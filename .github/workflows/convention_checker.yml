@@ -9,6 +9,7 @@ jobs:
   check-for-cc:
     runs-on: ubuntu-latest
     steps:
-      - name: check-for-cc
-        id: check-for-cc
-        uses: agenthunt/conventional-commit-checker-action@v1.0.0
+      - name: CommitMe - Conventional Commits validation
+        # You may pin to the exact commit or the version.
+        # uses: dev-build-deploy/commit-me@54be0b2090a8b62ecbd515e22bc19176fc872c34
+        uses: dev-build-deploy/commit-me@v1.1.0
