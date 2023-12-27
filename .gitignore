@@ -49,3 +49,9 @@ Temporary Items
 # Ignore all local history of files
 .history
 .ionide
+
+## virtual environment ignore ##
+.myenv
+
+## .env file ignore
+.env
