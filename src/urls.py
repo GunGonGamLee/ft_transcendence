@@ -25,8 +25,8 @@ router = routers.DefaultRouter()
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Snippets API",
-        default_version="v1",
+        title="ft_transcendence API",
+        default_version="v1.0.0",
         description="Test description",
         terms_of_service="https://www.google.com/policies/terms/",
     ),
@@ -36,9 +36,9 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('api/', include(('sample_swagger.urls', 'api'))),
 ]
 
+# DEBUG 모드일 경우, ui 없이 swagger view를 사용할 수 있도록 설정
 if settings.DEBUG:
     urlpatterns += [
         re_path(r'^swagger(?P<format>\.json|\.yaml)$',
