@@ -25,7 +25,7 @@ class CustomGame(models.Model):
     player_2_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='player_2')
     player_1_score = models.PositiveSmallIntegerField(default=0)
     player_2_score = models.PositiveSmallIntegerField(default=0)
-    who_is_winner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='winner')
+    winner_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='winner')
     created_date = models.DateTimeField(auto_now_add=True)  # 생성 날짜
     updated_date = models.DateTimeField(auto_now=True)  # 수정 날짜
 
@@ -44,7 +44,7 @@ class TournamentGame(models.Model):
         related_name='tournament')
     player_1_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='player_1')
     player_2_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='player_2')
-    who_is_winner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='winner')
+    winner_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='winner')
     player_1_score = models.PositiveSmallIntegerField(default=0)
     player_2_score = models.PositiveSmallIntegerField(default=0)
     match_index = models.PositiveSmallIntegerField(default=0)
