@@ -18,9 +18,9 @@ class User(AbstractUser):
 
 class FriendList(models.Model):
     class FriendList(models.Model):
-        user = models.ForeignKey(settings.USERS_USER_MODEL, on_delete=models.PROTECT,
+        user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
                                 related_name='friend_list_as_user')
-        friend = models.ForeignKey(settings.USERS_USER_MODEL, on_delete=models.PROTECT,
+        friend = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
                                 related_name='friend_list_as_friend')
 
         class Meta:
