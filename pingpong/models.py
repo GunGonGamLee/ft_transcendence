@@ -31,7 +31,8 @@ class Tournament(models.Model):
 
 
 class TournamentGame(models.Model):
-    tournament_id = models.ForeignKey(settings.PINGPONG_TOURNAMENT_MODEL, on_delete=models.PROTECT, related_name='tournament')
+    tournament_id = models.ForeignKey(settings.PINGPONG_TOURNAMENT_MODEL, on_delete=models.PROTECT,
+                                      related_name='tournament')
     player_1_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='player_1')
     player_2_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='player_2')
     who_is_winner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='winner')
@@ -41,3 +42,14 @@ class TournamentGame(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)  # 생성 날짜
     updated_date = models.DateTimeField(auto_now=True)  # 수정 날짜
     game_time = models.PositiveSmallIntegerField(default=0)
+
+
+class TournamentResult(models.Model):
+    tournament_id = models.ForeignKey(settings.PINGPONG_TOURNAMENT_MODEL, on_delete=models.PROTECT,
+                                      related_name='tournament')
+    first_player_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
+                                        related_name='first_player')
+    second_player_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
+                                         related_name='second_player')
+    created_date = models.DateTimeField(auto_now_add=True)  # 생성 날짜
+    updated_date = models.DateTimeField(auto_now=True)  # 수정 날짜
