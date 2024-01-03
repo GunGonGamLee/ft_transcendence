@@ -17,14 +17,13 @@ class User(AbstractUser):
 
 
 class FriendList(models.Model):
-    class FriendList(models.Model):
-        user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
-                                related_name='friend_list_as_user')
-        friend = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
-                                related_name='friend_list_as_friend')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
+        related_name='friend_list_as_user')
+    friend = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
+        related_name='friend_list_as_friend')
 
-        class Meta:
-            unique_together = ('user', 'friend')
+    class Meta:
+        unique_together = ('user', 'friend')
 
-        created_date = models.DateTimeField(auto_now_add=True)  # 생성 날짜
-        updated_date = models.DateTimeField(auto_now=True)  # 수정 날짜
+    created_date = models.DateTimeField(auto_now_add=True)  # 생성 날짜
+    updated_date = models.DateTimeField(auto_now=True)  # 수정 날짜
