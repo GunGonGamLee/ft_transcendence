@@ -16,18 +16,52 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ENV_PATH = os.path.join(BASE_DIR, '..', '.env')
 
-env = environ.Env(DEBUG=(bool, True))
 
-environ.Env.read_env(
-    env_file=os.path.join(BASE_DIR, '.env')
-)
+env = environ.Env()
+
+env.read_env(env_file=ENV_PATH)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-l2gfxz))kv&u)hbao6nmf7$2y71z(xl6)=e2kneyjt&n7k9v1f'
+
+# logging settings
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'json_formatter': {
+            '()': 'pythonjsonlogger.jsonlogger.JsonFormatter',
+            'format': '%(levelname)s %(asctime)s %(module)s %(message)s'
+        },
+    },
+    'handlers': {
+        'logstash': {
+            'level': 'INFO', # 모든 로그 레벨 포함
+            'class': 'logstash.TCPLogstashHandler',
+            'host': 'logstash_container', # Logstash 서비스의 컨테이너 이름
+            'port': 5333, # Logstash 컨테이너가 로그를 수신하는 포트
+            'version': 1,
+            'message_type': 'logstash',
+            'fqdn': False,
+            'tags': ['django'],
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['logstash'],
+            'level': 'DEBUG', # 모든 로그 레벨 포함
+            'propagate': True,
+        },
+        # 필요에 따라 추가 로거 정의
+    },
+}
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
