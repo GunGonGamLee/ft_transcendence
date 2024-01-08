@@ -1,4 +1,4 @@
-FROM logstash:8.11.3
+FROM logstash:7.17.16
 
 RUN logstash-plugin install logstash-filter-json
 RUN logstash-plugin install logstash-output-elasticsearch

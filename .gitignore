@@ -55,3 +55,6 @@ Temporary Items
 
 ## .env file ignore
 .env
+
+## volume directory git ignore
+volume/

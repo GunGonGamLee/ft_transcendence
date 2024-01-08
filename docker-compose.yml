@@ -32,22 +32,44 @@ services:
       - app_network
 
   elasticsearch:
-    image: elasticsearch:8.11.3
+    build:
+      context: ./elk/elasticsearch
+      dockerfile: Dockerfile
     volumes:
-      - "./volumes/elasticsearch/data:/usr/share/elasticsearch/data" # 수정된 경로
+      - type: bind
+        source: "${PWD}/elk/elasticsearch/config/elasticsearch.yml"
+        target: /usr/share/elasticsearch/config/elasticsearch.yml"
+        read_only: true
+      - "./volumes/elasticsearch/data:/usr/share/elasticsearch/data"
+      - "./volumes/elasticsearch/certs:/usr/share/elasticsearch/config/certs"
     environment:
-      - discovery.type=single-node
+      discovery.type : single-node
+      ELASTIC_PW : ${ELASTIC_PW}
+      ES_JAVA_OPTS: "-Xms2g -Xmx2g"
+      ES_CERTS_PW: ${ES_CERTS_PW}
     ports:
       - 9200:9200
+      - 9300:9300
     networks:
       - app_network
 
   logstash:
     build: ./elk/logstash
     container_name: logstash_container
+    environment:
+      LS_JAVA_OPTS: "-Xms2g -Xmx2g"
+      ELASTIC_PW: ${ELASTIC_PW}
+      ES_CERTS_PW: ${ES_CERTS_PW}
     volumes:
-      - "./volumes/logstash/config:/usr/share/logstash/config" # 수정된 경로
-      - "./volumes/logstash/pipeline:/usr/share/logstash/pipeline" # 수정된 경로
+      - type: bind
+        source: "${PWD}/elk/logstash/conf/logstash.yml"
+        target: /usr/share/logstash/config/logstash.yml
+        read_only: true
+      - type: bind
+        source: "${PWD}/elk/logstash/pipeline"
+        target: /usr/share/logstash/pipeline
+        read_only: true
+      - "./volumes/elasticsearch/certs:/usr/share/logstash/config/certs"
     ports:
       - 5333:5333
     depends_on:
@@ -55,14 +77,26 @@ services:
     networks:
       - app_network
 
-  # kibana:
-  #   build: ./elk/kibana
-  #   ports:
-  #     - 5601:5601
-  #   depends_on:
-  #     - elasticsearch
-  #   networks:
-  #     - app_network
+  kibana:
+    build: ./elk/kibana
+    container_name: kibana_container
+    volumes:
+      - type: bind
+        source: "${PWD}/elk/kibana/config/kibana.yml"
+        target: /usr/share/kibana/config/kibana.yml
+        read_only: true
+      - "./volumes/kibana/data:/usr/share/kibana/data"
+      - "./volumes/elasticsearch/certs:/usr/share/kibana/config/certs"
+    environment:
+      ELASTICSEARCH_URL: https://elasticsearch:9200
+      ELASTIC_PW: ${ELASTIC_PW}
+      ES_CERTS_PW: ${ES_CERTS_PW}
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
+    networks:
+      - app_network
 
 networks:
   app_network:
