@@ -1,0 +1,13 @@
+cluster.name: "docker-cluster"
+network.host: 0.0.0.0
+xpack.license.self_generated.type: trial
+xpack.monitoring.collection.enabled: true
+
+xpack.security.enabled: true
+xpack.security.http.ssl.enabled: true
+xpack.security.http.ssl.keystore.path: certs/elastic-certificates.p12
+xpack.security.http.ssl.truststore.path: certs/elastic-certificates.p12
+xpack.security.http.ssl.keystore.password: ${ES_CERTS_PW}
+xpack.security.http.ssl.truststore.password: ${ES_CERTS_PW}
+
+

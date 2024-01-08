@@ -1,0 +1,13 @@
+server.name: kibana
+server.host: "0"
+elasticsearch.hosts: https://elasticsearch:9200
+xpack.monitoring.ui.container.elasticsearch.enabled: true
+server.ssl.enabled: true
+server.ssl.keystore.path: "/usr/share/kibana/config/certs/elastic-certificates.p12"
+server.ssl.keystore.password: ${ES_CERTS_PW}
+server.ssl.truststore.path: "/usr/share/kibana/config/certs/elastic-certificates.p12"
+server.ssl.truststore.password: ${ES_CERTS_PW}
+
+elasticsearch.username: elastic
+elasticsearch.password: ${ELASTIC_PW}
+elasticsearch.ssl.verificationMode: "none"
