@@ -2,33 +2,14 @@ from rest_framework import serializers
 from drf_yasg.utils import swagger_auto_schema
 
 
-@swagger_auto_schema(
-    tags=["login"],
-)
-class GoogleLoginSerializer(serializers.Serializer):
-    def to_representation(self, instance):
-        return {
-            "access_token": instance["access_token"],
-            "refresh_token": instance["refresh_token"],
-            "user": {
-                "id": instance["user"].id,
-                "email": instance["user"].email,
-                "name": instance["user"].name,
-            },
-        }
+class LoginRedirectSerializer(serializers.Serializer):
+    status = serializers.IntegerField(default=302)
+    redirect_uri = serializers.URLField(default='http://localhost:8000/login/authorization')
 
 
-@swagger_auto_schema(
-    tags=["login"],
-)
-class Login42Serializer(serializers.Serializer):
-    def to_representation(self, instance):
-        return {
-            "access_token": instance["access_token"],
-            "refresh_token": instance["refresh_token"],
-            "user": {
-                "id": instance["user"].id,
-                "email": instance["user"].email,
-                "name": instance["user"].name,
-            },
-        }
+class GoogleLoginSerializer(LoginRedirectSerializer):
+    pass
+
+
+class FTLoginSerializer(LoginRedirectSerializer):
+    pass
