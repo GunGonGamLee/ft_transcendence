@@ -1,8 +1,9 @@
 from drf_yasg import openapi
 
-ft_login_response_schema = {
+
+common_login_response_schema = {
     302: openapi.Response(
-        description="42 인증 후 '/login/authorization'으로 리다이렉트",
+        description="Change description",
         headers={
             "Location": {
                 "type": "string",
@@ -28,3 +29,9 @@ ft_login_response_schema = {
         }
     )
 }
+
+google_login_response_schema = common_login_response_schema.copy()
+google_login_response_schema[302].description = "구글 인증 후 '/login/authorization'으로 리다이렉트"
+
+ft_login_response_schema = common_login_response_schema.copy()
+ft_login_response_schema[302].description = "42 인증 후 '/login/authorization'으로 리다이렉트"
