@@ -1,6 +1,24 @@
 version: '3.0'
 
 services:
+  hashicorp_vault:
+    build:
+      context: ./vault
+      dockerfile: Dockerfile
+    ports:
+      - 8200:8200
+    volumes:
+      - "./volumes/vault/file:/vault/file"
+      - "./volumes/vault/logs:/vault/logs"
+      # - "./volumes/vault/certs:/vault/certs"
+      - "./volumes/vault/config:/vault/config"
+    environment:
+      VAULT_ADDR: "http://hashicorp_vault:8200"
+    cap_add:
+      - IPC_LOCK
+    networks:
+      - app_network
+
   django_node_app:
     build: .
     container_name: django_node_container
@@ -17,6 +35,11 @@ services:
       DB_USER: ${DB_USER}
       DB_DATABASE: ${DB_DATABASE}
       DB_PASSWORD: ${DB_PASSWORD}
+      LOG_KEY: ${LOG_KEY}
+      VAULT_URL: "http://hashicorp_vault:8200"
+      VAULT_TOKEN: ${VAULT_TOKEN}
+    depends_on:
+      - hashicorp_vault
 
 
   nginx:
@@ -36,10 +59,6 @@ services:
       context: ./elk/elasticsearch
       dockerfile: Dockerfile
     volumes:
-      - type: bind
-        source: "${PWD}/elk/elasticsearch/config/elasticsearch.yml"
-        target: /usr/share/elasticsearch/config/elasticsearch.yml"
-        read_only: true
       - "./volumes/elasticsearch/data:/usr/share/elasticsearch/data"
       - "./volumes/elasticsearch/certs:/usr/share/elasticsearch/config/certs"
     environment:
@@ -61,14 +80,6 @@ services:
       ELASTIC_PW: ${ELASTIC_PW}
       ES_CERTS_PW: ${ES_CERTS_PW}
     volumes:
-      - type: bind
-        source: "${PWD}/elk/logstash/conf/logstash.yml"
-        target: /usr/share/logstash/config/logstash.yml
-        read_only: true
-      - type: bind
-        source: "${PWD}/elk/logstash/pipeline"
-        target: /usr/share/logstash/pipeline
-        read_only: true
       - "./volumes/elasticsearch/certs:/usr/share/logstash/config/certs"
     ports:
       - 5333:5333
@@ -81,10 +92,6 @@ services:
     build: ./elk/kibana
     container_name: kibana_container
     volumes:
-      - type: bind
-        source: "${PWD}/elk/kibana/config/kibana.yml"
-        target: /usr/share/kibana/config/kibana.yml
-        read_only: true
       - "./volumes/kibana/data:/usr/share/kibana/data"
       - "./volumes/elasticsearch/certs:/usr/share/kibana/config/certs"
     environment:

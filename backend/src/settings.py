@@ -13,21 +13,62 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import environ
 import os
+import hvac
+
+import requests
+import time
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ENV_PATH = os.path.join(BASE_DIR, '..', '.env')
+
+env = environ.Env()
+
+DEBUG = True
+
+env.read_env(env_file=ENV_PATH)
+
+VAULT_URL = os.environ.get("VAULT_URL")
+VAULT_TOKEN = os.environ.get("VAULT_TOKEN")
+
+client = hvac.Client(url=VAULT_URL, token=VAULT_TOKEN)
+
+def wait_for_vault_client(client, retries=5, delay=5):
+    for i in range(retries):
+        try:
+            if client.sys.is_initialized() and client.sys.is_sealed() == False:
+                print("Vault is ready!")
+                return
+            else:
+                print("Vault is not ready yet. retrying...")
+        except hvac.exceptions.VaultError as e:
+            print(f"Waiting for Vault to be ready: {e}")
+        time.sleep(delay)
+    raise Exception("Vault is not ready")
+
+
+if DEBUG:
+    pass
+else:
+    wait_for_vault_client(client)
+    secret_path = "sejokim"
+    read_response = client.secrets.kv.v2.read_secret_version(path=secret_path, mount_point='kv')
+    db_host = read_response['data']['data']['DB_HOST']
+    db_password = read_response['data']['data']['DB_PASSWORD']
+    db_user = read_response['data']['data']['DB_USER']
+    db_name = read_response['data']['data']['DB_DATABASE']
+    db_port = read_response['data']['data']['DB_PORT']
+    log_key = read_response['data']['data']['LOG_KEY']
 
 
 env = environ.Env()
 
 env.read_env(env_file=ENV_PATH)
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-l2gfxz))kv&u)hbao6nmf7$2y71z(xl6)=e2kneyjt&n7k9v1f'
+if DEBUG:
+    SECRET_KEY = env('LOG_KEY')
+else:
+    log_key = read_response['data']['data']['LOG_KEY']
 
 # logging settings
 
@@ -64,9 +105,8 @@ LOGGING = {
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -112,16 +152,28 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'src.wsgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('DB_DATABASE'),
-        'USER': env('DB_USER'),
-        'PASSWORD': env('DB_PASSWORD'),
-        'HOST': env('DB_HOST'),
-        'PORT': env('DB_PORT'),
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': env('DB_DATABASE'),
+            'USER': env('DB_USER'),
+            'PASSWORD': env('DB_PASSWORD'),
+            'HOST': env('DB_HOST'),
+            'PORT': env('DB_PORT'),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': db_name,
+            'USER': db_user,
+            'PASSWORD': db_password,
+            'HOST': db_host,
+            'PORT': db_port,
+        }
+    }
 
 
 # Password validation
