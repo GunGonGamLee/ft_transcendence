@@ -112,6 +112,8 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'users.apps.UsersConfig',
+    'pingpong.apps.PingpongConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -121,6 +123,9 @@ INSTALLED_APPS = [
 		'rest_framework',
 		'drf_yasg',
 ]
+
+PINGPONG_TOURNAMENT_MODEL = 'pingpong.Tournament'
+AUTH_USER_MODEL = 'users.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
