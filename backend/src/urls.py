@@ -27,7 +27,7 @@ schema_view = get_schema_view(
     openapi.Info(
         title="ft_transcendence API",
         default_version="v1.0.0",
-        description="Test description",
+        description="GunGonGamLee's ft_transcendence API",
         terms_of_service="https://www.google.com/policies/terms/",
     ),
     public=True,
