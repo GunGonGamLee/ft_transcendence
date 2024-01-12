@@ -1,23 +1,23 @@
 version: '3.0'
 
 services:
-  hashicorp_vault:
-    build:
-      context: ./vault
-      dockerfile: Dockerfile
-    ports:
-      - 8200:8200
-    volumes:
-      - "./volumes/vault/file:/vault/file"
-      - "./volumes/vault/logs:/vault/logs"
-      # - "./volumes/vault/certs:/vault/certs"
-      - "./volumes/vault/config:/vault/config"
-    environment:
-      VAULT_ADDR: "http://hashicorp_vault:8200"
-    cap_add:
-      - IPC_LOCK
-    networks:
-      - app_network
+  # hashicorp_vault:
+  #   build:
+  #     context: ./vault
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - 8200:8200
+  #   volumes:
+  #     - "./volumes/vault/file:/vault/file"
+  #     - "./volumes/vault/logs:/vault/logs"
+  #     # - "./volumes/vault/certs:/vault/certs"
+  #     - "./volumes/vault/config:/vault/config"
+  #   environment:
+  #     VAULT_ADDR: "http://hashicorp_vault:8200"
+  #   cap_add:
+  #     - IPC_LOCK
+  #   networks:
+  #     - app_network
 
   django_node_app:
     build: .
@@ -38,8 +38,8 @@ services:
       LOG_KEY: ${LOG_KEY}
       VAULT_URL: "http://hashicorp_vault:8200"
       VAULT_TOKEN: ${VAULT_TOKEN}
-    depends_on:
-      - hashicorp_vault
+    # depends_on:
+      # - hashicorp_vault
 
 
   nginx:
@@ -54,56 +54,56 @@ services:
     networks:
       - app_network
 
-  elasticsearch:
-    build:
-      context: ./elk/elasticsearch
-      dockerfile: Dockerfile
-    volumes:
-      - "./volumes/elasticsearch/data:/usr/share/elasticsearch/data"
-      - "./volumes/elasticsearch/certs:/usr/share/elasticsearch/config/certs"
-    environment:
-      discovery.type : single-node
-      ELASTIC_PW : ${ELASTIC_PW}
-      ES_JAVA_OPTS: "-Xms2g -Xmx2g"
-      ES_CERTS_PW: ${ES_CERTS_PW}
-    ports:
-      - 9200:9200
-      - 9300:9300
-    networks:
-      - app_network
+  # elasticsearch:
+  #   build:
+  #     context: ./elk/elasticsearch
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - "./volumes/elasticsearch/data:/usr/share/elasticsearch/data"
+  #     - "./volumes/elasticsearch/certs:/usr/share/elasticsearch/config/certs"
+  #   environment:
+  #     discovery.type : single-node
+  #     ELASTIC_PW : ${ELASTIC_PW}
+  #     ES_JAVA_OPTS: "-Xms2g -Xmx2g"
+  #     ES_CERTS_PW: ${ES_CERTS_PW}
+  #   ports:
+  #     - 9200:9200
+  #     - 9300:9300
+  #   networks:
+  #     - app_network
 
-  logstash:
-    build: ./elk/logstash
-    container_name: logstash_container
-    environment:
-      LS_JAVA_OPTS: "-Xms2g -Xmx2g"
-      ELASTIC_PW: ${ELASTIC_PW}
-      ES_CERTS_PW: ${ES_CERTS_PW}
-    volumes:
-      - "./volumes/elasticsearch/certs:/usr/share/logstash/config/certs"
-    ports:
-      - 5333:5333
-    depends_on:
-      - elasticsearch
-    networks:
-      - app_network
+  # logstash:
+  #   build: ./elk/logstash
+  #   container_name: logstash_container
+  #   environment:
+  #     LS_JAVA_OPTS: "-Xms2g -Xmx2g"
+  #     ELASTIC_PW: ${ELASTIC_PW}
+  #     ES_CERTS_PW: ${ES_CERTS_PW}
+  #   volumes:
+  #     - "./volumes/elasticsearch/certs:/usr/share/logstash/config/certs"
+  #   ports:
+  #     - 5333:5333
+  #   depends_on:
+  #     - elasticsearch
+  #   networks:
+  #     - app_network
 
-  kibana:
-    build: ./elk/kibana
-    container_name: kibana_container
-    volumes:
-      - "./volumes/kibana/data:/usr/share/kibana/data"
-      - "./volumes/elasticsearch/certs:/usr/share/kibana/config/certs"
-    environment:
-      ELASTICSEARCH_URL: https://elasticsearch:9200
-      ELASTIC_PW: ${ELASTIC_PW}
-      ES_CERTS_PW: ${ES_CERTS_PW}
-    ports:
-      - 5601:5601
-    depends_on:
-      - elasticsearch
-    networks:
-      - app_network
+  # kibana:
+  #   build: ./elk/kibana
+  #   container_name: kibana_container
+  #   volumes:
+  #     - "./volumes/kibana/data:/usr/share/kibana/data"
+  #     - "./volumes/elasticsearch/certs:/usr/share/kibana/config/certs"
+  #   environment:
+  #     ELASTICSEARCH_URL: https://elasticsearch:9200
+  #     ELASTIC_PW: ${ELASTIC_PW}
+  #     ES_CERTS_PW: ${ES_CERTS_PW}
+  #   ports:
+  #     - 5601:5601
+  #   depends_on:
+  #     - elasticsearch
+  #   networks:
+  #     - app_network
 
 networks:
   app_network:
