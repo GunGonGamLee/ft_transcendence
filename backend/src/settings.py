@@ -33,6 +33,7 @@ VAULT_TOKEN = os.environ.get("VAULT_TOKEN")
 
 client = hvac.Client(url=VAULT_URL, token=VAULT_TOKEN)
 
+
 def wait_for_vault_client(client, retries=5, delay=5):
     for i in range(retries):
         try:
@@ -60,7 +61,6 @@ else:
     db_port = read_response['data']['data']['DB_PORT']
     log_key = read_response['data']['data']['LOG_KEY']
 
-
 env = environ.Env()
 
 env.read_env(env_file=ENV_PATH)
@@ -83,10 +83,10 @@ LOGGING = {
     },
     'handlers': {
         'logstash': {
-            'level': 'INFO', # 모든 로그 레벨 포함
+            'level': 'INFO',  # 모든 로그 레벨 포함
             'class': 'logstash.TCPLogstashHandler',
-            'host': 'logstash_container', # Logstash 서비스의 컨테이너 이름
-            'port': 5333, # Logstash 컨테이너가 로그를 수신하는 포트
+            'host': 'logstash_container',  # Logstash 서비스의 컨테이너 이름
+            'port': 5333,  # Logstash 컨테이너가 로그를 수신하는 포트
             'version': 1,
             'message_type': 'logstash',
             'fqdn': False,
@@ -96,18 +96,16 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['logstash'],
-            'level': 'DEBUG', # 모든 로그 레벨 포함
+            'level': 'DEBUG',  # 모든 로그 레벨 포함
             'propagate': True,
         },
         # 필요에 따라 추가 로거 정의
     },
 }
 
-
 # SECURITY WARNING: don't run with debug turned on in production!
 
 ALLOWED_HOSTS = ['*']
-
 
 # Application definition
 
@@ -120,8 +118,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-		'rest_framework',
-		'drf_yasg',
+    'rest_framework',
+    'drf_yasg',
 ]
 
 PINGPONG_TOURNAMENT_MODEL = 'pingpong.Tournament'
@@ -180,7 +178,6 @@ else:
         }
     }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
@@ -199,7 +196,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -210,7 +206,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
