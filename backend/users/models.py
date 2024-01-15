@@ -27,7 +27,7 @@ class Friend(models.Model):
     status = models.PositiveSmallIntegerField(default=0)  # 친구 상태. 0: 수락 대기, 1: 친구 수락, 2: 친구 거절
 
     class Meta:
-        unique_together = ('user', 'friend')
+        unique_together = ('user_id', 'friend_id')
 
     created_date = models.DateTimeField(auto_now_add=True)  # 생성 날짜
     updated_date = models.DateTimeField(auto_now=True)  # 수정 날짜
