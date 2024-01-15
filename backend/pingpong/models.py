@@ -35,3 +35,11 @@ class TournamentGame(models.Model):
     game_time = models.DurationField(null=False, blank=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+
+class CustomGameRoom(models.Model):
+    manager_id = models.ForeignKey('users.User', on_delete=models.PROTECT, related_name='manager')
+    topic = models.CharField(max_length=100, null=False, blank=False)
+    password = models.CharField(max_length=100, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
