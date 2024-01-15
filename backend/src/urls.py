@@ -36,7 +36,7 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('login/', include('login.urls')),
+    path('api/', include('api.urls')),
 ]
 
 # DEBUG 모드일 경우, ui 없이 swagger view를 사용할 수 있도록 설정
