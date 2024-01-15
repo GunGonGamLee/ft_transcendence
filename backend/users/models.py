@@ -21,9 +21,9 @@ class User(AbstractUser):
 
 class FriendList(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
-        related_name='friend_list_as_user')
+                             related_name='friend_list_as_user')
     friend = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
-        related_name='friend_list_as_friend')
+                               related_name='friend_list_as_friend')
 
     class Meta:
         unique_together = ('user', 'friend')
