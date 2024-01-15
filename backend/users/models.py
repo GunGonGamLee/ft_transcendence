@@ -19,11 +19,12 @@ class User(AbstractUser):
     updated_date = models.DateTimeField(auto_now=True)  # 수정 날짜
 
 
-class FriendList(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
-                             related_name='friend_list_as_user')
-    friend = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
-                               related_name='friend_list_as_friend')
+class Friend(models.Model):
+    user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
+                                related_name='user_who_is_requesting')  # 친구 요청한 사람
+    friend_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
+                                  related_name='friend_who_is_requested')  # 친구 요청 받은 사람
+    status = models.PositiveSmallIntegerField(default=0)  # 친구 상태. 0: 수락 대기, 1: 친구 수락, 2: 친구 거절
 
     class Meta:
         unique_together = ('user', 'friend')
