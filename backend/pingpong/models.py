@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 
 
 class TwoPlayerGame(models.Model):
@@ -41,5 +43,15 @@ class CustomGameRoom(models.Model):
     manager_id = models.ForeignKey('users.User', on_delete=models.PROTECT, related_name='manager')
     topic = models.CharField(max_length=100, null=False, blank=False)
     password = models.CharField(max_length=100, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class CustomGame(models.Model):
+    room_id = models.ForeignKey('CustomGameRoom', on_delete=models.PROTECT, related_name='room')
+    mode = models.PositiveSmallIntegerField(default=0)
+    content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')  # TwoPlayerGame, TournamentGame의 model
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
