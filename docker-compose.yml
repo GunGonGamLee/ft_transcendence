@@ -47,6 +47,7 @@ services:
     container_name: nginx_container
     volumes:
       - "./volumes/nginx:/etc/nginx/conf.d"
+      - "./frontend:/usr/share/nginx/html"
     ports:
       - 443:443 # https 사용
     depends_on:
