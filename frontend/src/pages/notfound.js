@@ -1,3 +1,7 @@
+/**
+ *
+ * @param {HTMLElement} $container
+ */
 export default function NotFound($container) {
   this.$container = $container;
 

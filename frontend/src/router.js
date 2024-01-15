@@ -1,6 +1,9 @@
 import { routes } from "./constants/routeInfo.js";
 import NotFound from "./pages/notfound.js";
 
+/**
+ * @param {HTMLElement} $container
+ */
 export default function Router($container) {
   this.$container = $container;
   let currentPage = undefined;

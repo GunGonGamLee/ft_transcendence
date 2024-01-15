@@ -1,6 +1,6 @@
 /**
  * jQuery같이 querySelector를 사용하기 위한 함수
- * @param {HTMLElement} selector dom selector
+ * @param {string} selector dom selector
  * @returns dom element
  */
 export const $ = (selector) => {

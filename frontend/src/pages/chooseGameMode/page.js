@@ -1,5 +1,8 @@
 import { navigate } from "../../utils/navigate.js";
 
+/**
+ * @param {HTMLElement} $container
+ */
 export default function chooseGameMode($container) {
   this.$container = $container;
 
@@ -35,7 +38,6 @@ export default function chooseGameMode($container) {
     <img style="width: 89px; height: 89px; left: 1230px; top: 17px; position: absolute; border: 6px white solid" src="https://via.placeholder.com/89x89" />
     <img style="width: 89px; height: 89px; left: 117px; top: 107px; position: absolute; transform: rotate(-180deg); transform-origin: 0 0" src="https://via.placeholder.com/89x89" />
   </div>
-  <div id="button">fdfdfd</div>
 </div>
 	  `;
   };

@@ -1,4 +1,8 @@
 import { navigate } from "../../utils/navigate.js";
+
+/**
+ * @param {HTMLElement} $container
+ */
 export default function makeNickname($container) {
 	this.$container = $container;
 
