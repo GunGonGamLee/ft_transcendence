@@ -14,9 +14,9 @@ class User(AbstractUser):
     rating = models.PositiveIntegerField(default=0)  # 레이팅
     avatar = models.ImageField(upload_to='avatar/', null=True, blank=True)  # 아바타 이미지
     is_active = models.BooleanField(default=True)  # 활성화 여부
-    joined_date = models.DateTimeField(auto_now_add=True)  # 가입 날짜
-    created_date = models.DateTimeField(auto_now_add=True)  # 생성 날짜
-    updated_date = models.DateTimeField(auto_now=True)  # 수정 날짜
+    joined_at = models.DateTimeField(auto_now_add=True)  # 가입 날짜
+    created_at = models.DateTimeField(auto_now_add=True)  # 생성 날짜
+    updated_at = models.DateTimeField(auto_now=True)  # 수정 날짜
 
 
 class Friend(models.Model):
@@ -29,5 +29,5 @@ class Friend(models.Model):
     class Meta:
         unique_together = ('user_id', 'friend_id')
 
-    created_date = models.DateTimeField(auto_now_add=True)  # 생성 날짜
-    updated_date = models.DateTimeField(auto_now=True)  # 수정 날짜
+    created_at = models.DateTimeField(auto_now_add=True)  # 생성 날짜
+    updated_at = models.DateTimeField(auto_now=True)  # 수정 날짜
