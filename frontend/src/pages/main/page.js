@@ -1,5 +1,8 @@
 import { navigate } from "../../utils/navigate.js";
 
+/**
+ * @param {HTMLElement} $container
+ */
 export default function Main($container) {
   this.$container = $container;
 
