@@ -11,3 +11,15 @@ class TwoPlayerGame(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+
+class Tournament(models.Model):
+    player1_id = models.ForeignKey('users.User', on_delete=models.PROTECT, related_name='tournament_player1')
+    player2_id = models.ForeignKey('users.User', on_delete=models.PROTECT, related_name='tournament_player2')
+    player3_id = models.ForeignKey('users.User', on_delete=models.PROTECT, related_name='tournament_player3')
+    player4_id = models.ForeignKey('users.User', on_delete=models.PROTECT, related_name='tournament_player4')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('player1_id', 'player2_id', 'player3_id', 'player4_id')
+
