@@ -1,0 +1,32 @@
+header {
+    width: 100vw;
+    height: 12vh;
+    font-family: Galmuri11-Bold, serif;
+    font-size: 2rem;
+}
+
+.header-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+    padding: 0 5rem;
+    width: 100%;
+    height: 100%;
+}
+
+.header-wrapper .histories > div {
+    width: fit-content;
+}
+
+.header-wrapper .histories#title {
+    color: #29ABE2;
+}
+
+.header-wrapper .histories#close-button a {
+    display: block;
+    background-image: url("../../images/close.png");
+    background-position: center;
+    width: 3rem;
+    height: 3rem;
+}
