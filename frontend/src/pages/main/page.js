@@ -14,6 +14,8 @@ export default function Main($container) {
     this.$container.innerHTML = `
     <button id="button">go to makeNickname</button>
     <button id="loginBtn">42login</button>
+    <button class="bg-amber-300 font-bold py-2 px-4 rounded">Amber</button>
+    <div class="flex flex-col items-center justify-center h-screen">dfdf</div>
     `;
   };
 
