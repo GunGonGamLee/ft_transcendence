@@ -1,6 +1,7 @@
 import chooseGameMode from "../pages/chooseGameMode/page.js";
 import Main from "../pages/main/page.js";
 import makeNickname from "../pages/makeNickname/page.js";
+import oneOnOne from "../pages/histories/custom/one_on_one_list.js";
 
 export const BASE_URL = "http://localhost:3000";
 /**
@@ -8,7 +9,9 @@ export const BASE_URL = "http://localhost:3000";
  * @type {{path: RegExp, element: string}[]}
  */
 export const routes = [
-  { path: /^\/$/, element: Main },
-  { path: /^\/makeNickname$/, element: makeNickname },
-  { path: /^\/chooseGameMode$/, element: chooseGameMode },
+    {path: /^\/$/, element: Main},
+    {path: /^\/makeNickname$/, element: makeNickname},
+    {path: /^\/chooseGameMode$/, element: chooseGameMode},
+
+    {path: /^\/histories$/, element: oneOnOne},
 ];
