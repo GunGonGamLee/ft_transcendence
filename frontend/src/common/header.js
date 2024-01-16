@@ -19,7 +19,7 @@ export default function header($container) {
 
     init();
     switch (location.pathname) {
-        case "/users/histories":
+        case "/histories":
             new HistoriesHeader($container);
             break;
         default:
