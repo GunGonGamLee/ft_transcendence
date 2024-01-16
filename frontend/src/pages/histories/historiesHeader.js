@@ -13,7 +13,9 @@ export default function HistoriesHeader($container) {
         this.$container.innerHTML = `
         <div class="header-wrapper">
             <div class="histories" id="search-icon"></div>
-            <div class="histories" id="search-box"></div>
+            <div class="histories" id="search-box">
+                <input type="text">
+            </div>
             <div class="histories" id="title">너의 기록은</div>
             <div class="histories" id="user-avatar"></div>
             <div class="histories" id="close-button">
