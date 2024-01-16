@@ -16,13 +16,13 @@ export default function chooseGameMode($container) {
 	  <div style="width: 1440px; height: 1024px; position: relative; background: linear-gradient(180deg, #191D40 0%, #45003B 100%)">
   <div style="width: 610px; height: 706px; left: 894px; top: 159px; position: absolute; opacity: 0.25">
     <img style="width: 610px; height: 610px; left: 0px; top: 0px; position: absolute" src="https://via.placeholder.com/610x610" />
-    <div style="width: 344px; left: 133px; top: 586px; position: absolute; text-align: center; color: white; font-size: 35px; font-family: Galmuri11; font-weight: 400; line-height: 60px; word-wrap: break-word">다양한 모드로     게임을 즐길 수 있다.</div>
+    <div style="width: 344px; left: 133px; top: 586px; position: absolute; text-align: center; color: white; font-size: 35px; font-family: Galmuri11; font-weight: 400; line-height: 60px; word-wrap: break-word">다양한 모드로    게임을 즐길 수 있다.</div>
     <div style="left: 126px; top: 492px; position: absolute; text-align: center; color: #FF77C5; font-size: 45px; font-family: Galmuri11; font-weight: 400; word-wrap: break-word">사용자 지정 모드</div>
     <div style="left: 129px; top: 489px; position: absolute; text-align: center; color: white; font-size: 45px; font-family: Galmuri11; font-weight: 400; word-wrap: break-word">사용자 지정 모드</div>
   </div>
   <div style="width: 403px; height: 549px; left: 544px; top: 316px; position: absolute; opacity: 0.50">
     <img style="width: 295px; height: 295px; left: 53px; top: 0px; position: absolute" src="https://via.placeholder.com/295x295" />
-    <div style="left: 0px; top: 429px; position: absolute; text-align: center; color: white; font-size: 35px; font-family: Galmuri11; font-weight: 400; line-height: 60px; word-wrap: break-word">랜덤으로 4명의 사용자와     토너먼트 경기를 치른다.</div>
+    <div style="left: 0px; top: 429px; position: absolute; text-align: center; color: white; font-size: 35px; font-family: Galmuri11; font-weight: 400; line-height: 60px; word-wrap: break-word">랜덤으로 4명의 사용자와   토너먼트 경기를 치른다.</div>
     <div style="left: 53px; top: 335px; position: absolute; text-align: center; color: #FF77C5; font-size: 45px; font-family: Galmuri11; font-weight: 400; word-wrap: break-word">토너먼트 모드</div>
     <div style="left: 57px; top: 332px; position: absolute; text-align: center; color: white; font-size: 45px; font-family: Galmuri11; font-weight: 400; word-wrap: break-word">토너먼트 모드</div>
   </div>
