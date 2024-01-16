@@ -51,6 +51,21 @@ header {
     color: #29ABE2;
 }
 
+.header-wrapper .histories#user-avatar {
+    position: relative;
+    width: 4rem;
+    height: 4rem;
+    border: 4px solid white;
+    overflow: hidden;
+}
+
+.header-wrapper .histories#user-avatar > img {
+    position: absolute;
+    width: 6rem;
+    height: 6rem;
+    border-radius: 50%;
+}
+
 .header-wrapper .histories#close-button a {
     display: block;
     background-image: url("../../images/close.png");
