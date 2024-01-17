@@ -72,36 +72,36 @@ else:
 
 # logging settings
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'json_formatter': {
-            '()': 'pythonjsonlogger.jsonlogger.JsonFormatter',
-            'format': '%(levelname)s %(asctime)s %(module)s %(message)s'
-        },
-    },
-    'handlers': {
-        'logstash': {
-            'level': 'INFO',  # 모든 로그 레벨 포함
-            'class': 'logstash.TCPLogstashHandler',
-            'host': 'logstash_container',  # Logstash 서비스의 컨테이너 이름
-            'port': 5333,  # Logstash 컨테이너가 로그를 수신하는 포트
-            'version': 1,
-            'message_type': 'logstash',
-            'fqdn': False,
-            'tags': ['django'],
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['logstash'],
-            'level': 'DEBUG',  # 모든 로그 레벨 포함
-            'propagate': True,
-        },
-        # 필요에 따라 추가 로거 정의
-    },
-}
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters': {
+#         'json_formatter': {
+#             '()': 'pythonjsonlogger.jsonlogger.JsonFormatter',
+#             'format': '%(levelname)s %(asctime)s %(module)s %(message)s'
+#         },
+#     },
+#     'handlers': {
+#         'logstash': {
+#             'level': 'INFO',  # 모든 로그 레벨 포함
+#             'class': 'logstash.TCPLogstashHandler',
+#             'host': 'logstash_container',  # Logstash 서비스의 컨테이너 이름
+#             'port': 5333,  # Logstash 컨테이너가 로그를 수신하는 포트
+#             'version': 1,
+#             'message_type': 'logstash',
+#             'fqdn': False,
+#             'tags': ['django'],
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['logstash'],
+#             'level': 'DEBUG',  # 모든 로그 레벨 포함
+#             'propagate': True,
+#         },
+#         # 필요에 따라 추가 로거 정의
+#     },
+# }
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
@@ -120,16 +120,26 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'drf_yasg',
+    'rest_framework_simplejwt',
+
+    "django.contrib.sites",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
 ]
 
 PINGPONG_TOURNAMENT_MODEL = 'pingpong.Tournament'
 AUTH_USER_MODEL = 'users.User'
+
+REST_USE_JWT = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -198,6 +208,12 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
+
+SITE_ID = 1
+
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+SOCIAL_AUTH_GOOGLE_OAUTH2_TEST_USER_MODEL = 'users.User'
 
 LANGUAGE_CODE = 'en-us'
 

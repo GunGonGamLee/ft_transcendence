@@ -4,15 +4,15 @@ RUN mkdir frontend backend && \
 	apt-get update && \
 	apt-get install bash
 
-COPY frontend/package*.json ./frontend/
-RUN cd frontend && npm install
+# COPY frontend/package*.json ./frontend/
+# RUN cd frontend && npm install
 
 COPY backend/requirements.txt ./backend/
 RUN pip install -r backend/requirements.txt
 
 COPY backend ./backend
-COPY frontend ./frontend
+# COPY frontend ./frontend
 
-EXPOSE 8000 3000
+EXPOSE 8000
 
-CMD bash -c "cd backend && python manage.py runserver 0.0.0.0:8000 & cd ../frontend && npm run dev"
+CMD bash -c "cd backend && python manage.py runserver 0.0.0.0:8000"

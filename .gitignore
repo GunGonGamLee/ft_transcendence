@@ -58,3 +58,6 @@ Temporary Items
 
 ## volume directory git ignore
 volumes/
+
+## pycache ignore
+**__pycache__/
