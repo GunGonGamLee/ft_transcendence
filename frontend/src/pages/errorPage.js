@@ -33,9 +33,9 @@ export default function ErrorPage($container, errorCode) {
 
   this.render = () => {
     this.$container.innerHTML = `
-    <div style="width: 100vw; height: 100vh; position: relative; background: #0000AA; display: flex; align-items: center; flex-direction: column">
-  <span style="color: rgba(0, 0, 0, 0.20); font-size: 130px; font-family: Galmuri11; font-weight: 700; word-wrap: break-word; margin-top: 14vh">${errorCode} !<br/></span>
-  <span style="color: white; font-size: 70px; font-family: Galmuri11; font-weight: 700; word-wrap: break-word"><br/>${this.comment}</span>
+    <div style="width: 100vw; height: 88vh; position: relative; background: #0000AA; display: flex; align-items: center; flex-direction: column">
+  <span style="color: rgba(0, 0, 0, 0.20); font-size: 130px; font-family: Galmuri11-Bold, serif; font-weight: 700; word-wrap: break-word; margin-top: 14vh">${errorCode} !<br/></span>
+  <span style="color: white; font-size: 70px; font-family: Galmuri11-Bold, serif; font-weight: 700; word-wrap: break-word"><br/>${this.comment}</span>
 </div>
     `;
   };

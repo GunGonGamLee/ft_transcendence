@@ -1,4 +1,4 @@
-export default function oneOnOne($container) {
+export default function histories($container) {
     this.$container = $container;
 
     this.setState = () => {
@@ -9,7 +9,7 @@ export default function oneOnOne($container) {
         if (document.getElementsByTagName("head") !== null) {
             document.getElementsByTagName("head")[0].insertAdjacentHTML(
                 "beforeend",
-                '<link rel="stylesheet" href="../../../../assets/css/histories/one_on_one.css"/>'
+                '<link rel="stylesheet" href="../../../assets/css/histories/one_on_one.css"/>'
             );
         }
         this.$container.innerHTML = `
