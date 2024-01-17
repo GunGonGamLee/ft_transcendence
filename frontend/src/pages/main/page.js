@@ -12,7 +12,7 @@ export default function Main($container) {
 
   this.render = () => {
     this.$container.innerHTML = `
-    <div style="width: 100vw; height: 100vh; position: relative; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center">
+    <div style="width: 100vw; height: 88vh; position: relative; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center">
     <div style="font-size: 26px; margin-bottom: 14vh" >ft_transcendence</div>
     <button type="button" class="btn btn-dark" style="margin-bottom: 6px;" id="button">sign in with google</button>
     <button type="button" class="btn btn-dark" style="margin-bottom: 53vh; padding-left: 50px; padding-right: 50px" id="button2">42 login</button>

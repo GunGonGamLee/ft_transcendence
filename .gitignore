@@ -58,3 +58,6 @@ Temporary Items
 
 ## volume directory git ignore
 volumes/
+
+## .idea directory git ignore
+.idea/
