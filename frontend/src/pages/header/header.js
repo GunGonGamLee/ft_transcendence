@@ -1,5 +1,5 @@
-import Router from "../router.js";
-import HistoriesHeader from "../pages/histories/historiesHeader.js";
+import Router from "../../router.js";
+import HistoriesHeader from "./historiesHeader.js";
 
 /**
  * header 컴포넌트
