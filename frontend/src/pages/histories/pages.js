@@ -9,7 +9,7 @@ export default function pages($container) {
         if (document.getElementsByTagName("head") !== null) {
             document.getElementsByTagName("head")[0].insertAdjacentHTML(
                 "beforeend",
-                '<link rel="stylesheet" href="../../../assets/css/histories/one_on_one.css"/>'
+                '<link rel="stylesheet" href="../../../assets/css/histories.css"/>'
             );
         }
         this.$container.innerHTML = `
