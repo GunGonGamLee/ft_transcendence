@@ -51,11 +51,6 @@
     color: white;
 }
 
-.histories.list-item:hover {
-    border: 3px #29ABE2 solid;
-    border-radius: 1vw;
-}
-
 .histories.list-item .player {
     display: flex;
     justify-content: center;
@@ -113,10 +108,12 @@
 .histories#pagination, .histories#pagination div {
     display: inline-block;
     height: 6vh;
+    text-align: center;
 }
 
 .histories#pagination > .histories img {
     height: 100%;
+    margin: 0 0.5vw;
 }
 
 .histories#pagination > .histories#prev img {
@@ -149,9 +146,4 @@
 .histories#mode > div img {
     width: 7vh;
     margin-right: 2vh;
-}
-
-.histories#mode > div:hover {
-    font-family: Galmuri11-Bold, serif;
-    color: #29ABE2;
 }

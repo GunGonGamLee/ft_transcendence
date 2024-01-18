@@ -1,3 +1,5 @@
+import {hoverChangeBorder, hoverChangeColor, hoverChangeCursor, hoverChangeFont} from "../../utils/hoverEvent.js";
+
 export default function Histories($container) {
     this.$container = $container;
 
@@ -124,9 +126,6 @@ export default function Histories($container) {
         for (let data of mockData) {
             const listItemDiv = document.createElement("div");
             listItemDiv.className = "histories list-item";
-            listItemDiv.addEventListener("click", (e) => {
-                e.preventDefault();
-            });
             listItemDiv.href = ""; // TODO: 전적 상세 페이지로 요청 보내기
             this.renderPlayer(listItemDiv, data.player1);
             this.renderGameMode(listItemDiv);
@@ -166,5 +165,31 @@ export default function Histories($container) {
         listItemDiv.appendChild(gameModeDiv);
     }
 
+    this.addEventListeners = () => {
+        const summary = document.getElementById("summary");
+        const custom = document.getElementById("custom");
+        const tournament = document.getElementById("tournament");
+        const prev = document.getElementById("prev");
+        const next = document.getElementById("next");
+        const listItem = document.getElementsByClassName("histories list-item");
+
+        hoverChangeColor(summary, "#ffffff", "#29ABE2");
+        hoverChangeColor(custom, "#ffffff", "#29ABE2");
+        hoverChangeColor(tournament, "#ffffff", "#29ABE2");
+        for (let item of listItem) {
+          hoverChangeBorder(item, "3px solid transparent", "3px solid #29ABE2");
+          hoverChangeCursor(item, "pointer");
+        }
+        hoverChangeFont(summary, "Galmuri11, serif", "Galmuri11-Bold, serif");
+        hoverChangeFont(custom, "Galmuri11, serif", "Galmuri11-Bold, serif");
+        hoverChangeFont(tournament, "Galmuri11, serif", "Galmuri11-Bold, serif");
+        hoverChangeCursor(summary, "pointer");
+        hoverChangeCursor(custom, "pointer");
+        hoverChangeCursor(tournament, "pointer");
+        hoverChangeCursor(prev, "pointer");
+        hoverChangeCursor(next, "pointer");
+    }
+
     this.render();
+    this.addEventListeners();
 }
