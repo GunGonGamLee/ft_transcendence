@@ -2,7 +2,7 @@
  * 사용자 전적 페이지에 사용하는 header 컴포넌트
  * @param {HTMLElement} $container
  */
-export default function ErrorHeader($container) {
+export default function mainHeader($container) {
   this.$container = $container;
 
   this.setState = () => {
@@ -11,8 +11,8 @@ export default function ErrorHeader($container) {
 
   this.render = () => {
     this.$container.innerHTML = `
-    <div style="width: 100vw; height: 12vh; background: #0000AA"></div>
-    `
+        <div class="nickname header-wrapper" style="width: 100vw; height: 12vh; background: #191D40">
+        `
   }
 
   this.render();
