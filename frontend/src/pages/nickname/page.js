@@ -28,7 +28,7 @@ export default function Nickname($container) {
     this.$container.querySelector('#nicknameForm input').value = '';
     // ajax 로직
     // 유효한 닉네임
-    alert('제출');
+    // alert('제출');
     // 유효하지 않은 닉네임
     this.$container.querySelector('.white-box').style.borderColor = 'red';
     this.$container.querySelector('.white-box div:last-child').innerHTML = '이미 존재하는 닉네임이다';
