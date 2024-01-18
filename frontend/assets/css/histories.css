@@ -110,7 +110,7 @@
 
 /********** Histories Pagination **********/
 
-.histories#pagination, .histories#pagination a {
+.histories#pagination, .histories#pagination div {
     display: inline-block;
     height: 6vh;
 }
@@ -137,7 +137,7 @@
     font-size: 2em;
 }
 
-.histories#mode a {
+.histories#mode div {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -146,12 +146,12 @@
     text-decoration: none;
 }
 
-.histories#mode > a img {
+.histories#mode > div img {
     width: 7vh;
     margin-right: 2vh;
 }
 
-.histories#mode > a:hover {
+.histories#mode > div:hover {
     font-family: Galmuri11-Bold, serif;
     color: #29ABE2;
 }

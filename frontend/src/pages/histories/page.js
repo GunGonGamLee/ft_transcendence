@@ -25,26 +25,26 @@ export default function Histories($container) {
         <div class="histories" id="content-wrapper">
             <div class="histories" id="list"></div>
             <div class="histories" id="pagination">
-                <a href="" class="histories" id="prev">
+                <div href="" class="histories" id="prev">
                     <img src="../../../assets/images/pagination.png" alt="prev">
-                </a>
-                <a href="" class="histories" id="next">
+                </div>
+                <div href="" class="histories" id="next">
                     <img src="../../../assets/images/pagination.png" alt="next">
-                </a>
+                </div>
             </div>
             <div class="histories" id="mode">
-                <a class="histories" id="summary" href="">
+                <div class="histories" id="summary" href="">
                     <img class="histories" src="../../../assets/images/custom_summary.png" alt="summary">
                     개요
-                </a>
-                <a class="histories title" id="custom" href="">
+                </div>
+                <div class="histories title" id="custom" href="">
                     <img class="histories" src="../../../assets/images/setting.png" alt="custom-mode">
                     사용자 지정 모드
-                </a>
-               <a class="histories title" id="tournament" href="">
+                </div>
+               <div class="histories title" id="tournament" href="">
                    <img class="histories" src="../../../assets/images/tournament_logo.png" alt="tournament">
                    토너먼트 모드
-               </a>
+               </div>
             </div>
         </div>
         `;
@@ -137,7 +137,7 @@ export default function Histories($container) {
 
     /**
      * 전적 리스트의 플레이어 정보를 렌더링합니다.
-     * @param listItemDiv 전적 리스트의 플레이어 정보를 렌더링할 리스트 아이템 <a> 엘리먼트
+     * @param listItemDiv 전적 리스트의 플레이어 정보를 렌더링할 리스트 아이템 <div> 엘리먼트
      * @param data 전적 리스트의 플레이어 정보
      */
     this.renderPlayer = (listItemDiv, data) => {
@@ -155,7 +155,7 @@ export default function Histories($container) {
 
     /**
      * 전적 리스트의 게임 모드(1 vs 1 로고 또는 토너먼트 로고)를 렌더링합니다.
-     * @param listItemDiv 전적 리스트의 게임 모드를 렌더링할 리스트 아이템 <a> 엘리먼트
+     * @param listItemDiv 전적 리스트의 게임 모드를 렌더링할 리스트 아이템 <div> 엘리먼트
      */
     this.renderGameMode = (listItemDiv) => {
         const gameModeDiv = document.createElement("div");
