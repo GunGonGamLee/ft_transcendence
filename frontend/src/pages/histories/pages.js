@@ -6,6 +6,15 @@ export default function pages($container) {
     }
 
     this.render = () => {
+        this.renderLayout();
+        this.renderList();
+    }
+
+    /**
+     * 헤더, 그리고 개요-사용자 지정 모드-토너먼트 모드를 선택할 수 있는 버튼들을 렌더링합니다.
+     * 이는 전적 리스트의 페이지의 레이아웃으로 추후 공통 모듈로 분리할 수 있습니다.
+     */
+    this.renderLayout = () => {
         if (document.getElementsByTagName("head") !== null) {
             document.getElementsByTagName("head")[0].insertAdjacentHTML(
                 "beforeend",
@@ -39,8 +48,6 @@ export default function pages($container) {
             </div>
         </div>
         `;
-
-        this.renderList();
     }
 
     /**
@@ -125,6 +132,11 @@ export default function pages($container) {
         }
     }
 
+    /**
+     * 전적 리스트의 플레이어 정보를 렌더링합니다.
+     * @param listItemA 전적 리스트의 플레이어 정보를 렌더링할 리스트 아이템 <a> 엘리먼트
+     * @param data 전적 리스트의 플레이어 정보
+     */
     this.renderPlayer = (listItemA, data) => {
         const playerDiv = document.createElement("div");
         playerDiv.className = "histories player";
@@ -138,6 +150,10 @@ export default function pages($container) {
         listItemA.appendChild(playerDiv);
     }
 
+    /**
+     * 전적 리스트의 게임 모드(1 vs 1 로고 또는 토너먼트 로고)를 렌더링합니다.
+     * @param listItemA 전적 리스트의 게임 모드를 렌더링할 리스트 아이템 <a> 엘리먼트
+     */
     this.renderGameMode = (listItemA) => {
         const gameModeDiv = document.createElement("div");
         gameModeDiv.className = "histories game-mode";
