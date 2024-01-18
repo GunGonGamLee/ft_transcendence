@@ -1,4 +1,4 @@
-import Router from "../../router.js";
+import Router from "../router.js";
 import HistoriesHeader from "./historiesHeader.js";
 
 /**

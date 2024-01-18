@@ -13,7 +13,7 @@ export default function HistoriesHeader($container) {
         this.$container.innerHTML = `
         <div class="histories header-wrapper">
             <div class="histories" id="left-side">
-                <img src="../../../assets/images/search.png" alt="">
+                <img src="../../assets/images/search.png" alt="">
                 <div class="histories" id="search-box">
                     <input type="text">
                 </div>
@@ -21,7 +21,7 @@ export default function HistoriesHeader($container) {
             <div class="histories" id="title">너의 기록은</div>
             <div class="histories" id="right-side">
                 <div class="histories" id="user-avatar">
-                    <img src="../../../assets/images/avatar/red.png" alt="">
+                    <img src="../../assets/images/avatar/red.png" alt="">
                 </div>
                 <div class="histories" id="close-button">
                     <a href=""></a>
