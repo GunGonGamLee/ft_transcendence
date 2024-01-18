@@ -1,4 +1,4 @@
-export default function page($container) {
+export default function Histories($container) {
     this.$container = $container;
 
     this.setState = () => {
