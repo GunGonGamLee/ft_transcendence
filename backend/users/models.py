@@ -10,7 +10,7 @@ class User(AbstractUser):
         last_name, email, is_staff, is_active, date_joined
     """
     nickname = models.CharField(max_length=8, unique=True)  # 닉네임
-    email = models.EmailField(unique=True)  # 이메일
+    email = models.EmailField(unique=True, max_length=254)  # 이메일
     rating = models.PositiveIntegerField(default=0)  # 레이팅
     avatar = models.ImageField(upload_to='avatar/', null=True, blank=True)  # 아바타 이미지
     is_active = models.BooleanField(default=True)  # 활성화 여부

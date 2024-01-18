@@ -1,6 +1,7 @@
 # login/views.py
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.contrib.auth import login
 from drf_yasg.utils import swagger_auto_schema
 from .schema.responses import ft_login_response_schema, google_login_response_schema
 from django.shortcuts import redirect
@@ -15,6 +16,9 @@ from users.models import User
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from allauth.socialaccount.providers.google import views as google_view
 from urllib.parse import urlencode
+import jwt
+from datetime import datetime, timedelta
+from django.conf import settings
 
 
 # 로그인이 성공했을 때 -> redirect_uri로 code 보내줌 -> 이건 클래스형 뷰로 만들었음
@@ -67,65 +71,66 @@ def google_login(request):
     client_id = os.environ.get('SOCIAL_AUTH_GOOGLE_CLIENT_ID')
     return redirect(f'https://accounts.google.com/o/oauth2/v2/auth?client_id={client_id}&redirect_uri={GOOGLE_CALLBACK_URI}&response_type=code&scope={scope}')
 
+def create_jwt_token(user):
+    payload = {
+        'user_id': user.id,
+        'user_email': user.email,
+        'exp': datetime.utcnow() + timedelta(days=1),
+    }
+    token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
+    return token.decode('utf-8') if isinstance(token, bytes) else token
+
 def google_callback(request):
     client_id = os.environ.get('SOCIAL_AUTH_GOOGLE_CLIENT_ID')
     client_secret = os.environ.get('SOCIAL_AUTH_GOOGLE_SECRET')
     code = request.GET.get('code')
 
-    token_req = requests.post(f"https://oauth2.googleapis.com/token?client_id={client_id}&client_secret={client_secret}&code={code}&grant_type=authorization_code&redirect_uri={GOOGLE_CALLBACK_URI}&state={state}")
+    # Google로부터 액세스 토큰 요청
+    token_req = requests.post(
+        "https://oauth2.googleapis.com/token",
+        data={
+            "client_id": client_id,
+            "client_secret": client_secret,
+            "code": code,
+            "grant_type": "authorization_code",
+            "redirect_uri": GOOGLE_CALLBACK_URI
+        }
+    )
     token_req_json = token_req.json()
     error = token_req_json.get("error")
-
     if error is not None:
-        raise JSONDecodeError(error)
+        return JsonResponse({'err_msg': error}, status=status.HTTP_400_BAD_REQUEST)
     
     access_token = token_req_json.get('access_token')
 
+    # Google API를 사용하여 이메일 정보 얻기
     email_req = requests.get(f"https://www.googleapis.com/oauth2/v1/tokeninfo?access_token={access_token}")
-    email_req_status = email_req.status_code
-
-    if email_req_status != 200:
+    if email_req.status_code != 200:
         return JsonResponse({'err_msg': 'failed to get email'}, status=status.HTTP_400_BAD_REQUEST)
-    
-    email_req_json = email_req.json()
-    email = email_req_json.get('email')
+
+    email = email_req.json().get('email')
+    nickname = email.split('@')[0][:8] # 이메일 사용자를 그대로 갖고오지만, 8자로 제한한다
 
     try:
         user = User.objects.get(email=email)
-
-        # FK로 연결되어 있는 socialaccount 테이블에서 해당 이메일의 유저가 있는지 확인
         social_user = SocialAccount.objects.get(user=user)
-
-        # 있는데 구글계정이 아니어도 에러
         if social_user.provider != 'google':
             return JsonResponse({'err_msg': 'no matching social type'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # 이미 Google로 제대로 가입된 유저 => 로그인 & 해당 유저의 jwt 발급
-        data = {'access_token': access_token, 'code': code}
-        accept = requests.post(f"{BASE_URL}api/login/google/finish/", data=data)
-        accept_status = accept.status_code
+        # 사용자 로그인 처리 및 JWT 토큰 발급
+        login(request, user)
+        jwt_token = create_jwt_token(user)
 
-        # 뭔가 중간에 문제가 생기면 에러
-        if accept_status != 200:
-            return JsonResponse({'err_msg': 'failed to signin'}, status=accept_status)
-
-        accept_json = accept.json()
-        accept_json.pop('user', None)
-        return JsonResponse(accept_json)
+        return JsonResponse({'token': jwt_token})
 
     except User.DoesNotExist:
-        # 전달받은 이메일로 기존에 가입된 유저가 아예 없으면 => 새로 회원가입 & 해당 유저의 jwt 발급
-        data = {'access_token': access_token, 'code': code}
-        accept = requests.post(f"{BASE_URL}api/login/google/finish/", data=data)
-        accept_status = accept.status_code
+        # 새 사용자 생성 및 JWT 토큰 발급
+        user = User.objects.create(email=email, nickname=nickname)
+        SocialAccount.objects.create(user=user, provider='google')
+        login(request, user)
+        jwt_token = create_jwt_token(user)
 
-        # 뭔가 중간에 문제가 생기면 에러
-        if accept_status != 200:
-            return JsonResponse({'err_msg': 'failed to signup'}, status=accept_status)
-
-        accept_json = accept.json()
-        accept_json.pop('user', None)
-        return JsonResponse(accept_json)
+        return JsonResponse({'token': jwt_token})
 
     except SocialAccount.DoesNotExist:
         return JsonResponse({'err_msg': 'email exists but not social user'}, status=status.HTTP_400_BAD_REQUEST)
