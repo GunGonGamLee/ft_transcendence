@@ -2,7 +2,7 @@
  * 사용자 전적 페이지에 사용하는 header 컴포넌트
  * @param {HTMLElement} $container
  */
-export default function HistoriesHeader($container) {
+export default function Header($container) {
     this.$container = $container;
 
     this.setState = () => {
@@ -11,7 +11,7 @@ export default function HistoriesHeader($container) {
 
     this.render = () => {
         this.$container.innerHTML = `
-        <div class="header-wrapper">
+        <div class="histories header-wrapper">
             <div class="histories" id="search-icon"></div>
             <div class="histories" id="search-box"></div>
             <div class="histories" id="title">너의 기록은</div>

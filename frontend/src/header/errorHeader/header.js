@@ -12,7 +12,7 @@ export default function HistoriesHeader($container) {
   this.render = () => {
     this.$container.innerHTML = `
     <div style="width: 100vw; height: 12vh; background: #0000AA"></div>
-        `
+    `
   }
 
   this.render();
