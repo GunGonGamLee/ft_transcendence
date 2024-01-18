@@ -1,4 +1,5 @@
 import {hoverChangeBorder, hoverChangeColor, hoverChangeCursor, hoverChangeFont} from "../../utils/hoverEvent.js";
+import {click} from "../../utils/clickEvent.js";
 
 export default function Histories($container) {
     this.$container = $container;
@@ -126,10 +127,14 @@ export default function Histories($container) {
         for (let data of mockData) {
             const listItemDiv = document.createElement("div");
             listItemDiv.className = "histories list-item";
-            listItemDiv.href = ""; // TODO: 전적 상세 페이지로 요청 보내기
             this.renderPlayer(listItemDiv, data.player1);
             this.renderGameMode(listItemDiv);
             this.renderPlayer(listItemDiv, data.player2);
+            hoverChangeBorder(listItemDiv, "3px solid transparent", "3px solid #29ABE2");
+            hoverChangeCursor(listItemDiv, "pointer");
+            listItemDiv.addEventListener("click", () => {
+              console.log("TODO => 전적 상세 페이지로 이동")
+            });
             listWrapper.appendChild(listItemDiv);
         }
     }
@@ -165,31 +170,41 @@ export default function Histories($container) {
         listItemDiv.appendChild(gameModeDiv);
     }
 
-    this.addEventListeners = () => {
+  /**
+   * 레이아웃 엘리먼트에 이벤트 리스너를 추가합니다.
+   */
+  this.addEventListenersToLayout = () => {
         const summary = document.getElementById("summary");
         const custom = document.getElementById("custom");
         const tournament = document.getElementById("tournament");
         const prev = document.getElementById("prev");
         const next = document.getElementById("next");
-        const listItem = document.getElementsByClassName("histories list-item");
 
+        // 폰트 색상 변경
         hoverChangeColor(summary, "#ffffff", "#29ABE2");
         hoverChangeColor(custom, "#ffffff", "#29ABE2");
         hoverChangeColor(tournament, "#ffffff", "#29ABE2");
-        for (let item of listItem) {
-          hoverChangeBorder(item, "3px solid transparent", "3px solid #29ABE2");
-          hoverChangeCursor(item, "pointer");
-        }
+
+        // 폰트 변경
         hoverChangeFont(summary, "Galmuri11, serif", "Galmuri11-Bold, serif");
         hoverChangeFont(custom, "Galmuri11, serif", "Galmuri11-Bold, serif");
         hoverChangeFont(tournament, "Galmuri11, serif", "Galmuri11-Bold, serif");
+
+        // 커서 변경
         hoverChangeCursor(summary, "pointer");
         hoverChangeCursor(custom, "pointer");
         hoverChangeCursor(tournament, "pointer");
         hoverChangeCursor(prev, "pointer");
         hoverChangeCursor(next, "pointer");
+
+        // click 이벤트
+        click(summary, function () {console.log("TODO => 개요 페이지로 이동")});
+        click(custom, function () {console.log("TODO => 사용자 지정 모드 페이지로 이동")});
+        click(tournament, function () {console.log("TODO => 토너먼트 모드 페이지로 이동")});
+        click(prev, function () {console.log("TODO => 이전 페이지로 이동")});
+        click(next, function () {console.log("TODO => 다음 페이지로 이동")});
     }
 
     this.render();
-    this.addEventListeners();
+    this.addEventListenersToLayout();
 }

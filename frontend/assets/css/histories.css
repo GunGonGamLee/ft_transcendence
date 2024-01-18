@@ -101,6 +101,7 @@
 .histories.list-item .histories.rating {
     font-family: Galmuri11, serif;
     font-size: 1.1em;
+    text-align: center;
 }
 
 /********** Histories Pagination **********/
