@@ -7,7 +7,6 @@
 export const hoverChangeColor = (element, originalColor, hoverColor) => {
     element.addEventListener("mouseover", () => {
         element.style.color = hoverColor;
-        element.style.cursor = "pointer";
     });
     element.addEventListener("mouseout", () => {
         element.style.color = originalColor;
@@ -23,7 +22,6 @@ export const hoverChangeColor = (element, originalColor, hoverColor) => {
 export const hoverChangeFont = (element, originalFont, hoverFont) => {
     element.addEventListener("mouseover", () => {
         element.style.fontFamily = hoverFont;
-        element.style.cursor = "pointer";
     });
     element.addEventListener("mouseout", () => {
         element.style.fontFamily = originalFont;
@@ -39,7 +37,6 @@ export const hoverChangeFont = (element, originalFont, hoverFont) => {
 export const hoverChangeBorder = (element, originalBorder, hoverBorder) => {
     element.addEventListener("mouseover", () => {
         element.style.border = hoverBorder;
-        element.style.cursor = "pointer";
     });
     element.addEventListener("mouseout", () => {
         element.style.border = originalBorder;
