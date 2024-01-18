@@ -15,7 +15,6 @@ export default function Router($container) {
     routes.find((route) => route.path.test(location.pathname));
 
   const route = () => {
-    // this.currentPage = null;
     const TargetPage = findMatchedRoute()?.page || ErrorPage; // 현재 경로에 따라 렌더링할 컴포넌트를 정의합니다.
     const TargetHeader = findMatchedRoute()?.header || ErrorHeader; // 헤더 컴포넌트도 정의합니다.
 
