@@ -1,17 +1,16 @@
-import chooseGameMode from "../pages/chooseGameMode/page.js";
-import Main from "../pages/main/page.js";
-import makeNickname from "../pages/makeNickname/page.js";
 import pages from "../pages/histories/pages.js";
-
-export const BASE_URL = "http://localhost:3000";
+import GameMode from '../pages/game-mode/page.js';
+import Main from '../pages/main/page.js';
+import Nickname from '../pages/nickname/page.js';
+import histories from "../pages/histories/page.js";
+import errorHeader from '../header/errorHeader/header.js';
+export const BASE_URL = 'http://localhost:3000';
 /**
  * 원하는 경로에 따라 렌더링할 컴포넌트를 정의합니다.
- * @type {{path: RegExp, element: string}[]}
  */
 export const routes = [
-    {path: /^\/$/, element: Main},
-    {path: /^\/makeNickname$/, element: makeNickname},
-    {path: /^\/chooseGameMode$/, element: chooseGameMode},
-
-    {path: /^\/histories$/, element: pages},
-];
+    { path: /^\/$/, page: Main, header: errorHeader },
+    { path: /^\/nickname$/, page: Nickname, header: errorHeader },
+    { path: /^\/gamemode$/, page: GameMode, header: errorHeader },
+    { path: /^\/histories$/, page: pages, header: errorHeader}
+]
