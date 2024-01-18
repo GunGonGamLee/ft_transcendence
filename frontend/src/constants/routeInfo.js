@@ -1,8 +1,7 @@
-import pages from "../pages/histories/pages.js";
+import page from "../pages/histories/page.js";
 import GameMode from '../pages/game-mode/page.js';
 import Main from '../pages/main/page.js';
 import Nickname from '../pages/nickname/page.js';
-import histories from "../pages/histories/page.js";
 import errorHeader from '../header/errorHeader/header.js';
 export const BASE_URL = 'http://localhost:3000';
 /**
