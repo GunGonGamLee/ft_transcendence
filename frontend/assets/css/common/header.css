@@ -82,7 +82,7 @@ header {
     border-radius: 50%;
 }
 
-.header-wrapper .histories#close-button a {
+.header-wrapper .histories#close-button {
     display: block;
     background-image: url("../../images/close.png");
     background-position: center;
