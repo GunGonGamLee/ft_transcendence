@@ -27,6 +27,9 @@
     display:grid;
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(2, 1fr);
+    justify-content: center;
+    justify-items: center;
+    align-items: center;
     grid-gap: 1vh;
     width: 80%;
     height: 100%;
@@ -40,6 +43,8 @@
     border: 3px transparent solid;
     border-radius: 1vw;
     text-decoration: none;
+    width: 80%;
+    padding: 1vh 1vw;
 }
 
 .histories.list-item:visited, .histories.list-item:link, .histories.list-item:active {
@@ -90,7 +95,7 @@
 }
 
 .histories.list-item .game-mode {
-    width: 15%;
+    width: 20%;
 }
 
 .histories.list-item .histories.nickname {
