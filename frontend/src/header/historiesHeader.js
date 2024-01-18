@@ -32,6 +32,9 @@ export default function HistoriesHeader($container) {
         `
   }
 
+  /**
+   * 헤더의 레이아웃에 이벤트 리스너를 추가합니다.
+   */
   this.addEventListenersToLayout = () => {
     const $closeButton = document.getElementById("close-button");
     click($closeButton, function () {
