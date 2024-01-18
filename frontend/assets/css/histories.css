@@ -15,14 +15,46 @@
     height: 100%;
 }
 
-.histories#pagination {
-    height: 8vh;
+.histories#pagination, .histories#pagination a {
+    display: inline-block;
+    height: 6vh;
+}
+
+.histories#pagination > .histories img {
+    height: 100%;
+}
+
+.histories#pagination > .histories#prev img {
+    transform: rotate(180deg);
+}
+
+.histories#pagination#next {
 }
 
 .histories#mode {
     display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    flex-direction: row;
+    height: 20.5vh;
+    font-size: 2rem;
+}
+
+.histories#mode a {
+    display: flex;
     justify-content: center;
     align-items: center;
-    flex-direction: column;
-    height: 20vh;
+    color: white;
+    font-family: Galmuri11, serif;
+    text-decoration: none;
+}
+
+.histories#mode > a img {
+    width: 7vh;
+    margin-right: 2vh;
+}
+
+.histories#mode > a:hover {
+    font-family: Galmuri11-Bold, serif;
+    color: #29ABE2;
 }
