@@ -11,7 +11,7 @@ export default function HistoriesHeader($container) {
 
     this.render = () => {
         this.$container.innerHTML = `
-        <div class="header-wrapper">
+        <div class="histories header-wrapper">
             <div class="histories" id="left-side">
                 <img src="../../../assets/images/search.png" alt="">
                 <div class="histories" id="search-box">
