@@ -1,0 +1,150 @@
+.histories#content-wrapper {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    height: 100%;
+    background-color: black;
+    background-image: url("../images/histories_frame.png");
+    background-size: 100% 100%;
+    background-position: bottom;
+    background-repeat: no-repeat;
+    overflow: hidden;
+}
+
+/************* Histories List *************/
+
+.histories#list {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 66.6vh;
+    color: white;
+    padding: 10vh 6vw 3vh 6vw;
+}
+
+.histories#list-wrapper {
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    justify-content: center;
+    justify-items: center;
+    align-items: center;
+    grid-gap: 1vh;
+    width: 80%;
+    height: 100%;
+}
+
+.histories.list-item {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    flex-direction: row;
+    border: 3px transparent solid;
+    border-radius: 1vw;
+    text-decoration: none;
+    width: 80%;
+    padding: 1vh 1vw;
+}
+
+.histories.list-item:visited, .histories.list-item:link, .histories.list-item:active {
+    color: white;
+}
+
+.histories.list-item .player {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 10vw;
+    border-radius: 1vh;
+}
+
+.histories.list-item .player > div:not(:first-child) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 50%;
+}
+
+.histories.list-item .histories.avatar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 8vw;
+    height: 8vw;
+    overflow: hidden;
+}
+
+.histories.list-item .histories.avatar > img {
+    position: absolute;
+    top: 0.1vw;
+    width: 12vw;
+    height: 12vw;
+}
+
+.histories.list-item .player > div:not(:last-child) {
+    margin-bottom: 1vh;
+}
+
+.histories.list-item .game-mode {
+    width: 20%;
+}
+
+.histories.list-item .histories.nickname {
+    font-family: Galmuri11-Bold, serif;
+    font-size: 1.3em;
+}
+
+.histories.list-item .histories.rating {
+    font-family: Galmuri11, serif;
+    font-size: 1.1em;
+    text-align: center;
+}
+
+/********** Histories Pagination **********/
+
+.histories#pagination, .histories#pagination div {
+    display: inline-block;
+    height: 6vh;
+    text-align: center;
+}
+
+.histories#pagination > .histories img {
+    height: 100%;
+    margin: 0 0.5vw;
+}
+
+.histories#pagination > .histories#prev img {
+    transform: rotate(180deg);
+}
+
+.histories#pagination#next {
+}
+
+/********** Histories Mode Select **********/
+
+.histories#mode {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    flex-direction: row;
+    height: 15.5vh;
+    font-size: 2em;
+}
+
+.histories#mode div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-family: Galmuri11, serif;
+    text-decoration: none;
+}
+
+.histories#mode > div img {
+    width: 7vh;
+    margin-right: 2vh;
+}

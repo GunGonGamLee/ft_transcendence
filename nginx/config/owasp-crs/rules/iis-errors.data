@@ -1,4 +1,4 @@
-# This list comes from the default IIS error pages
+# This list comes from the default IIS error page
 # To renerate get the files from a default installation and use:
 # grep -h '<title' *.htm
 
