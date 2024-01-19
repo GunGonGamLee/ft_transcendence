@@ -19,7 +19,13 @@ from urllib.parse import urlencode
 import jwt
 from datetime import datetime, timedelta
 from django.conf import settings
-
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.contrib.sites.shortcuts import get_current_site
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes
+from django.utils.crypto import get_random_string
 
 # 로그인이 성공했을 때 -> redirect_uri로 code 보내줌 -> 이건 클래스형 뷰로 만들었음
 # 로그인 / 콜백 -> 함수로 만듦 -> 스웨거에 어떻게 쓰지?
@@ -27,33 +33,6 @@ from django.conf import settings
 BASE_URL = 'http://localhost:8000/'
 GOOGLE_CALLBACK_URI = BASE_URL + 'api/login/google/callback/'
 state = os.environ.get("STATE")
-
-class GoogleLoginView(APIView):
-    @swagger_auto_schema(
-        tags=["login"],
-        operation_summary="구글 OAuth 로그인",
-        operation_description="구글 OAuth 로그인 후 '/login/google/finish'로 리다이렉트",
-        responses=google_login_response_schema,
-    )
-    def get(self, request):
-        scope = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile'
-        client_id = os.environ.get('SOCIAL_AUTH_GOOGLE_CLIENT_ID')
-        redirect_uri = GOOGLE_CALLBACK_URI
-        state = os.environ.get('STATE')
-
-        google_auth_params = {
-            'scope': scope,
-            'client_id': client_id,
-            'redirect_uri': redirect_uri,
-            'state': state,
-            'response_type': 'code',
-            'prompt': 'select_account',
-        }
-        # 쿼리 파라미터를 url 인코딩
-        google_auth_url = f'https://accounts.google.com/o/oauth2/v2/auth?{urlencode(google_auth_params)}'
-
-        return redirect(google_auth_url)
-
 
 class FTLoginView(APIView):
     @swagger_auto_schema(
@@ -65,7 +44,7 @@ class FTLoginView(APIView):
     )
     def get(self, request):
         return Response(status=302, data={"message": "42 OAuth 로그인"})
-    
+
 def google_login(request):
     scope = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile'
     client_id = os.environ.get('SOCIAL_AUTH_GOOGLE_CLIENT_ID')
@@ -73,12 +52,51 @@ def google_login(request):
 
 def create_jwt_token(user):
     payload = {
-        'user_id': user.id,
         'user_email': user.email,
         'exp': datetime.utcnow() + timedelta(days=1),
     }
     token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
     return token.decode('utf-8') if isinstance(token, bytes) else token
+
+def create_2fa_token(user):
+    payload = {
+        'user_email' : user.email,
+        'exp': datetime.utcnow() + timedelta(minutes=3),
+    }
+    token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
+    return token.decode('utf-8') if isinstance(token, bytes) else token
+
+def send_verification_code(user):
+    verification_code = get_random_string(length=6)
+    user.verification_code = verification_code
+    user.save()
+
+    mail_subject = '[ft_transcendence] 이메일 인증을 완료해주세요.'
+    message = f'당신의 인증코드는 {verification_code}입니다.'
+    send_mail(mail_subject, message, settings.DEFAULT_FROM_MAIL, [user.email])
+    auth_token = create_2fa_token(user)
+
+    return JsonResponse({'auth_token': auth_token, 'msg': '이메일을 확인하고 인증 코드를 입력하세요.'})
+
+
+def verify_email(request):
+    user_code = request.POST.get('code')
+    email = request.POST.get('email')
+    two_fa_token = request.POST.get('2fa_token')
+
+    try:
+        user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        return JsonResponse({'err_msg': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+    
+    if user.verification_code == user_code:
+        is_verified = True
+        user.save()
+
+        jwt_token = create_jwt_token(user)
+        return JsonResponse({'token': jwt_token, 'msg': '이메일 인증이 완료되었습니다.'})
+    else:
+        return JsonResponse({'err_msg': '인증코드가 일치하지 않습니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
 def google_callback(request):
     client_id = os.environ.get('SOCIAL_AUTH_GOOGLE_CLIENT_ID')
@@ -109,28 +127,31 @@ def google_callback(request):
         return JsonResponse({'err_msg': 'failed to get email'}, status=status.HTTP_400_BAD_REQUEST)
 
     email = email_req.json().get('email')
-    nickname = email.split('@')[0][:8] # 이메일 사용자를 그대로 갖고오지만, 8자로 제한한다
+    google_user_id = email_req.json().get('user_id')
+    username = email.split('@')[0]
 
     try:
         user = User.objects.get(email=email)
-        social_user = SocialAccount.objects.get(user=user)
+        social_user, created = SocialAccount.objects.get_or_create(
+            user=user, provider='google', defaults={'uid': google_user_id}
+        )
         if social_user.provider != 'google':
             return JsonResponse({'err_msg': 'no matching social type'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # 사용자 로그인 처리 및 JWT 토큰 발급
-        login(request, user)
-        jwt_token = create_jwt_token(user)
-
-        return JsonResponse({'token': jwt_token})
+        send_verification_code(user)
+        return JsonResponse({'msg': '이메일을 확인하고 인증 코드를 입력해주세요.'})
 
     except User.DoesNotExist:
-        # 새 사용자 생성 및 JWT 토큰 발급
-        user = User.objects.create(email=email, nickname=nickname)
-        SocialAccount.objects.create(user=user, provider='google')
-        login(request, user)
-        jwt_token = create_jwt_token(user)
+            # 새 사용자 생성 및 JWT 토큰 발급
+        user = User.objects.create(email=email, username=username)
+        SocialAccount.objects.get_or_create(
+            user=user, provider='google', defaults={'uid': google_user_id}
+        )
+        user.save()
 
-        return JsonResponse({'token': jwt_token})
+        send_verification_code(user)
+        return JsonResponse({'msg': '회원가입을 위해 E-mail을 확인해주세요.'})
 
-    except SocialAccount.DoesNotExist:
-        return JsonResponse({'err_msg': 'email exists but not social user'}, status=status.HTTP_400_BAD_REQUEST)
+
+# 로그인을 (시도) 했다 -> 액세스토큰~~~~~~~ DB에 유저 정보가 저장된다. -> 이메일이 발송된다 -> JWT토큰(1차) 발급된다.
+# 다시 발급받고 싶다(코드를) -> /api/login/mail -> 

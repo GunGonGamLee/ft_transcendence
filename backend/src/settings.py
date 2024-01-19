@@ -127,6 +127,9 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
+
+    'django_otp',
+    'django_otp.plugins.otp_totp',
 ]
 
 PINGPONG_TOURNAMENT_MODEL = 'pingpong.Tournament'
@@ -209,13 +212,39 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-SITE_ID = 1
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': ['profile', 'email'],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        },
+    },
+}
+
+SOCIALACCOUNT_PROVIDERS['google']['AUTHENTICATION_METHOD'] = 'TOTP'
+
+OTP_TOTP_ISSUER = 'ft_transcendence'
+
+SITE_ID = 2
 
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 SOCIAL_AUTH_GOOGLE_OAUTH2_TEST_USER_MODEL = 'users.User'
 
-LANGUAGE_CODE = 'en-us'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_MAIL = EMAIL_HOST_USER
+
+LANGUAGE_CODE = 'KO'
 
 TIME_ZONE = 'UTC'
 

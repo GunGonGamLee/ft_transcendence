@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import GoogleLoginView, FTLoginView, google_login, google_callback
+from .views import FTLoginView, google_login, google_callback
 
 
 urlpatterns = [
@@ -9,9 +9,6 @@ urlpatterns = [
 	path('google/callback/', google_callback, name="google_callback"),
 	# path('42/callback/', ft_callback, name="ft_callback"),
 	
-    path('google/finish/', GoogleLoginView.as_view(), name="google_login_finish"),
     path('42/finish/', FTLoginView.as_view(), name="ft_login_finish"),
 ]
 
-
-# https://localhost:443/api/lgoin/google << 구글 로그인
