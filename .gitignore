@@ -61,3 +61,7 @@ volumes/
 
 ## pycache ignore
 **__pycache__/
+
+## .idea directory git ignore
+.idea/
+
