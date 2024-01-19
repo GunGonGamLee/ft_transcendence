@@ -22,8 +22,6 @@ services:
   django_node_app:
     build: .
     container_name: django_node_container
-    volumes:
-      - "./volumes/app:/app"
     ports:
       - 8000:8000 #django
       - 3000:3000 #node.js

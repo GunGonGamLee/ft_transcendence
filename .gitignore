@@ -59,5 +59,9 @@ Temporary Items
 ## volume directory git ignore
 volumes/
 
+## pycache ignore
+**__pycache__/
+
 ## .idea directory git ignore
 .idea/
+
