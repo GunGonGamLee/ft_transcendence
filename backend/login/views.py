@@ -161,3 +161,19 @@ def intra42_login(request):
         return redirect(target_url)
     else:
         return HttpResponse(status=405)
+
+
+class Intra42SignInCallBackView(APIView):
+    @staticmethod
+    def get(request):
+        auth_code = request.GET.get('code')
+        intra42_token_api = config('INTRA42_TOKEN_API')
+        data = {
+            'grant_type': 'authorization_code',
+            'client_id': config('INTRA42_CLIENT_ID'),
+            'client_secret': config('INTRA42_CLIENT_SECRET'),
+            'code': auth_code,
+            'redirect_uri': config('INTRA42_CALLBACK_URI')
+        }
+        token_response = requests.post(intra42_token_api, data=data)
+        return JsonResponse(token_response.json(), safe=False)
