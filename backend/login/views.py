@@ -26,13 +26,15 @@ from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.utils.crypto import get_random_string
-
+from decouple import AutoConfig
+from django.http import HttpResponse
 # 로그인이 성공했을 때 -> redirect_uri로 code 보내줌 -> 이건 클래스형 뷰로 만들었음
 # 로그인 / 콜백 -> 함수로 만듦 -> 스웨거에 어떻게 쓰지?
 
 BASE_URL = 'http://localhost:8000/'
 GOOGLE_CALLBACK_URI = BASE_URL + 'api/login/google/callback/'
 state = os.environ.get("STATE")
+config = AutoConfig()
 
 class FTLoginView(APIView):
     @swagger_auto_schema(
@@ -155,3 +157,14 @@ def google_callback(request):
 
 # 로그인을 (시도) 했다 -> 액세스토큰~~~~~~~ DB에 유저 정보가 저장된다. -> 이메일이 발송된다 -> JWT토큰(1차) 발급된다.
 # 다시 발급받고 싶다(코드를) -> /api/login/mail -> 
+
+
+def intra42_login(request):
+    if request.method == 'GET':
+        authorize_api_url = config('INTRA42_AUTHORIZE_API')
+        client_id = config('INTRA42_CLIENT_ID')
+        callback_uri = config('INTRA42_CALLBACK_URI')
+        target_url = f"{authorize_api_url}?client_id={client_id}&redirect_uri={callback_uri}&response_type=code"
+        return redirect(target_url)
+    else:
+        return HttpResponse(status=405)
