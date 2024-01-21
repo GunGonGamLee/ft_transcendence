@@ -1,4 +1,5 @@
 import { navigate } from '../../utils/navigate.js';
+import { importCss } from '../../utils/importCss.js';
 
 /**
  * @param {HTMLElement} $container
@@ -11,6 +12,7 @@ export default function GameMode($container) {
   };
 
   this.render = () => {
+    importCss('../../../assets/css/gameMode.css')
     this.$container.innerHTML = `
     <button id="button2">go to home</button>
 	  `;

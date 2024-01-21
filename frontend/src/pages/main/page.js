@@ -1,4 +1,5 @@
 import { navigate } from '../../utils/navigate.js';
+import { importCss } from '../../utils/importCss.js';
 
 /**
  * @param {HTMLElement} $container
@@ -11,13 +12,14 @@ export default function Main($container) {
   };
 
   this.render = () => {
+    importCss('../../../assets/css/main.css');
     this.$container.innerHTML = `
-    <div style="width: 100vw; height: 88vh; position: relative; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center">
-    <div style="font-size: 26px; margin-bottom: 14vh" >ft_transcendence</div>
-    <button type="button" class="btn btn-dark" style="margin-bottom: 6px;" id="button">sign in with google</button>
-    <button type="button" class="btn btn-dark" style="margin-bottom: 53vh; padding-left: 50px; padding-right: 50px" id="button2">42 login</button>
-    <img style="width: 60vw; height: 100vh; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);" src="../../../public/gamegi.png" />
-    </div>
+    <div class="main-component">
+    <div class="title">ft_transcendence</div>
+    <button type="button" class="btn btn-dark btn-signin" id="button">sign in with google</button>
+    <button type="button" class="btn btn-dark btn-login" id="button2">42 login</button>
+    <img class="background-img" src="../../../public/gamegi.png" />
+</div>
     `;
   };
 
