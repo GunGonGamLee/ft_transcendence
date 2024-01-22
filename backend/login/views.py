@@ -168,3 +168,14 @@ class VerificationCodeView(APIView):
             return JsonResponse({'error': 'Token has expired'}, status=status.HTTP_401_UNAUTHORIZED)
         except jwt.InvalidTokenError:
             return JsonResponse({'error': 'Invalid token'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return JsonResponse({'err_msg': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        if user.verification_code == verification_code:
+            jwt_token = create_jwt_token(user, 60 * 24)
+            return JsonResponse({'token': jwt_token}, status=status.HTTP_200_OK)
+        else:
+            return JsonResponse({'err_msg': '인증코드가 일치하지 않습니다.'}, status=status.HTTP_400_BAD_REQUEST)
