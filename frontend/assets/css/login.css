@@ -15,8 +15,8 @@
 }
 
 .arcade-machine {
-  height: 88vh;
-  width: 51vw;
+  height: 89vh;
+  width: 55vw;
   position: relative;
   perspective: 35em;
 }
@@ -34,10 +34,10 @@
 
 .top h1 {
   font-family: "Vibur", sans-serif;
-  font-size: 3vw;
+  font-size: 3.3vw;
   color: #fff;
   text-align: center;
-  margin-top: 2.8vh;
+  margin-top: 3.2vh;
   text-shadow:
   0 0 7px #DA0C81,
   0 0 10px #DA0C81,
@@ -50,27 +50,23 @@
 }
 
 .arcade-machine .top:before, .arcade-machine .top:after {
-  height: 100%;
-  width: 4%;
+  height: 14vh;
+  width: 2.5vw;
   position: absolute;
-  top: -5%;
+  top: -1vh;
   background: #DA0C81;
-  border: 5px solid #4c4c4c;
+  border: 0.5vw solid #4c4c4c;
   content: " ";
 }
+
 .arcade-machine .top:before {
   left: -6%;
 }
+
 .arcade-machine .top:after {
   right: -6%;
 }
-.arcade-machine .stripes:before, .arcade-machine .stripes:after {
-  height: 100%;
-  width: 90%;
-  position: absolute;
-  top: 10%;
-  content: " ";
-}
+
 .arcade-machine > .shadow {
   height: 85%;
   width: 65%;
