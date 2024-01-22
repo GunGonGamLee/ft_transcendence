@@ -12,6 +12,10 @@ from django.utils.crypto import get_random_string
 from decouple import AutoConfig
 from django.utils.http import urlencode
 import json
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+from .serializers import VerificationCodeSerializer
+from rest_framework.response import Response
 
 
 BASE_URL = 'http://localhost:8000/'
@@ -36,12 +40,12 @@ EMAIL_AUTH_URI = 'https://localhost:443/api/auth/email'
 
 
 class OAuthLoginView(APIView):
+    @swagger_auto_schema(tags=['/api/login'], operation_description="소셜 로그인 창으로 페이지 redirect", responses={302: "Redirect to Another Location"})
     def get(self, request):
         authorize_api_url = self.authorize_api
         client_id = self.client_id
         redirect_uri = self.redirect_uri
         scope = self.scope
-        print(redirect_uri)
         target_url = f"{authorize_api_url}?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code&scope={scope}"
         return redirect(target_url)
 
@@ -61,6 +65,12 @@ class Intra42LoginView(OAuthLoginView):
 
 
 class OAuthCallbackView(APIView):
+    @swagger_auto_schema(tags=['/api/login'],
+                         operation_description="사용자 정보를 받아 DB에 저장한 뒤, 해당 email로 2차 인증 코드를 보냅니다."
+                                               "jwt를 쿼리 파라미터에 담아 프론트 페이지로 리다이렉트 시킵니다.",
+                         manual_parameters=[
+                             openapi.Parameter('token', openapi.IN_QUERY, description="3분 뒤에 만료하는 JWT 토큰", type=openapi.TYPE_STRING)],
+                         responses={302: "Redirect to Front Page"})
     def get(self, request):
         code = request.GET.get('code')
         access_token = self.get_access_token(code)
@@ -68,18 +78,13 @@ class OAuthCallbackView(APIView):
 
         try:
             user = User.objects.get(email=email)
-            is_noob = False
-
         except User.DoesNotExist:
             user = User.objects.create(email=email)
             user.save()
-            is_noob = True
-
         finally:
             send_verification_code(user)
             auth_token = create_jwt_token(user, 3)
             target_url = EMAIL_AUTH_URI + "?" + urlencode({
-                'is_noob': is_noob,
                 'token': auth_token,
             })
             return redirect(target_url)
@@ -143,6 +148,17 @@ def send_verification_code(user):
 
 
 class VerificationCodeView(APIView):
+    @swagger_auto_schema(
+        tags=['/api/login'],
+        operation_description="사용자가 입력한 2차 이메일 인증 코드를 검증합니다. 헤더에는 jwt 토큰이 담겨져 있습니다.",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={'verification_code': openapi.Schema(type=openapi.TYPE_STRING, description='2차 인증 코드')},
+            required=['verification_code']),
+        manual_parameters=[
+            openapi.Parameter('Authorization', openapi.IN_HEADER, description='Bearer JWT Token', type=openapi.TYPE_STRING),
+            openapi.Parameter('content-type', openapi.IN_HEADER, description='application/json', type=openapi.TYPE_STRING),],
+        response_body=VerificationCodeSerializer)
     def post(self, request):
         try:
             email = self.check_jwt_token()
@@ -154,12 +170,20 @@ class VerificationCodeView(APIView):
 
         try:
             user = User.objects.get(email=email)
+            nickname = user.nickname
+            if nickname is None:
+                is_noob = True
+            else:
+                is_noob = False
         except User.DoesNotExist:
             return JsonResponse({'err_msg': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
 
         if user.verification_code == verification_code:
             jwt_token = create_jwt_token(user, 60 * 24)
-            return JsonResponse({'token': jwt_token}, status=status.HTTP_200_OK)
+
+            data = {'token': jwt_token, 'is_noob': is_noob}
+            serializer = VerificationCodeSerializer(data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return JsonResponse({'err_msg': '인증코드가 일치하지 않습니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
