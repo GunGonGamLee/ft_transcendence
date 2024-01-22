@@ -80,7 +80,19 @@ class OAuthCallbackView(APIView):
 
         email = userinfo_response.json().get('email')
 
-        return JsonResponse(email, safe=False)
+        username = email.split('@')[0]
+
+        try:
+            user = User.objects.get(email=email)
+
+        except User.DoesNotExist:
+            # 최초 가입자면
+            user = User.objects.create(email=email, username=username)
+            user.save()
+
+        finally:
+            send_verification_code(user)
+            return JsonResponse({'msg': '이메일을 확인하고 인증 코드를 입력해주세요.'})
 
 
 class GoogleCallbackView(OAuthCallbackView):
@@ -97,65 +109,6 @@ class Intra42CallbackView(OAuthCallbackView):
     token_api = config('INTRA42_TOKEN_API')
     redirect_uri = INTRA42_CALLBACK_URI
     userinfo_api = config('INTRA42_USERINFO_API')
-
-
-def google_callback(request):
-    client_id = config('GOOGLE_CLIENT_ID')
-    client_secret = config('GOOGLE_CLIENT_SECRET')
-    code = request.GET.get('code')
-
-    # Google로부터 액세스 토큰 요청
-    token_req = requests.post(
-        "https://oauth2.googleapis.com/token",
-        data={
-            "grant_type": "authorization_code",
-            "client_id": client_id,
-            "client_secret": client_secret,
-            "code": code,
-            "redirect_uri": GOOGLE_CALLBACK_URI
-        }
-    )
-    token_req_json = token_req.json()
-    error = token_req_json.get("error")
-    if error is not None:
-        return JsonResponse({'err_msg': error}, status=status.HTTP_400_BAD_REQUEST)
-
-    access_token = token_req_json.get('access_token')
-
-    # Google API를 사용하여 이메일 정보 얻기
-
-    email_req = requests.get("https://www.googleapis.com/oauth2/v1/tokeninfo", headers={'Authorization': f'Bearer {access_token}'})
-    if email_req.status_code != 200:
-        return JsonResponse({'err_msg': 'failed to get email'}, status=status.HTTP_400_BAD_REQUEST)
-
-    email = email_req.json().get('email')
-    google_user_id = email_req.json().get('u    ser_id')
-    username = email.split('@')[0]
-
-    # ------ 여기 위가 이메일 구하는 내용
-
-    try:
-        user = User.objects.get(email=email)
-        # social_user, created = SocialAccount.objects.get_or_create(
-        #     user=user, provider='google', defaults={'uid': google_user_id}
-        # )
-        # if social_user.provider != 'google':
-        #     return JsonResponse({'err_msg': 'no matching social type'}, status=status.HTTP_400_BAD_REQUEST)
-
-        send_verification_code(user)
-        return JsonResponse({'msg': '이메일을 확인하고 인증 코드를 입력해주세요.'})
-
-    except User.DoesNotExist:
-        # 새 사용자 생성 및 JWT 토큰 발급
-        user = User.objects.create(email=email, username=username)
-        SocialAccount.objects.get_or_create(
-            user=user, provider='google', defaults={'uid': google_user_id}
-        )
-        user.save()
-
-        send_verification_code(user)
-        return JsonResponse({'msg': '회원가입을 위해 E-mail을 확인해주세요.'})
-
 
 
 def create_jwt_token(user):
