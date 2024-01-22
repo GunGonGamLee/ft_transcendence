@@ -1,10 +1,10 @@
-.nickname-header-wrapper {
+.register-header-wrapper {
     width: 100vw;
     height: 12vh;
     background: #191D40;
 }
 
-.nickname-container {
+.register-container {
     width: 100vw;
     height: 88vh;
     background: #191D40;
@@ -40,7 +40,7 @@
     font-family: 'Galmuri11', serif;
 }
 
-.nickname-input {
+.register-input {
     margin-top: 5vh;
     text-align: center;
     font-family: 'Galmuri11', serif;
@@ -55,4 +55,11 @@
     color: red;
     font-size: 20px;
     font-family: 'Galmuri11-Bold', serif;
+}
+
+.resend-auth-btn {
+    color: white;
+    font-size: 3vh;
+    margin-top: 3vh;
+    font-family: Galmuri11, serif;
 }
