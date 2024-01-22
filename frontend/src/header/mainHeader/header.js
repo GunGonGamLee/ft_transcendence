@@ -19,15 +19,15 @@ export default function historiesHeader($container) {
             </div>
             <div class="main" id="title">사십 이 초-월</div>
             <div class="main" id="right-side">
-                <img src="../../../assets/images/avatar/red.png" alt="아바타" id="user-avatar">
+                <img src="../../../assets/images/avatar/red_torso.png" alt="아바타" id="user-avatar">
                 <img src="../../../assets/images/friends.png" alt="친구 목록" id="friends">
             </div>
         </div>
         `
 
-    hoverChangeCursor(document.getElementById("go-back"));
-    hoverChangeCursor(document.getElementById("user-avatar"));
-    hoverChangeCursor(document.getElementById("friends"));
+    hoverChangeCursor(document.getElementById("go-back"), "pointer");
+    hoverChangeCursor(document.getElementById("user-avatar"), "pointer");
+    hoverChangeCursor(document.getElementById("friends"), "pointer");
   }
 
 
