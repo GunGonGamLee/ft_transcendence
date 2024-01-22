@@ -4,7 +4,7 @@ import Nickname from '../pages/nickname/page.js';
 import Histories from "../pages/histories/page.js";
 import NicknameHeader from '../header/nicknameHeader/header.js';
 import MainHeader from '../header/mainHeader/header.js';
-import HistoriesHeader from '../header/historiesHeader/header.js';
+import HistoriesHeader from '../header/mainHeader/header.js';
 
 export const BASE_URL = 'http://localhost:3000';
 /**
@@ -14,5 +14,5 @@ export const routes = [
   { path: /^\/$/, page: Main, header: MainHeader },
   { path: /^\/nickname$/, page: Nickname, header: NicknameHeader },
   { path: /^\/game-mode$/, page: GameMode, header: MainHeader },
-  { path: /^\/histories$/, page: Histories, header: HistoriesHeader}
+  { path: /^\/histories$/, page: Histories, header: MainHeader}
 ]

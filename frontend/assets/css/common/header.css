@@ -15,11 +15,11 @@ header {
     height: 100%;
 }
 
-.header-wrapper .histories > div {
+.header-wrapper .main > div {
     width: fit-content;
 }
 
-.header-wrapper .histories#left-side, .header-wrapper .histories#right-side {
+.header-wrapper .main#left-side, .header-wrapper .main#right-side {
     display: flex;
     align-items: center;
     flex-direction: row;
@@ -27,21 +27,21 @@ header {
     height: 100%;
 }
 
-.header-wrapper .histories#left-side {
+.header-wrapper .main#left-side {
     justify-content: flex-start;
 }
 
-.header-wrapper .histories#right-side {
+.header-wrapper .main#right-side {
     justify-content: flex-end;
 }
 
-.header-wrapper .histories#left-side > img {
+.header-wrapper .main#left-side > img {
     width: 3rem;
     height: 3rem;
     margin-right: 10px;
 }
 
-.header-wrapper .histories#search-box {
+.header-wrapper .main#search-box {
     display: flex;
     width: fit-content;
     height: 100%;
@@ -49,7 +49,7 @@ header {
     align-items: center;
 }
 
-.header-wrapper .histories#search-box > input {
+.header-wrapper .main#search-box > input {
     width: 15rem;
     height: 50%;
     border-radius: 1rem;
@@ -61,12 +61,12 @@ header {
     font-family: Galmuri11, system-ui;
 }
 
-.header-wrapper .histories#title {
+.header-wrapper .main#title {
     text-align: center;
     color: #29ABE2;
 }
 
-.header-wrapper .histories#user-avatar {
+.header-wrapper .main#user-avatar {
     position: relative;
     width: 4rem;
     height: 4rem;
@@ -75,14 +75,14 @@ header {
     margin-right: 5rem;
 }
 
-.header-wrapper .histories#user-avatar > img {
+.header-wrapper .main#user-avatar > img {
     position: absolute;
     width: 6rem;
     height: 6rem;
     border-radius: 50%;
 }
 
-.header-wrapper .histories#close-button {
+.header-wrapper .main#close-button {
     display: block;
     background-image: url("../../images/close.png");
     background-position: center;
