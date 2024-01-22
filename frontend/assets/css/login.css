@@ -22,10 +22,9 @@
 }
 
 .arcade-machine .top {
-  height: 15.3%;
-  width: 70%;
+  height: 13.8vh;
+  width: 38.5vw;
   position: absolute;
-  top: 0%;
   left: 15%;
   background: #024959;
   border: 0.5vw solid #4c4c4c;
@@ -37,7 +36,7 @@
   font-size: 3.5vw;
   color: #fff;
   text-align: center;
-  margin-top: 3vh;
+  margin-top: 2vh;
   text-shadow:
   0 0 7px #DA0C81,
   0 0 10px #DA0C81,
@@ -86,17 +85,15 @@
   left: 19%;
   background: #4b5b61;
   border: 5px solid #4c4c4c;
-  z-index: 1;
 }
 .arcade-machine .screen-container:before, .arcade-machine .screen-container:after {
-  height: 44vh;
+  height: 44.5vh;
   width: 2.5vw;
   position: absolute;
-  top: -2%;
+  top: -1vh;
   background: #DA0C81;
   content: " ";
   border: 0.5vw solid #4c4c4c;
-  z-index: 2;
 }
 
 .arcade-machine .screen-container:before {
@@ -123,7 +120,7 @@
   top: 9%;
   left: 10%;
   background: #313332;
-  border: 0.5vw solid #4c4c4c;
+  border: 0.3vw solid #4c4c4c;
   border-radius: 90px 93px 93px 93px/15px 15px 15px 15px;
   overflow: hidden;
   text-align: center;
@@ -195,10 +192,10 @@
 }
 .arcade-machine .board {
   height: 20vh;
-  width: 36vw;
+  width: 37vw;
   position: absolute;
-  top: 51.4vh;
-  left: 9.5vw;
+  top: 52.2vh;
+  left: 9vw;
   background: #4b5b61;
   transform: rotateX(70deg);
 }
@@ -206,11 +203,9 @@
   height: 96%;
   width: 2.8vw;
   position: absolute;
-  top: -1%;
   background: #DA0C81;
   content: " ";
-  border: 5px solid #4c4c4c;
-  z-index: 2;
+  border: 0.5vw solid #4c4c4c;
 }
 .arcade-machine .board:before {
   left: -6.5%;
@@ -225,7 +220,7 @@
   top: 47%;
   left: 30%;
   border-radius: 50%;
-  border: 0.5vw solid #4c4c4c;
+  border: 0.3vw solid #4c4c4c;
 }
 .arcade-machine .board .button-a {
   background: #DA0C81;
@@ -240,29 +235,28 @@
   left: 70%;
 }
 .arcade-machine .bottom {
-  height: 10%;
-  width: 80.6%;
+  height: 10vh;
+  width: 43vw;
   position: absolute;
-  top: 78.2%;
-  left: 9.8%;
+  top: 68vh;
+  left: 6vw;
   background: #024959;
-  border: 5px solid #4c4c4c;
+  border: 0.5vw solid #4c4c4c;
 }
 .arcade-machine .bottom:before, .arcade-machine .bottom:after {
-  height: 98%;
-  width: 5%;
+  height: 9.8vh;
+  width: 2.8vw;
   position: absolute;
-  top: -4.5%;
+  top: -0.7vh;
   background: DA0C81;
   content: " ";
-  border: 5px solid #4c4c4c;
-  z-index: 2;
+  border: 0.5vw solid #4c4c4c;
 }
 .arcade-machine .bottom:before {
-  left: -5.8%;
+  left: -7%;
 }
 .arcade-machine .bottom:after {
-  right: -5.9%;
+  right: -7%;
 }
 
 .alien-container {
