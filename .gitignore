@@ -64,4 +64,4 @@ volumes/
 
 ## .idea directory git ignore
 */.idea/
-
+.idea/
