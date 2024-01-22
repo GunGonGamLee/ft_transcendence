@@ -176,4 +176,10 @@ class Intra42SignInCallBackView(APIView):
             'redirect_uri': config('INTRA42_CALLBACK_URI')
         }
         token_response = requests.post(intra42_token_api, data=data)
-        return JsonResponse(token_response.json(), safe=False)
+        access_token = token_response.json().get('access_token')
+
+        intra42_userinfo_api = config('INTRA42_USERINFO_API')
+        user_info_response = requests.get(intra42_userinfo_api, headers={'Authorization': f'Bearer {access_token}'})
+        user_email = user_info_response.json().get('email')
+
+        return JsonResponse(user_email, safe=False)
