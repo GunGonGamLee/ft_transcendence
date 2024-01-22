@@ -1,5 +1,6 @@
 import {hoverChangeBorder, hoverChangeColor, hoverChangeCursor, hoverChangeFont} from "../../utils/hoverEvent.js";
 import {click} from "../../utils/clickEvent.js";
+import { importCss } from '../../utils/importCss.js';
 
 export default function Histories($container) {
     this.$container = $container;
@@ -18,12 +19,7 @@ export default function Histories($container) {
      * 이는 전적 리스트의 페이지의 레이아웃으로 추후 공통 모듈로 분리할 수 있습니다.
      */
     this.renderLayout = () => {
-        if (document.getElementsByTagName("head") !== null) {
-            document.getElementsByTagName("head")[0].insertAdjacentHTML(
-                "beforeend",
-                '<link rel="stylesheet" href="../../../assets/css/histories.css"/>'
-            );
-        }
+        importCss('../../../assets/css/histories.css')
         this.$container.innerHTML = `
         <div class="histories" id="content-wrapper">
             <div class="histories" id="list"></div>

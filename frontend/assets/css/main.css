@@ -1,0 +1,40 @@
+.main-header-wrapper {
+    width: 100vw;
+    height: 12vh;
+    background: #191D40;
+}
+
+.main-component {
+    width: 100vw;
+    height: 88vh;
+    position: relative;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.title {
+    font-size: 26px;
+    margin-bottom: 14vh;
+}
+
+.btn-signin {
+    margin-bottom: 6px;
+}
+
+.btn-login {
+    margin-bottom: 53vh;
+    padding-left: 50px;
+    padding-right: 50px;
+}
+
+.background-img {
+    width: 60vw;
+    height: 100vh;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}

@@ -11,7 +11,7 @@ export default function nicknameHeader($container) {
 
   this.render = () => {
     this.$container.innerHTML = `
-        <div class="nickname header-wrapper" style="width: 100vw; height: 12vh; background: #191D40">
+        <div class="nickname-header-wrapper">
         `
   }
 

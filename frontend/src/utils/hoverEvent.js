@@ -1,5 +1,5 @@
 /**
- * 마우스 hover 시 폰트 색상 변경
+ * @discription 마우스 hover 시 폰트 색상 변경
  * @param element hover 효과를 넣고 싶은 html 엘리먼트
  * @param originalColor 원래 색상
  * @param hoverColor hover 시 색상
