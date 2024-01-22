@@ -1,10 +1,8 @@
 from rest_framework.views import APIView
 from django.shortcuts import redirect
-import os
 from django.http import JsonResponse
 import requests
 from rest_framework import status
-from allauth.socialaccount.models import SocialAccount
 from users.models import User
 import jwt
 from datetime import datetime, timedelta
@@ -12,7 +10,6 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.utils.crypto import get_random_string
 from decouple import AutoConfig
-from django.http import HttpResponse
 
 # todo config 다 위로 빼놓기
 
@@ -53,7 +50,6 @@ class Intra42LoginView(OAuthLoginView):
     scope = 'public'
 
 
-# -----------------------------------------
 class OAuthCallbackView(APIView):
     def get(self, request):
         code = request.GET.get('code')
@@ -79,14 +75,12 @@ class OAuthCallbackView(APIView):
             return JsonResponse({'err_msg': 'failed to get email'}, status=status.HTTP_400_BAD_REQUEST)
 
         email = userinfo_response.json().get('email')
-
         username = email.split('@')[0]
 
         try:
             user = User.objects.get(email=email)
 
         except User.DoesNotExist:
-            # 최초 가입자면
             user = User.objects.create(email=email, username=username)
             user.save()
 
@@ -111,19 +105,10 @@ class Intra42CallbackView(OAuthCallbackView):
     userinfo_api = config('INTRA42_USERINFO_API')
 
 
-def create_jwt_token(user):
+def create_jwt_token(user, expiration_minutes):
     payload = {
         'user_email': user.email,
-        'exp': datetime.utcnow() + timedelta(days=1),
-    }
-    token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
-    return token.decode('utf-8') if isinstance(token, bytes) else token
-
-
-def create_2fa_token(user):
-    payload = {
-        'user_email': user.email,
-        'exp': datetime.utcnow() + timedelta(minutes=3),
+        'exp': datetime.utcnow() + timedelta(minutes=expiration_minutes),
     }
     token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
     return token.decode('utf-8') if isinstance(token, bytes) else token
@@ -135,9 +120,9 @@ def send_verification_code(user):
     user.save()
 
     mail_subject = '[ft_transcendence] 이메일 인증을 완료해주세요.'
-    message = f'당신의 인증코드는 {verification_code}입니다.'
+    message = f'당신의 인증 코드는 {verification_code}입니다.'
     send_mail(mail_subject, message, settings.DEFAULT_FROM_MAIL, [user.email])
-    auth_token = create_2fa_token(user)
+    auth_token = create_jwt_token(user, 3)
 
     return JsonResponse({'auth_token': auth_token, 'msg': '이메일을 확인하고 인증 코드를 입력하세요.'})
 
