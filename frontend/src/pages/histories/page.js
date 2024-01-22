@@ -41,10 +41,16 @@ export default function Histories($container) {
                </div>
             </nav>
             <div class="histories" id="list"></div>
-            <div class="histories" id="pagination">
-                <img src="../../../assets/images/pagination.png" alt="prev" id="prev">
-                <img src="../../../assets/images/pagination.png" alt="next" id="next">
-            </div>
+            <footer class="histories">
+                <div class="histories" id="search-wrapper">
+                    <img class="histories" src="../../../assets/images/search.png" alt="search">
+                    <input class="histories" id="search" type="text" placeholder="유저 검색">
+                </div> 
+                <div class="histories" id="pagination">
+                    <img src="../../../assets/images/pagination.png" alt="prev" id="prev">
+                    <img src="../../../assets/images/pagination.png" alt="next" id="next">
+                </div>
+            </footer>
         </div>
         `;
     }

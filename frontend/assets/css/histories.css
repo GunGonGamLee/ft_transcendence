@@ -108,18 +108,19 @@
 
 .histories#pagination {
     text-align: center;
-    height: 21vh;
+    height: 100%;
+    z-index: 1;
 }
 
 .histories#pagination div {
     display: inline-block;
-    height: 8vh;
+    height: 100%;
     text-align: center;
 }
 
 .histories#pagination > img {
-    height: 8vh;
-    margin: 7vh 0.5vw 0 0;
+    height: 10vh;
+    margin: 6vh 0.5vw 0 0;
 }
 
 .histories#pagination > #prev {
@@ -158,4 +159,41 @@
 .histories#mode > div img {
     width: 3rem;
     margin-right: 2vh;
+}
+
+/************ Histories Search *************/
+.histories#search-wrapper {
+    position: fixed;
+    display: flex;
+    width: 100%;
+    margin-left: 25vw;
+    bottom: 5vh;
+    align-items: center;
+}
+
+.histories#search-wrapper > img {
+    width: 3rem;
+    height: 3rem;
+    margin-right: 0.5vw;
+}
+
+.histories#search-wrapper > #search {
+    background-color: black;
+    border: 3px solid #FF52A0;
+    font-family: Galmuri11, serif;
+    font-size: 1.5rem;
+    width: 16rem;
+    color: white;
+    padding: 0.5rem;
+}
+
+/************ Histories Footer *************/
+footer.histories {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    width: 100%;
+    height: 21.5vh;
+    margin-top: 2vh;
 }
