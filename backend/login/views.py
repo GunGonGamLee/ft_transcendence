@@ -1,7 +1,4 @@
 from rest_framework.views import APIView
-from rest_framework.response import Response
-from drf_yasg.utils import swagger_auto_schema
-from .schema.responses import ft_login_response_schema
 from django.shortcuts import redirect
 import os
 from django.http import JsonResponse
@@ -21,18 +18,6 @@ BASE_URL = 'http://localhost:8000/'
 GOOGLE_CALLBACK_URI = BASE_URL + 'api/login/google/callback/'
 state = os.environ.get("STATE")
 config = AutoConfig()
-
-
-class FTLoginView(APIView):
-    @swagger_auto_schema(
-        tags=["login"],
-        operation_id="42_login",
-        operation_summary="42 OAuth 로그인",
-        operation_description="42 OAuth 로그인 후 '/login/42/finish'으로 리다이렉트",
-        responses=ft_login_response_schema,
-    )
-    def get(self, request):
-        return Response(status=302, data={"message": "42 OAuth 로그인"})
 
 
 def google_login(request):

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import FTLoginView, google_login, intra42_login, google_callback, Intra42SignInCallBackView
+from .views import google_login, intra42_login, google_callback, Intra42SignInCallBackView
 
 
 urlpatterns = [
@@ -8,7 +8,4 @@ urlpatterns = [
 
     path('google/callback/', google_callback, name="google_callback"),
     path('intra42/callback/', Intra42SignInCallBackView.as_view(), name="intra42_callback"),
-
-    path('42/finish/', FTLoginView.as_view(), name="ft_login_finish"),
 ]
-
