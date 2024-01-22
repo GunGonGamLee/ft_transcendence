@@ -28,14 +28,32 @@ services:
     networks:
       - app_network
     environment:
+    # DB
       DB_HOST: ${DB_HOST}
       DB_PORT: ${DB_PORT}
       DB_USER: ${DB_USER}
       DB_DATABASE: ${DB_DATABASE}
       DB_PASSWORD: ${DB_PASSWORD}
+    # LOGSTASH
       LOG_KEY: ${LOG_KEY}
+    # Hashicorp vault
       VAULT_URL: "http://hashicorp_vault:8200"
       VAULT_TOKEN: ${VAULT_TOKEN}
+    # SMTP EMAIL
+      EMAIL_HOST_USER: ${EMAIL_HOST_USER}
+      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD}
+    # Google, 42 Oauth
+      GOOGLE_AUTHORIZE_API: ${GOOGLE_AUTHORIZE_API}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      STATE: ${STATE}
+      INTRA42_AUTHORIZE_API: ${INTRA42_AUTHORIZE_API}
+      INTRA42_TOKEN_API: ${INTRA42_TOKEN_API}
+      INTRA42_CLIENT_ID: ${INTRA42_CLIENT_ID}
+      INTRA42_CLIENT_SECRET: ${INTRA42_CLIENT_SECRET}
+      INTRA42_REDIRECT_URI: ${INTRA42_REDIRECT_URI}
+      INTRA42_USERINFO_API: ${INTRA42_USERINFO_API}
+
     # depends_on:
       # - hashicorp_vault
 
