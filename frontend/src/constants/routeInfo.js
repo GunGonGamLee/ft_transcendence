@@ -4,7 +4,7 @@ import Register from '../pages/register/page.js';
 import Histories from "../pages/histories/page.js";
 import RegisterHeader from '../header/registerHeader/header.js';
 import MainHeader from '../header/mainHeader/header.js';
-import HistoriesHeader from '../header/historiesHeader/header.js';
+import HistoriesHeader from '../header/mainHeader/header.js';
 
 export const BASE_URL = 'http://localhost:3000';
 /**
@@ -14,5 +14,5 @@ export const routes = [
   { path: /^\/$/, page: Main, header: MainHeader },
   { path: /^\/register$/, page: Register, header: RegisterHeader },
   { path: /^\/game-mode$/, page: GameMode, header: MainHeader },
-  { path: /^\/histories$/, page: Histories, header: HistoriesHeader}
+  { path: /^\/histories$/, page: Histories, header: MainHeader}
 ]
