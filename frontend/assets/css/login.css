@@ -1,6 +1,5 @@
-body {
+.login-wrapper {
   background-image: repeating-linear-gradient(0deg, #191d40, #191d40 15px, #0D092C 15px, #191d40 16px);
-  
   height: 100%; 
   margin: 0;
   padding: 0;
@@ -8,7 +7,14 @@ body {
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  min-height: 110vh;
+  flex-direction: column;
+  z-index: 100;
+}
+
+#app .container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .arcade-machine {

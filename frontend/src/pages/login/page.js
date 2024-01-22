@@ -24,6 +24,7 @@ export default function Login($container) {
             );
         }
         this.$container.innerHTML = `
+        <div class="login-wrapper">
         <div class="container">
         <div class="arcade-machine">
           <div class="shadow"></div>
@@ -65,6 +66,7 @@ export default function Login($container) {
             <div class="stripes"></div>
           </div>
         </div>
+      </div>
       </div>
     `
     }
