@@ -10,6 +10,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.utils.crypto import get_random_string
 from decouple import AutoConfig
+from django.utils.http import urlencode
 
 
 BASE_URL = 'http://localhost:8000/'
@@ -30,7 +31,7 @@ INTRA42_USERINFO_API = settings.INTRA42_USERINFO_API
 
 SECRET_KEY = settings.SECRET_KEY
 DEFAULT_FROM_MAIL = settings.DEFAULT_FROM_MAIL
-
+EMAIL_AUTH_URI = 'https://localhost:443/api/auth/email'
 
 class OAuthLoginView(APIView):
     def get(self, request):
@@ -65,14 +66,21 @@ class OAuthCallbackView(APIView):
 
         try:
             user = User.objects.get(email=email)
+            is_noob = False
 
         except User.DoesNotExist:
             user = User.objects.create(email=email)
             user.save()
+            is_noob = True
 
         finally:
             send_verification_code(user)
-            return JsonResponse({'msg': '이메일을 확인하고 인증 코드를 입력해주세요.'})
+            auth_token = create_jwt_token(user, 3)
+            target_url = EMAIL_AUTH_URI + "?" + urlencode({
+                'token': auth_token,
+                'is_noob': is_noob,
+            })
+            return redirect(target_url)
 
     def get_access_token(self, code):
         token_response = requests.post(
@@ -130,9 +138,6 @@ def send_verification_code(user):
     mail_subject = '[ft_transcendence] 이메일 인증을 완료해주세요.'
     message = f'당신의 인증 코드는 {verification_code}입니다.'
     send_mail(mail_subject, message, DEFAULT_FROM_MAIL, [user.email])
-    auth_token = create_jwt_token(user, 3)
-
-    return JsonResponse({'auth_token': auth_token, 'msg': '이메일을 확인하고 인증 코드를 입력하세요.'})
 
 
 def verify_email(request):
