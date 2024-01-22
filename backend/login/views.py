@@ -11,23 +11,30 @@ from django.core.mail import send_mail
 from django.utils.crypto import get_random_string
 from decouple import AutoConfig
 
-# todo config 다 위로 빼놓기
 
 BASE_URL = 'http://localhost:8000/'
 GOOGLE_CALLBACK_URI = BASE_URL + 'api/login/google/callback/'
 INTRA42_CALLBACK_URI = BASE_URL + 'api/login/intra42/callback'
 config = AutoConfig()
-state = config("STATE")
+state = settings.STATE
 
-GOOGLE_CLIENT_ID = config('GOOGLE_CLIENT_ID')
-INTRA42_CLIENT_ID = config('INTRA42_CLIENT_ID')
-GOOGLE_CLIENT_SECRET = config('GOOGLE_CLIENT_SECRET')
-INTRA42_CLIENT_SECRET = config('INTRA42_CLIENT_SECRET')
+GOOGLE_CLIENT_ID = settings.GOOGLE_CLIENT_ID
+GOOGLE_CLIENT_SECRET = settings.GOOGLE_CLIENT_SECRET
+GOOGLE_AUTHORIZE_API = settings.GOOGLE_AUTHORIZE_API
+
+INTRA42_CLIENT_ID = settings.INTRA42_CLIENT_ID
+INTRA42_CLIENT_SECRET = settings.INTRA42_CLIENT_SECRET
+INTRA42_AUTHORIZE_API = settings.INTRA42_AUTHORIZE_API
+INTRA42_TOKEN_API = settings.INTRA42_TOKEN_API
+INTRA42_USERINFO_API = settings.INTRA42_USERINFO_API
+
+SECRET_KEY = settings.SECRET_KEY
+DEFAULT_FROM_MAIL = settings.DEFAULT_FROM_MAIL
 
 
 class OAuthLoginView(APIView):
     def get(self, request):
-        authorize_api_url = config(self.authorize_api)
+        authorize_api_url = self.authorize_api
         client_id = self.client_id
         redirect_uri = self.redirect_uri
         scope = self.scope
@@ -37,14 +44,14 @@ class OAuthLoginView(APIView):
 
 
 class GoogleLoginView(OAuthLoginView):
-    authorize_api = 'GOOGLE_AUTHORIZE_API'
+    authorize_api = GOOGLE_AUTHORIZE_API
     client_id = GOOGLE_CLIENT_ID
     redirect_uri = GOOGLE_CALLBACK_URI
     scope = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile'
 
 
 class Intra42LoginView(OAuthLoginView):
-    authorize_api = 'INTRA42_AUTHORIZE_API'
+    authorize_api = INTRA42_AUTHORIZE_API
     client_id = INTRA42_CLIENT_ID
     redirect_uri = INTRA42_CALLBACK_URI
     scope = 'public'
@@ -100,9 +107,9 @@ class GoogleCallbackView(OAuthCallbackView):
 class Intra42CallbackView(OAuthCallbackView):
     client_id = INTRA42_CLIENT_ID
     client_secret = INTRA42_CLIENT_SECRET
-    token_api = config('INTRA42_TOKEN_API')
+    token_api = INTRA42_TOKEN_API
     redirect_uri = INTRA42_CALLBACK_URI
-    userinfo_api = config('INTRA42_USERINFO_API')
+    userinfo_api = INTRA42_USERINFO_API
 
 
 def create_jwt_token(user, expiration_minutes):
@@ -110,7 +117,7 @@ def create_jwt_token(user, expiration_minutes):
         'user_email': user.email,
         'exp': datetime.utcnow() + timedelta(minutes=expiration_minutes),
     }
-    token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
+    token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
     return token.decode('utf-8') if isinstance(token, bytes) else token
 
 
@@ -121,7 +128,7 @@ def send_verification_code(user):
 
     mail_subject = '[ft_transcendence] 이메일 인증을 완료해주세요.'
     message = f'당신의 인증 코드는 {verification_code}입니다.'
-    send_mail(mail_subject, message, settings.DEFAULT_FROM_MAIL, [user.email])
+    send_mail(mail_subject, message, DEFAULT_FROM_MAIL, [user.email])
     auth_token = create_jwt_token(user, 3)
 
     return JsonResponse({'auth_token': auth_token, 'msg': '이메일을 확인하고 인증 코드를 입력하세요.'})
