@@ -11,6 +11,7 @@ from django.core.mail import send_mail
 from django.utils.crypto import get_random_string
 from decouple import AutoConfig
 from django.utils.http import urlencode
+import json
 
 
 BASE_URL = 'http://localhost:8000/'
@@ -100,7 +101,7 @@ class OAuthCallbackView(APIView):
 
     def get_email(self, access_token):
         userinfo_response = requests.get(self.userinfo_api, headers={'Authorization': f'Bearer {access_token}'})
-        if userinfo_response.status_code != 200:
+        if userinfo_response.status_code != status.HTTP_200_OK:
             return JsonResponse({'err_msg': 'failed to get email'}, status=status.HTTP_400_BAD_REQUEST)
         return userinfo_response.json().get('email')
 
@@ -140,21 +141,30 @@ def send_verification_code(user):
     send_mail(mail_subject, message, DEFAULT_FROM_MAIL, [user.email])
 
 
-def verify_email(request):
-    user_code = request.POST.get('code')
-    email = request.POST.get('email')
-    two_fa_token = request.POST.get('2fa_token')
+class VerificationCodeView(APIView):
+    def get_verification_code(self):
+        if self.request.content_type != 'application/json':
+            return JsonResponse({'error': 'Invalid content type'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            json_data = json.loads(self.request.body.decode('utf-8'))
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON data'}, status=status.HTTP_400_BAD_REQUEST)
+        return json_data.get('verification_code', '')
 
-    try:
-        user = User.objects.get(email=email)
-    except User.DoesNotExist:
-        return JsonResponse({'err_msg': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+    def check_jwt_token(self):
+        authorization_header = self.request.headers.get('Authorization', '')
+        if not authorization_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Invalid Authorization header format'}, status=status.HTTP_400_BAD_REQUEST)
+        jwt_token = authorization_header[len('Bearer '):]
+        decoded_token = jwt.decode(jwt_token, SECRET_KEY, algorithms=['HS256'])
+        user_email = decoded_token.get('user_email')
+        return user_email
 
-    if user.verification_code == user_code:
-        is_verified = True
-        user.save()
-
-        jwt_token = create_jwt_token(user)
-        return JsonResponse({'token': jwt_token, 'msg': '이메일 인증이 완료되었습니다.'})
-    else:
-        return JsonResponse({'err_msg': '인증코드가 일치하지 않습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request):
+        try:
+            email = self.check_jwt_token()
+            verification_code = self.get_verification_code()
+        except jwt.ExpiredSignatureError:
+            return JsonResponse({'error': 'Token has expired'}, status=status.HTTP_401_UNAUTHORIZED)
+        except jwt.InvalidTokenError:
+            return JsonResponse({'error': 'Invalid token'}, status=status.HTTP_401_UNAUTHORIZED)
