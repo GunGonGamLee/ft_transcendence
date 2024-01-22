@@ -36,7 +36,7 @@ export default function Histories($container) {
                    토너먼트 모드
                </div>
                <div class="histories title" id="ranking" href="">
-                   <img class="histories" src="../../../assets/images/tournament_logo.png" alt="tournament">
+                   <img class="histories" src="../../../assets/images/ranking.png" alt="tournament">
                    전체 랭킹 
                </div>
             </nav>

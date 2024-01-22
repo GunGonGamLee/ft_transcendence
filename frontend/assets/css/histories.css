@@ -128,11 +128,11 @@
 
 .histories#mode {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: center;
     align-items: center;
     flex-direction: row;
     height: 15.5vh;
-    font-size: 2em;
+    font-size: 1.5rem;
 }
 
 .histories#mode div {
@@ -142,6 +142,10 @@
     color: white;
     font-family: Galmuri11, serif;
     text-decoration: none;
+}
+
+.histories#mode div:not(:last-child) {
+    margin-right: 3vw;
 }
 
 .histories#mode > div img {
