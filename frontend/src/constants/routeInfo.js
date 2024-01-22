@@ -4,7 +4,6 @@ import Register from '../pages/register/page.js';
 import Histories from "../pages/histories/page.js";
 import RegisterHeader from '../header/registerHeader/header.js';
 import MainHeader from '../header/mainHeader/header.js';
-import HistoriesHeader from '../header/mainHeader/header.js';
 
 export const BASE_URL = 'http://localhost:3000';
 /**
