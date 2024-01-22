@@ -14,21 +14,148 @@ from django.utils.crypto import get_random_string
 from decouple import AutoConfig
 from django.http import HttpResponse
 
+# todo config 다 위로 빼놓기
+
 BASE_URL = 'http://localhost:8000/'
 GOOGLE_CALLBACK_URI = BASE_URL + 'api/login/google/callback/'
-state = os.environ.get("STATE")
+INTRA42_CALLBACK_URI = BASE_URL + 'api/login/intra42/callback'
 config = AutoConfig()
+state = config("STATE")
+
+GOOGLE_CLIENT_ID = config('GOOGLE_CLIENT_ID')
+INTRA42_CLIENT_ID = config('INTRA42_CLIENT_ID')
+GOOGLE_CLIENT_SECRET = config('GOOGLE_CLIENT_SECRET')
+INTRA42_CLIENT_SECRET = config('INTRA42_CLIENT_SECRET')
 
 
-def google_login(request):
-    if request.method == 'GET':
-        authorize_api_url = config('GOOGLE_AUTHORIZE_API')
-        client_id = config('GOOGLE_CLIENT_ID')
-        scope = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile'
-        target_url = f'{authorize_api_url}?client_id={client_id}&redirect_uri={GOOGLE_CALLBACK_URI}&response_type=code&scope={scope}'
+class OAuthLoginView(APIView):
+    def get(self, request):
+        authorize_api_url = config(self.authorize_api)
+        client_id = self.client_id
+        redirect_uri = self.redirect_uri
+        scope = self.scope
+        print(redirect_uri)
+        target_url = f"{authorize_api_url}?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code&scope={scope}"
         return redirect(target_url)
-    else:
-        return HttpResponse(status=405)
+
+
+class GoogleLoginView(OAuthLoginView):
+    authorize_api = 'GOOGLE_AUTHORIZE_API'
+    client_id = GOOGLE_CLIENT_ID
+    redirect_uri = GOOGLE_CALLBACK_URI
+    scope = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile'
+
+
+class Intra42LoginView(OAuthLoginView):
+    authorize_api = 'INTRA42_AUTHORIZE_API'
+    client_id = INTRA42_CLIENT_ID
+    redirect_uri = INTRA42_CALLBACK_URI
+    scope = 'public'
+
+
+# -----------------------------------------
+class OAuthCallbackView(APIView):
+    def get(self, request):
+        code = request.GET.get('code')
+
+        token_response = requests.post(
+            self.token_api,
+            data={
+                "grant_type": "authorization_code",
+                "client_id": self.client_id,
+                "client_secret": self.client_secret,
+                "code": code,
+                "redirect_uri": self.redirect_uri
+            }
+        )
+        error = token_response.json().get("error")
+        if error is not None:
+            return JsonResponse({'err_msg': error}, status=status.HTTP_400_BAD_REQUEST)
+
+        access_token = token_response.json().get('access_token')
+
+        userinfo_response = requests.get(self.userinfo_api, headers={'Authorization': f'Bearer {access_token}'})
+        if userinfo_response.status_code != 200:
+            return JsonResponse({'err_msg': 'failed to get email'}, status=status.HTTP_400_BAD_REQUEST)
+
+        email = userinfo_response.json().get('email')
+
+        return JsonResponse(email, safe=False)
+
+
+class GoogleCallbackView(OAuthCallbackView):
+    client_id = GOOGLE_CLIENT_ID
+    client_secret = GOOGLE_CLIENT_SECRET
+    token_api = "https://oauth2.googleapis.com/token"
+    redirect_uri = GOOGLE_CALLBACK_URI
+    userinfo_api = "https://www.googleapis.com/oauth2/v1/tokeninfo"
+
+
+class Intra42CallbackView(OAuthCallbackView):
+    client_id = INTRA42_CLIENT_ID
+    client_secret = INTRA42_CLIENT_SECRET
+    token_api = config('INTRA42_TOKEN_API')
+    redirect_uri = INTRA42_CALLBACK_URI
+    userinfo_api = config('INTRA42_USERINFO_API')
+
+
+def google_callback(request):
+    client_id = config('GOOGLE_CLIENT_ID')
+    client_secret = config('GOOGLE_CLIENT_SECRET')
+    code = request.GET.get('code')
+
+    # Google로부터 액세스 토큰 요청
+    token_req = requests.post(
+        "https://oauth2.googleapis.com/token",
+        data={
+            "grant_type": "authorization_code",
+            "client_id": client_id,
+            "client_secret": client_secret,
+            "code": code,
+            "redirect_uri": GOOGLE_CALLBACK_URI
+        }
+    )
+    token_req_json = token_req.json()
+    error = token_req_json.get("error")
+    if error is not None:
+        return JsonResponse({'err_msg': error}, status=status.HTTP_400_BAD_REQUEST)
+
+    access_token = token_req_json.get('access_token')
+
+    # Google API를 사용하여 이메일 정보 얻기
+
+    email_req = requests.get("https://www.googleapis.com/oauth2/v1/tokeninfo", headers={'Authorization': f'Bearer {access_token}'})
+    if email_req.status_code != 200:
+        return JsonResponse({'err_msg': 'failed to get email'}, status=status.HTTP_400_BAD_REQUEST)
+
+    email = email_req.json().get('email')
+    google_user_id = email_req.json().get('u    ser_id')
+    username = email.split('@')[0]
+
+    # ------ 여기 위가 이메일 구하는 내용
+
+    try:
+        user = User.objects.get(email=email)
+        # social_user, created = SocialAccount.objects.get_or_create(
+        #     user=user, provider='google', defaults={'uid': google_user_id}
+        # )
+        # if social_user.provider != 'google':
+        #     return JsonResponse({'err_msg': 'no matching social type'}, status=status.HTTP_400_BAD_REQUEST)
+
+        send_verification_code(user)
+        return JsonResponse({'msg': '이메일을 확인하고 인증 코드를 입력해주세요.'})
+
+    except User.DoesNotExist:
+        # 새 사용자 생성 및 JWT 토큰 발급
+        user = User.objects.create(email=email, username=username)
+        SocialAccount.objects.get_or_create(
+            user=user, provider='google', defaults={'uid': google_user_id}
+        )
+        user.save()
+
+        send_verification_code(user)
+        return JsonResponse({'msg': '회원가입을 위해 E-mail을 확인해주세요.'})
+
 
 
 def create_jwt_token(user):
@@ -80,91 +207,3 @@ def verify_email(request):
         return JsonResponse({'token': jwt_token, 'msg': '이메일 인증이 완료되었습니다.'})
     else:
         return JsonResponse({'err_msg': '인증코드가 일치하지 않습니다.'}, status=status.HTTP_400_BAD_REQUEST)
-
-
-def google_callback(request):
-    client_id = os.environ.get('SOCIAL_AUTH_GOOGLE_CLIENT_ID')
-    client_secret = os.environ.get('SOCIAL_AUTH_GOOGLE_SECRET')
-    code = request.GET.get('code')
-
-    # Google로부터 액세스 토큰 요청
-    token_req = requests.post(
-        "https://oauth2.googleapis.com/token",
-        data={
-            "client_id": client_id,
-            "client_secret": client_secret,
-            "code": code,
-            "grant_type": "authorization_code",
-            "redirect_uri": GOOGLE_CALLBACK_URI
-        }
-    )
-    token_req_json = token_req.json()
-    error = token_req_json.get("error")
-    if error is not None:
-        return JsonResponse({'err_msg': error}, status=status.HTTP_400_BAD_REQUEST)
-
-    access_token = token_req_json.get('access_token')
-
-    # Google API를 사용하여 이메일 정보 얻기
-    email_req = requests.get(f"https://www.googleapis.com/oauth2/v1/tokeninfo?access_token={access_token}")
-    if email_req.status_code != 200:
-        return JsonResponse({'err_msg': 'failed to get email'}, status=status.HTTP_400_BAD_REQUEST)
-
-    email = email_req.json().get('email')
-    google_user_id = email_req.json().get('user_id')
-    username = email.split('@')[0]
-
-    try:
-        user = User.objects.get(email=email)
-        social_user, created = SocialAccount.objects.get_or_create(
-            user=user, provider='google', defaults={'uid': google_user_id}
-        )
-        if social_user.provider != 'google':
-            return JsonResponse({'err_msg': 'no matching social type'}, status=status.HTTP_400_BAD_REQUEST)
-
-        send_verification_code(user)
-        return JsonResponse({'msg': '이메일을 확인하고 인증 코드를 입력해주세요.'})
-
-    except User.DoesNotExist:
-        # 새 사용자 생성 및 JWT 토큰 발급
-        user = User.objects.create(email=email, username=username)
-        SocialAccount.objects.get_or_create(
-            user=user, provider='google', defaults={'uid': google_user_id}
-        )
-        user.save()
-
-        send_verification_code(user)
-        return JsonResponse({'msg': '회원가입을 위해 E-mail을 확인해주세요.'})
-
-
-def intra42_login(request):
-    if request.method == 'GET':
-        authorize_api_url = config('INTRA42_AUTHORIZE_API')
-        client_id = config('INTRA42_CLIENT_ID')
-        callback_uri = config('INTRA42_CALLBACK_URI')
-        target_url = f"{authorize_api_url}?client_id={client_id}&redirect_uri={callback_uri}&response_type=code"
-        return redirect(target_url)
-    else:
-        return HttpResponse(status=405)
-
-
-class Intra42SignInCallBackView(APIView):
-    @staticmethod
-    def get(request):
-        auth_code = request.GET.get('code')
-        intra42_token_api = config('INTRA42_TOKEN_API')
-        data = {
-            'grant_type': 'authorization_code',
-            'client_id': config('INTRA42_CLIENT_ID'),
-            'client_secret': config('INTRA42_CLIENT_SECRET'),
-            'code': auth_code,
-            'redirect_uri': config('INTRA42_CALLBACK_URI')
-        }
-        token_response = requests.post(intra42_token_api, data=data)
-        access_token = token_response.json().get('access_token')
-
-        intra42_userinfo_api = config('INTRA42_USERINFO_API')
-        user_info_response = requests.get(intra42_userinfo_api, headers={'Authorization': f'Bearer {access_token}'})
-        user_email = user_info_response.json().get('email')
-
-        return JsonResponse(user_email, safe=False)

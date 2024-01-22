@@ -1,11 +1,11 @@
 from django.urls import path
-from .views import google_login, intra42_login, google_callback, Intra42SignInCallBackView
+from .views import GoogleLoginView, Intra42LoginView,  GoogleCallbackView, Intra42CallbackView
 
 
 urlpatterns = [
-    path('google/', google_login, name="google_login"), # 이 URL이 구글 로그인 선택창 (ID 선택창)
-    path('intra42/', intra42_login, name="42_login"),
+    path('google/', GoogleLoginView.as_view(), name="google_login"),
+    path('intra42/', Intra42LoginView.as_view(), name="42_login"),
 
-    path('google/callback/', google_callback, name="google_callback"),
-    path('intra42/callback/', Intra42SignInCallBackView.as_view(), name="intra42_callback"),
+    path('google/callback/', GoogleCallbackView.as_view(), name="google_callback"),
+    path('intra42/callback/', Intra42CallbackView.as_view(), name="intra42_callback"),
 ]
