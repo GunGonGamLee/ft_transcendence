@@ -34,6 +34,7 @@ SECRET_KEY = settings.SECRET_KEY
 DEFAULT_FROM_MAIL = settings.DEFAULT_FROM_MAIL
 EMAIL_AUTH_URI = 'https://localhost:443/api/auth/email'
 
+
 class OAuthLoginView(APIView):
     def get(self, request):
         authorize_api_url = self.authorize_api
@@ -78,8 +79,8 @@ class OAuthCallbackView(APIView):
             send_verification_code(user)
             auth_token = create_jwt_token(user, 3)
             target_url = EMAIL_AUTH_URI + "?" + urlencode({
-                'token': auth_token,
                 'is_noob': is_noob,
+                'token': auth_token,
             })
             return redirect(target_url)
 
@@ -142,24 +143,6 @@ def send_verification_code(user):
 
 
 class VerificationCodeView(APIView):
-    def get_verification_code(self):
-        if self.request.content_type != 'application/json':
-            return JsonResponse({'error': 'Invalid content type'}, status=status.HTTP_400_BAD_REQUEST)
-        try:
-            json_data = json.loads(self.request.body.decode('utf-8'))
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON data'}, status=status.HTTP_400_BAD_REQUEST)
-        return json_data.get('verification_code', '')
-
-    def check_jwt_token(self):
-        authorization_header = self.request.headers.get('Authorization', '')
-        if not authorization_header.startswith('Bearer '):
-            return JsonResponse({'error': 'Invalid Authorization header format'}, status=status.HTTP_400_BAD_REQUEST)
-        jwt_token = authorization_header[len('Bearer '):]
-        decoded_token = jwt.decode(jwt_token, SECRET_KEY, algorithms=['HS256'])
-        user_email = decoded_token.get('user_email')
-        return user_email
-
     def post(self, request):
         try:
             email = self.check_jwt_token()
@@ -179,3 +162,21 @@ class VerificationCodeView(APIView):
             return JsonResponse({'token': jwt_token}, status=status.HTTP_200_OK)
         else:
             return JsonResponse({'err_msg': '인증코드가 일치하지 않습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    def check_jwt_token(self):
+        authorization_header = self.request.headers.get('Authorization', '')
+        if not authorization_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Invalid Authorization header format'}, status=status.HTTP_400_BAD_REQUEST)
+        jwt_token = authorization_header[len('Bearer '):]
+        decoded_token = jwt.decode(jwt_token, SECRET_KEY, algorithms=['HS256'])
+        user_email = decoded_token.get('user_email')
+        return user_email
+
+    def get_verification_code(self):
+        if self.request.content_type != 'application/json':
+            return JsonResponse({'error': 'Invalid content type'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            json_data = json.loads(self.request.body.decode('utf-8'))
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON data'}, status=status.HTTP_400_BAD_REQUEST)
+        return json_data.get('verification_code', '')
