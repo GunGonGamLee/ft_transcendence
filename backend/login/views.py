@@ -60,7 +60,21 @@ class Intra42LoginView(OAuthLoginView):
 class OAuthCallbackView(APIView):
     def get(self, request):
         code = request.GET.get('code')
+        access_token = self.get_access_token(code)
+        email = self.get_email(access_token)
 
+        try:
+            user = User.objects.get(email=email)
+
+        except User.DoesNotExist:
+            user = User.objects.create(email=email)
+            user.save()
+
+        finally:
+            send_verification_code(user)
+            return JsonResponse({'msg': '이메일을 확인하고 인증 코드를 입력해주세요.'})
+
+    def get_access_token(self, code):
         token_response = requests.post(
             self.token_api,
             data={
@@ -74,26 +88,13 @@ class OAuthCallbackView(APIView):
         error = token_response.json().get("error")
         if error is not None:
             return JsonResponse({'err_msg': error}, status=status.HTTP_400_BAD_REQUEST)
+        return token_response.json().get('access_token')
 
-        access_token = token_response.json().get('access_token')
-
+    def get_email(self, access_token):
         userinfo_response = requests.get(self.userinfo_api, headers={'Authorization': f'Bearer {access_token}'})
         if userinfo_response.status_code != 200:
             return JsonResponse({'err_msg': 'failed to get email'}, status=status.HTTP_400_BAD_REQUEST)
-
-        email = userinfo_response.json().get('email')
-        username = email.split('@')[0]
-
-        try:
-            user = User.objects.get(email=email)
-
-        except User.DoesNotExist:
-            user = User.objects.create(email=email, username=username)
-            user.save()
-
-        finally:
-            send_verification_code(user)
-            return JsonResponse({'msg': '이메일을 확인하고 인증 코드를 입력해주세요.'})
+        return userinfo_response.json().get('email')
 
 
 class GoogleCallbackView(OAuthCallbackView):
