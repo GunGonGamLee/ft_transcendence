@@ -1,4 +1,3 @@
-import {click} from "../../utils/clickEvent.js";
 import {hoverChangeCursor} from "../../utils/hoverEvent.js";
 
 /**
@@ -16,33 +15,21 @@ export default function historiesHeader($container) {
     this.$container.innerHTML = `
         <div class="main header-wrapper">
             <div class="main" id="left-side">
-                <img src="../../../assets/images/search.png" alt="">
-                <div class="main" id="search-box">
-                    <input type="text">
-                </div>
+                <img src="../../../assets/images/go_back.png" alt="뒤로가기" class="main" id="go-back">
             </div>
-            <div class="main" id="title">너의 기록은</div>
+            <div class="main" id="title">사십 이 초-월</div>
             <div class="main" id="right-side">
-                <div class="main" id="user-avatar">
-                    <img src="../../../assets/images/avatar/red.png" alt="">
-                </div>
-                <div class="main" id="close-button"></div>
+                <img src="../../../assets/images/avatar/red.png" alt="아바타" id="user-avatar">
+                <img src="../../../assets/images/friends.png" alt="친구 목록" id="friends">
             </div>
         </div>
         `
+
+    hoverChangeCursor(document.getElementById("go-back"));
+    hoverChangeCursor(document.getElementById("user-avatar"));
+    hoverChangeCursor(document.getElementById("friends"));
   }
 
-  /**
-   * 헤더의 레이아웃에 이벤트 리스너를 추가합니다.
-   */
-  this.addEventListenersToLayout = () => {
-    const $closeButton = document.getElementById("close-button");
-    click($closeButton, function () {
-      console.log("전적 창 닫기");
-    });
-    hoverChangeCursor($closeButton, "pointer");
-  }
 
   this.render();
-  this.addEventListenersToLayout();
 }

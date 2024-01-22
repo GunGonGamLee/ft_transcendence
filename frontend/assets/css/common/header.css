@@ -35,57 +35,22 @@ header {
     justify-content: flex-end;
 }
 
-.header-wrapper .main#left-side > img {
-    width: 3rem;
-    height: 3rem;
-    margin-right: 10px;
-}
-
-.header-wrapper .main#search-box {
-    display: flex;
-    width: fit-content;
-    height: 100%;
-    justify-content: center;
-    align-items: center;
-}
-
-.header-wrapper .main#search-box > input {
-    width: 15rem;
-    height: 50%;
-    border-radius: 1rem;
-    border: 4px #FF79C5 solid;
-    background: none;
-    color: white;
-    font-size: 1.5rem;
-    padding: 0 1rem;
-    font-family: Galmuri11, system-ui;
+.header-wrapper .main#go-back {
+    display: block;
+    transform: rotate(180deg);
+    width: 8vh;
 }
 
 .header-wrapper .main#title {
     text-align: center;
-    color: #29ABE2;
+    color: #FBFF3E;
 }
 
-.header-wrapper .main#user-avatar {
-    position: relative;
-    width: 4rem;
-    height: 4rem;
-    border: 4px solid white;
-    overflow: hidden;
-    margin-right: 5rem;
+.header-wrapper .main#right-side > #user-avatar {
+    width: 6vh;
+    margin-right: 2vh;
 }
 
-.header-wrapper .main#user-avatar > img {
-    position: absolute;
-    width: 6rem;
-    height: 6rem;
-    border-radius: 50%;
-}
-
-.header-wrapper .main#close-button {
-    display: block;
-    background-image: url("../../images/close.png");
-    background-position: center;
-    width: 3rem;
-    height: 3rem;
+.header-wrapper .main#right-side > #friends {
+    width: 10vh;
 }
