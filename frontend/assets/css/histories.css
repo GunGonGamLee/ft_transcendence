@@ -32,6 +32,7 @@
     grid-gap: 1vh;
     width: 80%;
     height: 100%;
+    padding-bottom: 3vh;
 }
 
 .histories.list-item {
@@ -105,19 +106,23 @@
 
 /********** Histories Pagination **********/
 
-.histories#pagination, .histories#pagination div {
+.histories#pagination {
+    text-align: center;
+    height: 21vh;
+}
+
+.histories#pagination div {
     display: inline-block;
     height: 8vh;
     text-align: center;
-    margin-bottom: 4.3vh;
 }
 
-.histories#pagination > .histories img {
-    height: 100%;
-    margin: 0 0.5vw;
+.histories#pagination > img {
+    height: 8vh;
+    margin: 7vh 0.5vw 0 0;
 }
 
-.histories#pagination > .histories#prev img {
+.histories#pagination > #prev {
     transform: rotate(180deg);
 }
 

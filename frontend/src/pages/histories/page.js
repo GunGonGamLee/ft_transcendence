@@ -42,12 +42,8 @@ export default function Histories($container) {
             </nav>
             <div class="histories" id="list"></div>
             <div class="histories" id="pagination">
-                <div href="" class="histories" id="prev">
-                    <img src="../../../assets/images/pagination.png" alt="prev">
-                </div>
-                <div href="" class="histories" id="next">
-                    <img src="../../../assets/images/pagination.png" alt="next">
-                </div>
+                <img src="../../../assets/images/pagination.png" alt="prev" id="prev">
+                <img src="../../../assets/images/pagination.png" alt="next" id="next">
             </div>
         </div>
         `;
