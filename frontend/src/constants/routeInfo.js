@@ -4,9 +4,7 @@ import Register from '../pages/register/page.js';
 import Histories from "../pages/histories/page.js";
 import RegisterHeader from '../header/registerHeader/header.js';
 import MainHeader from '../header/mainHeader/header.js';
-import HistoriesHeader from '../header/mainHeader/header.js';
 
-export const BASE_URL = 'http://localhost:3000';
 /**
  * 원하는 경로에 따라 렌더링할 컴포넌트를 정의합니다.
  */
