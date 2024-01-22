@@ -61,6 +61,7 @@ export default function Histories($container) {
     }
 
     this.renderList = () => {
+        new Summary(document.getElementById("list"));
     }
 
   /**
