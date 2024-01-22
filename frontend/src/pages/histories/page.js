@@ -22,19 +22,10 @@ export default function Histories($container) {
         importCss('../../../assets/css/histories.css')
         this.$container.innerHTML = `
         <div class="histories" id="content-wrapper">
-            <div class="histories" id="list"></div>
-            <div class="histories" id="pagination">
-                <div href="" class="histories" id="prev">
-                    <img src="../../../assets/images/pagination.png" alt="prev">
-                </div>
-                <div href="" class="histories" id="next">
-                    <img src="../../../assets/images/pagination.png" alt="next">
-                </div>
-            </div>
-            <div class="histories" id="mode">
+            <nav class="histories" id="mode">
                 <div class="histories" id="summary" href="">
                     <img class="histories" src="../../../assets/images/custom_summary.png" alt="summary">
-                    개요
+                    너의 기록은
                 </div>
                 <div class="histories title" id="custom" href="">
                     <img class="histories" src="../../../assets/images/setting.png" alt="custom-mode">
@@ -44,6 +35,19 @@ export default function Histories($container) {
                    <img class="histories" src="../../../assets/images/tournament_logo.png" alt="tournament">
                    토너먼트 모드
                </div>
+               <div class="histories title" id="ranking" href="">
+                   <img class="histories" src="../../../assets/images/tournament_logo.png" alt="tournament">
+                   전체 랭킹 
+               </div>
+            </nav>
+            <div class="histories" id="list"></div>
+            <div class="histories" id="pagination">
+                <div href="" class="histories" id="prev">
+                    <img src="../../../assets/images/pagination.png" alt="prev">
+                </div>
+                <div href="" class="histories" id="next">
+                    <img src="../../../assets/images/pagination.png" alt="next">
+                </div>
             </div>
         </div>
         `;
@@ -173,6 +177,7 @@ export default function Histories($container) {
         const summary = document.getElementById("summary");
         const custom = document.getElementById("custom");
         const tournament = document.getElementById("tournament");
+        const ranking = document.getElementById("ranking");
         const prev = document.getElementById("prev");
         const next = document.getElementById("next");
 
@@ -180,16 +185,19 @@ export default function Histories($container) {
         hoverChangeColor(summary, "#ffffff", "#29ABE2");
         hoverChangeColor(custom, "#ffffff", "#29ABE2");
         hoverChangeColor(tournament, "#ffffff", "#29ABE2");
+        hoverChangeColor(ranking, "#ffffff", "#29ABE2");
 
         // 폰트 변경
         hoverChangeFont(summary, "Galmuri11, serif", "Galmuri11-Bold, serif");
         hoverChangeFont(custom, "Galmuri11, serif", "Galmuri11-Bold, serif");
         hoverChangeFont(tournament, "Galmuri11, serif", "Galmuri11-Bold, serif");
+        hoverChangeFont(ranking, "Galmuri11, serif", "Galmuri11-Bold, serif");
 
         // 커서 변경
         hoverChangeCursor(summary, "pointer");
         hoverChangeCursor(custom, "pointer");
         hoverChangeCursor(tournament, "pointer");
+        hoverChangeCursor(ranking, "pointer");
         hoverChangeCursor(prev, "pointer");
         hoverChangeCursor(next, "pointer");
 
@@ -197,6 +205,7 @@ export default function Histories($container) {
         click(summary, function () {console.log("TODO => 개요 페이지로 이동")});
         click(custom, function () {console.log("TODO => 사용자 지정 모드 페이지로 이동")});
         click(tournament, function () {console.log("TODO => 토너먼트 모드 페이지로 이동")});
+        click(ranking, function () {console.log("TODO => 전체 랭킹 페이지로 이동")});
         click(prev, function () {console.log("TODO => 이전 페이지로 이동")});
         click(next, function () {console.log("TODO => 다음 페이지로 이동")});
     }
