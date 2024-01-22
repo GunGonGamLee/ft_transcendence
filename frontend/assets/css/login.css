@@ -15,7 +15,7 @@
 }
 
 .arcade-machine {
-  height: 89vh;
+  height: 88vh;
   width: 55vw;
   position: relative;
   perspective: 35em;
@@ -28,16 +28,16 @@
   top: 0%;
   left: 15%;
   background: #024959;
-  border: 5px solid #4c4c4c;
+  border: 0.5vw solid #4c4c4c;
   z-index: 3;
 }
 
 .top h1 {
   font-family: "Vibur", sans-serif;
-  font-size: 3.3vw;
+  font-size: 3.5vw;
   color: #fff;
   text-align: center;
-  margin-top: 3.2vh;
+  margin-top: 3vh;
   text-shadow:
   0 0 7px #DA0C81,
   0 0 10px #DA0C81,
@@ -89,21 +89,23 @@
   z-index: 1;
 }
 .arcade-machine .screen-container:before, .arcade-machine .screen-container:after {
-  height: 100%;
-  width: 4%;
+  height: 43.7vh;
+  width: 2.5vw;
   position: absolute;
   top: -1%;
   background: #DA0C81;
   content: " ";
-  border: 5px solid #4c4c4c;
+  border: 0.5vw solid #4c4c4c;
   z-index: 2;
 }
+
 .arcade-machine .screen-container:before {
   left: -6%;
 }
 .arcade-machine .screen-container:after {
   right: -6%;
 }
+
 .arcade-machine .screen-container .shadow {
   height: 8%;
   width: 110%;
@@ -113,14 +115,15 @@
   background: rgba(0, 0, 0, 0.1);
   z-index: 4;
 }
+
 .arcade-machine .screen-container .screen {
-  height: 79%;
+  height: 84%;
   width: 80%;
   position: absolute;
   top: 9%;
-  left: 9%;
+  left: 10%;
   background: #313332;
-  border: 5px solid #4c4c4c;
+  border: 0.5vw solid #4c4c4c;
   border-radius: 90px 93px 93px 93px/15px 15px 15px 15px;
   overflow: hidden;
   text-align: center;
@@ -135,31 +138,30 @@
 
 .arcade-machine .screen-container .screen h2 {
   position: absolute;
-  font-size: 2em;
-  left: 25%;
+  font-size: 2.7vw;
   color: #e0e0e0;
   font-family: "Orbitron", sans-serif, sans-serif;
 }
 
 .arcade-machine .screen-container .screen h2#google {
-  left: 25%;
-  top: 50%;
+  left: 5.3vw;
+  top: 20vh;
 }
 
 .arcade-machine .screen-container .screen h2#forty-two {
-  left: 34%;
-  top: 65%;
+  left: 8.1vw;
+  top: 26vh;
 }
 
 .arcade-machine .screen-container .joystick {
-  height: 6%;
-  width: 5%;
+  height: 3.5vh;
+  width: 2.2vw;
   background: #DA0C81;
   position: absolute;
-  top: 91%;
-  left: 17%;
+  top: 98%;
+  left: 6vw;
   border-radius: 50%;
-  border: 5px solid #4c4c4c;
+  border: 0.5vw solid #4c4c4c;
   z-index: 3;
 }
 .arcade-machine .screen-container .joystick:before {
