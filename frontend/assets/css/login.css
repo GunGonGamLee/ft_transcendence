@@ -1,14 +1,11 @@
 .login-wrapper {
   background-image: repeating-linear-gradient(0deg, #191d40, #191d40 15px, #0D092C 15px, #191d40 16px);
-  height: 100%; 
-  margin: 0;
-  padding: 0;
+  height: fit-content;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
   flex-direction: column;
-  z-index: 100;
 }
 
 #app .container {
@@ -18,14 +15,14 @@
 }
 
 .arcade-machine {
-  height: 800px;
-  width: 800px;
+  height: 88vh;
+  width: 51vw;
   position: relative;
   perspective: 35em;
 }
 
 .arcade-machine .top {
-  height: 15%;
+  height: 15.3%;
   width: 70%;
   position: absolute;
   top: 0%;
@@ -37,10 +34,10 @@
 
 .top h1 {
   font-family: "Vibur", sans-serif;
-  font-size: 3em;
+  font-size: 3vw;
   color: #fff;
   text-align: center;
-  margin-top: 30px;
+  margin-top: 2.8vh;
   text-shadow:
   0 0 7px #DA0C81,
   0 0 10px #DA0C81,
