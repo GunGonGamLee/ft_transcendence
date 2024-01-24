@@ -76,7 +76,7 @@ export default function Login($container) {
         const fortyTwo = document.getElementById("forty-two");
         
         click(google, () => {
-          fetch('http://localhost:3000/api/login/google')
+          fetch('http://localhost:8000/api/login/google')
           .then(response => response.json())
           .then(data => {
               window.location.href = data.url;
@@ -84,7 +84,7 @@ export default function Login($container) {
           .catch(error => console.error('google login error:', error));
         });
         click(fortyTwo, () => {
-          fetch('http://localhost:3000/api/login/intra42')
+          fetch('http://localhost:8000/api/login/intra42')
           .then(response => response.json())
           .then(data => {
               window.location.href = data.url;
