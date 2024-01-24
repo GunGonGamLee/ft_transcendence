@@ -16,6 +16,9 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from .serializers import VerificationCodeSerializer
 from rest_framework.response import Response
+from django.core.exceptions import ValidationError
+from src.exceptions import GetDataException
+from requests.exceptions import RequestException
 
 
 BASE_URL = 'http://localhost:8000/'
@@ -72,17 +75,20 @@ class OAuthCallbackView(APIView):
                              openapi.Parameter('token', openapi.IN_QUERY, description="3분 뒤에 만료하는 JWT 토큰", type=openapi.TYPE_STRING)],
                          responses={302: "Redirect to Front Page"})
     def get(self, request):
-        code = request.GET.get('code')
-        access_token = self.get_access_token(code)
-        email = self.get_email(access_token)
-
         try:
+            code = request.GET.get('code')
+            access_token = self.get_access_token(code)
+            email = self.get_email(access_token)
             user = User.objects.get(email=email)
         except User.DoesNotExist:
             user = User.objects.create(email=email)
             user.save()
+        except GetDataException as e:
+            return JsonResponse({'err_msg': e.message_dict}, status=status.HTTP_400_BAD_REQUEST)
+        except RequestException:
+            return JsonResponse({'err_msg': 'get access token error'}, status=status.HTTP_400_BAD_REQUEST)
         finally:
-            send_verification_code(user)
+            send_and_save_verification_code(user)
             auth_token = create_jwt_token(user, 3)
             target_url = EMAIL_AUTH_URI + "?" + urlencode({
                 'token': auth_token,
@@ -102,13 +108,13 @@ class OAuthCallbackView(APIView):
         )
         error = token_response.json().get("error")
         if error is not None:
-            return JsonResponse({'err_msg': error}, status=status.HTTP_400_BAD_REQUEST)
+            raise RequestException()
         return token_response.json().get('access_token')
 
     def get_email(self, access_token):
         userinfo_response = requests.get(self.userinfo_api, headers={'Authorization': f'Bearer {access_token}'})
         if userinfo_response.status_code != status.HTTP_200_OK:
-            return JsonResponse({'err_msg': 'failed to get email'}, status=status.HTTP_400_BAD_REQUEST)
+            raise GetDataException('failed to get email')
         return userinfo_response.json().get('email')
 
 
@@ -128,16 +134,16 @@ class Intra42CallbackView(OAuthCallbackView):
     userinfo_api = INTRA42_USERINFO_API
 
 
-def create_jwt_token(user, expiration_minutes):
+def create_jwt_token(user, expiration_days):
     payload = {
         'user_email': user.email,
-        'exp': datetime.utcnow() + timedelta(minutes=expiration_minutes),
+        'exp': datetime.utcnow() + timedelta(days=expiration_days),
     }
     token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
     return token.decode('utf-8') if isinstance(token, bytes) else token
 
 
-def send_verification_code(user):
+def send_and_save_verification_code(user):
     verification_code = get_random_string(length=6)
     user.verification_code = verification_code
     user.save()
@@ -161,25 +167,26 @@ class VerificationCodeView(APIView):
         response_body=VerificationCodeSerializer)
     def post(self, request):
         try:
-            email = self.check_jwt_token()
-            verification_code = self.get_verification_code()
-        except jwt.ExpiredSignatureError:
-            return JsonResponse({'error': 'Token has expired'}, status=status.HTTP_401_UNAUTHORIZED)
-        except jwt.InvalidTokenError:
-            return JsonResponse({'error': 'Invalid token'}, status=status.HTTP_401_UNAUTHORIZED)
-
-        try:
+            email = AuthUtils.check_jwt_token(request)
+            verification_code = AuthUtils.get_verification_code(request)
             user = User.objects.get(email=email)
             nickname = user.nickname
             if nickname is None:
                 is_noob = True
             else:
                 is_noob = False
+
+        except jwt.ExpiredSignatureError:
+            return JsonResponse({'error': 'Token has expired'}, status=status.HTTP_401_UNAUTHORIZED)
+        except jwt.InvalidTokenError:
+            return JsonResponse({'error': 'Invalid token'}, status=status.HTTP_401_UNAUTHORIZED)
+        except ValidationError as e:
+            return JsonResponse({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
         except User.DoesNotExist:
             return JsonResponse({'err_msg': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
 
         if user.verification_code == verification_code:
-            jwt_token = create_jwt_token(user, 60 * 24)
+            jwt_token = create_jwt_token(user, 7)
 
             data = {'token': jwt_token, 'is_noob': is_noob}
             serializer = VerificationCodeSerializer(data)
@@ -206,18 +213,24 @@ class VerificationCodeAgainView(APIView):
         except User.DoesNotExist:
             return JsonResponse({'err_msg': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
 
+
+class AuthUtils:
+    @staticmethod
+    def check_jwt_token(request):
+        authorization_header = request.headers.get('Authorization', '')
         if not authorization_header.startswith('Bearer '):
-            return JsonResponse({'error': 'Invalid Authorization header format'}, status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Invalid authorization header')
         jwt_token = authorization_header[len('Bearer '):]
         decoded_token = jwt.decode(jwt_token, SECRET_KEY, algorithms=['HS256'])
         user_email = decoded_token.get('user_email')
         return user_email
 
-    def get_verification_code(self):
-        if self.request.content_type != 'application/json':
-            return JsonResponse({'error': 'Invalid content type'}, status=status.HTTP_400_BAD_REQUEST)
+    @staticmethod
+    def get_verification_code(request):
+        if request.content_type != 'application/json':
+            raise ValidationError('Invalid content type')
         try:
-            json_data = json.loads(self.request.body.decode('utf-8'))
+            json_data = json.loads(request.body.decode('utf-8'))
         except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON data'}, status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Invalid JSON data')
         return json_data.get('verification_code', '')
