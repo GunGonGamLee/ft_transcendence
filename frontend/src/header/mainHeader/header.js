@@ -1,5 +1,4 @@
 import {hoverChangeCursor} from "../../utils/hoverEvent.js";
-
 /**
  * 사용자 전적 페이지에 사용하는 header 컴포넌트
  * @param {HTMLElement} $container
@@ -9,6 +8,9 @@ export default function historiesHeader($container) {
 
   this.setState = () => {
     this.render();
+    document.getElementById("go-back").addEventListener("click", () => {
+      history.back();
+    })
   }
 
   this.render = () => {
@@ -30,6 +32,5 @@ export default function historiesHeader($container) {
     hoverChangeCursor(document.getElementById("friends"), "pointer");
   }
 
-
-  this.render();
+  this.setState();
 }
