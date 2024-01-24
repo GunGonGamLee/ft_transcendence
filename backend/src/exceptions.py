@@ -1,0 +1,2 @@
+class GetDataException(Exception):
+    pass
