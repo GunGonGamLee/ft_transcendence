@@ -43,7 +43,8 @@ EMAIL_AUTH_URI = 'https://localhost:443/api/auth/email'
 
 
 class OAuthLoginView(APIView):
-    @swagger_auto_schema(tags=['/api/login'], operation_description="소셜 로그인 창으로 페이지 redirect", responses={302: "Redirect to Another Location"})
+    @swagger_auto_schema(tags=['/api/login'], operation_description="소셜 로그인 창으로 페이지 redirect",
+                         responses={302: "Redirect to Another Location"})
     def get(self, request):
         authorize_api_url = self.authorize_api
         client_id = self.client_id
@@ -69,11 +70,11 @@ class Intra42LoginView(OAuthLoginView):
 
 class OAuthCallbackView(APIView):
     @swagger_auto_schema(tags=['/api/login'],
-                         operation_description="사용자 정보를 받아 DB에 저장한 뒤, 해당 email로 2차 인증 코드를 보냅니다."
-                                               "jwt를 쿼리 파라미터에 담아 프론트 페이지로 리다이렉트 시킵니다.",
+                         operation_description="사용자의 이메일로 2차 인증 코드를 보내는 API",
                          manual_parameters=[
-                             openapi.Parameter('token', openapi.IN_QUERY, description="3분 뒤에 만료하는 JWT 토큰", type=openapi.TYPE_STRING)],
-                         responses={302: "Redirect to Front Page"})
+                             openapi.Parameter('token', openapi.IN_QUERY, description="1일 뒤에 만료하는 JWT 토큰", type=openapi.TYPE_STRING)],
+                         responses={302: "Redirect to Front Page",
+                                    400: 'BAD_REQUEST'})
     def get(self, request):
         try:
             code = request.GET.get('code')
@@ -156,15 +157,18 @@ def send_and_save_verification_code(user):
 class VerificationCodeView(APIView):
     @swagger_auto_schema(
         tags=['/api/login'],
-        operation_description="사용자가 입력한 2차 이메일 인증 코드를 검증합니다. 헤더에는 jwt 토큰이 담겨져 있습니다.",
+        operation_description="유저가 입력한 2차 이메일 인증 코드를 검증 API",
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={'verification_code': openapi.Schema(type=openapi.TYPE_STRING, description='2차 인증 코드')},
             required=['verification_code']),
         manual_parameters=[
             openapi.Parameter('Authorization', openapi.IN_HEADER, description='Bearer JWT Token', type=openapi.TYPE_STRING),
-            openapi.Parameter('content-type', openapi.IN_HEADER, description='application/json', type=openapi.TYPE_STRING),],
-        response_body=VerificationCodeSerializer)
+            openapi.Parameter('content-type', openapi.IN_HEADER, description='application/json', type=openapi.TYPE_STRING), ],
+        responses={201: openapi.Response('Successful Response', schema=VerificationCodeSerializer),
+                   400: 'Bad Request',
+                   401: 'Bad Unauthorized',
+                   404: 'NOT FOUND'})
     def post(self, request):
         try:
             email = AuthUtils.check_jwt_token(request)
