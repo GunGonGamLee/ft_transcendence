@@ -1,6 +1,6 @@
 import {hoverChangeColor, hoverChangeCursor, hoverChangeFont, hoverToggle} from "../../utils/hoverEvent.js";
 import {click} from "../../utils/clickEvent.js";
-import { importCss } from '../../utils/importCss.js';
+import {importCss} from '../../utils/importCss.js';
 import Summary from "./summary-page.js";
 import CustomHistories from "./custom-page.js";
 import TournamentHistories from "./tournament-page.js";
@@ -8,24 +8,24 @@ import Ranking from "./ranking-page.js";
 
 
 export default function Histories($container) {
-    this.$container = $container;
+  this.$container = $container;
 
-    this.setState = () => {
-        this.render();
-    }
+  this.setState = () => {
+    this.render();
+  }
 
-    this.render = () => {
-        this.renderLayout();
-        this.renderList();
-    }
+  this.render = () => {
+    this.renderLayout();
+    this.renderList();
+  }
 
-    /**
-     * 헤더, 그리고 개요-사용자 지정 모드-토너먼트 모드를 선택할 수 있는 버튼들을 렌더링합니다.
-     * 이는 전적 리스트의 페이지의 레이아웃으로 추후 공통 모듈로 분리할 수 있습니다.
-     */
-    this.renderLayout = () => {
-        importCss('../../../assets/css/histories.css')
-        this.$container.innerHTML = `
+  /**
+   * 헤더, 그리고 개요-사용자 지정 모드-토너먼트 모드를 선택할 수 있는 버튼들을 렌더링합니다.
+   * 이는 전적 리스트의 페이지의 레이아웃으로 추후 공통 모듈로 분리할 수 있습니다.
+   */
+  this.renderLayout = () => {
+    importCss('../../../assets/css/histories.css')
+    this.$container.innerHTML = `
         <div class="histories" id="content-wrapper">
             <nav class="histories" id="mode">
                 <div class="histories" id="summary" href="">
@@ -66,11 +66,11 @@ export default function Histories($container) {
             </footer>
         </div>
         `;
-    }
+  }
 
-    this.renderList = () => {
-        new Summary(document.getElementById("list"));
-    }
+  this.renderList = () => {
+    new Summary(document.getElementById("list"));
+  }
 
   /**
    * 레이아웃 엘리먼트에 이벤트 리스너를 추가합니다.
@@ -86,26 +86,14 @@ export default function Histories($container) {
     const $next = document.getElementById("next");
 
     // 폰트 색상 변경
-    hoverChangeColor($summary, "#ffffff", "#29ABE2");
-    hoverChangeColor($modeSelect, "#ffffff", "#29ABE2");
-    hoverChangeColor($tournament, "#ffffff", "#29ABE2");
-    hoverChangeColor($ranking, "#ffffff", "#29ABE2");
-    hoverChangeColor($toggle[0], "#aaaaaa", "#29ABE2");
-    hoverChangeColor($toggle[1], "#aaaaaa", "#29ABE2");
+    hoverChangeColor([$summary, $modeSelect, $tournament, $ranking], "#ffffff", "#29ABE2");
+    hoverChangeColor([$toggle], "#aaaaaa", "#29ABE2");
 
     // 폰트 변경
-    hoverChangeFont($summary, "Galmuri11, serif", "Galmuri11-Bold, serif");
-    hoverChangeFont($modeSelect, "Galmuri11, serif", "Galmuri11-Bold, serif");
-    hoverChangeFont($tournament, "Galmuri11, serif", "Galmuri11-Bold, serif");
-    hoverChangeFont($ranking, "Galmuri11, serif", "Galmuri11-Bold, serif");
+    hoverChangeFont([$summary, $modeSelect, $tournament, $ranking], "Galmuri11, serif", "Galmuri11-Bold, serif");
 
     // 커서 변경
-    hoverChangeCursor($summary, "pointer");
-    hoverChangeCursor($custom, "pointer");
-    hoverChangeCursor($tournament, "pointer");
-    hoverChangeCursor($ranking, "pointer");
-    hoverChangeCursor($prev, "pointer");
-    hoverChangeCursor($next, "pointer");
+    hoverChangeCursor([$summary, $custom, $tournament, $ranking, $prev, $next], "pointer");
 
     // click 이벤트
     click($summary, Summary);
@@ -124,6 +112,6 @@ export default function Histories($container) {
       $custom.style.color = "#29ABE2";
     })
   }
-    this.render();
-    this.addEventListenersToLayout();
+  this.render();
+  this.addEventListenersToLayout();
 }
