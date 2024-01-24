@@ -196,6 +196,14 @@ class VerificationCodeView(APIView):
 
 
 class VerificationCodeAgainView(APIView):
+    @swagger_auto_schema(
+        tags=['/api/login'],
+        operation_description="이메일 인증 코드를 재발급 받는 API.",
+        responses={200: openapi.Response('Successful Response', schema=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={'token': openapi.Schema(type=openapi.TYPE_STRING, description='JWT 1차 토큰')})),
+                   401: 'Bad Unauthorized',
+                   404: 'NOT FOUND'})
     def post(self, request):
         try:
             email = AuthUtils.check_jwt_token(request)
