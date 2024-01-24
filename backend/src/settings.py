@@ -8,16 +8,11 @@ import time
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ENV_PATH = os.path.join(BASE_DIR, '..', '.env')
-
 env = environ.Env()
+
 DEBUG = True
+
 env.read_env(env_file=ENV_PATH)
-
-VAULT_URL = config('VAULT_URL')
-VAULT_TOKEN = config('VAULT_TOKEN')
-
-client = hvac.Client(url=VAULT_URL, token=VAULT_TOKEN)
-
 def wait_for_vault_client(client, retries=5, delay=5):
     for i in range(retries):
         try:
@@ -63,15 +58,21 @@ if DEBUG:
     EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 else:
+    VAULT_URL = env('VAULT_URL')
+    VAULT_TOKEN = env('VAULT_TOKEN')
+    client = hvac.Client(url=VAULT_URL, token=VAULT_TOKEN)
+
     wait_for_vault_client(client)
     secret_path = "sejokim"
+
     read_response = client.secrets.kv.v2.read_secret_version(path=secret_path, mount_point='kv')
+
     db_host = read_response['data']['data']['DB_HOST']
     db_password = read_response['data']['data']['DB_PASSWORD']
     db_user = read_response['data']['data']['DB_USER']
     db_name = read_response['data']['data']['DB_DATABASE']
     db_port = read_response['data']['data']['DB_PORT']
-    log_key = read_response['data']['data']['LOG_KEY']
+    LOG_KEY = read_response['data']['data']['LOG_KEY']
     INTRA42_AUTHORIZE_API = read_response['data']['data']['INTRA42_AUTHORIZE_API']
     INTRA42_TOKEN_API = read_response['data']['data']['INTRA42_TOKEN_API']
     INTRA42_CLIENT_ID = read_response['data']['data']['INTRA42_CLIENT_ID']
@@ -84,11 +85,7 @@ else:
     STATE = read_response['data']['data']['STATE']
     EMAIL_HOST_USER = read_response['data']['data']['EMAIL_HOST_USER']
     EMAIL_HOST_PASSWORD = read_response['data']['data']['EMAIL_HOST_PASSWORD']
-    SECRET_KEY = ['data']['data']['LOG_KEY']
-
-env = environ.Env()
-
-env.read_env(env_file=ENV_PATH)
+    SECRET_KEY = LOG_KEY
 
 # logging settings
 
@@ -260,9 +257,9 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = env('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_MAIL = EMAIL_HOST_USER
+# EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+# EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 
 LANGUAGE_CODE = 'KO'
 
