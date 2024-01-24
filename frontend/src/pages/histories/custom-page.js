@@ -1,6 +1,11 @@
 import {hoverChangeBorder, hoverChangeCursor} from "../../utils/hoverEvent.js";
 
-export default function CustomHistories() {
+/**
+ * 사용자 지정 모드의 전적 리스트를 렌더링합니다.
+ * @param mode {string} 전적 리스트의 게임 모드 ("1vs1" 또는 "tournament")
+ * @constructor 전적 리스트의 게임 모드
+ */
+export default function CustomHistories(mode) {
   this.$container = document.getElementById("list");
   this.$pagination = document.getElementById("pagination");
 
@@ -25,6 +30,20 @@ export default function CustomHistories() {
         `
     let $listWrapper = document.getElementById("list-wrapper");
     $listWrapper.innerHTML = '';
+    if (mode === "1vs1") {
+      this.render1vs1($listWrapper);
+    }
+    else if (mode === "tournament") {
+      console.log("TODO => 토너먼트 모드")
+      // this.renderTournament($listWrapper);
+    }
+  }
+
+  /**
+   * 사용자 지정 게임의 1 vs 1 모드 전적 리스트를 렌더링합니다.
+   * @param $listWrapper {HTMLElement} 전적 리스트를 렌더링할 <div> 엘리먼트
+   */
+  this.render1vs1 = ($listWrapper) => {
     let mockData = [
       {
         player1: {
@@ -100,8 +119,8 @@ export default function CustomHistories() {
 
   /**
    * 전적 리스트의 플레이어 정보를 렌더링합니다.
-   * @param listItemDiv 전적 리스트의 플레이어 정보를 렌더링할 리스트 아이템 <div> 엘리먼트
-   * @param data 전적 리스트의 플레이어 정보
+   * @param listItemDiv {HTMLElement} 전적 리스트의 플레이어 정보를 렌더링할 리스트 아이템 <div> 엘리먼트
+   * @param data {{avatar: string, nickname: string, rating: string}} 전적 리스트의 플레이어 정보
    */
   this.renderPlayer = (listItemDiv, data) => {
     const playerDiv = document.createElement("div");
@@ -118,7 +137,7 @@ export default function CustomHistories() {
 
   /**
    * 전적 리스트의 게임 모드(1 vs 1 로고 또는 토너먼트 로고)를 렌더링합니다.
-   * @param listItemDiv 전적 리스트의 게임 모드를 렌더링할 리스트 아이템 <div> 엘리먼트
+   * @param listItemDiv {HTMLElement} 전적 리스트의 게임 모드를 렌더링할 리스트 아이템 <div> 엘리먼트
    */
   this.renderGameMode = (listItemDiv) => {
     const gameModeDiv = document.createElement("div");
