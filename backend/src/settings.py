@@ -126,6 +126,8 @@ ALLOWED_HOSTS = ['*']
 
 # Application definition
 
+CORS_ALLOW_ALL_ORIGINS = True
+
 INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'pingpong.apps.PingpongConfig',
@@ -147,6 +149,8 @@ INSTALLED_APPS = [
 
     'django_otp',
     'django_otp.plugins.otp_totp',
+
+    'corsheaders',
 ]
 
 PINGPONG_TOURNAMENT_MODEL = 'pingpong.Tournament'
@@ -163,6 +167,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'src.urls'
