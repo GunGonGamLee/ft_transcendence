@@ -187,8 +187,25 @@ class VerificationCodeView(APIView):
         else:
             return JsonResponse({'err_msg': '인증코드가 일치하지 않습니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    def check_jwt_token(self):
-        authorization_header = self.request.headers.get('Authorization', '')
+
+class VerificationCodeAgainView(APIView):
+    def post(self, request):
+        try:
+            email = AuthUtils.check_jwt_token(request)
+            user = User.objects.get(email=email)
+            send_and_save_verification_code(user)
+            auth_token = create_jwt_token(user, 1)
+            return JsonResponse({'token': auth_token}, status=status.HTTP_200_OK)
+
+        except jwt.ExpiredSignatureError:
+            return JsonResponse({'error': 'Token has expired'}, status=status.HTTP_401_UNAUTHORIZED)
+        except jwt.InvalidTokenError:
+            return JsonResponse({'error': 'Invalid token'}, status=status.HTTP_401_UNAUTHORIZED)
+        except ValidationError as e:
+            return JsonResponse({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
+        except User.DoesNotExist:
+            return JsonResponse({'err_msg': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+
         if not authorization_header.startswith('Bearer '):
             return JsonResponse({'error': 'Invalid Authorization header format'}, status=status.HTTP_400_BAD_REQUEST)
         jwt_token = authorization_header[len('Bearer '):]
