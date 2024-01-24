@@ -1,4 +1,4 @@
-import {hoverChangeColor, hoverChangeCursor, hoverChangeFont} from "../../utils/hoverEvent.js";
+import {hoverChangeColor, hoverChangeCursor, hoverChangeFont, hoverToggle} from "../../utils/hoverEvent.js";
 import {click} from "../../utils/clickEvent.js";
 import { importCss } from '../../utils/importCss.js';
 import Summary from "./summary-page.js";
@@ -33,8 +33,16 @@ export default function Histories($container) {
                     너의 기록은
                 </div>
                 <div class="histories title" id="custom" href="">
-                    <img class="histories" src="../../../assets/images/setting.png" alt="custom-mode">
-                    사용자 지정 모드
+                    <div class="histories" id="mode-select">
+                        <img class="histories" src="../../../assets/images/setting.png" alt="custom-mode">
+                        사용자 지정 모드
+                    </div>
+                    <div class="histories" id="custom-toggle">
+                        <ul class="histories">
+                            <li>1 VS 1 모드</li>
+                            <li>토너먼트 모드</li>
+                        </ul>
+                    </div>
                 </div>
                <div class="histories title" id="tournament" href="">
                    <img class="histories" src="../../../assets/images/tournament_logo.png" alt="tournament">
@@ -68,42 +76,54 @@ export default function Histories($container) {
    * 레이아웃 엘리먼트에 이벤트 리스너를 추가합니다.
    */
   this.addEventListenersToLayout = () => {
-        const $summary = document.getElementById("summary");
-        const $custom = document.getElementById("custom");
-        const $tournament = document.getElementById("tournament");
-        const $ranking = document.getElementById("ranking");
-        const $prev = document.getElementById("prev");
-        const $next = document.getElementById("next");
+    const $summary = document.getElementById("summary");
+    const $custom = document.getElementById("custom");
+    const $modeSelect = document.getElementById("mode-select");
+    const $toggle = document.getElementsByTagName("li");
+    const $tournament = document.getElementById("tournament");
+    const $ranking = document.getElementById("ranking");
+    const $prev = document.getElementById("prev");
+    const $next = document.getElementById("next");
 
-        // 폰트 색상 변경
-        hoverChangeColor($summary, "#ffffff", "#29ABE2");
-        hoverChangeColor($custom, "#ffffff", "#29ABE2");
-        hoverChangeColor($tournament, "#ffffff", "#29ABE2");
-        hoverChangeColor($ranking, "#ffffff", "#29ABE2");
+    // 폰트 색상 변경
+    hoverChangeColor($summary, "#ffffff", "#29ABE2");
+    hoverChangeColor($modeSelect, "#ffffff", "#29ABE2");
+    hoverChangeColor($tournament, "#ffffff", "#29ABE2");
+    hoverChangeColor($ranking, "#ffffff", "#29ABE2");
+    hoverChangeColor($toggle[0], "#aaaaaa", "#29ABE2");
+    hoverChangeColor($toggle[1], "#aaaaaa", "#29ABE2");
 
-        // 폰트 변경
-        hoverChangeFont($summary, "Galmuri11, serif", "Galmuri11-Bold, serif");
-        hoverChangeFont($custom, "Galmuri11, serif", "Galmuri11-Bold, serif");
-        hoverChangeFont($tournament, "Galmuri11, serif", "Galmuri11-Bold, serif");
-        hoverChangeFont($ranking, "Galmuri11, serif", "Galmuri11-Bold, serif");
+    // 폰트 변경
+    hoverChangeFont($summary, "Galmuri11, serif", "Galmuri11-Bold, serif");
+    hoverChangeFont($modeSelect, "Galmuri11, serif", "Galmuri11-Bold, serif");
+    hoverChangeFont($tournament, "Galmuri11, serif", "Galmuri11-Bold, serif");
+    hoverChangeFont($ranking, "Galmuri11, serif", "Galmuri11-Bold, serif");
 
-        // 커서 변경
-        hoverChangeCursor($summary, "pointer");
-        hoverChangeCursor($custom, "pointer");
-        hoverChangeCursor($tournament, "pointer");
-        hoverChangeCursor($ranking, "pointer");
-        hoverChangeCursor($prev, "pointer");
-        hoverChangeCursor($next, "pointer");
+    // 커서 변경
+    hoverChangeCursor($summary, "pointer");
+    hoverChangeCursor($custom, "pointer");
+    hoverChangeCursor($tournament, "pointer");
+    hoverChangeCursor($ranking, "pointer");
+    hoverChangeCursor($prev, "pointer");
+    hoverChangeCursor($next, "pointer");
 
-        // click 이벤트
-        click($summary, Summary);
-        click($custom, CustomHistories);
-        click($tournament, TournamentHistories);
-        click($ranking, Ranking);
-        click($prev, function () {console.log("TODO => 이전 페이지로 이동")});
-        click($next, function () {console.log("TODO => 다음 페이지로 이동")});
-    }
-
+    // click 이벤트
+    click($summary, Summary);
+    click($custom, CustomHistories);
+    click($tournament, TournamentHistories);
+    click($ranking, Ranking);
+    click($prev, function () {
+      console.log("TODO => 이전 페이지로 이동")
+    });
+    click($next, function () {
+      console.log("TODO => 다음 페이지로 이동")
+    });
+    let customToggle = document.getElementById("custom-toggle");
+    hoverToggle($custom, customToggle, "flex");
+    $custom.addEventListener("mouseover", () => {
+      $custom.style.color = "#29ABE2";
+    })
+  }
     this.render();
     this.addEventListenersToLayout();
 }

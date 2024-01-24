@@ -149,7 +149,6 @@
     align-items: center;
     color: white;
     font-family: Galmuri11, serif;
-    text-decoration: none;
 }
 
 .histories#mode div:not(:last-child) {
@@ -159,6 +158,33 @@
 .histories#mode > div img {
     width: 3rem;
     margin-right: 2vh;
+}
+
+.histories#mode #custom {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+}
+
+.histories#mode #custom #custom-toggle {
+    position: absolute;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: fit-content;
+    top: calc(16vh + 1.5rem + 1rem + 3px); /* 16vh: header height, 1.5rem: nav font-size, 1rem: <li> padding, 3px: <ul> border */
+    z-index: 1;
+}
+
+.histories#mode #custom #custom-toggle ul {
+    border: 3px solid #29ABE2;
+    background: #0000009c;
+}
+
+.histories#mode #custom #custom-toggle li {
+    padding: 1rem;
+    color: #aaaaaa;
 }
 
 /************ Histories Search *************/
