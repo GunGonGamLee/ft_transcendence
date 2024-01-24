@@ -160,13 +160,13 @@
     margin-right: 2vh;
 }
 
-.histories#mode #custom {
+.histories#mode #custom-menu-wrapper {
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
 }
 
-.histories#mode #custom #custom-toggle {
+.histories.custom-toggle#toggle {
     position: absolute;
     display: none;
     justify-content: center;
@@ -177,12 +177,12 @@
     z-index: 1;
 }
 
-.histories#mode #custom #custom-toggle ul {
+.histories.custom-toggle ul {
     border: 3px solid #29ABE2;
     background: #0000009c;
 }
 
-.histories#mode #custom #custom-toggle li {
+.histories.custom-toggle li {
     padding: 1rem;
     color: #aaaaaa;
 }
