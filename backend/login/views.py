@@ -175,11 +175,16 @@ class VerificationCodeView(APIView):
             verification_code = AuthUtils.get_verification_code(request)
             user = User.objects.get(email=email)
             nickname = user.nickname
-            if nickname is None:
-                is_noob = True
-            else:
-                is_noob = False
+            is_noob = True if nickname is None else False
 
+            if user.verification_code == verification_code:
+                jwt_token = create_jwt_token(user, 7)
+
+                data = {'token': jwt_token, 'is_noob': is_noob}
+                serializer = VerificationCodeSerializer(data)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return JsonResponse({'err_msg': '인증코드가 일치하지 않습니다.'}, status=status.HTTP_400_BAD_REQUEST)
         except jwt.ExpiredSignatureError:
             return JsonResponse({'error': 'Token has expired'}, status=status.HTTP_401_UNAUTHORIZED)
         except jwt.InvalidTokenError:
@@ -188,15 +193,6 @@ class VerificationCodeView(APIView):
             return JsonResponse({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
         except User.DoesNotExist:
             return JsonResponse({'err_msg': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
-
-        if user.verification_code == verification_code:
-            jwt_token = create_jwt_token(user, 7)
-
-            data = {'token': jwt_token, 'is_noob': is_noob}
-            serializer = VerificationCodeSerializer(data)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return JsonResponse({'err_msg': '인증코드가 일치하지 않습니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class VerificationCodeAgainView(APIView):
