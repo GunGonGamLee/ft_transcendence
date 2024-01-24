@@ -6,7 +6,7 @@ import {hoverChangeBorder, hoverChangeCursor} from "../../utils/hoverEvent.js";
  * @constructor 전적 리스트의 게임 모드
  */
 export default function CustomHistories(mode) {
-  this.$container = document.getElementById("list");
+  this.customList = document.getElementById("list");
   this.$pagination = document.getElementById("pagination");
 
   this.init = () => {
@@ -25,7 +25,7 @@ export default function CustomHistories(mode) {
    */
   this.render = () => {
     this.init();
-    this.$container.innerHTML = `
+    this.customList.innerHTML = `
         <div class="histories" id="list-wrapper"></div>
         `
     let $listWrapper = document.getElementById("list-wrapper");
