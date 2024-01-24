@@ -143,11 +143,13 @@
 .arcade-machine .screen-container .screen h2#google {
   left: 5.3vw;
   top: 20vh;
+  cursor: pointer;
 }
 
 .arcade-machine .screen-container .screen h2#forty-two {
   left: 8.1vw;
   top: 26vh;
+  cursor: pointer;
 }
 
 .arcade-machine .screen-container .joystick {
