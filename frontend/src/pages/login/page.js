@@ -76,10 +76,20 @@ export default function Login($container) {
         const fortyTwo = document.getElementById("forty-two");
         
         click(google, () => {
-            window.location.href = "http://localhost:3000/api/auth/google";
+          fetch('http://localhost:8000/api/login/google')
+          .then(response => response.json())
+          .then(data => {
+              window.location.href = data.url;
+          })
+          .catch(error => console.error('google login error:', error));
         });
         click(fortyTwo, () => {
-            window.location.href = "http://localhost:3000/api/auth/42";
+          fetch('http://localhost:8000/api/login/intra42')
+          .then(response => response.json())
+          .then(data => {
+              window.location.href = data.url;
+          })
+          .catch(error => console.error('intra42 login error:', error));
         });
     }
 
