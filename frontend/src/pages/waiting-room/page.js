@@ -1,34 +1,37 @@
 import { importCss } from '../../utils/importCss.js';
+import {hover} from "../../utils/hoverEvent.js";
 
 /**
  * @param {HTMLElement} $container
  */
 export default function WaitingRoom($container) {
     this.$container = $container;
+    this.roomTitle = '방 제목';
+    this.gameMode = '게임 모드';
 
     this.setState = () => {
         this.render();
+        hover(this.$container.querySelector('.room-name-text'),
+            () => {this.$container.querySelector('.room-password-modal').style.display = 'inline';},
+            () => {this.$container.querySelector('.room-password-modal').style.display = 'none';});
     };
 
     this.render = () => {
         importCss('../../../assets/css/waiting-room.css');
         this.$container.innerHTML = `
-    <div class="waiting-room-component">
-    </div>
-    `;
+          <div class="waiting-room-wrapper" style="display: flex; flex-direction: column; justify-content: center; align-items: center">
+            <div class="room-name-wrapper" style="width: 100vw; height: 10vh">
+              <div class="room-name-box" style="display: flex; align-items: center; margin-top: 2vh">
+                <div class="room-name-text" style="margin-left: 5vw; font-size: 3vh;font-family: Galmuri11,serif; color: white">${this.roomTitle} | ${this.gameMode}</div>
+                <img class="room-name-edit" alt="setting" src="../../../assets/images/setting.png" style="margin-left: 1vw; margin-bottom: 0.4vh; width: 2vw; height: 2.8vh;">
+              </div>
+              <div class="room-password-modal" style="display: none; margin-left: 5vw; font-size: 1.5vh; color: white; font-family: Galmuri11,serif">
+                <span style="background-color: black; padding: 0.4vh;">password</span>
+              </div>
+            </div>
+          </div>
+        `;
     };
 
-    this.render();
-
-    // $container.addEventListener("click", (e) => {
-    //   if (e.target.id === "loginBtn") {
-    //     fetch("127.0.0.1:8000/api/login/42")
-    //       .then((res) => {
-    //         console.log(res);
-    //         // todo: 쿼리 파라미터 받아서 로그인 된 건지 확인하고 navigate 해줘야함
-    //         }
-    //       )
-    //       .catch((err) => console.error(err));
-    //   }
-    // })
+    this.setState();
 }
