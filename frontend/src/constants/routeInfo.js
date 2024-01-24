@@ -1,5 +1,4 @@
 import GameMode from '../pages/game-mode/page.js';
-import Main from '../pages/main/page.js';
 import Register from '../pages/register/page.js';
 import Histories from "../pages/histories/page.js";
 import RegisterHeader from '../header/registerHeader/header.js';
