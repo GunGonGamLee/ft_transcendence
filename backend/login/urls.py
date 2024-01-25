@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import GoogleLoginView, Intra42LoginView,  GoogleCallbackView, Intra42CallbackView, VerificationCodeView, VerificationCodeAgainVie
+from .views import GoogleLoginView, Intra42LoginView,  GoogleCallbackView, Intra42CallbackView, VerificationCodeView, VerificationCodeAgainView
 
 
 urlpatterns = [
