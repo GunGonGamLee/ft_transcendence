@@ -39,7 +39,7 @@ INTRA42_USERINFO_API = settings.INTRA42_USERINFO_API
 
 SECRET_KEY = settings.SECRET_KEY
 DEFAULT_FROM_MAIL = settings.DEFAULT_FROM_MAIL
-EMAIL_AUTH_URI = 'https://localhost:443/api/auth/email'
+EMAIL_AUTH_URI = 'https://localhost:443/auth'
 
 
 class OAuthLoginView(APIView):
