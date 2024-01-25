@@ -252,4 +252,4 @@ class AuthUtils:
             json_data = json.loads(request.body.decode('utf-8'))
         except json.JSONDecodeError:
             raise ValidationError('Invalid JSON data')
-        return json_data.get('verification_code', '')
+        return json_data.get('code', '')
