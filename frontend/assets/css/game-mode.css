@@ -1,0 +1,39 @@
+.game-mode-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 88vh;
+}
+
+.game-mode-unit {
+    height: 65vh;
+    width: 25vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.game-mode-image {
+    width: 17vw;
+    height: 25vh;
+}
+
+.game-mode-title {
+    font-size: 2vw;
+    color: white;
+    margin-top: 4vh;
+    font-family: 'Galmuri11', serif;
+}
+
+.game-mode-description {
+    font-size: 1.5vw;
+    color: white;
+    margin-top: 2vh;
+    font-family: 'Galmuri11', serif;
+}
+
+.spacer {
+    height: 65vh;
+    width: 3vw;
+}

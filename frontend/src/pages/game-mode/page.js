@@ -12,16 +12,15 @@ export default function GameMode($container) {
   };
 
   this.render = () => {
-    importCss('../../../assets/css/gameMode.css')
+    importCss('../../../assets/css/game-mode.css')
     this.$container.innerHTML = `
-        <div class="gameMode-container" style="display: flex; justify-content: center; align-items: center; height: 88vh">
-            ${gameModeUnit(0)}
-            <div class="box" style="height: 65vh; width: 3vw;"></div>
-            ${gameModeUnit(1)}
-            <div class="box" style="height: 65vh; width: 3vw"></div>
-            ${gameModeUnit(2)}
-            </div>
-        </div>
+        <div class="game-mode-container">
+        ${gameModeUnit(0)}
+        <div class="spacer"></div>
+        ${gameModeUnit(1)}
+        <div class="spacer"></div>
+        ${gameModeUnit(2)}
+    </div>
 	  `;
   };
 

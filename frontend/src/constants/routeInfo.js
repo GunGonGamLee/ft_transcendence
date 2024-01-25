@@ -3,6 +3,7 @@ import Register from '../pages/register/page.js';
 import Histories from "../pages/histories/page.js";
 import RegisterHeader from '../header/registerHeader/header.js';
 import MainHeader from '../header/mainHeader/header.js';
+import WaitingRoom from "../pages/waiting-room/page.js";
 import Login from '../pages/login/page.js'
 
 /**
@@ -12,5 +13,6 @@ export const routes = [
   { path: /^\/$/, page: Login, header: RegisterHeader },
   { path: /^\/register$/, page: Register, header: RegisterHeader },
   { path: /^\/game-mode$/, page: GameMode, header: MainHeader },
-  { path: /^\/histories$/, page: Histories, header: MainHeader}
+  { path: /^\/histories$/, page: Histories, header: MainHeader},
+  { path: /^\/waiting-room$/, page: WaitingRoom, header: MainHeader }
 ]

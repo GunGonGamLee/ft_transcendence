@@ -4,6 +4,18 @@
  * @param originalColor {string} 원래 색상
  * @param hoverColor {string} hover 시 색상
  */
+
+/**
+ *
+ * @param {HTMLElement} element
+ * @param {function} mouseoverFunc
+ * @param {function} mouseoutFunc
+ */
+export const hover = (element, mouseoverFunc, mouseoutFunc) => {
+    element.addEventListener("mouseover", mouseoverFunc);
+    element.addEventListener("mouseout", mouseoutFunc);
+}
+
 export const hoverChangeColor = (elements, originalColor, hoverColor) => {
   if (!Array.isArray(elements)) {
     elements = [elements];

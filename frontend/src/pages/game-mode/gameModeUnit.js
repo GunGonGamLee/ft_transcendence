@@ -9,11 +9,11 @@ export default function GameModeUnit(unitNumber) {
         {img: "../../../assets/images/setting.png", title: "사용자 지정 모드", description1: "다양한 모드로", description2: "게임을 즐길 수 있다."}
     ];
     return (`
-        <div class="box" style="height: 65vh; width: 25vw; display: flex; flex-direction: column; justify-content: center; align-items: center">
-          <img src="${data[unitNumber].img}" style="width: 17vw; height: 25vh">
-          <div style="font-size: 2vw; color: white; margin-top: 4vh; font-family: Galmuri11, serif">${data[unitNumber].title}</div>
-          <div style="font-size: 1.5vw; color: white; margin-top: 2vh; font-family: Galmuri11, serif;">${data[unitNumber].description1}</div>
-          <div style="font-size: 1.5vw; color: white; margin-top: 1vh; font-family: Galmuri11, serif;">${data[unitNumber].description2}</div>
+        <div class="game-mode-unit">
+            <img class="game-mode-image" src="${data[unitNumber].img}">
+            <div class="game-mode-title">${data[unitNumber].title}</div>
+            <div class="game-mode-description">${data[unitNumber].description1}</div>
+            <div class="game-mode-description">${data[unitNumber].description2}</div>
         </div>
-    `)
+    `);
 }
