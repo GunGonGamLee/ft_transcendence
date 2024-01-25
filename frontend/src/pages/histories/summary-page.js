@@ -6,8 +6,14 @@ export default async function Summary() {
     this.$pagination.style.display = "none";
   }
 
+  this.useState = async () => {
+    this.newState = await this.getUsersHistoriesSummary();
+  }
+
   this.setState = () => {
-    this.render();
+    if (this.state === this.newState) return;
+    this.state = this.newState;
+    this.render(this.state);
   }
 
   /**
@@ -86,6 +92,7 @@ export default async function Summary() {
   }
 
   this.init();
-  const data = await this.getUsersHistoriesSummary();
-  this.render(data);
+  await this.useState();
+  this.setState();
+  this.render(this.state);
 }
