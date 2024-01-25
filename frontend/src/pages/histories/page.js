@@ -70,7 +70,7 @@ export default function Histories($container) {
   }
 
   this.renderList = () => {
-    return new Summary(document.getElementById("list"));
+    return Summary;
   }
 
   /**
