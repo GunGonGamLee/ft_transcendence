@@ -74,7 +74,8 @@ class OAuthCallbackView(APIView):
                          manual_parameters=[
                              openapi.Parameter('token', openapi.IN_QUERY, description="1일 뒤에 만료하는 JWT 토큰", type=openapi.TYPE_STRING)],
                          responses={302: "Redirect to Front Page",
-                                    400: 'BAD_REQUEST'})
+                                    400: 'BAD_REQUEST',
+                                    500: 'SERVER_ERROR'})
     def get(self, request):
         try:
             code = request.GET.get('code')
@@ -168,7 +169,8 @@ class VerificationCodeView(APIView):
         responses={201: openapi.Response('Successful Response', schema=VerificationCodeSerializer),
                    400: 'Bad Request',
                    401: 'Bad Unauthorized',
-                   404: 'NOT FOUND'})
+                   404: 'NOT FOUND',
+                   500: 'SERVER_ERROR'})
     def post(self, request):
         try:
             email = AuthUtils.check_jwt_token(request)
@@ -203,7 +205,8 @@ class VerificationCodeAgainView(APIView):
             type=openapi.TYPE_OBJECT,
             properties={'token': openapi.Schema(type=openapi.TYPE_STRING, description='JWT 1차 토큰')})),
                    401: 'Bad Unauthorized',
-                   404: 'NOT FOUND'})
+                   404: 'NOT FOUND',
+                   500: 'SERVER_ERROR'})
     def post(self, request):
         try:
             email = AuthUtils.check_jwt_token(request)
