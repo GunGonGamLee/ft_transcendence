@@ -25,7 +25,7 @@ export default function Histories($container) {
    */
   this.renderLayout = () => {
     importCss('../../../assets/css/histories.css')
-    this.$container.innerHTML = `
+    this.$container.insertAdjacentHTML("afterbegin", `
         <div class="histories" id="content-wrapper">
             <nav class="histories" id="mode">
                 <div class="histories" id="summary" href="">
@@ -66,11 +66,12 @@ export default function Histories($container) {
                 </div>
             </footer>
         </div>
-        `;
+        `);
   }
 
   this.renderList = () => {
-    return new Summary(document.getElementById("list"));
+    let $list = document.getElementById("list");
+    Summary.bind($list)();
   }
 
   /**
