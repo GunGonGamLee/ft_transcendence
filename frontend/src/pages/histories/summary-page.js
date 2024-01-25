@@ -52,13 +52,6 @@ export default async function Summary() {
    */
   this.getUsersHistoriesSummary = async function () {
     // TODO => API 요청으로 await 해서 데이터 받아오기
-    // const nickname = localStorage.getItem("nickname");
-    // const data = await fetch(`/api/users/${nickname}/info`, {
-    //   method: "GET",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    // }).then((res) => res.json());
     return {
       nickname: 'yena',
       avatar: '../../../assets/images/avatar/green.png',
@@ -74,15 +67,37 @@ export default async function Summary() {
    * @param {{nickname: string, avatar: string}} props 사용자의 닉네임과 아바타 이미지 주소
    */
   this.renderUserInfo = (props) => {
-    return (``);
+    return (`
+        <img class="histories summary" src="${props.avatar}" alt="avatar">
+        <span>${props.nickname}</span>
+    `);
   }
 
   /**
    * 사용자의 전적 개요 데이터를 렌더링합니다.
-   * @param {{custom_win_rate: number, tournament_win_rate: number, rating: number, win_rate: number}} props 사용자의 전적 개요 데이터
+   * @param {{rating: number, win_rate: number, custom_win_rate: number, tournament_win_rate: number}} props 사용자의 전적 개요 데이터
    */
   this.renderHistoriesSummary = (props) => {
-    return (``);
+    return (`
+      <div class="histories summary" id="data">
+        <div class="histories summary" id="rating">
+          <span>Rating: </span>
+          <span>${props.rating}</span>
+        </div>
+        <div class="histories summary" id="win-rate">
+          <span>전체 승률: </span>
+          <span>${props.win_rate}%</span>
+        </div>
+        <div class="histories summary" id="custom-win-rate">
+          <span>사용자 지정 모드 승률: </span>
+          <span>${props.custom_win_rate}%</span>
+        </div>
+        <div class="histories summary" id="tournament-win-rate">
+          <span>토너먼트 모드 승률: </span>
+          <span>${props.tournament_win_rate}%</span>
+        </div>
+      </div>
+    `);
   }
 
   this.init();
