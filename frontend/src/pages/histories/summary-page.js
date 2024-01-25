@@ -1,6 +1,7 @@
 export default async function Summary() {
   this.$container = document.getElementById("list");
   this.$pagination = document.getElementById("pagination");
+  this.needToRender = false;
 
   this.init = () => {
     this.$pagination.style.display = "none";
@@ -10,32 +11,28 @@ export default async function Summary() {
     this.newState = await this.getUsersHistoriesSummary();
   }
 
-  this.setState = () => {
-    if (this.state === this.newState) return;
+  this.setState = async () => {
+    if (this.state === this.newState) {
+      this.needToRender = false;
+      return;
+    }
     this.state = this.newState;
-    this.render(this.state);
+    this.needToRender = true;
   }
 
   /**
    * 사용자의 전적 개요를 렌더링합니다.
-   * @param data {{
-   *    nickname: string,
-   *    avatar: string,
-   *    rating: number,
-   *    win_rate: number,
-   *    custom_win_rate: number,
-   *    tournament_win_rate: number
-   * }} 사용자의 전적 개요 데이터. nickname, avatar, rating, win_rate, custom_win_rate, tournament_win_rate를 포함합니다.
    */
-  this.render = (data) => {
-    const { nickname, avatar, rating, win_rate, custom_win_rate, tournament_win_rate } = data;
+  this.render = () => {
+    if (!this.needToRender) return;
+    const { nickname, avatar, rating, win_rate, custom_win_rate, tournament_win_rate } = this.state;
     this.$container.innerText = `
     <div class="histories summary" id="summary-wrapper">
         <div class="histories summary" id="user-info">
-            ${renderUserInfo(nickname, avatar)}
+            ${this.renderUserInfo({ nickname, avatar })}
         </div>
         <div class="histories summary" id="histories-info">
-            ${renderHistoriesSummary(rating, win_rate, custom_win_rate, tournament_win_rate)}
+            ${this.renderHistoriesSummary({ rating, win_rate, custom_win_rate, tournament_win_rate })}
         </div>
     </div>
     `;
@@ -73,26 +70,22 @@ export default async function Summary() {
 
   /**
    * 사용자의 정보를 렌더링합니다.
-   * @param nickname {string} 사용자의 닉네임
-   * @param avatar {string} 사용자의 아바타 이미지 URL
+   * @param {{nickname: string, avatar: string}} props 사용자의 닉네임과 아바타 이미지 주소
    */
-  this.renderUserInfo = (nickname, avatar) => {
-
+  this.renderUserInfo = (props) => {
+    return ``;
   }
 
   /**
    * 사용자의 전적 개요 데이터를 렌더링합니다.
-   * @param rating {number} 사용자의 레이팅 점수
-   * @param win_rate {number} 사용자의 전체 승률 (토너먼트 + 커스텀)
-   * @param custom_win_rate {number} 사용자의 커스텀 게임 승률 (1 vs 1 모드 + 토너먼트 모드)
-   * @param tournament_win_rate {number} 사용자의 토너먼트 게임 승률
+   * @param {{custom_win_rate: number, tournament_win_rate: number, rating: number, win_rate: number}} props 사용자의 전적 개요 데이터
    */
-  this.renderHistoriesSummary = (rating, win_rate, custom_win_rate, tournament_win_rate) => {
-
+  this.renderHistoriesSummary = (props) => {
+    return ``;
   }
 
   this.init();
   await this.useState();
-  this.setState();
-  this.render(this.state);
+  await this.setState();
+  this.render();
 }
