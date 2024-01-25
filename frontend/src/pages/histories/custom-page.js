@@ -10,6 +10,7 @@ export default function CustomHistories(mode) {
   this.$pagination = document.getElementById("pagination");
 
   this.init = () => {
+    this.customList.textContent = "";
     this.$pagination.style.display = "block";
   }
 
@@ -25,11 +26,10 @@ export default function CustomHistories(mode) {
    */
   this.render = () => {
     this.init();
-    this.customList.innerHTML = `
+    this.customList.insertAdjacentHTML("afterbegin", `
         <div class="histories" id="list-wrapper"></div>
-        `
+        `);
     let $listWrapper = document.getElementById("list-wrapper");
-    $listWrapper.innerHTML = '';
     if (mode === "1vs1") {
       this.render1vs1($listWrapper);
     }

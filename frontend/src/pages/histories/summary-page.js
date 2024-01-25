@@ -4,6 +4,7 @@ export default async function Summary() {
   this.needToRender = false;
 
   this.init = () => {
+    this.$container.textContent = "";
     this.$pagination.style.display = "none";
   }
 
@@ -26,7 +27,7 @@ export default async function Summary() {
   this.render = () => {
     if (!this.needToRender) return;
     const { nickname, avatar, rating, win_rate, custom_win_rate, tournament_win_rate } = this.state;
-    this.$container.innerHTML = `
+    this.$container.insertAdjacentHTML("afterbegin", `
     <div class="histories summary" id="summary-wrapper">
         <div class="histories summary" id="user-info">
             ${this.renderUserInfo({ nickname, avatar })}
@@ -35,7 +36,7 @@ export default async function Summary() {
             ${this.renderHistoriesSummary({ rating, win_rate, custom_win_rate, tournament_win_rate })}
         </div>
     </div>
-    `;
+    `);
   }
 
   /**
