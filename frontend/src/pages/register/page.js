@@ -36,7 +36,8 @@ export default function Register($container) {
       body: JSON.stringify({ code: this.$container.querySelector('#register-form input').value }),
     };
 
-    fetch('https://localhost/api/login/verification-code', requestOptions)
+
+    fetch('https://localhost/api/login/verification-code/', requestOptions)
       .then(response => {
         // 인증코드 잘못된 경우
         if (response.status === 400) {
@@ -47,6 +48,10 @@ export default function Register($container) {
         if (response.status === 401) {
           alert('인증이 만료되었습니다. 다시 로그인해주세요.');
           navigate('/'); // 인증되지 않은 사용자는 메인 페이지로 이동
+          return;
+        }
+        if (response.status === 500) {
+          console.log(response.json());
           return;
         }
         // 응답을 JSON으로 파싱
@@ -133,11 +138,11 @@ export default function Register($container) {
           'Content-Type': 'application/json',
           ...(jwtToken ? { Authorization: 'Bearer ' + jwtToken } : {})
         },
-        body: JSON.stringify({ code: this.$container.querySelector('#register-form input').value })
+        body: JSON.stringify({ "code": this.$container.querySelector('#register-form input').value })
       };
 
       // fetch 함수를 사용하여 서버에 요청을 보냅니다
-      fetch('https://localhost/api/login/email', requestOptions)
+      fetch('https://localhost/api/login/email/', requestOptions)
         .then(response => response.json()) // 응답을 JSON으로 파싱
         .then(data => {
           // 서버로부터 받은 JWT 토큰을 로컬 스토리지에 저장
