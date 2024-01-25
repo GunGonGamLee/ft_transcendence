@@ -83,19 +83,23 @@ class OAuthCallbackView(APIView):
             email = self.get_email(access_token)
             user = User.objects.get(email=email)
         except User.DoesNotExist:
-            user = User.objects.create(email=email)
-            user.save()
+            user = User.objects.create_user(email=email)
         except GetDataException as e:
             return JsonResponse({'err_msg': e.message_dict}, status=status.HTTP_400_BAD_REQUEST)
         except RequestException:
             return JsonResponse({'err_msg': 'get access token error'}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return JsonResponse({'error': e.__class__.__name__}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         finally:
-            send_and_save_verification_code(user)
-            auth_token = create_jwt_token(user, 3)
-            target_url = EMAIL_AUTH_URI + "?" + urlencode({
-                'token': auth_token,
-            })
-            return redirect(target_url)
+            try:
+                send_and_save_verification_code(user)
+                auth_token = create_jwt_token(user, 3)
+                target_url = EMAIL_AUTH_URI + "?" + urlencode({
+                    'token': auth_token,
+                })
+                return redirect(target_url)
+            except Exception as e:
+                return JsonResponse({'error': e.__class__.__name__}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def get_access_token(self, code):
         token_response = requests.post(
@@ -195,6 +199,8 @@ class VerificationCodeView(APIView):
             return JsonResponse({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
         except User.DoesNotExist:
             return JsonResponse({'err_msg': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return JsonResponse({'error': e.__class__.__name__}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class VerificationCodeAgainView(APIView):
@@ -223,6 +229,8 @@ class VerificationCodeAgainView(APIView):
             return JsonResponse({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
         except User.DoesNotExist:
             return JsonResponse({'err_msg': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return JsonResponse({'error': e.__class__.__name__}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class AuthUtils:
