@@ -1,4 +1,5 @@
 import GameMode from '../pages/game-mode/page.js';
+import auth from '../pages/auth/page.js';
 import Register from '../pages/register/page.js';
 import Histories from "../pages/histories/page.js";
 import RegisterHeader from '../header/registerHeader/header.js';
@@ -11,6 +12,7 @@ import Login from '../pages/login/page.js'
  */
 export const routes = [
   { path: /^\/$/, page: Login, header: RegisterHeader },
+  { path: /^\/auth(?:\?.*)?$/, page: auth, header: RegisterHeader },
   { path: /^\/register$/, page: Register, header: RegisterHeader },
   { path: /^\/game-mode$/, page: GameMode, header: MainHeader },
   { path: /^\/histories$/, page: Histories, header: MainHeader},
