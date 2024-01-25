@@ -74,12 +74,12 @@ export default function Login($container) {
     this.addEventListenersToLayout = () => {
         const google = document.getElementById("google");
         const fortyTwo = document.getElementById("forty-two");
-        
+
         click(google, () => {
-            window.location.href = "http://localhost:3000/api/auth/google";
+            window.location.href = 'http://localhost:8000/api/login/google/';
         });
         click(fortyTwo, () => {
-            window.location.href = "http://localhost:3000/api/auth/42";
+            window.location.href = 'http://localhost:8000/api/login/intra42/';
         });
     }
 

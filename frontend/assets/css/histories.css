@@ -32,6 +32,7 @@
     grid-gap: 1vh;
     width: 80%;
     height: 100%;
+    padding-bottom: 3vh;
 }
 
 .histories.list-item {
@@ -105,19 +106,24 @@
 
 /********** Histories Pagination **********/
 
-.histories#pagination, .histories#pagination div {
-    display: inline-block;
-    height: 8vh;
+.histories#pagination {
     text-align: center;
-    margin-bottom: 4.3vh;
-}
-
-.histories#pagination > .histories img {
     height: 100%;
-    margin: 0 0.5vw;
+    z-index: 1;
 }
 
-.histories#pagination > .histories#prev img {
+.histories#pagination div {
+    display: inline-block;
+    height: 100%;
+    text-align: center;
+}
+
+.histories#pagination > img {
+    height: 10vh;
+    margin: 6vh 0.5vw 0 0;
+}
+
+.histories#pagination > #prev {
     transform: rotate(180deg);
 }
 
@@ -143,7 +149,6 @@
     align-items: center;
     color: white;
     font-family: Galmuri11, serif;
-    text-decoration: none;
 }
 
 .histories#mode div:not(:last-child) {
@@ -153,4 +158,68 @@
 .histories#mode > div img {
     width: 3rem;
     margin-right: 2vh;
+}
+
+.histories#mode #custom-menu-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+}
+
+.histories.custom-toggle#toggle {
+    position: absolute;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: fit-content;
+    top: calc(16vh + 1.5rem + 1rem + 3px); /* 16vh: header height, 1.5rem: nav font-size, 1rem: <li> padding, 3px: <ul> border */
+    z-index: 1;
+}
+
+.histories.custom-toggle ul {
+    border: 3px solid #29ABE2;
+    background: #0000009c;
+}
+
+.histories.custom-toggle li {
+    padding: 1rem;
+    color: #aaaaaa;
+}
+
+/************ Histories Search *************/
+.histories#search-wrapper {
+    position: fixed;
+    display: flex;
+    width: 100%;
+    margin-left: 25vw;
+    bottom: 5vh;
+    align-items: center;
+}
+
+.histories#search-wrapper > img {
+    width: 3rem;
+    height: 3rem;
+    margin-right: 0.5vw;
+}
+
+.histories#search-wrapper > #search {
+    background-color: black;
+    border: 3px solid #FF52A0;
+    font-family: Galmuri11, serif;
+    font-size: 1.5rem;
+    width: 16rem;
+    color: white;
+    padding: 0.5rem;
+}
+
+/************ Histories Footer *************/
+footer.histories {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    width: 100%;
+    height: 21.5vh;
+    margin-top: 2vh;
 }
