@@ -83,8 +83,7 @@ class OAuthCallbackView(APIView):
             email = self.get_email(access_token)
             user = User.objects.get(email=email)
         except User.DoesNotExist:
-            user = User.objects.create(email=email)
-            user.save()
+            user = User.objects.create_user(email=email)
         except GetDataException as e:
             return JsonResponse({'err_msg': e.message_dict}, status=status.HTTP_400_BAD_REQUEST)
         except RequestException:
