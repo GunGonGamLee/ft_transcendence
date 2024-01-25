@@ -74,22 +74,12 @@ export default function Login($container) {
     this.addEventListenersToLayout = () => {
         const google = document.getElementById("google");
         const fortyTwo = document.getElementById("forty-two");
-        
+
         click(google, () => {
-          fetch('http://localhost:8000/api/login/google')
-          .then(response => response.json())
-          .then(data => {
-              window.location.href = data.url;
-          })
-          .catch(error => console.error('google login error:', error));
+            window.location.href = 'http://localhost:8000/api/login/google/';
         });
         click(fortyTwo, () => {
-          fetch('http://localhost:8000/api/login/intra42')
-          .then(response => response.json())
-          .then(data => {
-              window.location.href = data.url;
-          })
-          .catch(error => console.error('intra42 login error:', error));
+            window.location.href = 'http://localhost:8000/api/login/intra42/';
         });
     }
 
