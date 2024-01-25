@@ -104,7 +104,6 @@ export default async function CustomHistories(mode) {
 
   /**
    * 전적 리스트의 플레이어 정보를 렌더링합니다.
-   * @param $listItemDiv {HTMLElement} 전적 리스트의 플레이어 정보를 렌더링할 리스트 아이템 <div> 엘리먼트
    * @param data {{avatar: string, nickname: string, rating: string}} 전적 리스트의 플레이어 정보
    */
   this.renderPlayer = (data) => {
@@ -121,7 +120,6 @@ export default async function CustomHistories(mode) {
 
   /**
    * 전적 리스트의 게임 모드(1 vs 1 로고 또는 토너먼트 로고)를 렌더링합니다.
-   * @param $listItemDiv {HTMLElement} 전적 리스트의 게임 모드를 렌더링할 리스트 아이템 <div> 엘리먼트
    */
   this.renderGameMode = () => {
     if (this.mode === "1vs1") {
