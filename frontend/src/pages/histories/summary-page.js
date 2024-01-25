@@ -26,7 +26,7 @@ export default async function Summary() {
   this.render = () => {
     if (!this.needToRender) return;
     const { nickname, avatar, rating, win_rate, custom_win_rate, tournament_win_rate } = this.state;
-    this.$container.innerText = `
+    this.$container.innerHTML = `
     <div class="histories summary" id="summary-wrapper">
         <div class="histories summary" id="user-info">
             ${this.renderUserInfo({ nickname, avatar })}
@@ -73,7 +73,7 @@ export default async function Summary() {
    * @param {{nickname: string, avatar: string}} props 사용자의 닉네임과 아바타 이미지 주소
    */
   this.renderUserInfo = (props) => {
-    return ``;
+    return (``);
   }
 
   /**
@@ -81,7 +81,7 @@ export default async function Summary() {
    * @param {{custom_win_rate: number, tournament_win_rate: number, rating: number, win_rate: number}} props 사용자의 전적 개요 데이터
    */
   this.renderHistoriesSummary = (props) => {
-    return ``;
+    return (``);
   }
 
   this.init();
