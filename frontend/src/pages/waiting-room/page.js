@@ -20,7 +20,7 @@ export default function WaitingRoom($container) {
     this.render = () => {
         importCss('../../../assets/css/waiting-room.css');
         this.$container.innerHTML = `
-          <div class="waiting-room-wrapper" style="display: flex; flex-direction: column; justify-content: center; align-items: center">
+          <div class="waiting-room-wrapper" style="background-image: url('../../../assets/images/game_room_bg_trans.png'); display: flex; flex-direction: column; justify-content: center; align-items: center">
             <div class="room-name-wrapper" style="width: 100vw; height: 10vh">
               <div class="room-name-box" style="display: flex; align-items: center; margin-top: 2vh">
                 <img class="room-lock" alt="lock" src="../../../assets/images/password.png" style="margin-left: 5vw; margin-bottom: 0.4vh; width: 2vw; height: 2.8vh; -webkit-user-drag: none; user-select: none;">
