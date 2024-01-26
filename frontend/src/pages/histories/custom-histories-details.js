@@ -45,7 +45,7 @@ export default async function CustomHistoriesDetails(gameId, mode) {
     `);
   }
 
-  this.render = () => {
+  this.render1vs1Details = () => {
     this.insertAdjacentHTML("afterbegin", `
       <div class="histories 1vs1" id="details-wrapper">
         <div class="histories 1vs1" id="players">
@@ -58,6 +58,14 @@ export default async function CustomHistoriesDetails(gameId, mode) {
         </div>
       </div>
     `);
+  }
+
+  this.render = () => {
+    if (mode === "1vs1") {
+      this.render1vs1Details();
+    } else if (mode === "tournament") {
+      // this.renderTournamentDetails();
+    }
   }
 
   this.init();
