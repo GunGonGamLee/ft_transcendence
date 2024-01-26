@@ -39,7 +39,7 @@ INTRA42_USERINFO_API = settings.INTRA42_USERINFO_API
 
 SECRET_KEY = settings.SECRET_KEY
 DEFAULT_FROM_MAIL = settings.DEFAULT_FROM_MAIL
-EMAIL_AUTH_URI = 'https://localhost:443/api/auth/email'
+EMAIL_AUTH_URI = 'https://localhost:443/auth'
 
 
 class OAuthLoginView(APIView):
@@ -74,7 +74,8 @@ class OAuthCallbackView(APIView):
                          manual_parameters=[
                              openapi.Parameter('token', openapi.IN_QUERY, description="1일 뒤에 만료하는 JWT 토큰", type=openapi.TYPE_STRING)],
                          responses={302: "Redirect to Front Page",
-                                    400: 'BAD_REQUEST'})
+                                    400: 'BAD_REQUEST',
+                                    500: 'SERVER_ERROR'})
     def get(self, request):
         try:
             code = request.GET.get('code')
@@ -82,19 +83,23 @@ class OAuthCallbackView(APIView):
             email = self.get_email(access_token)
             user = User.objects.get(email=email)
         except User.DoesNotExist:
-            user = User.objects.create(email=email)
-            user.save()
+            user = User.objects.create_user(email=email)
         except GetDataException as e:
             return JsonResponse({'err_msg': e.message_dict}, status=status.HTTP_400_BAD_REQUEST)
         except RequestException:
             return JsonResponse({'err_msg': 'get access token error'}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return JsonResponse({'error': e.__class__.__name__}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         finally:
-            send_and_save_verification_code(user)
-            auth_token = create_jwt_token(user, 3)
-            target_url = EMAIL_AUTH_URI + "?" + urlencode({
-                'token': auth_token,
-            })
-            return redirect(target_url)
+            try:
+                send_and_save_verification_code(user)
+                auth_token = create_jwt_token(user, 3)
+                target_url = EMAIL_AUTH_URI + "?" + urlencode({
+                    'token': auth_token,
+                })
+                return redirect(target_url)
+            except Exception as e:
+                return JsonResponse({'error': e.__class__.__name__}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def get_access_token(self, code):
         token_response = requests.post(
@@ -168,7 +173,8 @@ class VerificationCodeView(APIView):
         responses={201: openapi.Response('Successful Response', schema=VerificationCodeSerializer),
                    400: 'Bad Request',
                    401: 'Bad Unauthorized',
-                   404: 'NOT FOUND'})
+                   404: 'NOT FOUND',
+                   500: 'SERVER_ERROR'})
     def post(self, request):
         try:
             email = AuthUtils.check_jwt_token(request)
@@ -193,6 +199,8 @@ class VerificationCodeView(APIView):
             return JsonResponse({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
         except User.DoesNotExist:
             return JsonResponse({'err_msg': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return JsonResponse({'error': e.__class__.__name__}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class VerificationCodeAgainView(APIView):
@@ -203,7 +211,8 @@ class VerificationCodeAgainView(APIView):
             type=openapi.TYPE_OBJECT,
             properties={'token': openapi.Schema(type=openapi.TYPE_STRING, description='JWT 1차 토큰')})),
                    401: 'Bad Unauthorized',
-                   404: 'NOT FOUND'})
+                   404: 'NOT FOUND',
+                   500: 'SERVER_ERROR'})
     def post(self, request):
         try:
             email = AuthUtils.check_jwt_token(request)
@@ -220,6 +229,8 @@ class VerificationCodeAgainView(APIView):
             return JsonResponse({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
         except User.DoesNotExist:
             return JsonResponse({'err_msg': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return JsonResponse({'error': e.__class__.__name__}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class AuthUtils:
@@ -241,4 +252,4 @@ class AuthUtils:
             json_data = json.loads(request.body.decode('utf-8'))
         except json.JSONDecodeError:
             raise ValidationError('Invalid JSON data')
-        return json_data.get('verification_code', '')
+        return json_data.get('code', '')

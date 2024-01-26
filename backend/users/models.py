@@ -1,7 +1,15 @@
-from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.conf import settings
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 
+
+class UserManager(BaseUserManager):
+    def create_user(self, email, **extra_fields):
+        if not email:
+            raise ValueError('이메일 주소는 필수입니다.')
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.save(using=self._db)
+        return user
 
 
 class User(AbstractUser):
@@ -10,16 +18,22 @@ class User(AbstractUser):
         ID, PASSWORD, last_login, is_superuser, username, first_name,
         last_name, email, is_staff, is_active, date_joined
     """
+    username = None  # 필드 제거
+    password = None
+    first_name = None
+    last_name = None
+    is_staff = None
+
+    USERNAME_FIELD = 'email'  # 이메일을 주 사용자 식별자로 설정
+    REQUIRED_FIELDS = []  # email은 USERNAME_FIELD로 사용되므로 여기서 제외
+
+    objects = UserManager()
+
+    email = models.EmailField('이메일 주소', unique=True, max_length=254)  # 이메일
     nickname = models.CharField(max_length=8, unique=True, blank=True, null=True)  # 닉네임
-    email = models.EmailField(unique=True, max_length=254)  # 이메일
     rating = models.PositiveIntegerField(default=0)  # 레이팅
     avatar = models.ImageField(upload_to='avatar/', null=True, blank=True)  # 아바타 이미지
-    is_active = models.BooleanField(default=True)  # 활성화 여부
-    joined_at = models.DateTimeField(auto_now_add=True)  # 가입 날짜
-    created_at = models.DateTimeField(auto_now_add=True)  # 생성 날짜
-    updated_at = models.DateTimeField(auto_now=True)  # 수정 날짜
-    verification_code = models.CharField(max_length=6, blank=True, null=True) # 이메일 인증 코드
-    is_verified = models.BooleanField(default=False) # 이메일 인증 여부
+    verification_code = models.CharField(max_length=6, blank=True, null=True)   # 이메일 인증 코드
 
     class Meta:
         db_table = 'users'
