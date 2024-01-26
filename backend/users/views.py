@@ -13,6 +13,19 @@ from django.core.exceptions import ValidationError
 
 
 class SetNicknameView(APIView):
+    @swagger_auto_schema(tags=['/api/users'],
+                         operation_description="사용자 닉네임 저장 API",
+                         manual_parameters=[
+                             openapi.Parameter('Authorization', openapi.IN_HEADER, description='Bearer JWT Token',
+                                               type=openapi.TYPE_STRING),
+                             openapi.Parameter('content-type', openapi.IN_HEADER, description='application/json',
+                                               type=openapi.TYPE_STRING), ],
+                         responses={
+                                    201: 'CREATED',
+                                    400: 'BAD_REQUEST',
+                                    401: 'UNAUTHORIZED',
+                                    404: 'NOT_FOUND',
+                                    500: 'SERVER_ERROR'})
     def post(self, request):
         try:
             user = AuthUtils.validate_jwt_token_and_get_user(request)
