@@ -1,4 +1,4 @@
-export default async function CustomHistoriesDetails(gameId) {
+export default async function CustomHistoriesDetails(gameId, mode) {
   this.init = () => {
     this.textContent = "";
   }
@@ -7,7 +7,7 @@ export default async function CustomHistoriesDetails(gameId) {
     // TODO => backend로부터 데이터 받아오기
     this.state = {
       id: gameId,
-      mode: "1vs1",
+      mode,
       player1: {
         nickname: "hyojocho",
         avatar: "../../../assets/images/avatar/blue.png",
@@ -30,10 +30,32 @@ export default async function CustomHistoriesDetails(gameId) {
 
   }
 
+  this.renderPlayer = (player) => {
+    return (`
+      <div class="histories 1vs1" id="player">
+        <div class="histories 1vs1" id="player-avatar">
+          <img class="histories 1vs1" src="${player.avatar}" alt="player-avatar">
+        </div>
+        <div class="histories 1vs1" id="player-info">
+          <div class="histories 1vs1" id="player-nickname">${player.nickname}</div>
+          <div class="histories 1vs1" id="player-rating">${player.rating}</div>
+          <div class="histories 1vs1" id="player-score">${player.score}</div>
+        </div>
+      </div>
+    `);
+  }
+
   this.render = () => {
     this.insertAdjacentHTML("afterbegin", `
-      <div>
-        
+      <div class="histories 1vs1" id="details-wrapper">
+        <div class="histories 1vs1" id="players">
+            ${this.renderPlayer(this.state.player1)}
+            :
+            ${this.renderPlayer(this.state.player2)}
+        </div>
+        <div class="histories 1vs1" id="game-info">
+            ${this.renderGameInfo()}
+        </div>
       </div>
     `);
   }
