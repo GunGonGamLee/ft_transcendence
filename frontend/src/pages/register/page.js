@@ -20,7 +20,6 @@ export default function Register($container) {
     this.command = '별명을 적어라';
     this.placeholder = '최대 8글자 가능하다.';
     this.maxLength = 8;
-    alert('닉네임 가즈아');
     this.render();
     this.setNicknameEvent();
   };
