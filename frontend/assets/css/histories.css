@@ -11,9 +11,9 @@
     overflow: hidden;
 }
 
-/************* Histories List *************/
+/************ Histories Content ************/
 
-.histories#list {
+.histories#content {
     display: flex;
     justify-content: center;
     align-items: center;
