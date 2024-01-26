@@ -95,7 +95,7 @@ export default function Register($container) {
     fetch('https://localhost/api/users/nickname/',  this.getRequestOptions(jwtToken, 'nickname'))
         .then(response => {
           // 인증코드 잘못된 경우
-          if (response.status === 200) {
+          if (response.status === 201) {
             navigate('/game-mode');
             return;
           }
