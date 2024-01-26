@@ -1,9 +1,10 @@
 import {click} from "../../utils/clickEvent.js";
-
+import {navigate} from "../../utils/navigate.js";
 /**
  * header 컴포넌트
  * @param {HTMLElement} $container
  */
+
 
 export default function Login($container) {
     this.$container = $container;
@@ -83,6 +84,37 @@ export default function Login($container) {
         });
     }
 
+    this.isAlreadyLogin = () => {
+        const token = localStorage.getItem('token');
+        if (token === null)
+            return false;
+        const requestOption = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                // JWT 토큰이 존재하는 경우, Authorization 헤더에 추가합니다
+                ...(token ? {Authorization: 'Bearer ' + token} : {}),
+            }
+        };
+
+        fetch('https://localhost/api/users/me/',  requestOption)
+            .then(response => {
+                if (response.status === 200) {
+                    navigate('/game-mode');
+                    return true;
+                } else if (response.status === 500) {
+                    navigate('/500')
+                    return true;
+                } else {
+                    console.error('알 수 없는 오류');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        return false;
+    }
+
+    if (this.isAlreadyLogin())
+        return ;
     this.render();
     this.addEventListenersToLayout();
 }
