@@ -12,7 +12,7 @@ export default async function Summary() {
     this.newState = await this.getUsersHistoriesSummary();
   }
 
-  this.setState = async () => {
+  this.setState = () => {
     if (this.state === this.newState) {
       this.needToRender = false;
       return;
@@ -102,6 +102,6 @@ export default async function Summary() {
 
   this.init();
   await this.useState();
-  await this.setState();
+  this.setState();
   this.render();
 }
