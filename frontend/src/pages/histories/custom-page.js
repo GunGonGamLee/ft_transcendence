@@ -101,7 +101,7 @@ export default async function CustomHistories(mode) {
       hoverChangeBorder($listItemDiv, "3px solid transparent", "3px solid #29ABE2");
       hoverChangeCursor($listItemDiv, "pointer");
       click($listItemDiv, () => {
-        CustomHistoriesDetails.bind(this, id)();
+        CustomHistoriesDetails.bind(this, id, "1vs1")();
       });
       $listWrapper.appendChild($listItemDiv);
     }
