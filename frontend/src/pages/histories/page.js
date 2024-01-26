@@ -10,10 +10,6 @@ import Ranking from "./ranking-page.js";
 export default function Histories($container) {
   this.$container = $container;
 
-  this.setState = () => {
-    this.render();
-  }
-
   this.render = () => {
     this.renderLayout();
     this.renderList();

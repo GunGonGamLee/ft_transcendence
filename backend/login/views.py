@@ -11,7 +11,6 @@ from django.core.mail import send_mail
 from django.utils.crypto import get_random_string
 from decouple import AutoConfig
 from django.utils.http import urlencode
-import json
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from .serializers import VerificationCodeSerializer
@@ -19,6 +18,7 @@ from rest_framework.response import Response
 from django.core.exceptions import ValidationError
 from src.exceptions import GetDataException
 from requests.exceptions import RequestException
+from src.utils import get_request_body_value
 
 
 BASE_URL = 'http://localhost:8000/'
@@ -177,9 +177,8 @@ class VerificationCodeView(APIView):
                    500: 'SERVER_ERROR'})
     def post(self, request):
         try:
-            email = AuthUtils.check_jwt_token(request)
-            verification_code = AuthUtils.get_verification_code(request)
-            user = User.objects.get(email=email)
+            user = AuthUtils.validate_jwt_token_and_get_user(request)
+            verification_code = get_request_body_value(request, 'code')
             nickname = user.nickname
             is_noob = True if nickname is None else False
 
@@ -215,8 +214,7 @@ class VerificationCodeAgainView(APIView):
                    500: 'SERVER_ERROR'})
     def post(self, request):
         try:
-            email = AuthUtils.check_jwt_token(request)
-            user = User.objects.get(email=email)
+            user = AuthUtils.validate_jwt_token_and_get_user(request)
             send_and_save_verification_code(user)
             auth_token = create_jwt_token(user, 1)
             return JsonResponse({'token': auth_token}, status=status.HTTP_200_OK)
@@ -235,21 +233,12 @@ class VerificationCodeAgainView(APIView):
 
 class AuthUtils:
     @staticmethod
-    def check_jwt_token(request):
+    def validate_jwt_token_and_get_user(request):
         authorization_header = request.headers.get('Authorization', '')
         if not authorization_header.startswith('Bearer '):
             raise ValidationError('Invalid authorization header')
         jwt_token = authorization_header[len('Bearer '):]
         decoded_token = jwt.decode(jwt_token, SECRET_KEY, algorithms=['HS256'])
         user_email = decoded_token.get('user_email')
-        return user_email
-
-    @staticmethod
-    def get_verification_code(request):
-        if request.content_type != 'application/json':
-            raise ValidationError('Invalid content type')
-        try:
-            json_data = json.loads(request.body.decode('utf-8'))
-        except json.JSONDecodeError:
-            raise ValidationError('Invalid JSON data')
-        return json_data.get('code', '')
+        user = User.objects.get(email=user_email)
+        return user
