@@ -1,15 +1,12 @@
-export default async function CustomHistoriesDetails(id) {
-
+export default async function CustomHistoriesDetails(gameId) {
   this.init = () => {
-    this.$container = document.getElementById("list");
-    this.id = id;
-    this.$container.textContent = "";
+    this.textContent = "";
   }
 
   this.useState = async () => {
     // TODO => backend로부터 데이터 받아오기
     this.state = {
-      id,
+      id: gameId,
       mode: "1vs1",
       player1: {
         nickname: "hyojocho",
@@ -34,7 +31,11 @@ export default async function CustomHistoriesDetails(id) {
   }
 
   this.render = () => {
-
+    this.insertAdjacentHTML("afterbegin", `
+      <div>
+        
+      </div>
+    `);
   }
 
   this.init();
