@@ -244,12 +244,3 @@ class AuthUtils:
         user_email = decoded_token.get('user_email')
         return user_email
 
-    @staticmethod
-    def get_verification_code(request):
-        if request.content_type != 'application/json':
-            raise ValidationError('Invalid content type')
-        try:
-            json_data = json.loads(request.body.decode('utf-8'))
-        except json.JSONDecodeError:
-            raise ValidationError('Invalid JSON data')
-        return json_data.get('code', '')
