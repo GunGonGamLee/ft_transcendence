@@ -1,6 +1,8 @@
 export default async function CustomHistoriesDetails(gameId, mode) {
   this.init = () => {
     this.textContent = "";
+    let $pagination = document.getElementById("pagination");
+    $pagination.style.display = "none";
   }
 
   this.useState = async () => {
@@ -38,7 +40,7 @@ export default async function CustomHistoriesDetails(gameId, mode) {
         </div>
         <div class="histories one-on-one" id="player-info">
           <div class="histories one-on-one" id="player-nickname">${player.nickname}</div>
-          <div class="histories one-on-one" id="player-rating">${player.rating}</div>
+          <div class="histories one-on-one" id="player-rating">Rating: ${player.rating}</div>
           <div class="histories one-on-one" id="player-score">${player.score}</div>
         </div>
       </div>
@@ -48,9 +50,12 @@ export default async function CustomHistoriesDetails(gameId, mode) {
   this.renderGameInfo = () => {
     const { id, date, playtime } = this.state;
     return (`
-      <div class="histories one-on-one" id="game-id">게임 번호: ${id}</div>
-      <div class="histories one-on-one" id="game-date">게임 날짜: ${date}</div>
-      <div class="histories one-on-one" id="game-playtime">게임 시간: ${playtime}</div>
+      <div class="histories one-on-one info-title" id="game-id">게임 번호</div>
+      <div class="histories one-on-one info-data">${id}</div>
+      <div class="histories one-on-one info-title" id="game-date">게임 날짜</div>
+      <div class="histories one-on-one info-data">${date}</div>
+      <div class="histories one-on-one info-title" id="game-playtime">게임 시간</div>
+      <div class="histories one-on-one info-data">${playtime}</div>
     `)
   }
 
@@ -59,7 +64,7 @@ export default async function CustomHistoriesDetails(gameId, mode) {
       <div class="histories one-on-one" id="details-wrapper">
         <div class="histories one-on-one" id="players">
             ${this.renderPlayer(this.state.player1)}
-            :
+            <p class="histories" id="score-separator">:</p>
             ${this.renderPlayer(this.state.player2)}
         </div>
         <div class="histories one-on-one" id="game-info">
