@@ -19,6 +19,7 @@
     align-items: center;
     width: 100%;
     height: 66.6vh;
+    padding-bottom: 3vh;
     color: white;
 }
 
@@ -220,8 +221,7 @@ footer.histories {
     align-items: center;
     flex-direction: row;
     width: 100%;
-    height: 21.5vh;
-    margin-top: 2vh;
+    height: 21vh;
 }
 
 /************ Histories Summary ************/
@@ -254,3 +254,84 @@ footer.histories {
 .histories.summary#data > div:not(:last-child) {
     margin-bottom: 3vh;
 }
+
+/********* Histories Details: 1vs1 *********/
+.histories.one-on-one#details-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    width: 100%;
+    color: white;
+    padding: 0 10vw;
+}
+
+.histories.one-on-one#players {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    flex-direction: row;
+    width: fit-content;
+    height: 100%;
+    text-align: center;
+}
+
+.histories.one-on-one#players > div:first-child {
+    margin-right: 3vw;
+}
+
+.histories.one-on-one#players > div:last-child {
+    margin-left: 3vw;
+}
+
+.histories.one-on-one#player-avatar > img {
+    width: 6rem;
+}
+
+.histories.one-on-one#player-info {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(3, 1fr);
+    row-gap: 0.5rem;
+    align-items: center;
+    height: 100%;
+    font-family: Galmuri11-Bold, serif;
+}
+
+.histories.one-on-one#player-nickname {
+    font-size: 1.5rem;
+}
+
+.histories.one-on-one#player-rating {
+    font-size: 1.2rem;
+}
+
+.histories.one-on-one#player-score {
+    font-size: 2rem;
+}
+
+.histories#score-separator {
+    font-size: 2rem;
+}
+
+.histories.one-on-one#game-info {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    grid-template-rows: repeat(3, 1fr);
+    column-gap: 1rem;
+    row-gap: 1rem;
+    justify-content: center;
+    width: fit-content;
+    height: 100%;
+    font-size: 2rem;
+    margin-left: 5rem;
+}
+
+.histories.one-on-one.info-title {
+    font-family: Galmuri11-Bold, serif;
+}
+
+.histories.one-on-one.info-data {
+    font-family: Galmuri11, serif;
+}
+
