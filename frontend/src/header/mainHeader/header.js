@@ -21,7 +21,7 @@ export default function historiesHeader($container) {
             </div>
             <div class="main" id="title">사십 이 초-월</div>
             <div class="main" id="right-side">
-                <img src="../../../assets/images/avatar/red_torso.png" alt="아바타" id="user-avatar">
+                <img src="../../../assets/images/avatar/red_bust.png" alt="아바타" id="user-avatar">
                 <img src="../../../assets/images/friends.png" alt="친구 목록" id="friends">
             </div>
         </div>
