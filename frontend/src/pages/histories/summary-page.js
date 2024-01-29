@@ -1,5 +1,5 @@
 export default async function Summary() {
-  this.$container = document.getElementById("list");
+  this.$container = document.getElementById("content");
   this.$pagination = document.getElementById("pagination");
   this.needToRender = false;
 

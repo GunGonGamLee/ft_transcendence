@@ -1,5 +1,6 @@
 import {hoverChangeBorder, hoverChangeCursor} from "../../utils/hoverEvent.js";
 import {click} from "../../utils/clickEvent.js";
+import CustomHistoriesDetails from "./custom-histories-details.js";
 
 /**
  * 사용자 지정 모드의 전적 리스트를 렌더링합니다.
@@ -7,7 +8,7 @@ import {click} from "../../utils/clickEvent.js";
  * @constructor 전적 리스트의 게임 모드
  */
 export default async function CustomHistories(mode) {
-  this.$customList = document.getElementById("list");
+  this.$customList = document.getElementById("content");
   this.$pagination = document.getElementById("pagination");
 
   this.init = () => {
@@ -21,24 +22,28 @@ export default async function CustomHistories(mode) {
     // TODO => backend로부터 데이터 받아오기
     if (mode === "1vs1") {
       this.newState = [{
+        id: 1,
         player1: {
           nickname: "hyojocho", avatar: "../../../assets/images/avatar/red.png", rating: 2130, is_winner: true,
         }, player2: {
           nickname: "yena", avatar: "../../../assets/images/avatar/blue.png", rating: 110, is_winner: false,
         },
       }, {
+        id: 2,
         player1: {
           nickname: "hyojocho", avatar: "../../../assets/images/avatar/red.png", rating: 2130, is_winner: true,
         }, player2: {
           nickname: "yena", avatar: "../../../assets/images/avatar/blue.png", rating: 110, is_winner: false,
         },
       }, {
+        id: 3,
         player1: {
           nickname: "hyojocho", avatar: "../../../assets/images/avatar/red.png", rating: 2130, is_winner: true,
         }, player2: {
           nickname: "yena", avatar: "../../../assets/images/avatar/blue.png", rating: 110, is_winner: false,
         },
       }, {
+        id: 4,
         player1: {
           nickname: "hyojocho", avatar: "../../../assets/images/avatar/red.png", rating: 2130, is_winner: true,
         }, player2: {
@@ -84,9 +89,9 @@ export default async function CustomHistories(mode) {
    */
   this.render1vs1 = ($listWrapper) => {
     for (let data of this.state) {
-      const {player1, player2} = data;
+      const {id, player1, player2} = data;
       $listWrapper.insertAdjacentHTML("beforeend", `
-        <div class="histories list-item">
+        <div class="histories list-item" data-item-id="${id}">
             ${this.renderPlayer(player1)}
             ${this.renderGameMode()}
             ${this.renderPlayer(player2)}
@@ -96,7 +101,7 @@ export default async function CustomHistories(mode) {
       hoverChangeBorder($listItemDiv, "3px solid transparent", "3px solid #29ABE2");
       hoverChangeCursor($listItemDiv, "pointer");
       click($listItemDiv, () => {
-        console.log("TODO => 전적 상세 페이지로 이동");
+        CustomHistoriesDetails.bind(this, id, "1vs1")();
       });
       $listWrapper.appendChild($listItemDiv);
     }
