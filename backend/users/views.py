@@ -51,6 +51,15 @@ class SetNicknameView(APIView):
 
 
 class UserInfoView(APIView):
+    @swagger_auto_schema(
+        tags=['/api/users'],
+        operation_description="사용자 정보 API",
+        manual_parameters=[
+            openapi.Parameter('Authorization', openapi.IN_HEADER, description='Bearer JWT Token', type=openapi.TYPE_STRING)],
+        responses={200: openapi.Response('Successful Response', schema=UserInfoSerializer),
+                   401: 'Bad Unauthorized',
+                   404: 'NOT FOUND',
+                   500: 'SERVER_ERROR'})
     def get(self, request):
         try:
             user = AuthUtils.validate_jwt_token_and_get_user(request)
