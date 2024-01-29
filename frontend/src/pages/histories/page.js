@@ -75,6 +75,7 @@ export default function Histories($container) {
    */
   this.addEventListenersToLayout = () => {
     const $content = document.getElementById("content");
+    const $listWrapper = document.getElementById("list-wrapper");
     const $summary = document.getElementById("summary");
     const $customMenuWrapper = document.getElementById("custom-menu-wrapper");
     const $custom = document.getElementById("custom");
@@ -97,7 +98,7 @@ export default function Histories($container) {
     // click 이벤트
     click($summary, Summary);
     click($custom, CustomHistories.bind($content, "1vs1"));
-    click($tournament, TournamentHistories);
+    click($tournament, TournamentHistories.bind($content, false));
     click($ranking, Ranking);
     click($prev, function () {
       console.log("TODO => 이전 페이지로 이동")
@@ -106,7 +107,7 @@ export default function Histories($container) {
       console.log("TODO => 다음 페이지로 이동")
     });
     click($toggleItems[0], CustomHistories.bind($content, "1vs1")); // 1 vs 1 모드 선택 시 실행
-    click($toggleItems[1], CustomHistories.bind($content, "tournament")); // 토너먼트 모드 선택 시 실행
+    click($toggleItems[1], TournamentHistories.bind($content, true)); // 토너먼트 모드 선택 시 실행
 
     // toggle 이벤트
     let $toggle = document.getElementById("toggle");
