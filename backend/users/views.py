@@ -1,4 +1,5 @@
 import jwt
+import random
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
@@ -31,6 +32,7 @@ class SetNicknameView(APIView):
             user = AuthUtils.validate_jwt_token_and_get_user(request)
             nickname = get_request_body_value(request, 'nickname')
             user.nickname = nickname
+            user.avatar = random.randint(0, 5)
             user.save()
             return Response(status=status.HTTP_201_CREATED)
         except jwt.ExpiredSignatureError:
