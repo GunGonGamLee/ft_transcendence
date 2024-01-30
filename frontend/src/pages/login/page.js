@@ -105,7 +105,7 @@ export default function Login($container) {
           navigate("/500");
           return true;
         } else {
-          console.error("알 수 없는 오류");
+          alert("알 수 없는 오류");
         }
       })
       .catch((error) => console.error("Error:", error));
