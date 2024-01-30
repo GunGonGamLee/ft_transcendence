@@ -48,6 +48,11 @@
     padding: 1vh 1vw;
 }
 
+.histories.list-item:hover {
+    border: 3px #29ABE2 solid;
+    cursor: pointer;
+}
+
 .histories.list-item:visited, .histories.list-item:link, .histories.list-item:active {
     color: white;
 }

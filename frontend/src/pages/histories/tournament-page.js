@@ -1,7 +1,8 @@
 export default async function TournamentHistories(isCustomMode) {
   this.$pagination = document.getElementById("pagination");
   this.needToRender = true;
-  this.avatarPath = "../../../assets/images/avatar";
+  this.imagePath = "../../../assets/images";
+  this.avatarPath = `${this.imagePath}/avatar`;
 
   this.init = () => {
     this.textContent = "";
@@ -38,7 +39,7 @@ export default async function TournamentHistories(isCustomMode) {
           {
             nickname: "yena",
             avatar: "green_bust",
-            rnaking: 3,
+            ranking: 3,
           },
         ]
       },
@@ -151,23 +152,41 @@ export default async function TournamentHistories(isCustomMode) {
   }
 
   this.renderOpponents = ([{nickname, avatar, ranking}, ...opponents]) => {
-    return (`
-      <div class="histories" id="opponents">
-        <div class="histories" id="opponents-avatar">
+    let html = "";
+    console.log(this.state);
+    for (let opponent of opponents) {
+      html += (`
+      <div class="histories opponents">
+        <div class="histories opponents-avatar">
             <img class="histories" src="${this.avatarPath}/${avatar}.png" alt="avatar">
         </div>
-      </div>
-    `);
+        <div class="histories opponents-nickname">
+            ${nickname}
+        </div>`);
+      if (opponent.ranking === 1) {
+        html += (`
+        <div class="histories opponents-ranking first">
+          <img class="histories" src="${this.imagePath}/winner.png" alt="first">
+        </div>
+        `);
+      }
+      html += (`</div>`);
+    }
+    return html;
   }
 
   this.renderList = () => {
     let $listWrapper = document.getElementById("list-wrapper");
     for (let data of this.state) {
-      $listWrapper.insertAdjacentHTML("afterbegin", `
+      let $listItem = document.createElement("div");
+      $listItem.classList.add("histories");
+      $listItem.classList.add("list-item");
+      $listItem.insertAdjacentHTML("afterbegin", `
         ${this.renderRanking(data.player.ranking)}
         ${this.renderPlayer(data.player)}
         ${this.renderOpponents(data.opponents)}
       `)
+      $listWrapper.appendChild($listItem);
     }
   }
 
