@@ -42,7 +42,7 @@ export default async function TournamentHistories(isCustomMode) {
             ranking: 3,
           },
         ],
-        date: '2023.01.30 ',
+        date: '2023.01.30 13:55:23',
       },
       {
         id: 2,
@@ -68,6 +68,7 @@ export default async function TournamentHistories(isCustomMode) {
             ranking: 1,
           },
         ],
+        date: '2023.01.30 14:55:23',
       },
       {
         id: 3,
@@ -93,6 +94,7 @@ export default async function TournamentHistories(isCustomMode) {
             ranking: 1,
           },
         ],
+        date: '2023.01.30 16:55:23',
       },
       {
         id: 4,
@@ -118,6 +120,7 @@ export default async function TournamentHistories(isCustomMode) {
             ranking: 1,
           },
         ],
+        date: '2023.01.30 17:55:23',
       },
     ];
   };
@@ -164,12 +167,16 @@ export default async function TournamentHistories(isCustomMode) {
    * @returns {string} 플레이어를 렌더링하는 HTML.
    */
   this.renderPlayer = ({ nickname, avatar, ranking }) => {
+    let fontColor = '';
+    if (ranking === 1) {
+      fontColor = `style="color: #FF52A0"`;
+    }
     return `
     <div class="histories tournament player">
       <div class="histories tournament player-avatar">
         <img class="histories" src="${this.avatarPath}/${avatar}.png" alt="avatar">
       </div>
-      <div class="histories tournament player-nickname">
+      <div class="histories tournament player-nickname" ${fontColor}>
         ${nickname}
       </div>
     </div>
@@ -184,20 +191,25 @@ export default async function TournamentHistories(isCustomMode) {
   this.renderOpponents = opponents => {
     let html = `<div class= "histories tournament opponents">`;
     for (let opponent of opponents) {
-      html += `
+      let imageTag = '';
+      let fontColor = '';
+      if (opponent.ranking === 1) {
+        imageTag = `
+          <img class="histories" src="${this.imagePath}/winner.png" alt="first">
+       `;
+        fontColor = `style="color: #FF52A0"`;
+      }
+      html +=
+        `
       <div class="histories tournament opponents-avatar">
         <img class="histories" src = "${this.avatarPath}/${opponent.avatar}.png" alt="avatar">
       </div>
-      <div class="histories tournament opponents-nickname">
+      <div class="histories tournament opponents-nickname" ${fontColor}>
         ${opponent.nickname}
         <div class="histories tournament opponents-ranking first">
-      `;
-      if (opponent.ranking === 1) {
-        html += `
-          <img class="histories" src="${this.imagePath}/winner.png" alt="first">
-       `;
-      }
-      html += `
+      ` +
+        imageTag +
+        `
         </div>
       </div>
       `;
@@ -216,6 +228,7 @@ export default async function TournamentHistories(isCustomMode) {
       $listItem.classList.add('histories');
       $listItem.classList.add('tournament');
       $listItem.classList.add('list-item');
+      $listItem.dataset.itemId = data.id;
       $listItem.insertAdjacentHTML(
         'afterbegin',
         `
