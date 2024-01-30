@@ -41,7 +41,8 @@ export default async function TournamentHistories(isCustomMode) {
             avatar: "green_bust",
             ranking: 3,
           },
-        ]
+        ],
+        date: "2023.01.30 "
       },
       {
         id: 2,
@@ -189,15 +190,17 @@ export default async function TournamentHistories(isCustomMode) {
       </div>
       <div class="histories tournament opponents-nickname">
         ${opponent.nickname}
+        <div class="histories tournament opponents-ranking first">
       `);
       if (opponent.ranking === 1) {
         html += (`
-        <div class="histories tournament opponents-ranking first">
           <img class="histories" src="${this.imagePath}/winner.png" alt="first">
-        </div>
        `);
       }
-      html += (`</div>`);
+      html += (`
+        </div>
+      </div>
+      `);
     }
     html += (`</div>`);
     return html;
