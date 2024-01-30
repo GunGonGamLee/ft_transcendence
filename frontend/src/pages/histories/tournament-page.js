@@ -130,6 +130,11 @@ export default async function TournamentHistories(isCustomMode) {
     }
   }
 
+  /**
+   * 랭킹을 렌더링합니다.
+   * @param ranking {number} 랭킹.
+   * @returns {string} 랭킹을 렌더링하는 HTML.
+   */
   this.renderRanking = (ranking) => {
     return (`
       <div class="histories" id="ranking">
@@ -171,7 +176,7 @@ export default async function TournamentHistories(isCustomMode) {
   /**
    * 토너먼트 모드에서 상대방들을 렌더링합니다.
    * @param opponents {Array<{nickname: string, avatar: string, ranking: number}>} 상대방들의 정보.
-   * @returns {string}
+   * @returns {string} 상대방들을 렌더링하는 HTML.
    */
   this.renderOpponents = (opponents) => {
     let html = "";
@@ -196,6 +201,9 @@ export default async function TournamentHistories(isCustomMode) {
     return html;
   }
 
+  /**
+   * 토너먼트 모드에서 리스트를 렌더링합니다.
+   */
   this.renderList = () => {
     let $listWrapper = document.getElementById("list-wrapper");
     for (let data of this.state) {
