@@ -96,7 +96,6 @@ export default function Login($container) {
         ...(token ? { Authorization: "Bearer " + token } : {}),
       },
     };
-    alert("test");
     fetch("https://localhost/api/users/me/", requestOption)
       .then((response) => {
         if (response.status === 200) {
