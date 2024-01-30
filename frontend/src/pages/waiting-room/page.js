@@ -1,6 +1,9 @@
 import { importCss } from "../../utils/importCss.js";
 import { hover } from "../../utils/hoverEvent.js";
 import userBox from "./userBox.js";
+import countdownModal from "./countdownModal.js";
+import errorModal from "./errorModal.js";
+import roomSettingModal from "./roomSettingModal.js";
 /**
  * @param {HTMLElement} $container
  */
@@ -28,6 +31,9 @@ export default function WaitingRoom($container) {
   this.render = () => {
     importCss("../../../assets/css/waiting-room.css");
     this.$container.innerHTML = `
+      ${countdownModal(false)}
+      ${errorModal(false)}
+      ${roomSettingModal(true)}
       <div class="waiting-room-wrapper" style="background-image: url('../../../assets/images/game_room_bg_trans.png'); background-size: 100% 50%; background-repeat: no-repeat; background-position: center bottom; width: 100vw; height: 88vh; display: flex; flex-direction: column; justify-content: center; align-items: center">
         <div class="room-name-box" style="align-self: flex-start;display: flex; align-items: center; margin-top: 2vh">
           <img class="room-lock" alt="lock" src="../../../assets/images/password.png" style="margin-left: 5vw; margin-bottom: 0.4vh; width: 2vw; height: 2.8vh; -webkit-user-drag: none; user-select: none;">
