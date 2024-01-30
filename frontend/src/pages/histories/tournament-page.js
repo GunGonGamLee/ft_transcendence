@@ -1,6 +1,7 @@
 export default async function TournamentHistories(isCustomMode) {
   this.$pagination = document.getElementById("pagination");
   this.needToRender = true;
+  this.avatarPath = "../../../assets/images/avatar";
 
   this.init = () => {
     this.textContent = "";
@@ -140,7 +141,7 @@ export default async function TournamentHistories(isCustomMode) {
     return (`
       <div class="histories" id="player">
         <div class="histories" id="player-avatar">
-          <img class="histories" src="../../../assets/images/${avatar}.png" alt="avatar">
+          <img class="histories" src="${this.avatarPath}/${avatar}.png" alt="avatar">
         </div>
         <div class="histories" id="player-nickname">
           ${nickname}
@@ -153,7 +154,7 @@ export default async function TournamentHistories(isCustomMode) {
     return (`
       <div class="histories" id="opponents">
         <div class="histories" id="opponents-avatar">
-            <img class="histories" src="../../../assets/images/${avatar}.png" alt="avatar">
+            <img class="histories" src="${this.avatarPath}/${avatar}.png" alt="avatar">
         </div>
       </div>
     `);
