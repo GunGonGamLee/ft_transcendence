@@ -151,17 +151,21 @@ export default async function TournamentHistories(isCustomMode) {
     `);
   }
 
-  this.renderOpponents = ([{nickname, avatar, ranking}, ...opponents]) => {
+  /**
+   * 토너먼트 모드에서 상대방들을 렌더링합니다.
+   * @param opponents {Array<{nickname: string, avatar: string, ranking: number}>} 상대방들의 정보.
+   * @returns {string}
+   */
+  this.renderOpponents = (opponents) => {
     let html = "";
-    console.log(this.state);
     for (let opponent of opponents) {
       html += (`
       <div class="histories opponents">
         <div class="histories opponents-avatar">
-            <img class="histories" src="${this.avatarPath}/${avatar}.png" alt="avatar">
+            <img class="histories" src="${this.avatarPath}/${opponent.avatar}.png" alt="avatar">
         </div>
         <div class="histories opponents-nickname">
-            ${nickname}
+            ${opponent.nickname}
         </div>`);
       if (opponent.ranking === 1) {
         html += (`
