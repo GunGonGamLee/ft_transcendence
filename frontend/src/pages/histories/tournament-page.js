@@ -138,9 +138,25 @@ export default async function TournamentHistories(isCustomMode) {
     `);
   }
 
+  /**
+   * 플레이어를 렌더링합니다.
+   * @param nickname {string} 플레이어의 닉네임.
+   * @param avatar {string} 플레이어의 아바타.
+   * @param ranking {number} 플레이어의 랭킹.
+   * @returns {string} 플레이어를 렌더링하는 HTML.
+   */
   this.renderPlayer = ({nickname, avatar, ranking}) => {
-    return (`
+    let html = (`
       <div class="histories" id="player">
+      `);
+    if (ranking === 1) {
+      html += (`
+        <div class="histories" id="player-ranking first">
+          <img class="histories" src="${this.imagePath}/winner.png" alt="first">
+        </div>
+      `);
+    }
+    html += (`
         <div class="histories" id="player-avatar">
           <img class="histories" src="${this.avatarPath}/${avatar}.png" alt="avatar">
         </div>
@@ -149,6 +165,7 @@ export default async function TournamentHistories(isCustomMode) {
         </div>
       </div>
     `);
+    return html;
   }
 
   /**
