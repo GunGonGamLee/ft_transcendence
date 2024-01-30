@@ -136,11 +136,23 @@ export default async function TournamentHistories(isCustomMode) {
    * @returns {string} 랭킹을 렌더링하는 HTML.
    */
   this.renderRanking = (ranking) => {
-    return (`
-      <div class="histories" id="ranking">
+    let html = (`
+    <div class="histories tournament ranking">
+      <div class="histories tournament player-ranking first">
+    `);
+    if (ranking === 1) {
+      html += (`
+        <img class="histories" src="${this.imagePath}/winner.png" alt="first">
+      `);
+    }
+    html += (`
+      </div>
+      <div class="histories ranking-text">
         ${ranking}등
       </div>
+    </div>
     `);
+    return html;
   }
 
   /**
@@ -151,26 +163,16 @@ export default async function TournamentHistories(isCustomMode) {
    * @returns {string} 플레이어를 렌더링하는 HTML.
    */
   this.renderPlayer = ({nickname, avatar, ranking}) => {
-    let html = (`
-      <div class="histories tournament player">
-      `);
-    if (ranking === 1) {
-      html += (`
-        <div class="histories tournament player-ranking first">
-          <img class="histories" src="${this.imagePath}/winner.png" alt="first">
-        </div>
-      `);
-    }
-    html += (`
-        <div class="histories tournament player-avatar">
-          <img class="histories" src="${this.avatarPath}/${avatar}.png" alt="avatar">
-        </div>
-        <div class="histories tournament player-nickname">
-          ${nickname}
-        </div>
+    return (`
+    <div class="histories tournament player">
+      <div class="histories tournament player-avatar">
+        <img class="histories" src="${this.avatarPath}/${avatar}.png" alt="avatar">
       </div>
+      <div class="histories tournament player-nickname">
+        ${nickname}
+      </div>
+    </div>
     `);
-    return html;
   }
 
   /**
@@ -179,15 +181,15 @@ export default async function TournamentHistories(isCustomMode) {
    * @returns {string} 상대방들을 렌더링하는 HTML.
    */
   this.renderOpponents = (opponents) => {
-    let html = (`<div class="histories tournament opponents">`);
+    let html = (`<div class= "histories tournament opponents">`);
     for (let opponent of opponents) {
       html += (`
-        <div class="histories tournament opponents-avatar">
-            <img class="histories" src="${this.avatarPath}/${opponent.avatar}.png" alt="avatar">
-        </div>
-        <div class="histories tournament opponents-nickname">
-            ${opponent.nickname}
-            `);
+      <div class="histories tournament opponents-avatar">
+        <img class="histories" src = "${this.avatarPath}/${opponent.avatar}.png" alt="avatar">
+      </div>
+      <div class="histories tournament opponents-nickname">
+        ${opponent.nickname}
+      `);
       if (opponent.ranking === 1) {
         html += (`
         <div class="histories tournament opponents-ranking first">
@@ -209,6 +211,7 @@ export default async function TournamentHistories(isCustomMode) {
     for (let data of this.state) {
       let $listItem = document.createElement("div");
       $listItem.classList.add("histories");
+      $listItem.classList.add("tournament");
       $listItem.classList.add("list-item");
       $listItem.insertAdjacentHTML("afterbegin", `
         ${this.renderRanking(data.player.ranking)}
