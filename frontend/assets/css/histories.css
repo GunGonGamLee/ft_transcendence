@@ -24,7 +24,7 @@
 }
 
 .histories#list-wrapper {
-    display:grid;
+    display: grid;
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(2, 1fr);
     justify-content: center;
@@ -340,3 +340,34 @@ footer.histories {
     font-family: Galmuri11, serif;
 }
 
+/********** Histories Tournament ***********/
+.histories.tournament.player {
+    width: 10vw;
+}
+
+.histories.tournament.player-ranking.first {
+    width: 5vw;
+    margin-bottom: 0 !important;
+}
+
+.histories.tournament.opponents {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    justify-content: center;
+    align-items: center;
+}
+
+.histories.tournament.opponents > .opponents-avatar {
+    width: 3vw;
+}
+
+.histories.tournament.opponents > .opponents-nickname {
+    display: flex;
+    align-items: center;
+}
+
+.histories.tournament.opponents > .opponents-nickname > .opponents-ranking.first {
+    display: inline-block;
+    width: 5vw;
+}

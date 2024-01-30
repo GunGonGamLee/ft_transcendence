@@ -152,20 +152,20 @@ export default async function TournamentHistories(isCustomMode) {
    */
   this.renderPlayer = ({nickname, avatar, ranking}) => {
     let html = (`
-      <div class="histories" id="player">
+      <div class="histories tournament player">
       `);
     if (ranking === 1) {
       html += (`
-        <div class="histories" id="player-ranking first">
+        <div class="histories tournament player-ranking first">
           <img class="histories" src="${this.imagePath}/winner.png" alt="first">
         </div>
       `);
     }
     html += (`
-        <div class="histories" id="player-avatar">
+        <div class="histories tournament player-avatar">
           <img class="histories" src="${this.avatarPath}/${avatar}.png" alt="avatar">
         </div>
-        <div class="histories" id="player-nickname">
+        <div class="histories tournament player-nickname">
           ${nickname}
         </div>
       </div>
@@ -179,25 +179,25 @@ export default async function TournamentHistories(isCustomMode) {
    * @returns {string} 상대방들을 렌더링하는 HTML.
    */
   this.renderOpponents = (opponents) => {
-    let html = "";
+    let html = (`<div class="histories tournament opponents">`);
     for (let opponent of opponents) {
       html += (`
-      <div class="histories opponents">
-        <div class="histories opponents-avatar">
+        <div class="histories tournament opponents-avatar">
             <img class="histories" src="${this.avatarPath}/${opponent.avatar}.png" alt="avatar">
         </div>
-        <div class="histories opponents-nickname">
+        <div class="histories tournament opponents-nickname">
             ${opponent.nickname}
-        </div>`);
+            `);
       if (opponent.ranking === 1) {
         html += (`
-        <div class="histories opponents-ranking first">
+        <div class="histories tournament opponents-ranking first">
           <img class="histories" src="${this.imagePath}/winner.png" alt="first">
         </div>
-        `);
+       `);
       }
       html += (`</div>`);
     }
+    html += (`</div>`);
     return html;
   }
 
