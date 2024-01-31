@@ -11,6 +11,11 @@
 
 /* game-room-list */
 
+
+.game-room-list#game-room-list-wrapper {
+    height: 100%;
+}
+
 .game-room-list.game-mode {
     width:100%;
 }
@@ -25,7 +30,17 @@
 .room-info {
     font-size: 1.5rem;
     display: grid;
-    grid-template-columns: 2fr 3fr;
+    grid-template-columns: 1fr 4fr;
+}
+
+.game-room-list.row:first-child {
+    display: grid;
+    grid-template-columns: 4fr 2fr;
+}
+
+.game-room-list.row:nth-child(2) {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
 }
 
 /* resize photo */

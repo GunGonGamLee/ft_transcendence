@@ -10,27 +10,18 @@ export default function GameRoomList() {
                 room: {
                     gameMode: "1vs1",
                     gameModeImage: "../../../assets/images/1vs1_logo.png",
-                    roomName: "핑포로로로롱",
                     countOfPlayers: "1/2",
+                    roomTitle: "핑포로로로롱",
                     roomStatus: "대기중",
                     isSecret: "../../assets/images/password.png"
                 },
             },
             {
                 room: {
-                    gameMode: "토너먼트",
-                    gameModeImage: "../../../assets/images/tournament_logo.png",
-                    roomName: "Im king of pingpong",
-                    countOfPlayers: "1/4",
-                    roomStatus: "대기중"
-                },
-            },
-            {
-                room: {
-                    gameMode: "1vs1", 
+                    gameMode: "1vs1",
                     gameModeImage: "../../../assets/images/1vs1_logo.png",
-                    roomName: "너만 오면 ㄱ",
                     countOfPlayers: "2/2",
+                    roomTitle: "너만 오면 ㄱ",
                     roomStatus: "게임중",
                     isSecret: "../../assets/images/password.png"
                 },
@@ -39,7 +30,16 @@ export default function GameRoomList() {
                 room: {
                     gameMode: "토너먼트",
                     gameModeImage: "../../../assets/images/tournament_logo.png",
-                    roomName: "토너먼트 모드",
+                    roomTitle: "Im king of pingpong",
+                    countOfPlayers: "1/4",
+                    roomStatus: "대기중"
+                },
+            },
+            {
+                room: {
+                    gameMode: "토너먼트",
+                    gameModeImage: "../../../assets/images/tournament_logo.png",
+                    roomTitle: "다 뎀비라!",
                     countOfPlayers: "4/4",
                     roomStatus: "게임중"
                 }
@@ -95,22 +95,24 @@ export default function GameRoomList() {
                     </div>
                 </div>
                 <div class="game-room-list column">
-                    <div class="game-room-list game-mode-name">
-                        ${room.gameMode}
+                    <div class="game-room-list row">
+                        <div class="game-room-list room-title">
+                            ${room.roomTitle}
+                        </div>
+                        ${isSecretHTML}
                     </div>
-                    <div class="game-room-list room-name">
-                        ${room.roomName}
+                    <div class="game-room-list row">
+                        <div class="game-room-list count-of-players">
+                            ${room.countOfPlayers}
+                        </div>
+                        <div class="game-room-list game-mode-name">
+                            ${room.gameMode}
+                        </div>
+                        <div class="game-room-list room-status">
+                            ${room.roomStatus}
+                        </div>
                     </div>
-                    <div class="game-room-list count-of-players">
-                        ${room.countOfPlayers}
-                    </div>
-                    <div class="game-room-list room-status">
-                        ${room.roomStatus}
-                    </div>
-                    ${isSecretHTML}
                 </div>
-                
-                
             </div>
         `;
     }
