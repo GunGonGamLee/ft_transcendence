@@ -1,22 +1,19 @@
 .game-mode-container {
     display: flex;
-    justify-content: center;
+    justify-content: space-evenly;
     align-items: center;
     height: 88vh;
 }
 
 .game-mode-unit {
-    height: 65vh;
     width: 25vw;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
 }
 
 .game-mode-image {
     width: 17vw;
-    height: 25vh;
 }
 
 .game-mode-title {
@@ -31,9 +28,4 @@
     color: white;
     margin-top: 2vh;
     font-family: 'Galmuri11', serif;
-}
-
-.spacer {
-    height: 65vh;
-    width: 3vw;
 }
