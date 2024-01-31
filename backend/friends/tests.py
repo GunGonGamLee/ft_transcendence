@@ -33,7 +33,7 @@ class FriendsViewTestCase(TestCase):
             {'nickname': 'friend'},
             HTTP_AUTHORIZATION=f'Bearer {self.token}'
         )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status .HTTP_200_OK)
 
 class AcceptFriendViewTestCase(TestCase):
     def setUp(self):

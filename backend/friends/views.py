@@ -6,28 +6,12 @@ from .serializers import FriendSerializer
 from django.conf import settings
 import jwt
 from django.shortcuts import get_object_or_404
-from src.exceptions import CustomException
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from login.views import AuthUtils
 from src.utils import *
 
 class FriendsView(APIView):
-    def get_user_from_token(self, request):
-        authorization_header = request.headers.get('Authorization', '')
-        if not authorization_header.startswith('Bearer '):
-            raise CustomException('Authorization header is missing', status_code=status.HTTP_401_UNAUTHORIZED)
-        token = authorization_header[len('Bearer '):]
-        if not token:
-            raise CustomException('Authorization token is missing', status_code=status.HTTP_401_UNAUTHORIZED)
-        try:
-            decoded_data = jwt.decode(token.split(' ')[1], settings.SECRET_KEY, algorithms=['HS256'])
-        except:
-            raise CustomException('Authorization token is invalid', status_code=status.HTTP_401_UNAUTHORIZED)
-        user_email = decoded_data.get('email')
-        return User.objects.get(email=user_email)
-
-    # GET 요청 : 친구 목록 조회
     @swagger_auto_schema(
         tags=['/api/friends'],
         manual_parameters=[
@@ -35,14 +19,8 @@ class FriendsView(APIView):
         response={200: "OK", 400: "Bad Request", 500: "Internal Server Error"})
     def get(self, request):
         try:
-            # current_user_email = self.get_user_from_token(request)
-
-            # current_user(현재 로그인한 유저)의 정보
-            # current_user = User.objects.get(email=current_user_email)
-
             current_user = AuthUtils.validate_jwt_token_and_get_user(request)
         
-            # 친구 관계 조회 로직, user_id는 현재 접속한 유저, friend는 친구 
             friends_relations = Friend.objects.filter(user_id=current_user).filter(status=Friend.ACCEPTED) \
             | Friend.objects.filter(friend_id=current_user).filter(status=Friend.ACCEPTED)
 
@@ -74,9 +52,6 @@ class FriendsView(APIView):
         )
     def post(self, request):
         try:
-            # current_user_email = self.get_user_from_token(request)
-            # current_user = User.objects.get(email=current_user_email)
-
             current_user = AuthUtils.validate_jwt_token_and_get_user(request)
 
             requested_nickname = get_request_body_value(request, 'nickname')
@@ -91,8 +66,6 @@ class FriendsView(APIView):
             Friend.objects.create(user_id=current_user, friend_id=requested_friend, status=Friend.PENDING)
             return Response({'message': 'Friend request sent'}, status=status.HTTP_200_OK)
 
-        except CustomException as e:
-            return Response({'error': str(e)}, status=e.status_code)
         except User.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
@@ -115,8 +88,6 @@ class AcceptFriendView(APIView):
     
     def post(self, request):
         try:
-            # current_user = self.get_user_from_token(request)
-
             current_user = AuthUtils.validate_jwt_token_and_get_user(request)
             requested_nickname = get_request_body_value(request, 'nickname')
             requested_friend = get_object_or_404(User, nickname=requested_nickname)
@@ -130,8 +101,6 @@ class AcceptFriendView(APIView):
 
             return Response({'message': 'Friend request Accepted'}, status=status.HTTP_200_OK)
         
-        except CustomException as e:
-            return Response({'error': str(e)}, status=e.status_code)
         except User.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
@@ -165,8 +134,6 @@ class RejectFriendView(APIView):
 
             return Response({'message': 'Friend request rejected'}, status=status.HTTP_200_OK)
 
-        except CustomException as e:
-            return Response({'error': str(e)}, status=e.status_code)
         except User.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
