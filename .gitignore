@@ -65,3 +65,6 @@ volumes/
 ## .idea directory git ignore
 */.idea/
 .idea/
+
+## node_modules directory git ignore
+/frontend/node_modules/

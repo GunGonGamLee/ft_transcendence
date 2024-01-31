@@ -24,7 +24,7 @@
 }
 
 .histories#list-wrapper {
-    display:grid;
+    display: grid;
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(2, 1fr);
     justify-content: center;
@@ -46,6 +46,11 @@
     text-decoration: none;
     width: 80%;
     padding: 1vh 1vw;
+}
+
+.histories.list-item:hover {
+    border: 3px #29ABE2 solid;
+    cursor: pointer;
 }
 
 .histories.list-item:visited, .histories.list-item:link, .histories.list-item:active {
@@ -335,3 +340,56 @@ footer.histories {
     font-family: Galmuri11, serif;
 }
 
+/********** Histories Tournament ***********/
+.histories.tournament.list-item {
+    display: grid;
+    grid-template-columns: 1fr 2fr 3fr;
+    justify-items: center;
+    align-items: center;
+    font-family: Galmuri11-Bold, serif;
+    grid-gap: 1vh 1vw;
+}
+
+.histories.tournament.list-item > .ranking {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-items: center;
+    font-size: 1.8rem;
+    width: 100%;
+}
+
+.histories.tournament.player {
+    width: 12vh;
+    font-size: 1.5rem;
+}
+
+.histories.tournament.player-ranking.first {
+    width: 5vw;
+    margin-bottom: 0 !important;
+}
+
+.histories.tournament.opponents {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    grid-template-rows: repeat(3, 1fr);
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    font-size: 1.2rem;
+}
+
+.histories.tournament.opponents > .opponents-avatar {
+    width: 2rem;
+}
+
+.histories.tournament.opponents > .opponents-nickname {
+    display: flex;
+    align-items: center;
+}
+
+.histories.tournament.opponents > .opponents-nickname > .opponents-ranking.first {
+    margin-left: 0.5rem;
+    width: 2rem;
+}
