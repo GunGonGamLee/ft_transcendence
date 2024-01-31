@@ -147,9 +147,6 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
 
-    'django_otp',
-    'django_otp.plugins.otp_totp',
-
     'corsheaders',
 ]
 
@@ -247,10 +244,6 @@ SOCIALACCOUNT_PROVIDERS = {
         },
     },
 }
-
-SOCIALACCOUNT_PROVIDERS['google']['AUTHENTICATION_METHOD'] = 'TOTP'
-
-OTP_TOTP_ISSUER = 'ft_transcendence'
 
 SITE_ID = 2
 

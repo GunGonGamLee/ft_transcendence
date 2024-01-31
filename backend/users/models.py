@@ -29,10 +29,18 @@ class User(AbstractUser):
 
     objects = UserManager()
 
+    AVATAR_CHOICES = [
+        (0, "RED"),
+        (1, "BLUE"),
+        (2, "GREEN"),
+        (3, "YELLOW"),
+        (4, "PINK"),
+    ]
+
     email = models.EmailField('이메일 주소', unique=True, max_length=254)  # 이메일
     nickname = models.CharField(max_length=8, unique=True, blank=True, null=True)  # 닉네임
     rating = models.PositiveIntegerField(default=0)  # 레이팅
-    avatar = models.ImageField(upload_to='avatar/', null=True, blank=True)  # 아바타 이미지
+    avatar = models.PositiveSmallIntegerField(null=True, choices=AVATAR_CHOICES)  # 아바타 이미지
     verification_code = models.CharField(max_length=6, blank=True, null=True)   # 이메일 인증 코드
 
     class Meta:
