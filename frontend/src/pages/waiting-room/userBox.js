@@ -4,10 +4,10 @@ import userUnit from './userUnit.js';
  * @param {number} gameMode 2인용, 4인용
  */
 export default function userBox(gameMode) {
-    const props = [{img: '../../../assets/images/avatar/red_torso.png', nickname: 'donghyk2', rating: 2400, status: '오우-너', color: 'yellow'},
-        {img: '../../../assets/images/avatar/blue_torso.png', nickname: 'john', rating: 2200, status: '준비 중', color: 'white'},
-        {img: '../../../assets/images/avatar/yellow_torso.png', nickname: 'bob', rating: 2300, status: '준비 중', color: 'white'},
-        {img: '../../../assets/images/avatar/green_torso.png', nickname: 'garry', rating: 2300, status: '준비 중', color: 'white'}];
+    const props = [{img: '../../../assets/images/avatar/red_bust.png', nickname: 'donghyk2', rating: 2400, status: '오우-너', color: 'yellow'},
+        {img: '../../../assets/images/avatar/blue_bust.png', nickname: 'john', rating: 2200, status: '준비 중', color: 'white'},
+        {img: '../../../assets/images/avatar/yellow_bust.png', nickname: 'bob', rating: 2300, status: '준비 중', color: 'white'},
+        {img: '../../../assets/images/avatar/green_bust.png', nickname: 'garry', rating: 2300, status: '준비 중', color: 'white'}];
     if (gameMode === 2) {
     return (`
         <div class="user-box-wrapper" style="; width: 100vw; height: 65vh; display : flex; flex-direction: row">

@@ -49,7 +49,7 @@ export default function Histories($container) {
                    전체 랭킹 
                </div>
             </nav>
-            <div class="histories" id="list">
+            <div class="histories" id="content">
             </div>
             <footer class="histories">
                 <div class="histories" id="search-wrapper">
@@ -66,15 +66,15 @@ export default function Histories($container) {
   }
 
   this.renderList = () => {
-    let $list = document.getElementById("list");
-    Summary.bind($list)();
+    let $content = document.getElementById("content");
+    Summary.bind($content)();
   }
 
   /**
    * 레이아웃 엘리먼트에 이벤트 리스너를 추가합니다.
    */
   this.addEventListenersToLayout = () => {
-    const $list = document.getElementById("list");
+    const $content = document.getElementById("content");
     const $summary = document.getElementById("summary");
     const $customMenuWrapper = document.getElementById("custom-menu-wrapper");
     const $custom = document.getElementById("custom");
@@ -96,7 +96,7 @@ export default function Histories($container) {
 
     // click 이벤트
     click($summary, Summary);
-    click($custom, CustomHistories.bind($list, "1vs1"));
+    click($custom, CustomHistories.bind($content, "1vs1"));
     click($tournament, TournamentHistories);
     click($ranking, Ranking);
     click($prev, function () {
@@ -105,8 +105,8 @@ export default function Histories($container) {
     click($next, function () {
       console.log("TODO => 다음 페이지로 이동")
     });
-    click($toggleItems[0], CustomHistories.bind($list, "1vs1")); // 1 vs 1 모드 선택 시 실행
-    click($toggleItems[1], CustomHistories.bind($list, "tournament")); // 토너먼트 모드 선택 시 실행
+    click($toggleItems[0], CustomHistories.bind($content, "1vs1")); // 1 vs 1 모드 선택 시 실행
+    click($toggleItems[1], CustomHistories.bind($content, "tournament")); // 토너먼트 모드 선택 시 실행
 
     // toggle 이벤트
     let $toggle = document.getElementById("toggle");

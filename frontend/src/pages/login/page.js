@@ -1,29 +1,34 @@
+
 import {click} from "../../utils/clickEvent.js";
 
+import { click } from "../../utils/clickEvent.js";
+import { navigate } from "../../utils/navigate.js";
 /**
  * header 컴포넌트
  * @param {HTMLElement} $container
  */
 
 export default function Login($container) {
-    this.$container = $container;
+  this.$container = $container;
 
-    this.setState = () => {
-        this.render();
+  this.setState = () => {
+    this.render();
+  };
+
+  this.render = () => {
+    this.renderLayout();
+  };
+
+  this.renderLayout = () => {
+    if (document.getElementsByTagName("head") !== null) {
+      document
+        .getElementsByTagName("head")[0]
+        .insertAdjacentHTML(
+          "beforeend",
+          '<link rel="stylesheet" href="../../../assets/css/login.css"/>',
+        );
     }
-
-    this.render = () => {
-        this.renderLayout();
-    }
-
-    this.renderLayout = () => {
-        if (document.getElementsByTagName("head") !== null) {
-            document.getElementsByTagName("head")[0].insertAdjacentHTML(
-                "beforeend",
-                '<link rel="stylesheet" href="../../../assets/css/login.css"/>'
-            );
-        }
-        this.$container.innerHTML = `
+    this.$container.innerHTML = `
         <div class="login-wrapper">
         <div class="container">
         <div class="arcade-machine">
@@ -68,21 +73,52 @@ export default function Login($container) {
         </div>
       </div>
       </div>
-    `
-    }
+    `;
+  };
 
-    this.addEventListenersToLayout = () => {
-        const google = document.getElementById("google");
-        const fortyTwo = document.getElementById("forty-two");
+  this.addEventListenersToLayout = () => {
+    const google = document.getElementById("google");
+    const fortyTwo = document.getElementById("forty-two");
 
-        click(google, () => {
-            window.location.href = 'http://localhost:8000/api/login/google/';
-        });
-        click(fortyTwo, () => {
-            window.location.href = 'http://localhost:8000/api/login/intra42/';
-        });
-    }
 
     this.render();
     this.addEventListenersToLayout();
+    click(google, () => {
+      window.location.href = "http://localhost:8000/api/login/google/";
+    });
+    click(fortyTwo, () => {
+      window.location.href = "http://localhost:8000/api/login/intra42/";
+    });
+  };
+
+  this.isAlreadyLogin = () => {
+    const token = localStorage.getItem("jwtToken");
+    if (token === null) return false;
+    const requestOption = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        // JWT 토큰이 존재하는 경우, Authorization 헤더에 추가합니다
+        ...(token ? { Authorization: "Bearer " + token } : {}),
+      },
+    };
+    fetch("https://localhost/api/users/me/", requestOption)
+      .then((response) => {
+        if (response.status === 200) {
+          navigate("/game-mode");
+          return true;
+        } else if (response.status === 500) {
+          navigate("/500");
+          return true;
+        } else {
+          alert("알 수 없는 오류");
+        }
+      })
+      .catch((error) => console.error("Error:", error));
+    return false;
+  };
+
+  if (this.isAlreadyLogin()) return;
+  this.render();
+  this.addEventListenersToLayout();
 }
