@@ -179,7 +179,7 @@
     align-items: center;
     width: 100%;
     height: fit-content;
-    top: calc(16vh + 1.5rem + 1rem + 3px); /* 16vh: header height, 1.5rem: nav font-size, 1rem: <li> padding, 3px: <ul> border */
+    top: calc(16vh + 1.5rem + 1rem + 3px); /* 16vh: header height, 1.5rem: nav fonts-size, 1rem: <li> padding, 3px: <ul> border */
     z-index: 1;
 }
 

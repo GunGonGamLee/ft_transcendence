@@ -12,9 +12,9 @@
  * @param {function} mouseoutFunc
  */
 export const hover = (element, mouseoverFunc, mouseoutFunc) => {
-    element.addEventListener("mouseover", mouseoverFunc);
-    element.addEventListener("mouseout", mouseoutFunc);
-}
+  element.addEventListener("mouseover", mouseoverFunc);
+  element.addEventListener("mouseout", mouseoutFunc);
+};
 
 export const hoverChangeColor = (elements, originalColor, hoverColor) => {
   if (!Array.isArray(elements)) {
@@ -28,13 +28,13 @@ export const hoverChangeColor = (elements, originalColor, hoverColor) => {
       element.style.color = originalColor;
     });
   }
-}
+};
 
 /**
  * 마우스 hover 시 폰트 변경
  * @param elements {HTMLElement[] | HTMLElement} hover 효과를 넣고 싶은 html 엘리먼트
- * @param originalFont {string} 원래 font-family
- * @param hoverFont {string} hover 시 font-family
+ * @param originalFont {string} 원래 fonts-family
+ * @param hoverFont {string} hover 시 fonts-family
  */
 export const hoverChangeFont = (elements, originalFont, hoverFont) => {
   if (!Array.isArray(elements)) {
@@ -48,7 +48,7 @@ export const hoverChangeFont = (elements, originalFont, hoverFont) => {
       element.style.fontFamily = originalFont;
     });
   }
-}
+};
 
 /**
  * 마우스 hover 시 border 변경
@@ -68,7 +68,7 @@ export const hoverChangeBorder = (elements, originalBorder, hoverBorder) => {
       element.style.border = originalBorder;
     });
   }
-}
+};
 
 /**
  * 마우스 hover 시 cursor 변경
@@ -87,7 +87,7 @@ export const hoverChangeCursor = (elements, cursor) => {
       element.style.cursor = "default";
     });
   }
-}
+};
 
 /**
  * toggleSwitch를 hover하면 toggleItem을 보여주고, toggleSwitch를 벗어나면 toggleItem을 숨깁니다.
@@ -102,4 +102,4 @@ export const hoverToggle = (toggleSwitch, toggleItem, displayAttr) => {
   toggleSwitch.addEventListener("mouseout", () => {
     toggleItem.style.display = "none";
   });
-}
+};
