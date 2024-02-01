@@ -1,6 +1,6 @@
 /**
  * @description useState 훅 구현
- * @param {array | number | string | boolean}stateInput 상태
+ * @param {array | number | string | boolean | Object}stateInput 상태
  * @param {object}component 전달된 컴포넌트
  * @param {string}render 렌더링 함수 명
  * @returns [getState, setState] 반환
