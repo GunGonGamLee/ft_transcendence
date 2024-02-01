@@ -6,6 +6,7 @@ import RegisterHeader from '../header/registerHeader/header.js';
 import MainHeader from '../header/mainHeader/header.js';
 import WaitingRoom from "../pages/waiting-room/page.js";
 import Login from '../pages/login/page.js'
+import CustomGameList from '../pages/custom-game-list/page.js';
 
 /**
  * 원하는 경로에 따라 렌더링할 컴포넌트를 정의합니다.
@@ -16,5 +17,6 @@ export const routes = [
   { path: /^\/register$/, page: Register, header: RegisterHeader },
   { path: /^\/game-mode$/, page: GameMode, header: MainHeader },
   { path: /^\/histories$/, page: Histories, header: MainHeader},
-  { path: /^\/waiting-room$/, page: WaitingRoom, header: MainHeader }
+  { path: /^\/waiting-room$/, page: WaitingRoom, header: MainHeader },
+  { path: /^\/custom-game-list$/, page: CustomGameList, header: MainHeader}
 ]
