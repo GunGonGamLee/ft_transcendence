@@ -76,20 +76,36 @@ export default function GameRoomList() {
     }
 
     /**
+     * 비밀방 여부에 따른 HTML 문자열을 반환합니다.
+     * @param room {object} 게임 방의 정보
+     * @returns {string} 비밀방 여부에 따른 HTML 문자열
+     */
+    this.getSecretRoomHTML = (room) => {
+        return room.isSecret ?
+            `<div class="game-room-list is-secret">
+            <img class="game-room-list" src="${room.isSecret}" alt="is-secret">
+         </div>` : '';
+    };
+
+    /**
+     * 방 상태에 따른 스타일(테두리 색상과 텍스트 색상)을 반환합니다.
+     * @param room {object} 게임 방의 정보
+     * @returns {object} 스타일 정보를 담은 객체
+     */
+    this.getRoomStyle = (room) => {
+        let borderColor = room.roomStatus === "대기중" ? "#08F6B0" : "#FF79C5";
+        let textColor = borderColor; // 텍스트 색상을 테두리 색상과 동일하게 설정
+        return { borderColor, textColor };
+    };
+
+    /**
      * 게임 방의 정보를 렌더링합니다.
      * @param room {object} 게임 방의 정보
      * @returns {string} 게임 방의 정보를 렌더링한 HTML 문자열
      */
     this.renderRoom = (room) => {
-        let isSecretHTML = room.isSecret ?
-        `<div class="game-room-list is-secret">
-            <img class="game-room-list" src="${room.isSecret}" alt="is-secret">
-         </div>`
-        : '';
-
-        let borderColor = room.roomStatus === "대기중" ? "#08F6B0" : "#FF79C5";
-        let textColor = borderColor; // 텍스트 색상을 테두리 색상과 동일하게 설정합니다.
-
+        let isSecretHTML = this.getSecretRoomHTML(room);
+        let { borderColor, textColor } = this.getRoomStyle(room);
 
         return `
             <div class="game-room-list room-info" style="color: rgb(255, 255, 255); font-family: Galmuri11, serif; border: 1px solid ${borderColor}; border-radius: 10px; width: 100%;">
