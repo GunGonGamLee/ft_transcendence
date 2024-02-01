@@ -7,7 +7,7 @@ import useState from "../../utils/useState.js";
 
 export default function GameMode($container) {
   this.$container = $container;
-  let [getGameMode, setGameMode] = useState(0, this);
+  let [getGameMode, setGameMode] = useState(0, this, "render");
   this.setState = () => {
     this.render();
   };
