@@ -32,7 +32,7 @@ export default function CustomGameList($container) {
             </div>
             <footer class="custom-game-list" id="game-room-options-wrapper>
                 <div class="">
-                    <a class="custom-game-list" id="quick-join" style="color: rgb(255, 255, 255); font-family: Galmuri11, serif;">새로고침</a>
+                    <a class="custom-game-list" id="quick-join" style="color: rgb(255, 255, 255); font-family: Galmuri11, serif;">신속히 입장</a>
                     <a class="custom-game-list" id="create-room" style="color: rgb(255, 255, 255); font-family: Galmuri11, serif;">방 만들기</a>
                     <a class="custom-game-list" id="room-filter" style="color: rgb(255, 255, 255); font-family: Galmuri11, serif;">방 걸러보기</a>
                 </div>

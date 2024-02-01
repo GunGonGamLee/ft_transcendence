@@ -8,7 +8,7 @@ export default function GameRoomList() {
         this.state = [
             {
                 room: {
-                    gameMode: "1vs1",
+                    gameMode: "1 vs 1",
                     gameModeImage: "../../../assets/images/1vs1_logo.png",
                     countOfPlayers: "1/2",
                     roomTitle: "핑포로로로롱",
@@ -18,7 +18,7 @@ export default function GameRoomList() {
             },
             {
                 room: {
-                    gameMode: "1vs1",
+                    gameMode: "1 vs 1",
                     gameModeImage: "../../../assets/images/1vs1_logo.png",
                     countOfPlayers: "2/2",
                     roomTitle: "너만 오면 ㄱ",
@@ -30,7 +30,7 @@ export default function GameRoomList() {
                 room: {
                     gameMode: "토너먼트",
                     gameModeImage: "../../../assets/images/tournament_logo.png",
-                    roomTitle: "Im king of pingpong",
+                    roomTitle: "Im king of pingpong lalalalaalalalala",
                     countOfPlayers: "1/4",
                     roomStatus: "대기중"
                 },
@@ -81,14 +81,18 @@ export default function GameRoomList() {
      * @returns {string} 게임 방의 정보를 렌더링한 HTML 문자열
      */
     this.renderRoom = (room) => {
-        let isSecretHTML = room.isSecret ? 
+        let isSecretHTML = room.isSecret ?
         `<div class="game-room-list is-secret">
             <img class="game-room-list" src="${room.isSecret}" alt="is-secret">
          </div>`
         : '';
 
+        let borderColor = room.roomStatus === "대기중" ? "#08F6B0" : "#FF79C5";
+        let textColor = borderColor; // 텍스트 색상을 테두리 색상과 동일하게 설정합니다.
+
+
         return `
-            <div class="game-room-list room-info">
+            <div class="game-room-list room-info" style="color: rgb(255, 255, 255); font-family: Galmuri11, serif; border: 1px solid ${borderColor}; border-radius: 10px; width: 100%;">
                 <div class="game-room-list column">
                     <div class="game-room-list game-mode">
                         <img class="game-room-list" id= "game-mode-image" src="${room.gameModeImage}" alt="game-mode">
@@ -108,7 +112,7 @@ export default function GameRoomList() {
                         <div class="game-room-list game-mode-name">
                             ${room.gameMode}
                         </div>
-                        <div class="game-room-list room-status">
+                        <div class="game-room-list room-status" style="color: ${textColor};">
                             ${room.roomStatus}
                         </div>
                     </div>
