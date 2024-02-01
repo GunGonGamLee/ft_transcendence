@@ -1,7 +1,7 @@
 /**
  * @description useState 훅 구현
  * @param state 상태
- * @param component 전달된 컴포넌트
+ * @param {object}component 전달된 컴포넌트
  * @param {string}render 렌더링 함수 명
  * @returns [getState, setState] 반환
  */
