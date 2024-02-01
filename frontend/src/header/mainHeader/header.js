@@ -5,9 +5,18 @@ import {hoverChangeCursor} from "../../utils/hoverEvent.js";
  */
 export default function historiesHeader($container) {
   this.$container = $container;
+  this.imagePath = "../../../assets/images";
 
   this.setState = () => {
-    this.render();
+    const token = localStorage.getItem("jwtToken");
+    console.log("hi");
+    fetch("https://localhost/api/users/me", {
+      method: "GET",
+      headers: {
+        "Content-type": "application/json",
+        ...(token ? { Authorization: "Bearer " + token } : {}),
+      }
+    });
     document.getElementById("go-back").addEventListener("click", () => {
       history.back();
     })
@@ -21,8 +30,8 @@ export default function historiesHeader($container) {
             </div>
             <div class="main" id="title">사십 이 초-월</div>
             <div class="main" id="right-side">
-                <img src="../../../assets/images/avatar/red_bust.png" alt="아바타" id="user-avatar">
-                <img src="../../../assets/images/friends.png" alt="친구 목록" id="friends">
+                <img src="${this.imagePath}/avatar/red_bust.png" alt="아바타" id="user-avatar">
+                <img src="${this.imagePath}/friends.png" alt="친구 목록" id="friends">
             </div>
         </div>
         `
@@ -33,4 +42,5 @@ export default function historiesHeader($container) {
   }
 
   this.setState();
+  this.render();
 }
