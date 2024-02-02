@@ -399,11 +399,14 @@ footer.histories {
 .histories.tournament#tree-wrapper {
     display: grid;
     grid-template-columns: 1fr 2fr 1fr;
-    width: 100%;
+    width: 90%;
     height: 100%;
     padding: 0 10vw;
     font-family: Galmuri11-Bold, serif;
     text-align: center;
+    align-items: center;
+    justify-items: center;
+    font-size: 3vh;
 }
 
 .histories.tournament#tree-wrapper > .match {
@@ -411,15 +414,41 @@ footer.histories {
     flex-direction: column;
     align-items: center;
     justify-content: space-evenly;
+    background-color: rgba(41, 171, 226, 0.25);
+    padding: 2vw 2vh;
+    width: fit-content;
+}
+
+.histories.tournament.player1 > img, .histories.tournament.player2 > img {
+    height: 12vh;
+}
+
+.histories.tournament.match.player1 {
+    margin-bottom: 7vh;
+}
+
+.histories.tournament.match.rating {
+    margin-top: 1vh;
+    font-size: 2vh;
 }
 
 .histories.tournament#final {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: 1fr 2fr;
     width: 100%;
+    height: fit-content;
     justify-items: center;
     align-items: center;
     align-content: center;
     justify-content: center;
+    padding: 3vh 2vw;
+    border-bottom: 3px solid #0071BC;
+}
+
+.histories.tournament.final.winner > img {
+    height: 7vh;
+}
+
+.histories.tournament.final.trophy > img {
+    height: 12vh;
 }

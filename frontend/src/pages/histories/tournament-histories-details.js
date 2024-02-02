@@ -4,6 +4,7 @@ export default async function TournamentHistoriesDetails(id) {
   this.needToRender = true;
   this.imagePath = "../../../assets/images";
 
+  // TODO => 이전 버튼 클릭 시 컴포넌트가 중복되는 문제 해결해야 함
   this.init = () => {
     this.textContent = "";
     addPaginationOnClickProperty(
@@ -79,19 +80,19 @@ export default async function TournamentHistoriesDetails(id) {
       `
             <div class="histories tournament match player1">
                 <img src="${this.imagePath}/avatar/${matchData.player1.avatar}.png" alt="avatar">
-                <div class="histories tournament match player1 nickname">
+                <div class="histories tournament match nickname">
                     ${matchData.player1.nickname}
                 </div>
-                <div class="histories tournament match player1 rating">
+                <div class="histories tournament match rating">
                     Rating: ${matchData.player1.rating}
                 </div>
             </div>
             <div class="histories tournament match player2">
                 <img src="${this.imagePath}/avatar/${matchData.player2.avatar}.png" alt="avatar">
-                <div class="histories tournament match player2 nickname">
+                <div class="histories tournament match nickname">
                     ${matchData.player2.nickname}
                 </div>
-                <div class="histories tournament match player2 rating">
+                <div class="histories tournament match rating">
                     Rating: ${matchData.player2.rating}
                 </div>
             </div>
@@ -120,10 +121,10 @@ export default async function TournamentHistoriesDetails(id) {
     return `
     <div class="histories tournament final player1">
         <img src="${this.imagePath}/avatar/${finalData.player1.avatar}.png" alt="avatar">
-        <div class="histories tournament final player1 nickname">
+        <div class="histories tournament nickname">
             ${finalData.player1.nickname}
         </div>
-        <div class="histories tournament final player1 rating">
+        <div class="histories tournament match rating">
             Rating: ${finalData.player1.rating}
         </div>
     </div>
@@ -132,10 +133,10 @@ export default async function TournamentHistoriesDetails(id) {
     </div>
     <div class="histories tournament final player2">
         <img src="${this.imagePath}/avatar/${finalData.player2.avatar}.png" alt="avatar">
-        <div class="histories tournament final player2 nickname">
+        <div class="histories tournament match nickname">
             ${finalData.player2.nickname}
         </div>
-        <div class="histories tournament final player2 rating">
+        <div class="histories tournament match rating">
             Rating: ${finalData.player2.rating}
         </div>
     </div>
