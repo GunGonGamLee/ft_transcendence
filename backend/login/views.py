@@ -168,8 +168,7 @@ class VerificationCodeView(APIView):
             properties={'verification_code': openapi.Schema(type=openapi.TYPE_STRING, description='2차 인증 코드')},
             required=['verification_code']),
         manual_parameters=[
-            openapi.Parameter('Authorization', openapi.IN_HEADER, description='Bearer JWT Token', type=openapi.TYPE_STRING),
-            openapi.Parameter('content-type', openapi.IN_HEADER, description='application/json', type=openapi.TYPE_STRING), ],
+            openapi.Parameter('Authorization', openapi.IN_HEADER, description='Bearer JWT Token', type=openapi.TYPE_STRING)],
         responses={201: openapi.Response('Successful Response', schema=VerificationCodeSerializer),
                    400: 'Bad Request',
                    401: 'Bad Unauthorized',
