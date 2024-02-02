@@ -298,7 +298,7 @@ footer.histories {
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: repeat(3, 1fr);
-    row-gap: 1.2vh;
+    row-gap: 0.5vh;
     align-items: center;
     height: 100%;
     font-family: Galmuri11-Bold, serif;
