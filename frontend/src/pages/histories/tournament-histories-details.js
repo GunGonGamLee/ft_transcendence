@@ -83,7 +83,7 @@ export default async function TournamentHistoriesDetails(id) {
                     ${matchData.player1.nickname}
                 </div>
                 <div class="histories tournament match player1 rating">
-                    ${matchData.player1.rating}
+                    Rating: ${matchData.player1.rating}
                 </div>
             </div>
             <div class="histories tournament match player2">
@@ -92,12 +92,54 @@ export default async function TournamentHistoriesDetails(id) {
                     ${matchData.player2.nickname}
                 </div>
                 <div class="histories tournament match player2 rating">
-                    ${matchData.player2.rating}
+                    Rating: ${matchData.player2.rating}
                 </div>
             </div>
     `,
     );
     $treeWrapper.appendChild($match);
+  };
+
+  this.renderFinalWinner = (finalData) => {
+    let winnerVisibilityOfPlayer1 =
+      finalData.winner === finalData.player1.nickname ? "visible" : "hidden";
+    let winnerVisibilityOfPlayer2 =
+      finalData.winner === finalData.player2.nickname ? "visible" : "hidden";
+    return `
+    <div class="histories tournament final winner">
+        <img src="${this.imagePath}/winner.png" alt="winner" style="visibility: ${winnerVisibilityOfPlayer1}">
+    </div>
+    <div></div>
+    <div class="histories tournament final winner">
+        <img src="${this.imagePath}/winner.png" alt="winner" style="visibility: ${winnerVisibilityOfPlayer2}">
+    </div>
+    `;
+  };
+
+  this.renderFinalPlayers = (finalData) => {
+    return `
+    <div class="histories tournament final player1">
+        <img src="${this.imagePath}/avatar/${finalData.player1.avatar}.png" alt="avatar">
+        <div class="histories tournament final player1 nickname">
+            ${finalData.player1.nickname}
+        </div>
+        <div class="histories tournament final player1 rating">
+            Rating: ${finalData.player1.rating}
+        </div>
+    </div>
+    <div class="histories tournament final trophy">
+        <img src="${this.imagePath}/tournament_logo.png" alt="tournament_logo">
+    </div>
+    <div class="histories tournament final player2">
+        <img src="${this.imagePath}/avatar/${finalData.player2.avatar}.png" alt="avatar">
+        <div class="histories tournament final player2 nickname">
+            ${finalData.player2.nickname}
+        </div>
+        <div class="histories tournament final player2 rating">
+            Rating: ${finalData.player2.rating}
+        </div>
+    </div>
+    `;
   };
 
   this.renderFinal = ($treeWrapper, finalData) => {
@@ -107,27 +149,8 @@ export default async function TournamentHistoriesDetails(id) {
     $final.insertAdjacentHTML(
       "afterbegin",
       `
-            <div class="histories tournament final player1">
-                <img src="${this.imagePath}/avatar/${finalData.player1.avatar}.png" alt="avatar">
-                <div class="histories tournament final player1 nickname">
-                    ${finalData.player1.nickname}
-                </div>
-                <div class="histories tournament final player1 rating">
-                    ${finalData.player1.rating}
-                </div>
-            </div>
-            <div class="histories tournament final trophy">
-                <img src="${this.imagePath}/tournament_logo.png" alt="tournament_logo">
-            </div>
-            <div class="histories tournament final player2">
-                <img src="${this.imagePath}/avatar/${finalData.player2.avatar}.png" alt="avatar">
-                <div class="histories tournament final player2 nickname">
-                    ${finalData.player2.nickname}
-                </div>
-                <div class="histories tournament final player2 rating">
-                    ${finalData.player2.rating}
-                </div>
-            </div>
+            ${this.renderFinalWinner(finalData)}
+            ${this.renderFinalPlayers(finalData)}
     `,
     );
     $treeWrapper.appendChild($final);
