@@ -396,3 +396,18 @@ footer.histories {
 }
 
 /******* Histories Tournament Details ******/
+.histories.tournament#tree-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    width: 100%;
+    height: 100%;
+    padding: 0 10vw;
+    font-family: Galmuri11-Bold, serif;
+}
+
+.histories.tournament#final {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: 1fr 2fr;
+    width: 100%;
+}

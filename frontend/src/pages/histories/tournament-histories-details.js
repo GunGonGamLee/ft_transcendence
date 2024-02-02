@@ -33,7 +33,7 @@ export default async function TournamentHistoriesDetails(id) {
         player1: {
           avatar: "han_solo",
           nickname: "sejokim",
-          rating: 110,
+          rating: 5,
         },
         player2: {
           avatar: "darth_vader",
@@ -43,13 +43,13 @@ export default async function TournamentHistoriesDetails(id) {
       },
       match3: {
         player1: {
-          avatar: "luke_skywalker",
-          nickname: "hyojocho",
-          rating: 1234,
+          avatar: "chewbacca",
+          nickname: "yena",
+          rating: 110,
         },
         player2: {
-          avatar: "luke_skywalker",
-          nickname: "hyojocho",
+          avatar: "han_solo",
+          nickname: "sejokim",
           rating: 1234,
         },
         winner: "yena",
@@ -73,11 +73,10 @@ export default async function TournamentHistoriesDetails(id) {
 
   this.renderMatch = ($treeWrapper, matchData) => {
     let $match = document.createElement("div");
-    $match.class = "match";
+    $match.className = "histories tournament match";
     $match.insertAdjacentHTML(
       "afterbegin",
       `
-        <div class="histories tournament match">
             <div class="histories tournament match player1">
                 <img src="${this.imagePath}/avatar/${matchData.player1.avatar}.png" alt="avatar">
                 <div class="histories tournament match player1 nickname">
@@ -96,18 +95,48 @@ export default async function TournamentHistoriesDetails(id) {
                     ${matchData.player2.rating}
                 </div>
             </div>
-        </div>
     `,
     );
     $treeWrapper.appendChild($match);
   };
 
-  this.renderFinal = ($treeWrapper, finalData) => {};
+  this.renderFinal = ($treeWrapper, finalData) => {
+    let $final = document.createElement("div");
+    $final.className = "histories tournament";
+    $final.id = "final";
+    $final.insertAdjacentHTML(
+      "afterbegin",
+      `
+            <div class="histories tournament final player1">
+                <img src="${this.imagePath}/avatar/${finalData.player1.avatar}.png" alt="avatar">
+                <div class="histories tournament final player1 nickname">
+                    ${finalData.player1.nickname}
+                </div>
+                <div class="histories tournament final player1 rating">
+                    ${finalData.player1.rating}
+                </div>
+            </div>
+            <div class="histories tournament final trophy">
+                <img src="${this.imagePath}/tournament_logo.png" alt="tournament_logo">
+            </div>
+            <div class="histories tournament final player2">
+                <img src="${this.imagePath}/avatar/${finalData.player2.avatar}.png" alt="avatar">
+                <div class="histories tournament final player2 nickname">
+                    ${finalData.player2.nickname}
+                </div>
+                <div class="histories tournament final player2 rating">
+                    ${finalData.player2.rating}
+                </div>
+            </div>
+    `,
+    );
+    $treeWrapper.appendChild($final);
+  };
 
   this.renderTournamentTree = () => {
     let $treeWrapper = document.createElement("div");
     $treeWrapper.id = "tree-wrapper";
-    $treeWrapper.class = "histories tournament";
+    $treeWrapper.className = "histories tournament";
     this.renderMatch($treeWrapper, this.state.match1);
     this.renderFinal($treeWrapper, this.state.match3);
     this.renderMatch($treeWrapper, this.state.match2);
