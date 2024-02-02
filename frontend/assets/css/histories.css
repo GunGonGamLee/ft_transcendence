@@ -102,12 +102,12 @@
 
 .histories.list-item .histories.nickname {
     font-family: Galmuri11-Bold, serif;
-    font-size: 1.3em;
+    font-size: 2.3vh;
 }
 
 .histories.list-item .histories.rating {
     font-family: Galmuri11, serif;
-    font-size: 1.1em;
+    font-size: 2.1vh;
     text-align: center;
 }
 
@@ -146,8 +146,11 @@
     flex-direction: row;
     width: 70%;
     height: fit-content;
-    font-size: 2em;
-    margin-top: 2.5vh;
+    font-size: 3.2vh;
+    margin-top: 3vh;
+}
+
+.histories#mode > div {
     padding: 1vh 0;
 }
 
@@ -160,7 +163,7 @@
 }
 
 .histories#mode > div img {
-    width: 3em;
+    width: 4vh;
     margin-right: 2vh;
 }
 
@@ -177,7 +180,7 @@
     align-items: center;
     width: 100%;
     height: fit-content;
-    top: calc(16vh + 1.5em + 1em + 3px); /* 16vh: header height, 1.5em: nav fonts-size, 1em: <li> padding, 3px: <ul> border */
+    top: calc(16vh + 3.2vh + 1.5vh + 3px); /* 16vh: header height, 3.2vh: nav fonts-size, 1.5vh: <li> padding, 3px: <ul> border */
     z-index: 1;
 }
 
@@ -187,7 +190,7 @@
 }
 
 .histories.custom-toggle li {
-    padding: 1em;
+    padding: 1.5vh;
     color: #aaaaaa;
 }
 
@@ -202,8 +205,8 @@
 }
 
 .histories#search-wrapper > img {
-    width: 3em;
-    height: 3em;
+    width: 4vh;
+    height: 4vh;
     margin-right: 0.5vw;
 }
 
@@ -211,10 +214,10 @@
     background-color: black;
     border: 3px solid #FF52A0;
     font-family: Galmuri11, serif;
-    font-size: 1.5em;
-    width: 16em;
+    font-size: 2.5vh;
+    width: 16vw;
     color: white;
-    padding: 0.5em;
+    padding: 0.5vh;
 }
 
 /************ Histories Footer *************/
@@ -236,7 +239,7 @@ footer.histories {
     height: 100%;
     color: white;
     font-family: Galmuri11-Bold, serif;
-    font-size: 2.2em;
+    font-size: 3.2vh;
 }
 
 .histories.summary #user-info {
@@ -288,46 +291,46 @@ footer.histories {
 }
 
 .histories.one-on-one#player-avatar > img {
-    width: 6em;
+    height: 25vh;
 }
 
 .histories.one-on-one#player-info {
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: repeat(3, 1fr);
-    row-gap: 0.5em;
+    row-gap: 1.2vh;
     align-items: center;
     height: 100%;
     font-family: Galmuri11-Bold, serif;
 }
 
 .histories.one-on-one#player-nickname {
-    font-size: 1.5em;
+    font-size: 3vh;
 }
 
 .histories.one-on-one#player-rating {
-    font-size: 1.2em;
+    font-size: 2.5vh;
 }
 
 .histories.one-on-one#player-score {
-    font-size: 2em;
+    font-size: 4vh;
 }
 
 .histories#score-separator {
-    font-size: 2em;
+    font-size: 4vh;
 }
 
 .histories.one-on-one#game-info {
     display: grid;
     grid-template-columns: 1fr 2fr;
     grid-template-rows: repeat(3, 1fr);
-    column-gap: 1em;
-    row-gap: 1em;
+    column-gap: 1.5vh;
+    row-gap: 1.5vh;
     justify-content: center;
     width: fit-content;
     height: 100%;
-    font-size: 2em;
-    margin-left: 5em;
+    font-size: 3.5vh;
+    margin-left: 5vh;
 }
 
 .histories.one-on-one.info-title {
@@ -353,13 +356,13 @@ footer.histories {
     flex-direction: column;
     align-items: center;
     justify-items: center;
-    font-size: 1.8em;
+    font-size: 3vh;
     width: 100%;
 }
 
 .histories.tournament.player {
     width: 12vh;
-    font-size: 1.5em;
+    font-size: 2.5vh;
 }
 
 .histories.tournament.player-ranking.first {
@@ -375,11 +378,11 @@ footer.histories {
     align-items: center;
     width: 100%;
     height: 100%;
-    font-size: 1.2em;
+    font-size: 2.5vh;
 }
 
 .histories.tournament.opponents > .opponents-avatar {
-    width: 2em;
+    width: 4.5vh;
 }
 
 .histories.tournament.opponents > .opponents-nickname {
@@ -388,6 +391,6 @@ footer.histories {
 }
 
 .histories.tournament.opponents > .opponents-nickname > .opponents-ranking.first {
-    margin-left: 0.5em;
-    width: 2em;
+    margin-left: 1.5vh;
+    width: 3vh;
 }

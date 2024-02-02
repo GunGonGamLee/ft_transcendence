@@ -44,7 +44,7 @@ header {
 .header-wrapper .main#title {
     text-align: center;
     color: #FBFF3E;
-    font-size: 3em;
+    font-size: 4vh;
 }
 
 .header-wrapper .main#right-side > #user-avatar {
