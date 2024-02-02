@@ -130,7 +130,8 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 INSTALLED_APPS = [
     'users.apps.UsersConfig',
-    'pingpong.apps.PingpongConfig',
+    'games.apps.GamesConfig',
+    'friends.apps.FriendsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
