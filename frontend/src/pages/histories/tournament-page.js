@@ -1,5 +1,6 @@
 import TournamentHistoriesDetails from "./tournament-histories-details.js";
-import { click } from "../../utils/clickEvent.js";
+import { click, onClick } from "../../utils/clickEvent.js";
+import { addPaginationOnClickProperty } from "../../utils/pagination.js";
 
 export default async function TournamentHistories(isCustomMode) {
   this.$pagination = document.getElementById("pagination");
@@ -10,6 +11,12 @@ export default async function TournamentHistories(isCustomMode) {
   this.init = () => {
     this.textContent = "";
     this.$pagination.style.display = "block";
+    addPaginationOnClickProperty(
+      "prev",
+      "next",
+      () => console.log("TODO => 이전 페이지로 이동하기"),
+      () => console.log("TODO => 다음 페이지로 이동하기"),
+    );
   };
 
   /**

@@ -108,12 +108,6 @@ export default function Histories($container) {
     click($summary, Summary);
     click($custom, CustomHistories.bind($content, "1vs1"));
     click($tournament, TournamentHistories.bind($content, false));
-    click($prev, function () {
-      console.log("TODO => 이전 페이지로 이동");
-    });
-    click($next, function () {
-      console.log("TODO => 다음 페이지로 이동");
-    });
     click($toggleItems[0], CustomHistories.bind($content, "1vs1")); // 1 vs 1 모드 선택 시 실행
     click($toggleItems[1], TournamentHistories.bind($content, true)); // 토너먼트 모드 선택 시 실행
 

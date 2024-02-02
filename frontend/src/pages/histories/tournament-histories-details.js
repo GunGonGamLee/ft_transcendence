@@ -1,14 +1,17 @@
 import { click, onClick } from "../../utils/clickEvent.js";
+import { addPaginationOnClickProperty } from "../../utils/pagination.js";
 
 export default async function TournamentHistoriesDetails(id) {
   this.needToRender = true;
 
   this.init = () => {
     this.textContent = "";
-    this.$prev = document.getElementById("prev");
-    this.$next = document.getElementById("next");
-    onClick(this.$prev, this.renderTournamentTree);
-    onClick(this.$next, this.renderTournamentResult);
+    addPaginationOnClickProperty(
+      "prev",
+      "next",
+      this.renderTournamentTree,
+      this.renderTournamentResult,
+    );
   };
 
   this.useState = async () => {
