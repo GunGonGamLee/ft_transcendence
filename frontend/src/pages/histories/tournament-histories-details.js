@@ -24,20 +24,20 @@ export default async function TournamentHistoriesDetails(id) {
           rating: 1234,
         },
         player2: {
-          avatar: "luke_skywalker",
-          nickname: "hyojocho",
+          avatar: "chewbacca",
+          nickname: "yena",
           rating: 110,
         },
       },
       match2: {
         player1: {
-          avatar: "luke_skywalker",
-          nickname: "hyojocho",
+          avatar: "han_solo",
+          nickname: "sejokim",
           rating: 110,
         },
         player2: {
-          avatar: "luke_skywalker",
-          nickname: "hyojocho",
+          avatar: "darth_vader",
+          nickname: "Polarbear",
           rating: 1234,
         },
       },
