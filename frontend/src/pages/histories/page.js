@@ -50,10 +50,6 @@ export default function Histories($container) {
                    <img class="histories" src="../../../assets/images/tournament_logo.png" alt="tournament">
                    토너먼트 모드
                </div>
-               <div class="histories title" id="ranking">
-                   <img class="histories" src="../../../assets/images/ranking.png" alt="tournament">
-                   전체 랭킹 
-               </div>
             </nav>
             <div class="histories" id="content">
             </div>
@@ -88,28 +84,23 @@ export default function Histories($container) {
     const $custom = document.getElementById("custom");
     const $toggleItems = Array.from(document.getElementsByTagName("li"));
     const $tournament = document.getElementById("tournament");
-    const $ranking = document.getElementById("ranking");
     const $prev = document.getElementById("prev");
     const $next = document.getElementById("next");
 
     // 폰트 색상 변경
-    hoverChangeColor(
-      [$summary, $custom, $tournament, $ranking],
-      "#ffffff",
-      "#29ABE2",
-    );
+    hoverChangeColor([$summary, $custom, $tournament], "#ffffff", "#29ABE2");
     hoverChangeColor($toggleItems, "#aaaaaa", "#29ABE2");
 
     // 폰트 변경
     hoverChangeFont(
-      [$summary, $custom, $tournament, $ranking],
+      [$summary, $custom, $tournament],
       "Galmuri11, serif",
       "Galmuri11-Bold, serif",
     );
 
     // 커서 변경
     hoverChangeCursor(
-      [$summary, $customMenuWrapper, $tournament, $ranking, $prev, $next],
+      [$summary, $customMenuWrapper, $tournament, $prev, $next],
       "pointer",
     );
 
@@ -117,7 +108,6 @@ export default function Histories($container) {
     click($summary, Summary);
     click($custom, CustomHistories.bind($content, "1vs1"));
     click($tournament, TournamentHistories.bind($content, false));
-    click($ranking, Ranking);
     click($prev, function () {
       console.log("TODO => 이전 페이지로 이동");
     });
