@@ -6,27 +6,40 @@
  * @returns [getState, setState] 반환
  * @description 배열이 인자로 올 때 동작이 다르니 유의해서 사용하세요
  */
+
 export default function useState(stateInput, component, render) {
-  if (typeof stateInput === "object") { // js에선 배열도 object로 인식함
+  if (Array.isArray(stateInput)) {
+    // 배열일 경우
     let state = [...stateInput];
     const getState = () => {
       return state;
     };
     const setState = (newState) => {
       state = [...newState];
-      component[render](); // 그냥 render를 인자로 받으면 최신화가 안되버리는..!
+      component[render](); // render 메서드 호출
+    };
+    return [getState, setState];
+  } else if (typeof stateInput === "object") {
+    // 객체일 경우 (단, null과 배열 제외)
+    let state = { ...stateInput };
+    const getState = () => {
+      return state;
+    };
+    const setState = (newState) => {
+      state = { ...newState };
+      component[render](); // render 메서드 호출
     };
     return [getState, setState];
   } else {
-      let state = stateInput;
-      const getState = () => {
-        return state;
-      };
-      const setState = (newState) => {
-        state = newState;
-        component[render](); // 그냥 render를 인자로 받으면 최신화가 안되버리는..!
-      };
-      return [getState, setState];
+    // 기본형(primitive) 데이터 타입일 경우
+    let state = stateInput;
+    const getState = () => {
+      return state;
+    };
+    const setState = (newState) => {
+      state = newState;
+      component[render](); // render 메서드 호출
+    };
+    return [getState, setState];
   }
 }
-
