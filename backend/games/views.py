@@ -1,15 +1,19 @@
 import jwt
+import random
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
 from django.http import JsonResponse
 from users.models import User
-from games.models import Game
+from games.models import Game, CasualGameView
 from login.views import AuthUtils
 from src.utils import get_request_body_value
 from django.core.exceptions import BadRequest
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from django.db import transaction
+from django.db.models import Min, Count
+from games.serializers import GameRoomSerializer
 
 
 class GameView(APIView):
@@ -80,3 +84,36 @@ class GameView(APIView):
     def is_title_already_exist(self, title):
         existing_games = Game.objects.filter(title=title)
         return existing_games.exists()
+
+
+class GameRoomView(APIView):
+    @transaction.atomic
+    def post(self, request, room_id):
+        try:
+            user = AuthUtils.validate_jwt_token_and_get_user(request)
+            room_id = int(room_id)
+
+            if room_id == 0:    # 신속히 입장
+                count = CasualGameView.objects.aggregate(Count('id'))
+                if count == 0:
+                    room_id = GameView.create_room("보보봉", None, random.choice([0, 1]), user)
+                    game = Game.objects.get(id=room_id)
+                    serializer = GameRoomSerializer(game)
+                    return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
+                else:
+                    id = CasualGameView.objects.aggregate(Min('id'))['id__min']
+                    game = Game.objects.get(id=id)
+                    serializer = GameRoomSerializer(game)
+                    return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+
+        except jwt.ExpiredSignatureError:
+            return JsonResponse({'error': 'Token has expired'}, status=status.HTTP_401_UNAUTHORIZED)
+        except jwt.InvalidTokenError:
+            return JsonResponse({'error': 'Invalid token'}, status=status.HTTP_401_UNAUTHORIZED)
+        except User.DoesNotExist:
+            return JsonResponse({'err_msg': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+        except ValueError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return JsonResponse({'error': e.__class__.__name__, 'message':str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
