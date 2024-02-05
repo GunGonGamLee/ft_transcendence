@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from src.choices import AVATAR_CHOICES
 
 
 class UserManager(BaseUserManager):
@@ -28,14 +29,6 @@ class User(AbstractUser):
     REQUIRED_FIELDS = []  # email은 USERNAME_FIELD로 사용되므로 여기서 제외
 
     objects = UserManager()
-
-    AVATAR_CHOICES = [
-        (0, "RED"),
-        (1, "BLUE"),
-        (2, "GREEN"),
-        (3, "YELLOW"),
-        (4, "PINK"),
-    ]
 
     email = models.EmailField('이메일 주소', unique=True, max_length=254)  # 이메일
     nickname = models.CharField(max_length=8, unique=True, blank=True, null=True)  # 닉네임

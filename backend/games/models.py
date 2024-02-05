@@ -1,19 +1,9 @@
 from django.db import models
 from users.models import User
+from src.choices import MODE_CHOICES, STATUS_CHOICES
 
 
 class Game(models.Model):
-    MODE_CHOICES = [
-        (0, "1vs1"),
-        (1, "casual_tournament"),
-        (2, "rank"),
-    ]
-    STATUS_CHOICES = [
-        (0, "WAITING"),
-        (1, "IN_GAME"),
-        (2, "FINISHED"),
-        (3, "DELETED"),
-    ]
 
     mode = models.PositiveSmallIntegerField(choices=MODE_CHOICES)
     title = models.CharField(null=True, blank=True)
