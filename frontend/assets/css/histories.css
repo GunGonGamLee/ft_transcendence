@@ -178,7 +178,6 @@
     display: none;
     justify-content: center;
     align-items: center;
-    width: 100%;
     height: fit-content;
     top: calc(16vh + 3.2vh + 1.5vh + 3px); /* 16vh: header height, 3.2vh: nav fonts-size, 1.5vh: <li> padding, 3px: <ul> border */
     z-index: 1;
