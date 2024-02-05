@@ -52,12 +52,27 @@ export default function CustomGameList($container) {
         this.$container.insertAdjacentHTML("beforeend", modalHtml);
     }
 
-    this.render();
-
     this.addEventListenersToLayout = () => {
         const $roomContent = document.getElementById("room-content");
         const $paginationBefore = document.getElementById("pagination-arrow-left");
         const $paginationAfter = document.getElementById("pagination-arrow-right");
+        const $createRoomButton = document.getElementById("create-room");
+        const $roomCreateModal = document.getElementById("room-create-modal-wrapper");
+        const $modalClose = document.getElementById("modal-close");
+
+
+        // 방만들기 모달 열기
+        click($createRoomButton, () => {
+            $roomCreateModal.style.display = "block";
+        });
+
+        // 방만들기 모달 닫기
+        click($modalClose, () => {
+            $roomCreateModal.style.display = "none";
+        });
 
     }
+
+    this.render();
+    this.addEventListenersToLayout();
 }
