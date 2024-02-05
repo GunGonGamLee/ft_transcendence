@@ -100,7 +100,7 @@ else:
 #     },
 #     'handlers': {
 #         'logstash': {
-#             'level': 'INFO',  # 모든 로그 레벨 포함
+#             'level': 'WARN',  # WARNING 단계 이상의 로그만 출력
 #             'class': 'logstash.TCPLogstashHandler',
 #             'host': 'logstash_container',  # Logstash 서비스의 컨테이너 이름
 #             'port': 5333,  # Logstash 컨테이너가 로그를 수신하는 포트

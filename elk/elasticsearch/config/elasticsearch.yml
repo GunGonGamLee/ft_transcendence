@@ -2,6 +2,7 @@ cluster.name: "docker-cluster"
 network.host: 0.0.0.0
 xpack.license.self_generated.type: trial
 xpack.monitoring.collection.enabled: true
+logger.level: error
 
 xpack.security.enabled: true
 xpack.security.http.ssl.enabled: true
