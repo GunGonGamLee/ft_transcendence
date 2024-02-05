@@ -69,7 +69,6 @@ class GameView(APIView):
         game = Game.objects.create(title=title, password=password, mode=mode, status=0, manager=user)
         return game.id
 
-
     def check_mode(self, mode):
         if mode == "casual_1v1":
             return 0
@@ -88,6 +87,22 @@ class GameView(APIView):
 
 
 class GameRoomView(APIView):
+    @swagger_auto_schema(tags=['/api/games'],
+                         operation_description="게임방 입장 API",
+                         manual_parameters=[
+                             openapi.Parameter('Authorization', openapi.IN_HEADER, description='Bearer JWT Token',
+                                               type=openapi.TYPE_STRING),
+                             openapi.Parameter('game_id', openapi.IN_PATH, description='게임 방 id',
+                                               type=openapi.TYPE_STRING),
+                         ],
+                         responses={
+                             200: 'OK',
+                             201: 'CREATED',
+                             400: 'BAD_REQUEST',
+                             401: 'UNAUTHORIZED',
+                             404: 'NOT_FOUND',
+                             409: 'CONFLICT',
+                             500: 'SERVER_ERROR'})
     @transaction.atomic
     def post(self, request, game_id):
         try:
