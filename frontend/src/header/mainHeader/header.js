@@ -87,13 +87,13 @@ export default function historiesHeader($container) {
 
   this.renderFriends = () => {
     this.$container.querySelector("#myModal").innerHTML = `
-        <div style="height: 70vh; width: 40vw; display: flex; flex-direction: column; justify-content: space-between; align-items: center">
+        <div class="user-card-wrapper">
           ${userCard(friends[0] || null)}
           ${userCard(friends[2] || null)}
           ${userCard(friends[4] || null)}
           ${userCard(friends[6] || null)}
         </div>
-        <div style="height: 70vh; width: 40vw; display: flex; flex-direction: column; justify-content: space-between; align-items: center">
+        <div class="user-card-wrapper">
           ${userCard(friends[1] || null)}
           ${userCard(friends[3] || null)}
           ${userCard(friends[5] || null)}
