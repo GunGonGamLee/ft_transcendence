@@ -45,8 +45,7 @@ class GameView(APIView):
             elif self.is_title_already_exist(title) and title is not None:
                 raise BadRequest
             else:
-                game = Game.objects.create(title=title, password=password, mode=mode, status=0, manager=user)
-                game.save()
+                self.create_room(title, password, mode, user)
                 return Response(status=status.HTTP_201_CREATED)
 
         except jwt.ExpiredSignatureError:
@@ -59,6 +58,11 @@ class GameView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return JsonResponse({'error': e.__class__.__name__}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @staticmethod
+    def create_room(title, password, mode, user):
+        game = Game.objects.create(title=title, password=password, mode=mode, status=0, manager=user)
+        return game.id
 
     def check_mode(self, mode):
         if mode == "casual_1v1":
