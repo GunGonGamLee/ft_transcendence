@@ -1,7 +1,8 @@
 import {click} from "../../utils/clickEvent.js"
-import GameRoomList from "./game-room-list.js";
-import {importCss} from '../../utils/importCss.js';
+import GameRoomList from "./game-room-list.js"
+import {importCss} from '../../utils/importCss.js'
 import roomCreateModal from './room-create-modal.js'
+import {hoverToggle} from '../../utils/hoverEvent.js'
 
 
 export default function CustomGameList($container) {
@@ -32,12 +33,20 @@ export default function CustomGameList($container) {
                     </a>
                 </div>
             </div>
-            <footer class="custom-game-list" id="game-room-options-wrapper>
-                <div class="">
+            <footer class="custom-game-list" id="game-room-options-wrapper">
                     <a class="custom-game-list" id="quick-join" style="color: rgb(255, 255, 255); font-family: Galmuri11, serif;">신속히 입장</a>
                     <a class="custom-game-list" id="create-room" style="color: rgb(255, 255, 255); font-family: Galmuri11, serif;">방 만들기</a>
-                    <a class="custom-game-list" id="room-filter" style="color: rgb(255, 255, 255); font-family: Galmuri11, serif;">방 걸러보기</a>
-                </div>
+                    <a class="custom-game-list" id="room-filter" style="color: rgb(255, 255, 255); font-family: Galmuri11, serif;">
+                        <div class="histories game-mode-toggle" id="toggle">
+                            <ul class="histories">
+                                <li>1 vs 1 모드</li>
+                                <li>토너먼트 모드</li>
+                            </ul>
+                        </div>
+                        <div class="custom-game-list" id="room-filter">
+                            방 걸러보기
+                        </div> 
+                    </a>
             </footer>
         `)
     }
@@ -59,6 +68,8 @@ export default function CustomGameList($container) {
         const $createRoomButton = document.getElementById("create-room");
         const $roomCreateModal = document.getElementById("room-create-modal-wrapper");
         const $modalClose = document.getElementById("modal-close");
+        const $roomSearchFilter = document.getElementById("room-filter");
+        const $modeFilterToggle= document.getElementById("toggle")
 
 
         // 방만들기 모달 열기
@@ -71,6 +82,8 @@ export default function CustomGameList($container) {
             $roomCreateModal.style.display = "none";
         });
 
+        // 방 걸러보기 토글
+        hoverToggle($roomSearchFilter, $modeFilterToggle, 'block');
     }
 
     this.render();

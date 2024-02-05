@@ -18,6 +18,32 @@
     padding: 4vh 5vw;
 }
 
+/* game-mode-toggle */
+.game-mode-toggle#toggle {
+    opacity: 0.7;
+    font-size: 2vw;
+    position: absolute;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    height: fit-content;
+    bottom: calc(10vh + 3vw); /* 10vh: footer의 height 절반 , 3vw: 2.7이 footer의 font사이즈 인데 0.3 더 늘임 */
+    z-index: 1;
+}
+
+.game-mode-toggle ul {
+    background: #0000009c;
+}
+
+.game-mode-toggle li {
+    padding: 1rem;
+    color: #aaaaaa;
+}
+
+#room-filter {
+    padding: 1vh 0vw;
+}
+
 /* room-info */
 .room-info {
     font-size: 1.8vw;
