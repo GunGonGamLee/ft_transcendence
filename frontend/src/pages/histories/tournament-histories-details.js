@@ -217,6 +217,16 @@ export default async function TournamentHistoriesDetails(id) {
     `;
   };
 
+  this.setPodiumHeight = (constant) => {
+    const $firstPodium = document.getElementById("first-podium");
+    const $secondPodium = document.getElementById("second-podium");
+    const $othersPodium = document.getElementById("others-podium");
+
+    $firstPodium.style.height = constant * 0.5 + "vh";
+    $secondPodium.style.height = constant * 0.3 + "vh";
+    $othersPodium.style.height = constant * 0.1 + "vh";
+  };
+
   /**
    * 토너먼트 결과를 렌더링합니다.
    * @param result 토너먼트 결과
@@ -238,8 +248,10 @@ export default async function TournamentHistoriesDetails(id) {
       </div>
       <div class="histories tournament result-column">
         <div class="">그 외</div>
-        ${this.renderTournamentPlayer(result.others.player1)}
-        ${this.renderTournamentPlayer(result.others.player2)}
+        <div class="histories tournament result others">
+            ${this.renderTournamentPlayer(result.others.player1)}
+            ${this.renderTournamentPlayer(result.others.player2)}
+        </div>
         <div class="histories podium" id="others-podium"></div>
       </div>
     `,
@@ -254,6 +266,7 @@ export default async function TournamentHistoriesDetails(id) {
     const result = this.getResult();
     this.renderResult(result, $resultWrapper);
     this.appendChild($resultWrapper);
+    this.setPodiumHeight(10);
   };
 
   this.init();
