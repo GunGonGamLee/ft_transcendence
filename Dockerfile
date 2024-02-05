@@ -1,18 +1,15 @@
-FROM nikolaik/python-nodejs:python3.12-nodejs20
+FROM python:3.12.1-slim
 
-RUN mkdir frontend backend && \
+RUN mkdir -p backend && \
 	apt-get update && \
-	apt-get install bash
-
-# COPY frontend/package*.json ./frontend/
-# RUN cd frontend && npm install
+	apt-get install bash && \
+	apt-get install -y python3-pip
 
 COPY backend/requirements.txt ./backend/
 RUN pip install -r backend/requirements.txt
 
 COPY backend ./backend
-# COPY frontend ./frontend
 
-EXPOSE 8000
+WORKDIR /backend
 
-CMD bash -c "cd backend && python manage.py runserver 0.0.0.0:8000"
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "src.wsgi:application"]

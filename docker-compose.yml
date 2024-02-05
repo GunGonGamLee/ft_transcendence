@@ -52,8 +52,8 @@ services:
       INTRA42_REDIRECT_URI: ${INTRA42_REDIRECT_URI}
       INTRA42_USERINFO_API: ${INTRA42_USERINFO_API}
 
-    depends_on:
-      - hashicorp_vault
+    # depends_on:
+      # - hashicorp_vault
 
   nginx:
     build: ./nginx
