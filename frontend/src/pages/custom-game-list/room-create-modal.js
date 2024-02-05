@@ -20,7 +20,7 @@ export default function roomCreateModal(isVisible) {
           </div>
           <div style="position: absolute; width: 167px; height: 62px; left: 349px; top: 397px;">
               <div style="background: rgba(251.14, 255, 62, 0.20); border-radius: 10px; border: 5px #FBFF3E solid; width: 100%; height: 100%;"></div>
-              <div style="position: absolute; left: 48px; top: 9px; text-align: center; color: white; font-size: 36px; font-family: Galmuri11, serif; font-weight: 400;">만들기</div>
+              <div style="position: absolute; left: 32px; top: 9px; text-align: center; color: white; font-size: 36px; font-family: Galmuri11, serif; font-weight: 400;">만들기</div>
           </div>
       </div>
     `;
