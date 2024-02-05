@@ -18,7 +18,7 @@ class SetNicknameView(APIView):
     @swagger_auto_schema(tags=['/api/users'],
                          operation_description="사용자 닉네임 저장 API",
                          manual_parameters=[
-                             openapi.Parameter('Authorization', openapi.IN_HEADER, description='Bearer JWT Token',
+                             openapi.Parameter('Authorization', openapi.IN_HEADER, description='JWT Token',
                                                type=openapi.TYPE_STRING), ],
                          request_body=openapi.Schema(
                              type=openapi.TYPE_OBJECT,
@@ -38,6 +38,41 @@ class SetNicknameView(APIView):
             user.avatar = random.randint(0, 5)
             user.save()
             return Response(status=status.HTTP_201_CREATED)
+        except jwt.ExpiredSignatureError:
+            return JsonResponse({'error': 'Token has expired'}, status=status.HTTP_401_UNAUTHORIZED)
+        except jwt.InvalidTokenError:
+            return JsonResponse({'error': 'Invalid token'}, status=status.HTTP_401_UNAUTHORIZED)
+        except ValidationError as e:
+            return JsonResponse({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
+        except User.DoesNotExist:
+            return JsonResponse({'err_msg': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+        except IntegrityError:
+            return JsonResponse({'err_msg': 'duplicate nickname'}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return JsonResponse({'error': e.__class__.__name__}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @swagger_auto_schema(tags=['/api/users'],
+                         operation_description="사용자 닉네임 수정 API",
+                         manual_parameters=[
+                             openapi.Parameter('Authorization', openapi.IN_HEADER, description='JWT Token',
+                                               type=openapi.TYPE_STRING), ],
+                         request_body=openapi.Schema(
+                             type=openapi.TYPE_OBJECT,
+                             properties={'nickname': openapi.Schema(type=openapi.TYPE_STRING, description='닉네임')},
+                             required=['nickname']),
+                         responses={
+                                    200: 'OK',
+                                    400: 'BAD_REQUEST',
+                                    401: 'UNAUTHORIZED',
+                                    404: 'NOT_FOUND',
+                                    500: 'SERVER_ERROR'})
+    def patch(self, request):
+        try:
+            user = AuthUtils.validate_jwt_token_and_get_user(request)
+            nickname = get_request_body_value(request, 'nickname')
+            user.nickname = nickname
+            user.save()
+            return Response(status=status.HTTP_200_OK)
         except jwt.ExpiredSignatureError:
             return JsonResponse({'error': 'Token has expired'}, status=status.HTTP_401_UNAUTHORIZED)
         except jwt.InvalidTokenError:
