@@ -168,6 +168,16 @@ export default async function TournamentHistoriesDetails(id) {
     this.appendChild($treeWrapper);
   };
 
+  /**
+   * 토너먼트 결과를 반환합니다.
+   * 1. match3의 승자를 기준으로 firstPlayer, secondPlayer를 정합니다.
+   * 2. match1, match2의 player1, player2 중 match3의 플레이어가 아닌 플레이어를 others에 추가합니다.
+   * @returns {{
+   * firstPlayer: {nickname: string, rating: number, avatar: string},
+   * secondPlayer: {nickname: string, rating: number, avatar: string},
+   * others: { player1: {nickname: string, rating: number, avatar: string}, player2: {nickname: string, rating: number, avatar: string}}
+   * }} 토너먼트 결과
+   */
   this.getResult = () => {
     const { match1, match2, match3 } = this.state;
     let firstPlayer,
@@ -180,20 +190,16 @@ export default async function TournamentHistoriesDetails(id) {
       firstPlayer = match3.player2;
       secondPlayer = match3.player1;
     }
-    const match3PlayerNicknames = [
+    const finalPlayerNicknames = [
       match3.player1.nickname,
       match3.player2.nickname,
     ];
-    if (!match3PlayerNicknames.includes(match1.player1.nickname)) {
-      others.add(match1.player1);
-    } else {
-      others.add(match1.player2);
-    }
-    if (!match3PlayerNicknames.includes(match2.player1.nickname)) {
-      others.add(match2.player1);
-    } else {
-      others.add(match2.player2);
-    }
+    finalPlayerNicknames.includes(match1.player1.nickname) === false
+      ? (others.player1 = match1.player1)
+      : (others.player1 = match1.player2);
+    finalPlayerNicknames.includes(match2.player1.nickname) === false
+      ? (others.player2 = match2.player1)
+      : (others.player2 = match2.player2);
     return {
       firstPlayer,
       secondPlayer,
