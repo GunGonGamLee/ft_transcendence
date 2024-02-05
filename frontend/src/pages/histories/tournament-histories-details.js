@@ -158,6 +158,7 @@ export default async function TournamentHistoriesDetails(id) {
   };
 
   this.renderTournamentTree = () => {
+    this.init();
     let $treeWrapper = document.createElement("div");
     $treeWrapper.id = "tree-wrapper";
     $treeWrapper.className = "histories tournament";
