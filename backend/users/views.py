@@ -51,6 +51,21 @@ class SetNicknameView(APIView):
         except Exception as e:
             return JsonResponse({'error': e.__class__.__name__}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    @swagger_auto_schema(tags=['/api/users'],
+                         operation_description="사용자 닉네임 수정 API",
+                         manual_parameters=[
+                             openapi.Parameter('Authorization', openapi.IN_HEADER, description='JWT Token',
+                                               type=openapi.TYPE_STRING), ],
+                         request_body=openapi.Schema(
+                             type=openapi.TYPE_OBJECT,
+                             properties={'nickname': openapi.Schema(type=openapi.TYPE_STRING, description='닉네임')},
+                             required=['nickname']),
+                         responses={
+                                    200: 'OK',
+                                    400: 'BAD_REQUEST',
+                                    401: 'UNAUTHORIZED',
+                                    404: 'NOT_FOUND',
+                                    500: 'SERVER_ERROR'})
     def patch(self, request):
         try:
             user = AuthUtils.validate_jwt_token_and_get_user(request)
