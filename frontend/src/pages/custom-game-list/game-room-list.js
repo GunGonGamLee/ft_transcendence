@@ -108,7 +108,7 @@ export default function GameRoomList() {
         let { borderColor, textColor } = this.getRoomStyle(room);
 
         return `
-            <div class="game-room-list room-info" style="color: rgb(255, 255, 255); font-family: Galmuri11, serif; border: 1px solid ${borderColor}; border-radius: 10px; width: 100%;">
+            <div class="game-room-list room-info" id="room-content" style="color: rgb(255, 255, 255); font-family: Galmuri11, serif; border: 1px solid ${borderColor}; border-radius: 10px; width: 100%;">
                 <div class="game-room-list column">
                     <div class="game-room-list game-mode">
                         <img class="game-room-list" id= "game-mode-image" src="${room.gameModeImage}" alt="game-mode">
