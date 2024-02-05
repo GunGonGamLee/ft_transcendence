@@ -88,16 +88,16 @@ class GameView(APIView):
 
 class GameRoomView(APIView):
     @transaction.atomic
-    def post(self, request, room_id):
+    def post(self, request, game_id):
         try:
             user = AuthUtils.validate_jwt_token_and_get_user(request)
-            room_id = int(room_id)
+            game_id = int(game_id)
 
-            if room_id == 0:    # 신속히 입장
+            if game_id == 0:    # 신속히 입장
                 count = CasualGameView.objects.aggregate(Count('id'))
                 if count == 0:
-                    room_id = GameView.create_room("보보봉", None, random.choice([0, 1]), user)
-                    game = Game.objects.get(id=room_id)
+                    game_id = GameView.create_room("보보봉", None, random.choice([0, 1]), user)
+                    game = Game.objects.get(id=game_id)
                     serializer = GameRoomSerializer(game)
                     return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
                 else:
