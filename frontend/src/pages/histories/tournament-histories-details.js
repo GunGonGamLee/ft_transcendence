@@ -168,8 +168,44 @@ export default async function TournamentHistoriesDetails(id) {
     this.appendChild($treeWrapper);
   };
 
+  this.getResult = () => {
+    const { match1, match2, match3 } = this.state;
+    let firstPlayer,
+      secondPlayer,
+      others = {};
+    if (match3.winner === match3.player1.nickname) {
+      firstPlayer = match3.player1;
+      secondPlayer = match3.player2;
+    } else {
+      firstPlayer = match3.player2;
+      secondPlayer = match3.player1;
+    }
+    const match3PlayerNicknames = [
+      match3.player1.nickname,
+      match3.player2.nickname,
+    ];
+    if (!match3PlayerNicknames.includes(match1.player1.nickname)) {
+      others.add(match1.player1);
+    } else {
+      others.add(match1.player2);
+    }
+    if (!match3PlayerNicknames.includes(match2.player1.nickname)) {
+      others.add(match2.player1);
+    } else {
+      others.add(match2.player2);
+    }
+    return {
+      firstPlayer,
+      secondPlayer,
+      others,
+    };
+  };
+
   this.renderTournamentResult = () => {
-    console.log("TODO => 토너먼트 결과 렌더링");
+    let $resultWrapper = document.createElement("div");
+    $resultWrapper.id = "result-wrapper";
+    $resultWrapper.className = "histories tournament";
+    const result = this.getResult();
   };
 
   this.init();
