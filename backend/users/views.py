@@ -18,7 +18,7 @@ class SetNicknameView(APIView):
     @swagger_auto_schema(tags=['/api/users'],
                          operation_description="사용자 닉네임 저장 API",
                          manual_parameters=[
-                             openapi.Parameter('Authorization', openapi.IN_HEADER, description='Bearer JWT Token',
+                             openapi.Parameter('Authorization', openapi.IN_HEADER, description='JWT Token',
                                                type=openapi.TYPE_STRING), ],
                          request_body=openapi.Schema(
                              type=openapi.TYPE_OBJECT,
