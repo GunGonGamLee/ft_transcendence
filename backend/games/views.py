@@ -14,6 +14,7 @@ from drf_yasg import openapi
 from django.db import transaction
 from django.db.models import Min, Count
 from games.serializers import GameRoomSerializer
+from django.core.exceptions import ValidationError
 
 
 class GameView(APIView):
@@ -101,8 +102,18 @@ class GameRoomView(APIView):
                     serializer = GameRoomSerializer(game)
                     return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
                 else:
-                    id = CasualGameView.objects.aggregate(Min('id'))['id__min']
-                    game = Game.objects.get(id=id)
+                    game_id = CasualGameView.objects.aggregate(Min('id'))['id__min']
+                    game = Game.objects.get(id=game_id)
+                    serializer = GameRoomSerializer(game)
+                    return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+            else:
+                game = Game.objects.get(id=game_id)
+                if game.status != 0:
+                    return Response({'error': '대기 중인 방이 아닙니다.'}, status=status.HTTP_400_BAD_REQUEST)
+                if self.is_full(game):
+                    return Response({'error': '꽉 찬 방입니다.'}, status=status.HTTP_409_CONFLICT)
+                else:
+                    self.enter_game(game, user)
                     serializer = GameRoomSerializer(game)
                     return JsonResponse(serializer.data, status=status.HTTP_200_OK)
 
@@ -111,9 +122,38 @@ class GameRoomView(APIView):
         except jwt.InvalidTokenError:
             return JsonResponse({'error': 'Invalid token'}, status=status.HTTP_401_UNAUTHORIZED)
         except User.DoesNotExist:
-            return JsonResponse({'err_msg': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+            return JsonResponse({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+        except Game.DoesNotExist:
+            return JsonResponse({'error': 'Game not found.'}, status=status.HTTP_404_NOT_FOUND)
         except ValueError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+        except ValidationError as e:
+            return JsonResponse({'error': e.messages}, status=status.HTTP_409_CONFLICT)
         except Exception as e:
             return JsonResponse({'error': e.__class__.__name__, 'message':str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def is_full(self, game):
+        player1 = game.player1_id
+        player2 = game.player2_id
+        player3 = game.player3_id
+
+        if player1 is not None and player2 is not None and player3 is not None:
+            return True
+
+    def enter_game(self, game, user):
+        player1 = game.player1_id
+        player2 = game.player2_id
+        player3 = game.player3_id
+
+        if player1 is None:
+            game.player1 = user
+            game.save()
+        elif player2 is None:
+            game.player2 = user
+            game.save()
+        elif player3 is None:
+            game.player3 = user
+            game.save()
+        else:
+            raise ValidationError('꽉 찬 방입니다.')
 
