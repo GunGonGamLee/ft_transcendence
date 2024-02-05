@@ -1,4 +1,4 @@
-from django.db import models, connection
+from django.db import models
 from users.models import User
 
 
@@ -45,76 +45,19 @@ class Result(models.Model):
         db_table = 'results'
 
 
-class RankGameViewManager(models.Manager):
-    def get_queryset(self):
-        with connection.cursor() as cursor:
-            cursor.execute("""
-                SELECT games.id, games.mode, games.status
-                FROM games                
-                WHERE games.status = 0 and games.mode = 2;
-            """)
-            results = cursor.fetchall()
-
-        return [self.model(*row) for row in results]
-
-
 class RankGameView(models.Model):
-    game = models.ForeignKey(Game, on_delete=models.SET_NULL, null=True, blank=True)
     mode = models.PositiveSmallIntegerField()
     status = models.PositiveSmallIntegerField()
 
-    objects = RankGameViewManager()
-
     class Meta:
         managed = False
-
-
-class CasualGameViewManager(models.Manager):
-    def get_queryset(self):
-        with connection.cursor() as cursor:
-            cursor.execute("""
-                SELECT games.id, games.mode, games.status
-                FROM games                
-                WHERE games.status = 0 and (games.mode = 0 or games.mode = 1);
-            """)
-            results = cursor.fetchall()
-
-        return [self.model(*row) for row in results]
+        db_table = 'rankgameview'
 
 
 class CasualGameView(models.Model):
-    game = models.ForeignKey(Game, on_delete=models.SET_NULL, null=True, blank=True)
     mode = models.PositiveSmallIntegerField()
     status = models.PositiveSmallIntegerField()
 
-    objects = CasualGameViewManager()
-
     class Meta:
         managed = False
-
-
-# class GameRecordViewManager(models.Manager):
-#     def get_queryset(self):
-#         with connection.cursor() as cursor:
-#             cursor.execute("""
-#                 SELECT mode, g.id, p.player1_id, p.player2_id, p.player3_id, p.player4_id
-#                 from game g
-#                 inner join player p on g.players_id = p.id;
-#             """)
-#             results = cursor.fetchall()
-#
-#         return [self.model(*row) for row in results]
-
-
-# class GameRecordView(models.Model):
-#     game = models.ForeignKey(Game, on_delete=models.SET_NULL, null=True, blank=True)
-#     mode = models.PositiveSmallIntegerField()
-#     player1 = models.ForeignKey(Player, related_name='gamerecordview_player1', on_delete=models.SET_NULL, null=True, blank=True)
-#     player2 = models.ForeignKey(Player, related_name='gamerecordview_player2', on_delete=models.SET_NULL, null=True, blank=True)
-#     player3 = models.ForeignKey(Player, related_name='gamerecordview_player3', on_delete=models.SET_NULL, null=True, blank=True)
-#     player4 = models.ForeignKey(Player, related_name='gamerecordview_player4', on_delete=models.SET_NULL, null=True, blank=True)
-#
-#     objects = GameRecordViewManager()
-#
-#     class Meta:
-#         managed = False
+        db_table = 'casualgameview'
