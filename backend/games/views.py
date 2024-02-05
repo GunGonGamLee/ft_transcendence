@@ -64,6 +64,7 @@ class GameView(APIView):
         game = Game.objects.create(title=title, password=password, mode=mode, status=0, manager=user)
         return game.id
 
+
     def check_mode(self, mode):
         if mode == "casual_1v1":
             return 0
@@ -71,6 +72,8 @@ class GameView(APIView):
             return 1
         elif mode == "rank":
             return 2
+        elif mode == "local_tournament":
+            return 3
         else:
             raise BadRequest
 
