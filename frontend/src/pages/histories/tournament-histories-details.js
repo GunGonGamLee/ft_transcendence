@@ -117,7 +117,7 @@ export default async function TournamentHistoriesDetails(id) {
     `;
   };
 
-  this.renderFinalPlayers = (finalData) => {
+  this.renderTournamentPlayers = (finalData) => {
     return `
     <div class="histories tournament final player1">
         <img src="${this.imagePath}/avatar/${finalData.player1.avatar}.png" alt="avatar">
@@ -151,7 +151,7 @@ export default async function TournamentHistoriesDetails(id) {
       "afterbegin",
       `
             ${this.renderFinalWinner(finalData)}
-            ${this.renderFinalPlayers(finalData)}
+            ${this.renderTournamentPlayers(finalData)}
     `,
     );
     $treeWrapper.appendChild($final);
@@ -203,9 +203,19 @@ export default async function TournamentHistoriesDetails(id) {
     };
   };
 
-  this.renderFinalPlayer = (playerInfo, rank) => {};
-
-  this.renderOtherPlayers = (others) => {};
+  this.renderTournamentPlayer = (playerInfo) => {
+    return `
+        <div class="histories tournament result final-player">
+            <img src="${this.imagePath}/avatar/${playerInfo.avatar}.png" alt="avatar">
+            <div class="histories tournament result nickname">
+                ${playerInfo.nickname}
+            </div>
+            <div class="histories tournament result rating">
+                Rating: ${playerInfo.rating}
+            </div>
+        </div>
+    `;
+  };
 
   /**
    * 토너먼트 결과를 렌더링합니다.
@@ -217,13 +227,20 @@ export default async function TournamentHistoriesDetails(id) {
       "afterbegin",
       `
       <div class="histories tournament result-column">
-        ${this.renderFinalPlayer(result.secondPlayer, 2)}
+        <div class="">2등</div>
+        ${this.renderTournamentPlayer(result.secondPlayer)}
+        <div class="histories podium" id="second-podium"></div>
       </div>
       <div class="histories tournament result-column">
-        ${this.renderFinalPlayer(result.firstPlayer, 1)}
+        <div class="">1등</div>
+        ${this.renderTournamentPlayer(result.firstPlayer)}
+        <div class="histories podium" id="first-podium"></div>
       </div>
       <div class="histories tournament result-column">
-        ${this.renderOtherPlayers(result.others)}
+        <div class="">그 외</div>
+        ${this.renderTournamentPlayer(result.others.player1)}
+        ${this.renderTournamentPlayer(result.others.player2)}
+        <div class="histories podium" id="others-podium"></div>
       </div>
     `,
     );
