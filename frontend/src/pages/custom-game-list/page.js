@@ -1,6 +1,7 @@
 import {click} from "../../utils/clickEvent.js"
 import GameRoomList from "./game-room-list.js";
 import {importCss} from '../../utils/importCss.js';
+import roomCreateModal from './room-create-modal.js'
 
 
 export default function CustomGameList($container) {
@@ -13,6 +14,7 @@ export default function CustomGameList($container) {
     this.render = () => {
         this.renderLayout();
         this.renderList();
+        this.renderRoomCreateModal();
     }
 
     this.renderLayout = () => {
@@ -45,5 +47,17 @@ export default function CustomGameList($container) {
         GameRoomList.bind($list)();
     }
 
+    this.renderRoomCreateModal = () => {
+        const modalHtml = roomCreateModal();
+        this.$container.insertAdjacentHTML("beforeend", modalHtml);
+    }
+
     this.render();
+
+    this.addEventListenersToLayout = () => {
+        const $roomContent = document.getElementById("room-content");
+        const $paginationBefore = document.getElementById("pagination-arrow-left");
+        const $paginationAfter = document.getElementById("pagination-arrow-right");
+
+    }
 }
