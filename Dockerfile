@@ -9,7 +9,9 @@ COPY backend/requirements.txt ./backend/
 RUN pip install -r backend/requirements.txt
 
 COPY backend ./backend
-
 WORKDIR /backend
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "src.wsgi:application"]
+COPY init.sh /init.sh
+RUN chmod +x /init.sh
+
+ENTRYPOINT ["/init.sh"]
