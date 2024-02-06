@@ -36,18 +36,27 @@ class Result(models.Model):
 
 
 class RankGameView(models.Model):
-    mode = models.PositiveSmallIntegerField()
-    status = models.PositiveSmallIntegerField()
+    game_id = models.IntegerField(primary_key=True)
 
     class Meta:
         managed = False
-        db_table = 'rankgameview'
+        db_table = 'rank_game_view'
 
 
 class CasualGameView(models.Model):
+    game_id = models.IntegerField(primary_key=True)
     mode = models.PositiveSmallIntegerField()
-    status = models.PositiveSmallIntegerField()
 
     class Meta:
         managed = False
-        db_table = 'casualgameview'
+        db_table = 'casual_game_view'
+
+
+class GameRecordView(models.Model):
+    game_id = models.IntegerField()
+    mode = models.IntegerField()
+    user_id = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'game_record_view'
