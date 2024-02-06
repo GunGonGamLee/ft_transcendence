@@ -206,7 +206,7 @@ export default async function TournamentHistoriesDetails(id) {
   this.renderTournamentPlayer = (playerInfo) => {
     return `
         <div class="histories tournament result final-player">
-            <img src="${this.imagePath}/avatar/${playerInfo.avatar}.png" alt="avatar">
+            <img src="${this.imagePath}/avatar/${playerInfo.avatar}.png" alt="avatar" class="result avatar">
             <div class="histories tournament result nickname">
                 ${playerInfo.nickname}
             </div>
@@ -222,9 +222,9 @@ export default async function TournamentHistoriesDetails(id) {
     const $secondPodium = document.getElementById("second-podium");
     const $othersPodium = document.getElementById("others-podium");
 
-    $firstPodium.style.height = constant * 0.5 + "vh";
-    $secondPodium.style.height = constant * 0.3 + "vh";
-    $othersPodium.style.height = constant * 0.1 + "vh";
+    $firstPodium.style.height = constant * 3 + "vh";
+    $secondPodium.style.height = constant * 2 + "vh";
+    $othersPodium.style.height = constant * 1 + "vh";
   };
 
   /**
@@ -237,17 +237,17 @@ export default async function TournamentHistoriesDetails(id) {
       "afterbegin",
       `
       <div class="histories tournament result-column">
-        <div class="">2등</div>
+        <div class="result-column rating">2등</div>
         ${this.renderTournamentPlayer(result.secondPlayer)}
         <div class="histories podium" id="second-podium"></div>
       </div>
       <div class="histories tournament result-column">
-        <div class="">1등</div>
+        <div class="result-column rating first-place">1등</div>
         ${this.renderTournamentPlayer(result.firstPlayer)}
         <div class="histories podium" id="first-podium"></div>
       </div>
       <div class="histories tournament result-column">
-        <div class="">그 외</div>
+        <div class="result-column rating">그 외</div>
         <div class="histories tournament result others">
             ${this.renderTournamentPlayer(result.others.player1)}
             ${this.renderTournamentPlayer(result.others.player2)}
@@ -255,6 +255,16 @@ export default async function TournamentHistoriesDetails(id) {
         <div class="histories podium" id="others-podium"></div>
       </div>
     `,
+    );
+  };
+
+  this.renderWinnerIcon = () => {
+    let $firstPlace = document.querySelector(".first-place");
+    $firstPlace.insertAdjacentHTML(
+      "beforebegin",
+      `
+        <img src="${this.imagePath}/winner.png" alt="winner" class="winner-icon">
+        `,
     );
   };
 
@@ -266,7 +276,8 @@ export default async function TournamentHistoriesDetails(id) {
     const result = this.getResult();
     this.renderResult(result, $resultWrapper);
     this.appendChild($resultWrapper);
-    this.setPodiumHeight(10);
+    this.setPodiumHeight(4);
+    this.renderWinnerIcon();
   };
 
   this.init();

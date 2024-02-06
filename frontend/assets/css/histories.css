@@ -204,19 +204,19 @@
 }
 
 .histories#search-wrapper > img {
-    width: 4vh;
-    height: 4vh;
-    margin-right: 0.5vw;
+    width: 5vh;
+    height: 5vh;
+    margin-right: 1vh;
 }
 
 .histories#search-wrapper > #search {
     background-color: black;
-    border: 3px solid #FF52A0;
+    border: 3px solid rgb(255, 82, 160);
     font-family: Galmuri11, serif;
     font-size: 2.5vh;
-    width: 16vw;
+    width: 18vw;
     color: white;
-    padding: 0.5vh;
+    padding: 1vh 1vw;
 }
 
 /************ Histories Footer *************/
@@ -456,8 +456,25 @@ footer.histories {
     width: 80%;
     height: 100%;
     display: grid;
-    grid-template-columns: 1fr 1fr 2fr;
+    grid-template-columns: 1fr 1fr 1.5fr;
     align-items: end;
+    font-family: Galmuri11-Bold, serif;
+}
+
+.first-place {
+    color: #FF52A0;
+}
+
+.result.avatar {
+    height: 12vh;
+}
+
+.histories.tournament.result.nickname {
+    font-size: 2.5vh;
+}
+
+.histories.tournament.ressult.rating {
+    font-size: 2vh;
 }
 
 .histories.tournament.result-column {
@@ -467,13 +484,29 @@ footer.histories {
     text-align: center;
 }
 
+.result-column.rating {
+    font-size: 3vh;
+}
+
+.histories.tournament.result-column > div:not(:last-child),
+.histories.tournament.result-column img:not(.histories.tournament.result-column.winner),
+.histories.tournament.result.nickname {
+    margin-bottom: 1.5vh;
+}
+
 .histories.tournament.result.others {
     display: flex;
     align-items: flex-end;
     flex-direction: row;
+    justify-content: space-evenly;
+    width: 80%;
 }
 
 .histories.podium {
     width: 100%;
     background-color: #29ABE2;
+}
+
+.winner-icon {
+    height: 6vh;
 }
