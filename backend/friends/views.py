@@ -69,6 +69,38 @@ class FriendsView(APIView):
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+    # DELETE 요청 : 친구 삭제
+    @swagger_auto_schema(
+        tags=['/api/friends'],
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'nickname': openapi.Schema(type=openapi.TYPE_STRING, description='친구 삭제할 닉네임')
+            },
+            required=['nickname']),
+        manual_parameters=[
+            openapi.Parameter('Authorization', openapi.IN_HEADER, description='Bearer JWT Token', type=openapi.TYPE_STRING)],
+            response={200: "OK", 400: "Bad Request", 404: "Not Found", 409: "Conflict", 500: "Internal Server Error"}
+        )
+    def delete(self, request):
+        try:
+            current_user = AuthUtils.validate_jwt_token_and_get_user(request)
+
+            requested_nickname = get_request_body_value(request, 'nickname')
+            requested_friend = get_object_or_404(User, nickname=requested_nickname)
+            if not Friend.objects.filter(user_id=current_user, friend_id=requested_friend, status=Friend.ACCEPTED).exists() \
+                and not Friend.objects.filter(user_id=requested_friend, friend_id=current_user, status=Friend.ACCEPTED).exists():
+                return Response({'error': 'Not friends'}, status=status.HTTP_409_CONFLICT)
+            
+            Friend.objects.filter(user_id=current_user, friend_id=requested_friend, status=Friend.ACCEPTED).delete()
+            Friend.objects.filter(user_id=requested_friend, friend_id=current_user, status=Friend.ACCEPTED).delete()
+            return Response({'message': 'Friend deleted'}, status=status.HTTP_200_OK)
+        
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
 class AcceptFriendView(APIView):
     @swagger_auto_schema(
@@ -118,7 +150,7 @@ class RejectFriendView(APIView):
             openapi.Parameter('Authorization', openapi.IN_HEADER, description='Bearer JWT Token', type=openapi.TYPE_STRING)],
             response={200: "OK", 400: "Bad Request", 404: "Not Found", 500: "Internal Server Error"}
         )
-    
+
     def post(self, request):
         try:
             current_user = AuthUtils.validate_jwt_token_and_get_user(request)
