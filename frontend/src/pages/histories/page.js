@@ -1,10 +1,15 @@
-import { hoverChangeColor, hoverChangeCursor, hoverChangeFont, hoverToggle } from '../../utils/hoverEvent.js';
-import { click } from '../../utils/clickEvent.js';
-import { importCss } from '../../utils/importCss.js';
-import Summary from './summary-page.js';
-import CustomHistories from './custom-page.js';
-import TournamentHistories from './tournament-page.js';
-import Ranking from './ranking-page.js';
+import {
+  hoverChangeColor,
+  hoverChangeCursor,
+  hoverChangeFont,
+  hoverToggle,
+} from "../../utils/hoverEvent.js";
+import { click } from "../../utils/clickEvent.js";
+import { importCss } from "../../utils/importCss.js";
+import Summary from "./summary-page.js";
+import CustomHistories from "./custom-page.js";
+import TournamentHistories from "./tournament-page.js";
+import Ranking from "./ranking-page.js";
 
 export default function Histories($container) {
   this.$container = $container;
@@ -19,17 +24,17 @@ export default function Histories($container) {
    * 이는 전적 리스트의 페이지의 레이아웃으로 추후 공통 모듈로 분리할 수 있습니다.
    */
   this.renderLayout = () => {
-    importCss('../../../assets/css/histories.css');
+    importCss("../../../assets/css/histories.css");
     this.$container.insertAdjacentHTML(
-      'afterbegin',
+      "afterbegin",
       `
         <div class="histories" id="content-wrapper">
             <nav class="histories" id="mode">
-                <div class="histories" id="summary" href="">
+                <div class="histories" id="summary">
                     <img class="histories" src="../../../assets/images/custom_summary.png" alt="summary">
                     너의 기록은
                 </div>
-                <div class="histories" id="custom-menu-wrapper" href="">
+                <div class="histories" id="custom-menu-wrapper">
                     <div class="histories custom-toggle" id="custom">
                         <img class="histories" src="../../../assets/images/setting.png" alt="custom-mode">
                         사용자 지정 모드
@@ -41,13 +46,9 @@ export default function Histories($container) {
                         </ul>
                     </div>
                 </div>
-               <div class="histories title" id="tournament" href="">
+               <div class="histories title" id="tournament">
                    <img class="histories" src="../../../assets/images/tournament_logo.png" alt="tournament">
                    토너먼트 모드
-               </div>
-               <div class="histories title" id="ranking" href="">
-                   <img class="histories" src="../../../assets/images/ranking.png" alt="tournament">
-                   전체 랭킹 
                </div>
             </nav>
             <div class="histories" id="content">
@@ -68,7 +69,7 @@ export default function Histories($container) {
   };
 
   this.renderList = () => {
-    let $content = document.getElementById('content');
+    let $content = document.getElementById("content");
     Summary.bind($content)();
   };
 
@@ -76,46 +77,45 @@ export default function Histories($container) {
    * 레이아웃 엘리먼트에 이벤트 리스너를 추가합니다.
    */
   this.addEventListenersToLayout = () => {
-    const $content = document.getElementById('content');
-    const $listWrapper = document.getElementById('list-wrapper');
-    const $summary = document.getElementById('summary');
-    const $customMenuWrapper = document.getElementById('custom-menu-wrapper');
-    const $custom = document.getElementById('custom');
-    const $toggleItems = Array.from(document.getElementsByTagName('li'));
-    const $tournament = document.getElementById('tournament');
-    const $ranking = document.getElementById('ranking');
-    const $prev = document.getElementById('prev');
-    const $next = document.getElementById('next');
+    const $content = document.getElementById("content");
+    const $listWrapper = document.getElementById("list-wrapper");
+    const $summary = document.getElementById("summary");
+    const $customMenuWrapper = document.getElementById("custom-menu-wrapper");
+    const $custom = document.getElementById("custom");
+    const $toggleItems = Array.from(document.getElementsByTagName("li"));
+    const $tournament = document.getElementById("tournament");
+    const $prev = document.getElementById("prev");
+    const $next = document.getElementById("next");
 
     // 폰트 색상 변경
-    hoverChangeColor([$summary, $custom, $tournament, $ranking], '#ffffff', '#29ABE2');
-    hoverChangeColor($toggleItems, '#aaaaaa', '#29ABE2');
+    hoverChangeColor([$summary, $custom, $tournament], "#ffffff", "#29ABE2");
+    hoverChangeColor($toggleItems, "#aaaaaa", "#29ABE2");
 
     // 폰트 변경
-    hoverChangeFont([$summary, $custom, $tournament, $ranking], 'Galmuri11, serif', 'Galmuri11-Bold, serif');
+    hoverChangeFont(
+      [$summary, $custom, $tournament],
+      "Galmuri11, serif",
+      "Galmuri11-Bold, serif",
+    );
 
     // 커서 변경
-    hoverChangeCursor([$summary, $customMenuWrapper, $tournament, $ranking, $prev, $next], 'pointer');
+    hoverChangeCursor(
+      [$summary, $customMenuWrapper, $tournament, $prev, $next],
+      "pointer",
+    );
 
     // click 이벤트
     click($summary, Summary);
-    click($custom, CustomHistories.bind($content, '1vs1'));
+    click($custom, CustomHistories.bind($content, "1vs1"));
     click($tournament, TournamentHistories.bind($content, false));
-    click($ranking, Ranking);
-    click($prev, function () {
-      console.log('TODO => 이전 페이지로 이동');
-    });
-    click($next, function () {
-      console.log('TODO => 다음 페이지로 이동');
-    });
-    click($toggleItems[0], CustomHistories.bind($content, '1vs1')); // 1 vs 1 모드 선택 시 실행
+    click($toggleItems[0], CustomHistories.bind($content, "1vs1")); // 1 vs 1 모드 선택 시 실행
     click($toggleItems[1], TournamentHistories.bind($content, true)); // 토너먼트 모드 선택 시 실행
 
     // toggle 이벤트
-    let $toggle = document.getElementById('toggle');
-    hoverToggle($customMenuWrapper, $toggle, 'flex');
-    $customMenuWrapper.addEventListener('mouseover', () => {
-      $customMenuWrapper.style.color = '#29ABE2';
+    let $toggle = document.getElementById("toggle");
+    hoverToggle($customMenuWrapper, $toggle, "flex");
+    $customMenuWrapper.addEventListener("mouseover", () => {
+      $customMenuWrapper.style.color = "#29ABE2";
     });
   };
   this.render();
