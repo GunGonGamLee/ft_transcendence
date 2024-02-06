@@ -119,16 +119,17 @@ class GameRoomView(APIView):
                 else:
                     game_id = CasualGameView.objects.aggregate(Min('id'))['id__min']
                     game = Game.objects.get(id=game_id)
+                    self.enter_game(game, user, game.mode)
                     serializer = GameRoomSerializer(game)
                     return JsonResponse(serializer.data, status=status.HTTP_200_OK)
             else:
                 game = Game.objects.get(id=game_id)
                 if game.status != 0:
                     return Response({'error': '대기 중인 방이 아닙니다.'}, status=status.HTTP_400_BAD_REQUEST)
-                if self.is_full(game):
+                if self.is_full(game, game.mode):
                     return Response({'error': '꽉 찬 방입니다.'}, status=status.HTTP_409_CONFLICT)
                 else:
-                    self.enter_game(game, user)
+                    self.enter_game(game, user, game.mode)
                     serializer = GameRoomSerializer(game)
                     return JsonResponse(serializer.data, status=status.HTTP_200_OK)
 
@@ -147,28 +148,38 @@ class GameRoomView(APIView):
         except Exception as e:
             return JsonResponse({'error': e.__class__.__name__, 'message':str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    def is_full(self, game):
+    def is_full(self, game, mode):
         player1 = game.player1_id
         player2 = game.player2_id
         player3 = game.player3_id
 
+        if mode == 0 and player1 is not None:
+            return True
         if player1 is not None and player2 is not None and player3 is not None:
             return True
+        return False
 
-    def enter_game(self, game, user):
+    def enter_game(self, game, user, mode):
         player1 = game.player1_id
         player2 = game.player2_id
         player3 = game.player3_id
 
-        if player1 is None:
-            game.player1 = user
-            game.save()
-        elif player2 is None:
-            game.player2 = user
-            game.save()
-        elif player3 is None:
-            game.player3 = user
-            game.save()
+        if mode == 0:
+            if player1 is None:
+                game.player1 = user
+                game.status = 1
+            else:
+                raise ValidationError('꽉 찬 방입니다.')
         else:
-            raise ValidationError('꽉 찬 방입니다.')
-
+            if player1 is None:
+                game.player1 = user
+                game.save()
+            elif player2 is None:
+                game.player2 = user
+                game.save()
+            elif player3 is None:
+                game.player3 = user
+                game.status = 1
+                game.save()
+            else:
+                raise ValidationError('꽉 찬 방입니다.')
