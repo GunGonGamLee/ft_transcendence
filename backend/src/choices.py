@@ -28,10 +28,11 @@ MODE_CHOICES_DICT = {
 }
 
 STATUS_CHOICES = [
-    (0, "WAITING"),
-    (1, "IN_GAME"),
-    (2, "FINISHED"),
-    (3, "DELETED"),
+    (0, "AVAILABLE_WAITING"),
+    (1, "FULL_WAITING"),
+    (2, "IN_GAME"),
+    (3, "FINISHED"),
+    (4, "DELETED"),
 ]
 
 FRIENDS_CHOICES = [
