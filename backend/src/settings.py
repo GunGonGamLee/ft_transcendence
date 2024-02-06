@@ -149,7 +149,10 @@ INSTALLED_APPS = [
 
 
     'corsheaders',
+    'channels',
 ]
+
+ASGI_APPLICATION = 'src.routing.application'
 
 PINGPONG_TOURNAMENT_MODEL = 'pingpong.Tournament'
 AUTH_USER_MODEL = 'users.User'
