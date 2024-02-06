@@ -51,3 +51,12 @@ class CasualGameView(models.Model):
     class Meta:
         managed = False
         db_table = 'casualgameview'
+
+class GameRecordView(models.Model):
+    game_id = models.IntegerField()
+    mode = models.IntegerField()
+    user_id = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'game_record_view'
