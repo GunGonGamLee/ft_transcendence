@@ -8,9 +8,12 @@ services:
   #   ports:
   #     - 8200:8200
   #   volumes:
-  #     - "/Users/sejokim/desktop/volumes/vault/file:/vault/file"
-  #     - "/Users/sejokim/desktop/volumes/vault/logs:/vault/logs"
-  #     - "/Users/sejokim/desktop/volumes/vault/config:/vault/config"
+  #     # - "/Users/sejokim/desktop/volumes/vault/file:/vault/file"
+  #     # - "/Users/sejokim/desktop/volumes/vault/logs:/vault/logs"
+  #     # - "/Users/sejokim/desktop/volumes/vault/config:/vault/config"
+  #     # - "./volumes/vault/config:/vault/config"
+  #     # - "./volumes/vault/logs:/vault/logs"
+  #     # - "./volumes/vault/file:/vault/file"
   #   environment:
   #     VAULT_ADDR: "http://hashicorp_vault:8200"
   #   cap_add:
@@ -25,6 +28,8 @@ services:
       - 8000:8000
     networks:
       - app_network
+    volumes:
+      - "./backend/static:/backend/static"
     environment:
     # DB
       DB_HOST: ${DB_HOST}
@@ -52,14 +57,15 @@ services:
       INTRA42_REDIRECT_URI: ${INTRA42_REDIRECT_URI}
       INTRA42_USERINFO_API: ${INTRA42_USERINFO_API}
 
-    depends_on:
-      - hashicorp_vault
+    # depends_on:
+      # - hashicorp_vault
 
   nginx:
     build: ./nginx
     container_name: nginx_container
     volumes:
       - "./frontend:/usr/share/nginx/html"
+      - "./volumes/nginx/static:/usr/share/nginx/html/static"
       # - "/Users/sejokim/desktop/volumes/nginx/logs:/var/log/nginx"
       # - "/Users/sejokim/desktop/volumes/nginx/lib:/usr/local/modsecurity/lib"
     logging:

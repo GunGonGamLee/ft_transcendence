@@ -1,4 +1,6 @@
-import {hoverChangeCursor} from "../../utils/hoverEvent.js";
+import { hoverChangeCursor } from "../../utils/hoverEvent.js";
+import { importCss } from "../../utils/importCss.js";
+
 /**
  * 사용자 전적 페이지에 사용하는 header 컴포넌트
  * @param {HTMLElement} $container
@@ -19,9 +21,10 @@ export default function historiesHeader($container) {
     });
     document.getElementById("go-back").addEventListener("click", () => {
       history.back();
-    })
-  }
+    });
+  };
 
+  importCss("../../../assets/fonts/font.css");
   this.render = () => {
     this.$container.innerHTML = `
         <div class="main header-wrapper">
@@ -34,12 +37,12 @@ export default function historiesHeader($container) {
                 <img src="${this.imagePath}/friends.png" alt="친구 목록" id="friends">
             </div>
         </div>
-        `
+        `;
 
     hoverChangeCursor(document.getElementById("go-back"), "pointer");
     hoverChangeCursor(document.getElementById("user-avatar"), "pointer");
     hoverChangeCursor(document.getElementById("friends"), "pointer");
-  }
+  };
 
   this.setState();
   this.render();
