@@ -19,9 +19,11 @@ class SetNicknameView(APIView):
                          operation_description="사용자 닉네임 저장 API",
                          manual_parameters=[
                              openapi.Parameter('Authorization', openapi.IN_HEADER, description='Bearer JWT Token',
-                                               type=openapi.TYPE_STRING),
-                             openapi.Parameter('content-type', openapi.IN_HEADER, description='application/json',
                                                type=openapi.TYPE_STRING), ],
+                         request_body=openapi.Schema(
+                             type=openapi.TYPE_OBJECT,
+                             properties={'nickname': openapi.Schema(type=openapi.TYPE_STRING, description='닉네임')},
+                             required=['nickname']),
                          responses={
                                     201: 'CREATED',
                                     400: 'BAD_REQUEST',
@@ -64,7 +66,6 @@ class UserInfoView(APIView):
         try:
             user = AuthUtils.validate_jwt_token_and_get_user(request)
             serializer = UserInfoSerializer(user)
-            print(serializer)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except jwt.ExpiredSignatureError:
             return JsonResponse({'error': 'Token has expired'}, status=status.HTTP_401_UNAUTHORIZED)

@@ -7,6 +7,7 @@ server.ssl.keystore.path: "/usr/share/kibana/config/certs/elastic-certificates.p
 server.ssl.keystore.password: ${ES_CERTS_PW}
 server.ssl.truststore.path: "/usr/share/kibana/config/certs/elastic-certificates.p12"
 server.ssl.truststore.password: ${ES_CERTS_PW}
+logging.root.level: "error"
 
 elasticsearch.username: elastic
 elasticsearch.password: ${ELASTIC_PW}
