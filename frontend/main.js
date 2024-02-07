@@ -1,8 +1,7 @@
 import App from "./src/app.js";
 // import Header from "./src/header.js";
-import { $ } from "./src/utils/querySelector.js";
 
-window.addEventListener("DOMContentLoaded", (e) => {
+window.addEventListener("DOMContentLoaded", () => {
   // new Header($("#header"));
-  new App($("#app"));
+  new App(document.querySelector("#app"));
 });
