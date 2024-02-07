@@ -13,8 +13,9 @@ export default function Register($container) {
     maxLength: 6,
     pattern: "^[A-Za-z0-9]+$",
   };
+
   let [getAuthState, setAuthState] = useState(authStateInput, this, "render");
-  this.setAuthState = () => {
+  this.init = () => {
     this.render();
     this.setAuthEvent();
     this.setResendAuthEmailButton();
@@ -221,5 +222,5 @@ export default function Register($container) {
     });
   };
 
-  this.setAuthState();
+  this.init();
 }
