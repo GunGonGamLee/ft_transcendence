@@ -95,6 +95,7 @@ export default function CustomGameList($container) {
         hoverToggle($roomSearchFilter, $modeFilterToggle, 'block');
 
         // 대기중 && 자물쇠가 걸려있는 방 일때 패스워드 모달 열기
+        // roomContant에 마우스가 들어갈 떄 hover event 적용
         $roomContents.forEach($roomContent => {
             click($roomContent, () => {
                 const $roomWrapper = $roomContent.closest('.room-wrapper');
@@ -111,12 +112,28 @@ export default function CustomGameList($container) {
                     $passwordModal.style.display = "block";
                 }
             });
+
+            // mouseenter 이벤트 리스너
+            $roomContent.addEventListener('mouseenter', function() {
+                const style = window.getComputedStyle(this);
+                const borderColor = style.borderColor;
+
+                // RGB 색상에서 RGBA 색상으로 변환하여 배경색으로 설정 (20% 투명도 적용)
+                const backgroundColor = borderColor.replace('rgb', 'rgba').replace(')', ', 0.2)');
+                this.style.backgroundColor = backgroundColor;
+            });
+
+            // mouseleave 이벤트 리스너
+            $roomContent.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = ''; // 배경색을 초기화 (CSS 스타일로 돌아감)
+            });
         });
 
         // 패스워드 모달 닫기
         click($passwordModalClose, () => {
             $passwordModal.style.display = "none";
         });
+
     }
 
     this.render();
