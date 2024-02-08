@@ -128,6 +128,8 @@ ALLOWED_HOSTS = ['*']
 CORS_ALLOW_ALL_ORIGINS = True
 
 INSTALLED_APPS = [
+    "daphne",
+    'channels',
     'users.apps.UsersConfig',
     'games.apps.GamesConfig',
     'friends.apps.FriendsConfig',
@@ -149,7 +151,10 @@ INSTALLED_APPS = [
 
 
     'corsheaders',
+    'channels',
 ]
+
+ASGI_APPLICATION = 'src.routing.application'
 
 PINGPONG_TOURNAMENT_MODEL = 'pingpong.Tournament'
 AUTH_USER_MODEL = 'users.User'
@@ -277,3 +282,16 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Cookie settings
+SESSION_COOKIE_HTTPONLY = True
+
+#socket
+
+ASGI_APPLICATION = "src.asgi.application"
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer'
+    }
+}
