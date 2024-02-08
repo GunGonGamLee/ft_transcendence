@@ -3,25 +3,27 @@ import { importCss } from "../../utils/importCss.js";
 import { getCookie } from "../../utils/cookie.js";
 import { navigate } from "../../utils/navigate.js";
 import { click } from "../../utils/clickEvent.js";
+import Histories from "../../pages/histories/page.js";
 
 /**
  * 사용자 전적 페이지에 사용하는 header 컴포넌트
  * @param {HTMLElement} $container
  */
 export default function historiesHeader($container) {
-  this.$container = $container;
+  $container === undefined
+    ? (this.$container = document.querySelector("#header"))
+    : (this.$container = $container);
   this.imagePath = "../../../assets/images";
 
   this.setState = () => {
     const token = getCookie("jwt");
-    fetch("https://localhost/api/users/me").then((response) => {
+    fetch("https://localhost/api/usrs/me").then((response) => {
       if (response.status === 200) {
         response.json().then((data) => {
-          console.log(data);
           this.render(data.nickname, data.avatar_file_name);
         });
       } else {
-        navigate("/500");
+        // TODO => 에러 페이지로 이동
       }
     });
   };
@@ -45,8 +47,20 @@ export default function historiesHeader($container) {
         `;
 
     // 뒤로가기 버튼 클릭 이벤트
-    click("go-back", () => {
+    click(document.getElementById("go-back"), () => {
       history.back();
+    });
+    // 사용자 정보 클릭 이벤트
+    click(document.getElementById("user-info"), () => {
+      navigate("/histories");
+    });
+    // TODO => 친구 목록 버튼 클릭 이벤트
+    click(document.getElementById("friends"), () => {
+      // navigate("/friends");
+    });
+    // 메인 타이틀 클릭 이벤트
+    click(document.getElementById("title"), () => {
+      navigate("/game-mode");
     });
   };
 
