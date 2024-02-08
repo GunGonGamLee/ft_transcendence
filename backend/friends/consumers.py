@@ -2,8 +2,9 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 import json
 from friends.models import Friend
+from django.conf import settings
 
-class FriendStatusConsumer(AsyncWebsocketConsumer):
+class FriendStatusConsumer(AsyncWebsocketConsumer):    
     async def connect(self):
         self.user = self.scope["user"]
         if self.user.is_authenticated:
@@ -55,4 +56,3 @@ class FriendStatusConsumer(AsyncWebsocketConsumer):
         user_friends = Friend.objects.filter(user_id=self.user.id, status = 1).values_list('friend_id', flat=True)
         friend_users = Friend.objects.filter(friend_id=self.user.id, stauts = 1).value_list('user_id', flat=True)
         return list(user_friends) + list(friend_users)
-    
