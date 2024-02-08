@@ -3,6 +3,7 @@ header {
     height: 12vh;
     font-family: Galmuri11-Bold, serif;
     font-size: 2em;
+    color: white;
 }
 
 .header-wrapper {
@@ -47,11 +48,27 @@ header {
     font-size: 4vh;
 }
 
-.header-wrapper .main#right-side > #user-avatar {
-    width: 6vh;
+.header-wrapper .main#right-side > #user-info {
+    display: flex;
+    align-items: center;
+}
+
+.header-wrapper .main#right-side > #user-info > * {
     margin-right: 3vh;
 }
 
+.header-wrapper .main#right-side > #user-info > #user-avatar {
+    width: 6vh;
+}
+
+.header-wrapper .main#right-side > #user-info > #user-name {
+    font-size: 2vh;
+}
+
 .header-wrapper .main#right-side > #friends {
-    width: 10vh;
+    width: 8vh;
+}
+
+#go-back:hover, #user-info:hover, #friends:hover {
+    cursor: pointer;
 }
