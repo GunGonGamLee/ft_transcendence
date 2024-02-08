@@ -98,7 +98,7 @@ class OAuthCallbackView(APIView):
                     'token': auth_token,
                 })
                 response = redirect(target_url)
-                response.set_cookie('jwt', auth_token)
+                response.set_cookie('jwt', auth_token, httponly=True)
                 return response
             except Exception as e:
                 return JsonResponse({'error': e.__class__.__name__}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -187,7 +187,7 @@ class VerificationCodeView(APIView):
                 data = {'token': jwt_token, 'is_noob': is_noob}
                 serializer = VerificationCodeSerializer(data)
                 response = Response(serializer.data, status=status.HTTP_201_CREATED)
-                response.set_cookie('jwt', jwt_token)
+                response.set_cookie('jwt', jwt_token, httponly=True)
                 return response
             else:
                 return JsonResponse({'err_msg': '인증코드가 일치하지 않습니다.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -219,7 +219,7 @@ class VerificationCodeAgainView(APIView):
             send_and_save_verification_code(user)
             auth_token = create_jwt_token(user, 1)
             response = JsonResponse({'token': auth_token}, status=status.HTTP_200_OK)
-            response.set_cookie('jwt', auth_token)
+            response.set_cookie('jwt', auth_token, httponly=True)
             return response
 
         except jwt.ExpiredSignatureError:
