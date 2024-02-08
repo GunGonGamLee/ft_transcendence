@@ -11,9 +11,11 @@ export default function Register($container) {
     command: "인증번호를 적어라",
     placeholder: "인증번호는 6글자다.",
     maxLength: 6,
+    pattern: "^[A-Za-z0-9]+$",
   };
+
   let [getAuthState, setAuthState] = useState(authStateInput, this, "render");
-  this.setAuthState = () => {
+  this.init = () => {
     this.render();
     this.setAuthEvent();
     this.setResendAuthEmailButton();
@@ -27,12 +29,12 @@ export default function Register($container) {
        <div class="white-box">
          <div class="prompt-text">${getAuthState().command}</div>
            <form id="register-form">
-             <input class="register-input" placeholder="${getAuthState().placeholder}" maxlength="${getAuthState().maxLength}">
+             <input class="register-input" placeholder="${getAuthState().placeholder}" maxlength="${getAuthState().maxLength}" pattern="${getAuthState().pattern}">
            </form>
          <div class="error-message"></div>
        </div>
      </div>
-	  `;
+    `;
   };
 
   this.setNicknameState = () => {
@@ -40,6 +42,7 @@ export default function Register($container) {
       command: "별명을 적어라",
       placeholder: "최대 8글자 가능하다.",
       maxLength: 8,
+      pattern: "^[가-힣]{1,8}$",
     };
     setAuthState(nicknameStateInput);
     this.setNicknameEvent();
@@ -219,5 +222,5 @@ export default function Register($container) {
     });
   };
 
-  this.setAuthState();
+  this.init();
 }
