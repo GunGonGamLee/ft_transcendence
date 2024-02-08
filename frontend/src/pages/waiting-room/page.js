@@ -13,7 +13,7 @@ export default function WaitingRoom($container) {
   this.gameMode = "게임 모드";
   this.password = "password";
   this.gameModeNum = 4;
-  this.setState = () => {
+  this.init = () => {
     this.render();
     hover(
       this.$container.querySelector(".room-lock"),
@@ -50,5 +50,5 @@ export default function WaitingRoom($container) {
       </div>
         `;
   };
-  this.setState();
+  this.init();
 }

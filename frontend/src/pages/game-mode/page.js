@@ -6,9 +6,6 @@ import gameModeUnit from "./gameModeUnit.js";
 
 export default function GameMode($container) {
   this.$container = $container;
-  this.setState = () => {
-    this.render();
-  };
 
   this.render = () => {
     importCss("../../../assets/css/game-mode.css");
