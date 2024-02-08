@@ -283,6 +283,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Cookie settings
+SESSION_COOKIE_HTTPONLY = True
 
 #socket
 
