@@ -2,6 +2,7 @@ import { hoverChangeCursor } from "../../utils/hoverEvent.js";
 import { importCss } from "../../utils/importCss.js";
 import { getCookie } from "../../utils/cookie.js";
 import { navigate } from "../../utils/navigate.js";
+import { click } from "../../utils/clickEvent.js";
 
 /**
  * 사용자 전적 페이지에 사용하는 header 컴포넌트
@@ -44,7 +45,7 @@ export default function historiesHeader($container) {
         `;
 
     // 뒤로가기 버튼 클릭 이벤트
-    document.getElementById("go-back").addEventListener("click", () => {
+    click("go-back", () => {
       history.back();
     });
   };
