@@ -101,7 +101,7 @@ class UserInfoView(APIView):
         try:
             user = AuthUtils.validate_jwt_token_and_get_user(request)
             serializer = UserInfoSerializer(user)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return JsonResponse(serializer.data, status=status.HTTP_200_OK)
         except jwt.ExpiredSignatureError:
             return JsonResponse({'error': 'Token has expired'}, status=status.HTTP_401_UNAUTHORIZED)
         except jwt.InvalidTokenError:
