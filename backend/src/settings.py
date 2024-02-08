@@ -149,14 +149,9 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
 
-
     'corsheaders',
-    'channels',
 ]
 
-ASGI_APPLICATION = 'src.routing.application'
-
-PINGPONG_TOURNAMENT_MODEL = 'pingpong.Tournament'
 AUTH_USER_MODEL = 'users.User'
 
 REST_USE_JWT = True
@@ -265,11 +260,9 @@ EMAIL_HOST = 'smtp.gmail.com'
 DEFAULT_FROM_MAIL = EMAIL_HOST_USER
 
 LANGUAGE_CODE = 'KO'
-
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
-
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
@@ -286,10 +279,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Cookie settings
 SESSION_COOKIE_HTTPONLY = True
 
-#socket
-
+# Socket
 ASGI_APPLICATION = "src.asgi.application"
-
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels.layers.InMemoryChannelLayer'
