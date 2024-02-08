@@ -97,7 +97,9 @@ class OAuthCallbackView(APIView):
                 target_url = EMAIL_AUTH_URI + "?" + urlencode({
                     'token': auth_token,
                 })
-                return redirect(target_url)
+                response = redirect(target_url)
+                response.set_cookie('jwt', auth_token)
+                return response
             except Exception as e:
                 return JsonResponse({'error': e.__class__.__name__}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -140,13 +142,14 @@ class Intra42CallbackView(OAuthCallbackView):
     userinfo_api = INTRA42_USERINFO_API
 
 
-def create_jwt_token(user, expiration_days):
+def create_jwt_token(user: User, expiration_days: int):
     payload = {
         'user_email': user.email,
         'exp': datetime.utcnow() + timedelta(days=expiration_days),
     }
     token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
-    return token.decode('utf-8') if isinstance(token, bytes) else token
+    token = token.decode('utf-8') if isinstance(token, bytes) else token
+    return token
 
 
 def send_and_save_verification_code(user):
@@ -165,10 +168,8 @@ class VerificationCodeView(APIView):
         operation_description="유저가 입력한 2차 이메일 인증 코드를 검증 API",
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
-            properties={'verification_code': openapi.Schema(type=openapi.TYPE_STRING, description='2차 인증 코드')},
-            required=['verification_code']),
-        manual_parameters=[
-            openapi.Parameter('Authorization', openapi.IN_HEADER, description='Bearer JWT Token', type=openapi.TYPE_STRING)],
+            properties={'code': openapi.Schema(type=openapi.TYPE_STRING, description='2차 인증 코드')},
+            required=['code']),
         responses={201: openapi.Response('Successful Response', schema=VerificationCodeSerializer),
                    400: 'Bad Request',
                    401: 'Bad Unauthorized',
@@ -183,10 +184,11 @@ class VerificationCodeView(APIView):
 
             if user.verification_code == verification_code:
                 jwt_token = create_jwt_token(user, 7)
-
                 data = {'token': jwt_token, 'is_noob': is_noob}
                 serializer = VerificationCodeSerializer(data)
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
+                response = Response(serializer.data, status=status.HTTP_201_CREATED)
+                response.set_cookie('jwt', jwt_token)
+                return response
             else:
                 return JsonResponse({'err_msg': '인증코드가 일치하지 않습니다.'}, status=status.HTTP_400_BAD_REQUEST)
         except jwt.ExpiredSignatureError:
@@ -216,7 +218,9 @@ class VerificationCodeAgainView(APIView):
             user = AuthUtils.validate_jwt_token_and_get_user(request)
             send_and_save_verification_code(user)
             auth_token = create_jwt_token(user, 1)
-            return JsonResponse({'token': auth_token}, status=status.HTTP_200_OK)
+            response = JsonResponse({'token': auth_token}, status=status.HTTP_200_OK)
+            response.set_cookie('jwt', auth_token)
+            return response
 
         except jwt.ExpiredSignatureError:
             return JsonResponse({'error': 'Token has expired'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -233,10 +237,7 @@ class VerificationCodeAgainView(APIView):
 class AuthUtils:
     @staticmethod
     def validate_jwt_token_and_get_user(request):
-        authorization_header = request.headers.get('Authorization', '')
-        if not authorization_header.startswith('Bearer '):
-            raise ValidationError('Invalid authorization header')
-        jwt_token = authorization_header[len('Bearer '):]
+        jwt_token = request.COOKIES.get('jwt')
         decoded_token = jwt.decode(jwt_token, SECRET_KEY, algorithms=['HS256'])
         user_email = decoded_token.get('user_email')
         user = User.objects.get(email=user_email)
