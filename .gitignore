@@ -68,3 +68,6 @@ volumes/
 
 ## node_modules directory git ignore
 /frontend/node_modules/
+
+## backend static ignore
+/backend/static/
