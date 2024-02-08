@@ -69,6 +69,6 @@ header {
     width: 8vh;
 }
 
-#go-back:hover, #user-info:hover, #friends:hover {
+#title:hover, #go-back:hover, #user-info:hover, #friends:hover {
     cursor: pointer;
 }
