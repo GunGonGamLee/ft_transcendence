@@ -5,11 +5,12 @@
  */
 export function getCookie(name) {
   const cookies = document.cookie.split(";");
-  cookies.filter((cookie) => {
+  const jwtCookie = cookies.find((cookie) => {
     const [key, value] = cookie.split("=");
-    if (key.trim() === name) {
-      return value;
-    }
+    return key.trim() === name;
   });
+  if (jwtCookie) {
+    return jwtCookie.split("=")[1];
+  }
   return null;
 }
