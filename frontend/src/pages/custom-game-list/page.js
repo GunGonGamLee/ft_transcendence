@@ -9,11 +9,7 @@ import passwordModal from './password-modal.js'
 export default function CustomGameList($container) {
     this.$container = $container;
 
-    this.setState = () => {
-        this.render();
-    }
-
-    this.render = () => {
+    this.init = () => {
         this.renderLayout();
         this.renderList();
         this.renderRoomCreateModal();
@@ -136,6 +132,6 @@ export default function CustomGameList($container) {
 
     }
 
-    this.render();
+    this.init();
     this.addEventListenersToLayout();
 }
