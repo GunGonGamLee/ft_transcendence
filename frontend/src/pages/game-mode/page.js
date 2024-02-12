@@ -14,6 +14,9 @@ export default function GameMode($container) {
           ${gameModeUnit(0)}
           ${gameModeUnit(1)}
           ${gameModeUnit(2)}
+          <div class="alert alert-primary" role="alert">
+  A simple primary alert—check it out!
+</div>
         </div>
 	  `;
   };
