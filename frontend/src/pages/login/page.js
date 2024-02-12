@@ -1,5 +1,6 @@
 import { click } from "../../utils/clickEvent.js";
 import { navigate } from "../../utils/navigate.js";
+import { getCookie } from "../../utils/cookie.js";
 /**
  * header 컴포넌트
  * @param {HTMLElement} $container
@@ -86,7 +87,7 @@ export default function Login($container) {
   };
 
   this.isAlreadyLogin = () => {
-    const token = localStorage.getItem("jwtToken");
+    const token = getCookie("jwt");
     if (token === null) return false;
     const requestOption = {
       method: "GET",

@@ -1,22 +1,35 @@
 import { hoverChangeCursor } from "../../utils/hoverEvent.js";
 import { importCss } from "../../utils/importCss.js";
+import { getCookie } from "../../utils/cookie.js";
+import { navigate } from "../../utils/navigate.js";
+import { click } from "../../utils/clickEvent.js";
+import Histories from "../../pages/histories/page.js";
 
 /**
  * 사용자 전적 페이지에 사용하는 header 컴포넌트
  * @param {HTMLElement} $container
  */
 export default function historiesHeader($container) {
-  this.$container = $container;
+  $container === undefined
+    ? (this.$container = document.querySelector("#header"))
+    : (this.$container = $container);
+  this.imagePath = "../../../assets/images";
 
   this.setState = () => {
-    this.render();
-    document.getElementById("go-back").addEventListener("click", () => {
-      history.back();
+    const token = getCookie("jwt");
+    fetch("https://localhost/api/usrs/me").then((response) => {
+      if (response.status === 200) {
+        response.json().then((data) => {
+          this.render(data.nickname, data.avatar_file_name);
+        });
+      } else {
+        // TODO => 에러 페이지로 이동
+      }
     });
   };
 
   importCss("../../../assets/fonts/font.css");
-  this.render = () => {
+  this.render = (nickname, avatar_file_name) => {
     this.$container.innerHTML = `
         <div class="main header-wrapper">
             <div class="main" id="left-side">
@@ -24,16 +37,33 @@ export default function historiesHeader($container) {
             </div>
             <div class="main" id="title">사십 이 초-월</div>
             <div class="main" id="right-side">
-                <img src="../../../assets/images/avatar/red_bust.png" alt="아바타" id="user-avatar">
-                <img src="../../../assets/images/friends.png" alt="친구 목록" id="friends">
+                <div class="main" id="user-info">
+                    <span class="main" id="nickname">${nickname}</span>
+                    <img src="${this.imagePath}/avatar/${avatar_file_name}" alt="아바타" id="user-avatar">
+                </div>
+                <img src="${this.imagePath}/friends.png" alt="친구 목록" id="friends">
             </div>
         </div>
         `;
 
-    hoverChangeCursor(document.getElementById("go-back"), "pointer");
-    hoverChangeCursor(document.getElementById("user-avatar"), "pointer");
-    hoverChangeCursor(document.getElementById("friends"), "pointer");
+    // 뒤로가기 버튼 클릭 이벤트
+    click(document.getElementById("go-back"), () => {
+      history.back();
+    });
+    // 사용자 정보 클릭 이벤트
+    click(document.getElementById("user-info"), () => {
+      navigate("/histories");
+    });
+    // TODO => 친구 목록 버튼 클릭 이벤트
+    click(document.getElementById("friends"), () => {
+      // navigate("/friends");
+    });
+    // 메인 타이틀 클릭 이벤트
+    click(document.getElementById("title"), () => {
+      navigate("/game-mode");
+    });
   };
 
   this.setState();
+  this.render();
 }
