@@ -7,13 +7,13 @@ export default function registerHeader($container) {
 
   this.setState = () => {
     this.render();
-  }
+  };
 
   this.render = () => {
     this.$container.innerHTML = `
-        <div class="register-header-wrapper">
-        `
-  }
+        <div class="register-header-wrapper"></div>
+        `;
+  };
 
   this.render();
 }
