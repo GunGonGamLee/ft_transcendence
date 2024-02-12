@@ -1,9 +1,8 @@
-import { hoverChangeCursor } from "../../utils/hoverEvent.js";
 import { importCss } from "../../utils/importCss.js";
-import { getCookie } from "../../utils/cookie.js";
 import { navigate } from "../../utils/navigate.js";
 import { click } from "../../utils/clickEvent.js";
-import Histories from "../../pages/histories/page.js";
+import { BACKEND } from "../../global.js";
+import { getCookie } from "../../utils/cookie.js";
 
 /**
  * 사용자 전적 페이지에 사용하는 header 컴포넌트
@@ -16,14 +15,20 @@ export default function historiesHeader($container) {
   this.imagePath = "../../../assets/images";
 
   this.setState = () => {
-    const token = getCookie("jwt");
-    fetch("https://localhost/api/usrs/me").then((response) => {
+    fetch(`${BACKEND}/users/me`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${getCookie("jwt")}`,
+      },
+    }).then((response) => {
       if (response.status === 200) {
         response.json().then((data) => {
           this.render(data.nickname, data.avatar_file_name);
         });
       } else {
         // TODO => 에러 페이지로 이동
+        navigate("/");
       }
     });
   };

@@ -1,6 +1,8 @@
 import { importCss } from "../../utils/importCss.js";
 import { navigate } from "../../utils/navigate.js";
 import useState from "../../utils/useState.js";
+import { BACKEND } from "../../global.js";
+import { getCookie } from "../../utils/cookie.js";
 /**
  * @param {HTMLElement} $container
  */
@@ -56,6 +58,7 @@ export default function Register($container) {
   this.getRequestOptions = (jwt, key) => {
     return {
       method: "POST",
+      mode: "cors",
       headers: {
         "Content-Type": "application/json",
         // JWT 토큰이 존재하는 경우, Authorization 헤더에 추가합니다
@@ -69,9 +72,9 @@ export default function Register($container) {
   };
 
   this.fetchAuthCode = () => {
-    const jwtToken = localStorage.getItem("jwtToken");
+    const jwtToken = getCookie("jwt");
     fetch(
-      "https://localhost/api/login/verification-code/",
+      `${BACKEND}/login/verification-code/`,
       this.getRequestOptions(jwtToken, "code"),
     )
       .then((response) => {
@@ -121,7 +124,7 @@ export default function Register($container) {
   this.fetchNickname = () => {
     const jwtToken = localStorage.getItem("jwtToken");
     fetch(
-      "https://localhost/api/users/nickname/",
+      `${BACKEND}/users/nickname/`,
       this.getRequestOptions(jwtToken, "nickname"),
     )
       .then((response) => {
@@ -202,10 +205,7 @@ export default function Register($container) {
 
       // fetch 함수를 사용하여 서버에 요청을 보냅니다
       const jwtToken = localStorage.getItem("jwtToken");
-      fetch(
-        "https://localhost/api/login/email/",
-        this.getRequestOptions(jwtToken, "code"),
-      )
+      fetch(`${BACKEND}/login/email/`, this.getRequestOptions(jwtToken, "code"))
         .then((response) => response.json()) // 응답을 JSON으로 파싱
         .then((data) => {
           // 서버로부터 받은 JWT 토큰을 로컬 스토리지에 저장
