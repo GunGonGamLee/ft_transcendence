@@ -10,15 +10,7 @@ import { BACKEND } from "../../global.js";
 export default function Login($container) {
   this.$container = $container;
 
-  this.setState = () => {
-    this.render();
-  };
-
-  this.render = () => {
-    this.renderLayout();
-  };
-
-  this.renderLayout = () => {
+  this.init = () => {
     if (document.getElementsByTagName("head") !== null) {
       document
         .getElementsByTagName("head")[0]
@@ -115,6 +107,7 @@ export default function Login($container) {
   };
 
   if (this.isAlreadyLogin()) return;
-  this.render();
+
+  this.init();
   this.addEventListenersToLayout();
 }
