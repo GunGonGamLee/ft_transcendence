@@ -1,6 +1,7 @@
 import { click } from "../../utils/clickEvent.js";
 import { navigate } from "../../utils/navigate.js";
 import { getCookie } from "../../utils/cookie.js";
+import { BACKEND } from "../../global.js";
 /**
  * header 컴포넌트
  * @param {HTMLElement} $container
@@ -79,10 +80,10 @@ export default function Login($container) {
     const fortyTwo = document.getElementById("forty-two");
 
     click(google, () => {
-      window.location.href = "http://localhost:8000/api/login/google/";
+      window.location.href = `${BACKEND}/login/google/`;
     });
     click(fortyTwo, () => {
-      window.location.href = "http://localhost:8000/api/login/intra42/";
+      window.location.href = `${BACKEND}/login/intra42/`;
     });
   };
 
@@ -97,7 +98,7 @@ export default function Login($container) {
         ...(token ? { Authorization: "Bearer " + token } : {}),
       },
     };
-    fetch("https://localhost/api/users/me/", requestOption)
+    fetch(`${BACKEND}/users/me/`, requestOption)
       .then((response) => {
         if (response.status === 200) {
           navigate("/game-mode");

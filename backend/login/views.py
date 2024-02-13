@@ -39,7 +39,10 @@ INTRA42_USERINFO_API = settings.INTRA42_USERINFO_API
 
 SECRET_KEY = settings.SECRET_KEY
 DEFAULT_FROM_MAIL = settings.DEFAULT_FROM_MAIL
-EMAIL_AUTH_URI = 'https://localhost:443/auth'
+if settings.DEBUG:
+    EMAIL_AUTH_URI = 'http://localhost:3000/auth'
+else:
+    EMAIL_AUTH_URI = 'https://localhost:443/auth'
 
 
 class OAuthLoginView(APIView):
@@ -237,7 +240,10 @@ class VerificationCodeAgainView(APIView):
 class AuthUtils:
     @staticmethod
     def validate_jwt_token_and_get_user(request):
-        jwt_token = request.COOKIES.get('jwt')
+        if settings.DEBUG:
+            jwt_token = request.headers.get('Authorization').split(' ')[1]
+        else:
+            jwt_token = request.COOKIES.get('jwt')
         decoded_token = jwt.decode(jwt_token, SECRET_KEY, algorithms=['HS256'])
         user_email = decoded_token.get('user_email')
         user = User.objects.get(email=user_email)
