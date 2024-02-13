@@ -8,6 +8,8 @@ RUN mkdir -p backend && \
 COPY backend/requirements.txt ./backend/
 RUN pip install -r backend/requirements.txt
 
+ENV DJANGO_SETTINGS_MODULE=src.settings
+
 COPY backend ./backend
 WORKDIR /backend
 
