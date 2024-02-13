@@ -1,5 +1,5 @@
 import { importCss } from "../../utils/importCss.js";
-import gameModeUnit from "./gameModeUnit.js";
+// import gameModeUnit from "./gameModeUnit.js";
 import {click} from "../../utils/clickEvent.js";
 import {navigate} from "../../utils/navigate.js";
 /**
@@ -7,14 +7,14 @@ import {navigate} from "../../utils/navigate.js";
  */
 
 export default function GameMode($container) {
-  this.init = () => {
-    this.render();
+  const init = () => {
+    render();
     click($container.querySelector(".er"), () => {
       navigate("/errorPage", 9999);
     });
   }
 
-  this.render = () => {
+  const render = () => {
     importCss("../../../assets/css/game-mode.css");
     $container.innerHTML = `
       <div class="game-mode-container">
@@ -23,5 +23,5 @@ export default function GameMode($container) {
 	  `;
   };
 
-  this.init();
+  init();
 }

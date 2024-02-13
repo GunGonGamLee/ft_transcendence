@@ -7,18 +7,16 @@ import passwordModal from './password-modal.js'
 
 
 export default function CustomGameList($container) {
-    this.$container = $container;
-
-    this.init = () => {
-        this.renderLayout();
-        this.renderList();
-        this.renderRoomCreateModal();
-        this.renderPasswordModal();
+    const init = () => {
+        renderLayout();
+        renderList();
+        renderRoomCreateModal();
+        renderPasswordModal();
     }
 
-    this.renderLayout = () => {
+    const renderLayout = () => {
         importCss('../../../assets/css/customGameList.css')
-        this.$container.insertAdjacentHTML("afterbegin", `
+        $container.insertAdjacentHTML("afterbegin", `
             <div class="custom-game-list" id="content-wrapper">
                 <div class="custom-game-list" id="game-room-list-wrapper">
                 </div>
@@ -49,22 +47,22 @@ export default function CustomGameList($container) {
         `)
     }
 
-    this.renderList = () => {
+    const renderList = () => {
         let $list = document.getElementById("game-room-list-wrapper");
         GameRoomList.bind($list)();
     }
 
-    this.renderRoomCreateModal = () => {
+    const renderRoomCreateModal = () => {
         const modalHtml = roomCreateModal();
-        this.$container.insertAdjacentHTML("beforeend", modalHtml);
+        $container.insertAdjacentHTML("beforeend", modalHtml);
     }
 
-    this.renderPasswordModal = () => {
+    const renderPasswordModal = () => {
         const modalHtml = passwordModal();
-        this.$container.insertAdjacentHTML("beforeend", modalHtml);
+        $container.insertAdjacentHTML("beforeend", modalHtml);
     }
 
-    this.addEventListenersToLayout = () => {
+    const addEventListenersToLayout = () => {
         const $roomContents = document.querySelectorAll(".game-room-list.room-info");
         const $paginationBefore = document.getElementById("pagination-arrow-left");
         const $paginationAfter = document.getElementById("pagination-arrow-right");
@@ -116,12 +114,12 @@ export default function CustomGameList($container) {
 
                 // RGB 색상에서 RGBA 색상으로 변환하여 배경색으로 설정 (20% 투명도 적용)
                 const backgroundColor = borderColor.replace('rgb', 'rgba').replace(')', ', 0.2)');
-                this.style.backgroundColor = backgroundColor;
+                style.backgroundColor = backgroundColor;
             });
 
             // mouseleave 이벤트 리스너
             $roomContent.addEventListener('mouseleave', function() {
-                this.style.backgroundColor = ''; // 배경색을 초기화 (CSS 스타일로 돌아감)
+                style.backgroundColor = ''; // 배경색을 초기화 (CSS 스타일로 돌아감)
             });
         });
 
@@ -132,6 +130,6 @@ export default function CustomGameList($container) {
 
     }
 
-    this.init();
-    this.addEventListenersToLayout();
+    init();
+    addEventListenersToLayout();
 }

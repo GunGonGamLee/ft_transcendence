@@ -8,9 +8,7 @@ import { BACKEND } from "../../global.js";
  */
 
 export default function Login($container) {
-  this.$container = $container;
-
-  this.init = () => {
+  const init = () => {
     if (document.getElementsByTagName("head") !== null) {
       document
         .getElementsByTagName("head")[0]
@@ -19,7 +17,7 @@ export default function Login($container) {
           '<link rel="stylesheet" href="../../../assets/css/login.css"/>',
         );
     }
-    this.$container.innerHTML = `
+    $container.innerHTML = `
         <div class="login-wrapper">
         <div class="container">
         <div class="arcade-machine">
@@ -67,7 +65,7 @@ export default function Login($container) {
     `;
   };
 
-  this.addEventListenersToLayout = () => {
+  const addEventListenersToLayout = () => {
     const google = document.getElementById("google");
     const fortyTwo = document.getElementById("forty-two");
 
@@ -79,7 +77,7 @@ export default function Login($container) {
     });
   };
 
-  this.isAlreadyLogin = () => {
+  const isAlreadyLogin = () => {
     const token = getCookie("jwt");
     if (token === null) return false;
     const requestOption = {
@@ -96,7 +94,7 @@ export default function Login($container) {
           navigate("/game-mode");
           return true;
         } else if (response.status === 500) {
-          navigate("/500");
+          navigate("/error", 500);
           return true;
         } else {
           alert("알 수 없는 오류");
@@ -106,8 +104,8 @@ export default function Login($container) {
     return false;
   };
 
-  if (this.isAlreadyLogin()) return;
+  if (isAlreadyLogin()) return;
 
-  this.init();
-  this.addEventListenersToLayout();
+  init();
+  addEventListenersToLayout();
 }
