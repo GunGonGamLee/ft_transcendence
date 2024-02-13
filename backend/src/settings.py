@@ -128,7 +128,6 @@ ALLOWED_HOSTS = ['*']
 CORS_ALLOW_ALL_ORIGINS = True
 
 INSTALLED_APPS = [
-    "daphne",
     'channels',
     'users.apps.UsersConfig',
     'games.apps.GamesConfig',
@@ -143,11 +142,11 @@ INSTALLED_APPS = [
     'drf_yasg',
     'rest_framework_simplejwt',
 
-    "django.contrib.sites",
-    "allauth",
-    "allauth.account",
-    "allauth.socialaccount",
-    "allauth.socialaccount.providers.google",
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 
     'corsheaders',
 ]
@@ -186,6 +185,13 @@ TEMPLATES = [
     },
 ]
 
+
+ASGI_APPLICATION = "src.asgi.application"
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer'
+    }
+}
 WSGI_APPLICATION = 'src.wsgi.application'
 
 if DEBUG:
@@ -278,11 +284,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Cookie settings
 SESSION_COOKIE_HTTPONLY = True
-
-# Socket
-ASGI_APPLICATION = "src.asgi.application"
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer'
-    }
-}
