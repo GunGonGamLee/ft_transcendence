@@ -3,7 +3,7 @@ import { importCss } from "../utils/importCss.js";
  * @param {HTMLElement} $container
  * @param {number} errorCode
  */
-export default function ErrorPage($container, errorCode) {
+export default function ErrorPage($container, errorCode = 0) {
   this.$container = $container;
   this.comment = "";
 

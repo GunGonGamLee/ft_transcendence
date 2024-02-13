@@ -90,7 +90,7 @@ export default function Register($container) {
           return;
         }
         if (response.status === 500) {
-          navigate("/500");
+          navigate("error", 500);
           return;
         }
         if (response.status === 404) {
@@ -147,7 +147,7 @@ export default function Register($container) {
           return;
         }
         if (response.status === 500) {
-          navigate("/500");
+          navigate("error", 500);
           return;
         }
         // 응답을 JSON으로 파싱
