@@ -1,7 +1,7 @@
 const devBackend = "http://localhost:8000/api";
 const prodBackend = "https://localhost/api";
 
-const getAPIUrl = async () => {
+const getAPIUrl = () => {
   if (window.mode === "dev") {
     return devBackend;
   } else {
@@ -9,4 +9,4 @@ const getAPIUrl = async () => {
   }
 };
 
-export const BACKEND = await getAPIUrl();
+export const BACKEND = getAPIUrl();
