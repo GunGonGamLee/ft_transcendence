@@ -1,12 +1,12 @@
 /**
  * @param  { string } to
- * @param  { boolean } isReplace
+ * @param  { number | boolean } errorCode
  */
-export const navigate = (to, isReplace = false) => {
+export const navigate = (to, errorCode= false) => {
   const historyChangeEvent = new CustomEvent("historychange", {
     detail: {
       to,
-      isReplace,
+      errorCode
     },
   });
 

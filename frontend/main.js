@@ -1,7 +1,5 @@
-import App from "./src/app.js";
-// import Header from "./src/header.js";
+import Router from "./src/router.js";
 
 window.addEventListener("DOMContentLoaded", () => {
-  // new Header($("#header"));
-  new App(document.querySelector("#app"));
+  new Router(document.querySelector("#app"));
 });

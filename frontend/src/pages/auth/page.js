@@ -3,9 +3,8 @@ import { navigate } from '../../utils/navigate.js';
  * @param {HTMLElement} $container
  */
 export default function Auth($container) {
-  this.$container = $container;
 
-  this.setState = () => {
+  const setState = () => {
     // URL에서 JWT 토큰 파싱
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token'); // 'jwt'는 URL 파라미터의 키 이름
@@ -17,5 +16,5 @@ export default function Auth($container) {
     navigate('/register');
   };
 
-  this.setState();
+  setState();
 }

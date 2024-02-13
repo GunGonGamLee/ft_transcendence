@@ -1,26 +1,27 @@
 import { importCss } from "../../utils/importCss.js";
-import gameModeUnit from "./gameModeUnit.js";
+// import gameModeUnit from "./gameModeUnit.js";
+import {click} from "../../utils/clickEvent.js";
+import {navigate} from "../../utils/navigate.js";
 /**
  * @param {HTMLElement} $container
  */
 
 export default function GameMode($container) {
-  this.$container = $container;
-
-  this.init = () => {
-    this.render();
+  const init = () => {
+    render();
+    click($container.querySelector(".er"), () => {
+      navigate("/errorPage", 9999);
+    });
   }
 
-  this.render = () => {
+  const render = () => {
     importCss("../../../assets/css/game-mode.css");
-    this.$container.innerHTML = `
+    $container.innerHTML = `
       <div class="game-mode-container">
-        ${gameModeUnit(0)}
-        ${gameModeUnit(1)}
-        ${gameModeUnit(2)}
+        <button type="button" class="btn btn-primary er">go to errorPage</button>
       </div>
 	  `;
   };
 
-  this.init();
+  init();
 }
