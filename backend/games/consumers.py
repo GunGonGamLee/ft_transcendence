@@ -1,6 +1,5 @@
 import json
 import random
-from django.contrib.auth.models import AnonymousUser
 from channels.generic.websocket import AsyncWebsocketConsumer
 from games.models import Game, CasualGameView
 from games.serializers import GameRoomSerializer
@@ -36,6 +35,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def is_invalid_user(self):
         user = self.scope['user']
+        from django.contrib.auth.models import AnonymousUser
         return isinstance(user, AnonymousUser)
 
     async def reject_invalid_user(self):

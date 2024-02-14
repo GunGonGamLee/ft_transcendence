@@ -3,6 +3,9 @@ from channels.db import database_sync_to_async
 import json
 from friends.models import Friend
 from django.conf import settings
+import logging
+
+logger = logging.getLogger(__name__)
 
 class FriendStatusConsumer(AsyncWebsocketConsumer):    
     async def connect(self):
@@ -16,6 +19,9 @@ class FriendStatusConsumer(AsyncWebsocketConsumer):
             await self.accept()
             # 친구들에게 접속 상태 업데이트 전송
             await self.notify_friends_online()
+            logger.info(f"Websocket connection established for user {self.user.id}")
+        else:
+            logger.info("Websocket connection rejected")
 
     async def disconnect(self, close_code):
         if self.user.is_authenticated:
@@ -26,6 +32,7 @@ class FriendStatusConsumer(AsyncWebsocketConsumer):
             )
             # 친구들에게 접속 해제 상태 업데이트 전송
             await self.notify_friends_offline()
+            logger.info(f"Websocket connection closed for user {self.user.id}")
 
     async def notify_friends_online(self):
         # 여기에 친구들에게 사용자가 온라인임을 알리는 코드를 추가
@@ -54,5 +61,5 @@ class FriendStatusConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def get_user_friends(self):
         user_friends = Friend.objects.filter(user_id=self.user.id, status = 1).values_list('friend_id', flat=True)
-        friend_users = Friend.objects.filter(friend_id=self.user.id, stauts = 1).value_list('user_id', flat=True)
+        friend_users = Friend.objects.filter(friend_id=self.user.id, status = 1).values_list('user_id', flat=True)
         return list(user_friends) + list(friend_users)
