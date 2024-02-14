@@ -13,6 +13,7 @@ import Ranking from "./ranking-page.js";
 
 export default function Histories($container) {
   this.$container = $container;
+  this.imagePath = "../../../assets/images";
 
   this.render = () => {
     this.renderLayout();
@@ -31,12 +32,12 @@ export default function Histories($container) {
         <div class="histories" id="content-wrapper">
             <nav class="histories" id="mode">
                 <div class="histories" id="summary">
-                    <img class="histories" src="../../../assets/images/custom_summary.png" alt="summary">
+                    <img class="histories" src="${this.imagePath}/custom_summary.png" alt="summary">
                     너의 기록은
                 </div>
                 <div class="histories" id="custom-menu-wrapper">
                     <div class="histories custom-toggle" id="custom">
-                        <img class="histories" src="../../../assets/images/setting.png" alt="custom-mode">
+                        <img class="histories" src="${this.imagePath}/setting.png" alt="custom-mode">
                         사용자 지정 모드
                     </div>
                     <div class="histories custom-toggle" id="toggle">
@@ -47,7 +48,7 @@ export default function Histories($container) {
                     </div>
                 </div>
                <div class="histories title" id="tournament">
-                   <img class="histories" src="../../../assets/images/tournament_logo.png" alt="tournament">
+                   <img class="histories" src="${this.imagePath}/tournament_logo.png" alt="tournament">
                    토너먼트 모드
                </div>
             </nav>
@@ -55,12 +56,12 @@ export default function Histories($container) {
             </div>
             <footer class="histories">
                 <div class="histories" id="search-wrapper">
-                    <img class="histories" src="../../../assets/images/search.png" alt="search">
+                    <img class="histories" src="${this.imagePath}/search.png" alt="search">
                     <input class="histories" id="search" type="text" placeholder="유저 검색">
                 </div> 
                 <div class="histories" id="pagination">
-                    <img src="../../../assets/images/pagination.png" alt="prev" id="prev">
-                    <img src="../../../assets/images/pagination.png" alt="next" id="next">
+                    <img src="${this.imagePath}/pagination.png" alt="prev" id="prev">
+                    <img src="${this.imagePath}/pagination.png" alt="next" id="next">
                 </div>
             </footer>
         </div>
