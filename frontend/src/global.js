@@ -10,3 +10,4 @@ const getAPIUrl = () => {
 };
 
 export const BACKEND = getAPIUrl();
+export const HISTORIES_IMAGE_PATH = "../../../assets/images";
