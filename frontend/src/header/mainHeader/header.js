@@ -8,7 +8,7 @@ import { getCookie } from "../../utils/cookie.js";
  * 사용자 전적 페이지에 사용하는 header 컴포넌트
  * @param {HTMLElement} $container
  */
-export default function historiesHeader($container) {
+export default function MainHeader($container) {
   $container === undefined
     ? (this.$container = document.querySelector("#header"))
     : (this.$container = $container);
