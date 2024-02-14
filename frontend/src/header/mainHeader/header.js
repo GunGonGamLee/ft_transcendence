@@ -10,9 +10,7 @@ import useState from "../../utils/useState.js";
  * @param {HTMLElement} $container
  */
 export default function MainHeader($container) {
-  $container === undefined
-    ? (this.$container = document.querySelector("#header"))
-    : (this.$container = $container);
+  this.$container = $container;
   this.imagePath = "../../../assets/images";
 
   const init = () => {
