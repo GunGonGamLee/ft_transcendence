@@ -16,8 +16,8 @@ export default function InGame($container) {
 		$container.innerHTML = `
 			${scoreBar()}
 			<div class="in-game" style="height: 100vh; width: 100vw; background-image: url('../../../assets/images/ingame_background.png'); background-size: cover">
-			<div class="bar1" style="position: fixed; top: 50vh; left: 10vw; height: 12vh; width: 1vw; background-image: url('../../../assets/images/light_saber_green.png'); background-size: cover"></div>
-			<div class="bar2" style="position: fixed; top: 50vh; left: 90vw; height: 12vh; width: 1vw; background-image: url('../../../assets/images/light_saber_yellow.png'); background-size: cover;"></div>
+			<div class="bar1" style="position: fixed; top: 50vh; left: 10vw; height: 20vh; width: 1vw; background-image: url('../../../assets/images/light_saber_green.png'); background-size: cover"></div>
+			<div class="bar2" style="position: fixed; top: 50vh; left: 90vw; height: 20vh; width: 1vw; background-image: url('../../../assets/images/light_saber_yellow.png'); background-size: cover;"></div>
 			<div class="ball" style="position: fixed; top: 48vh; left: 48vw; height: 4vh; width: 4vh; background-image: url('../../../assets/images/storm_trooper.png'); background-size: cover;"></div>
 			`
 	}
@@ -37,9 +37,9 @@ export default function InGame($container) {
 				if (currentTop <= 12) return;
 				$container.querySelector(".bar1").style.top = `${currentTop - 1}vh`;
 			}
-			else if (e.key === "s" || e.key === "S") {
+			else if (e.key === "s" || e.key === "S" || e.key === 'ㄴ') {
 				const currentTop = parseInt($container.querySelector(".bar1").style.top);
-				if (currentTop >= 88) return;
+				if (currentTop >= 80) return;
 				$container.querySelector(".bar1").style.top = `${currentTop + 1}vh`;
 			} // TODO: 2p 아닐땐 아래 이벤트리스너 실행 안되게 수정
 			else if (e.key === "ArrowUp") {
@@ -48,7 +48,7 @@ export default function InGame($container) {
 				$container.querySelector(".bar2").style.top = `${currentTop - 1}vh`;
 			} else if (e.key === "ArrowDown") {
 				const currentTop = parseInt($container.querySelector(".bar2").style.top);
-				if (currentTop >= 88) return;
+				if (currentTop >= 80) return;
 				$container.querySelector(".bar2").style.top = `${currentTop + 1}vh`;
 			}
 		})
