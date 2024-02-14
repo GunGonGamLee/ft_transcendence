@@ -11,6 +11,7 @@ export default function InGame($container) {
 		this.renderScoreBoard();
 		addKeyEvents();
 	}
+	// TODO: 다른 페이지로 이동 시 이벤트 제거, mainheader 보이게 수정
 	this.render = () => {
 		$container.innerHTML = `
 			${scoreBar()}
