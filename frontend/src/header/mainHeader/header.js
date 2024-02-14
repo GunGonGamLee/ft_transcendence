@@ -15,7 +15,7 @@ export default function MainHeader($container) {
     : (this.$container = $container);
   this.imagePath = "../../../assets/images";
 
-  this.setState = () => {
+  this.init = () => {
     fetch(`${BACKEND}/users/me`, {
       method: "GET",
       headers: {
@@ -71,6 +71,6 @@ export default function MainHeader($container) {
   };
 
   importCss("../../../assets/fonts/font.css");
-  this.setState();
+  this.init();
   let [getUserInfo, setUserInfo] = useState({}, this, "render");
 }
