@@ -36,7 +36,9 @@ export default function MainHeader($container) {
 
   this.render = () => {
     const userInfo = getUserInfo();
-    this.$container.innerHTML = `
+    this.$container.insertAdjacentHTML(
+      "beforeend",
+      `
         <div class="main header-wrapper">
             <div class="main" id="left-side">
                 <img src="../../../assets/images/go_back.png" alt="뒤로가기" class="main" id="go-back">
@@ -50,7 +52,8 @@ export default function MainHeader($container) {
                 <img src="${this.imagePath}/friends.png" alt="친구 목록" id="friends">
             </div>
         </div>
-        `;
+        `,
+    );
 
     // 뒤로가기 버튼 클릭 이벤트
     click(document.getElementById("go-back"), () => {
