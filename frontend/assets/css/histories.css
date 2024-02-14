@@ -186,6 +186,7 @@
 .histories.custom-toggle ul {
     border: 3px solid #29ABE2;
     background: #0000009c;
+    padding-left: 0;
 }
 
 .histories.custom-toggle li {
