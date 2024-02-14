@@ -15,7 +15,7 @@ export default function MainHeader($container) {
     : (this.$container = $container);
   this.imagePath = "../../../assets/images";
 
-  this.init = () => {
+  const init = () => {
     fetch(`${BACKEND}/users/me`, {
       method: "GET",
       headers: {
@@ -24,6 +24,7 @@ export default function MainHeader($container) {
       },
     }).then((response) => {
       if (response.status === 200) {
+        this.$container.textContent = "";
         response.json().then((data) => {
           setUserInfo(data);
         });
@@ -35,7 +36,7 @@ export default function MainHeader($container) {
   };
 
   this.render = () => {
-    const userInfo = getUserInfo();
+    const { nickname, avatar_file_name } = getUserInfo();
     this.$container.insertAdjacentHTML(
       "beforeend",
       `
@@ -46,8 +47,8 @@ export default function MainHeader($container) {
             <div class="main" id="title">사십 이 초-월</div>
             <div class="main" id="right-side">
                 <div class="main" id="user-info">
-                    <span class="main" id="nickname">${userInfo.nickname}</span>
-                    <img src="${this.imagePath}/avatar/${userInfo.avatar_file_name}" alt="아바타" id="user-avatar">
+                    <span class="main" id="nickname">${nickname}</span>
+                    <img src="${this.imagePath}/avatar/${avatar_file_name}" alt="아바타" id="user-avatar">
                 </div>
                 <img src="${this.imagePath}/friends.png" alt="친구 목록" id="friends">
             </div>
@@ -74,6 +75,6 @@ export default function MainHeader($container) {
   };
 
   importCss("../../../assets/fonts/font.css");
-  this.init();
+  init();
   let [getUserInfo, setUserInfo] = useState({}, this, "render");
 }
