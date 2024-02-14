@@ -78,7 +78,6 @@ export default function Histories($container) {
    */
   this.addEventListenersToLayout = () => {
     const $content = document.getElementById("content");
-    const $listWrapper = document.getElementById("list-wrapper");
     const $summary = document.getElementById("summary");
     const $customMenuWrapper = document.getElementById("custom-menu-wrapper");
     const $custom = document.getElementById("custom");
