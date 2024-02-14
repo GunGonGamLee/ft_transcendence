@@ -139,7 +139,7 @@
 
 /********** Histories Mode Select **********/
 
-.histories#mode {
+nav.histories {
     display: flex;
     justify-content: space-evenly;
     align-items: center;
@@ -150,11 +150,11 @@
     margin-top: 3vh;
 }
 
-.histories#mode > div {
+nav.histories > div {
     padding: 1vh 0;
 }
 
-.histories#mode div {
+nav.histories div {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -162,12 +162,12 @@
     font-family: Galmuri11, serif;
 }
 
-.histories#mode > div img {
+nav.histories > div img {
     width: 4vh;
     margin-right: 2vh;
 }
 
-.histories#mode #custom-menu-wrapper {
+nav.histories #custom-menu-wrapper {
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
