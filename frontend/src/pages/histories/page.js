@@ -98,23 +98,6 @@ export default function Histories($container) {
     const $prev = document.getElementById("prev");
     const $next = document.getElementById("next");
 
-    // 폰트 색상 변경
-    hoverChangeColor([$summary, $custom, $tournament], "#ffffff", "#29ABE2");
-    hoverChangeColor($toggleItems, "#aaaaaa", "#29ABE2");
-
-    // 폰트 변경
-    hoverChangeFont(
-      [$summary, $custom, $tournament],
-      "Galmuri11, serif",
-      "Galmuri11-Bold, serif",
-    );
-
-    // 커서 변경
-    hoverChangeCursor(
-      [$summary, $customMenuWrapper, $tournament, $prev, $next],
-      "pointer",
-    );
-
     // click 이벤트
     click($summary, Summary);
     click($custom, CustomHistories.bind($content, "1vs1"));
@@ -125,9 +108,6 @@ export default function Histories($container) {
     // toggle 이벤트
     let $toggle = document.getElementById("toggle");
     hoverToggle($customMenuWrapper, $toggle, "flex");
-    $customMenuWrapper.addEventListener("mouseover", () => {
-      $customMenuWrapper.style.color = "#29ABE2";
-    });
   };
   this.render();
   this.addEventListenersToLayout();

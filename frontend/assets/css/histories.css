@@ -130,6 +130,10 @@
     margin: 6vh 0.5vw 0 0;
 }
 
+.histories#pagination > img:hover {
+    cursor: pointer;
+}
+
 .histories#pagination > #prev {
     transform: rotate(180deg);
 }
@@ -152,6 +156,14 @@ nav.histories {
 
 nav.histories > div {
     padding: 1vh 0;
+}
+
+nav.histories > div:hover,
+nav.histories > div#custom-menu-wrapper > div#custom:hover,
+nav.histories > div#custom-menu-wrapper > div#toggle > ul.histories > li:hover {
+    cursor: pointer;
+    color: #29ABE2;
+    font-family: Galmuri11-Bold, serif;
 }
 
 nav.histories div {
