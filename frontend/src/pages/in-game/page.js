@@ -16,8 +16,8 @@ export default function InGame($container) {
 		$container.innerHTML = `
 			${scoreBar()}
 			<div class="in-game" style="height: 100vh; width: 100vw; background-image: url('../../../assets/images/ingame_background.png'); background-size: cover">
-			<div class="bar1" style="position: fixed; top: 50vh; left: 10vw; height: 20vh; width: 1vw; background-image: url('../../../assets/images/light_saber_green.png'); background-size: cover"></div>
-			<div class="bar2" style="position: fixed; top: 50vh; left: 90vw; height: 20vh; width: 1vw; background-image: url('../../../assets/images/light_saber_yellow.png'); background-size: cover;"></div>
+			<div class="bar1" style="position: fixed; top: 40vh; left: 10vw; height: 20vh; width: 1vw; background-image: url('../../../assets/images/light_saber_green.png'); background-size: cover"></div>
+			<div class="bar2" style="position: fixed; top: 40vh; left: 90vw; height: 20vh; width: 1vw; background-image: url('../../../assets/images/light_saber_yellow.png'); background-size: cover;"></div>
 			<div class="ball" style="position: fixed; top: 48vh; left: 48vw; height: 4vh; width: 4vh; background-image: url('../../../assets/images/storm_trooper.png'); background-size: cover;"></div>
 			`
 	}
