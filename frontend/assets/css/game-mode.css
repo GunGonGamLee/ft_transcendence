@@ -12,7 +12,7 @@
     align-items: center;
 }
 .game-mode-unit:hover {
-    border: 3px #29ABE2 solid;
+    border: 4px yellow solid;
     border-radius: 20px;
     cursor: pointer;
 }
