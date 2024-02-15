@@ -17,9 +17,6 @@ from .serializers import UserMeInfoSerializer, UserInfoSerializer
 class SetNicknameView(APIView):
     @swagger_auto_schema(tags=['/api/users'],
                          operation_description="사용자 닉네임 저장 API",
-                         manual_parameters=[
-                             openapi.Parameter('Authorization', openapi.IN_HEADER, description='JWT Token',
-                                               type=openapi.TYPE_STRING), ],
                          request_body=openapi.Schema(
                              type=openapi.TYPE_OBJECT,
                              properties={'nickname': openapi.Schema(type=openapi.TYPE_STRING, description='닉네임')},
@@ -53,9 +50,6 @@ class SetNicknameView(APIView):
 
     @swagger_auto_schema(tags=['/api/users'],
                          operation_description="사용자 닉네임 수정 API",
-                         manual_parameters=[
-                             openapi.Parameter('Authorization', openapi.IN_HEADER, description='JWT Token',
-                                               type=openapi.TYPE_STRING), ],
                          request_body=openapi.Schema(
                              type=openapi.TYPE_OBJECT,
                              properties={'nickname': openapi.Schema(type=openapi.TYPE_STRING, description='닉네임')},
@@ -113,6 +107,13 @@ class UserMeInfoView(APIView):
 
 
 class UserInfoView(APIView):
+    @swagger_auto_schema(
+        tags=['/api/users'],
+        operation_description="사용자 전적 API",
+        responses={200: openapi.Response('Successful Response', schema=UserInfoSerializer),
+                   401: 'Bad Unauthorized',
+                   404: 'NOT FOUND',
+                   500: 'SERVER_ERROR'})
     def get(self, request, nickname):
         try:
             user = AuthUtils.validate_jwt_token_and_get_user(request)
