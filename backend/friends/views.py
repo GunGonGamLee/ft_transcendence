@@ -26,7 +26,11 @@ class FriendsView(APIView):
             friend_list = []
             for relation in friends_relations:
                 friend = relation.friend_id if relation.user_id == current_user else relation.user_id
-                friend_list.append(friend.nickname)
+                friend_data = {
+                    'nickname' : friend.nickname,
+                    'is_online' : friend.is_online,
+                }
+                friend_list.append(friend_data)
 
             response_data = {'friends': friend_list}
             return Response(response_data, status=status.HTTP_200_OK)

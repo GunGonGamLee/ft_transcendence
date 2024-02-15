@@ -4,8 +4,13 @@ import json
 from friends.models import Friend
 from django.conf import settings
 import logging
+from users.models import User
 
 logger = logging.getLogger(__name__)
+
+@database_sync_to_async
+def set_user_online(self, user_id, online=True):
+    User.objects.filter(id=user_id).update(is_online=online)
 
 class FriendStatusConsumer(AsyncWebsocketConsumer):    
     async def connect(self):
@@ -19,6 +24,7 @@ class FriendStatusConsumer(AsyncWebsocketConsumer):
             await self.accept()
             # 친구들에게 접속 상태 업데이트 전송
             await self.notify_friends_online()
+            await self.set_user_online(self.user.id, online=True)
             logger.info(f"Websocket connection established for user {self.user.id}")
         else:
             logger.info("Websocket connection rejected")
@@ -32,6 +38,7 @@ class FriendStatusConsumer(AsyncWebsocketConsumer):
             )
             # 친구들에게 접속 해제 상태 업데이트 전송
             await self.notify_friends_offline()
+            await self.set_user_online(self.user.id, online=False)
             logger.info(f"Websocket connection closed for user {self.user.id}")
 
     async def notify_friends_online(self):
