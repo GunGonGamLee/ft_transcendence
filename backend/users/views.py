@@ -87,7 +87,7 @@ class SetNicknameView(APIView):
             return JsonResponse({'error': e.__class__.__name__}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-class UserInfoView(APIView):
+class UserMeInfoView(APIView):
     @swagger_auto_schema(
         tags=['/api/users'],
         operation_description="사용자 정보 API",
