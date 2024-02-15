@@ -3,7 +3,7 @@ from users.models import User
 from src.choices import MODE_CHOICES_DICT, AVATAR_CHOICES_DICT
 
 
-class UserInfoSerializer(serializers.ModelSerializer):
+class UserMeInfoSerializer(serializers.ModelSerializer):
 
     avatar_file_name = serializers.SerializerMethodField()
 

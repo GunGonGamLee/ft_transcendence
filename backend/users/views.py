@@ -11,7 +11,7 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
-from .serializers import UserInfoSerializer
+from .serializers import UserMeInfoSerializer
 
 
 class SetNicknameView(APIView):
@@ -100,7 +100,7 @@ class UserMeInfoView(APIView):
     def get(self, request):
         try:
             user = AuthUtils.validate_jwt_token_and_get_user(request)
-            serializer = UserInfoSerializer(user)
+            serializer = UserMeInfoSerializer(user)
             return JsonResponse(serializer.data, status=status.HTTP_200_OK)
         except jwt.ExpiredSignatureError:
             return JsonResponse({'error': 'Token has expired'}, status=status.HTTP_401_UNAUTHORIZED)
