@@ -1,9 +1,4 @@
-import {
-  hoverChangeColor,
-  hoverChangeCursor,
-  hoverChangeFont,
-  hoverToggle,
-} from "../../utils/hoverEvent.js";
+import { hoverToggle } from "../../utils/hoverEvent.js";
 import { click } from "../../utils/clickEvent.js";
 import { importCss } from "../../utils/importCss.js";
 import Summary from "./summary-page.js";
@@ -95,8 +90,6 @@ export default function Histories($container) {
     const $custom = document.getElementById("custom");
     const $toggleItems = Array.from(document.getElementsByTagName("li"));
     const $tournament = document.getElementById("tournament");
-    const $prev = document.getElementById("prev");
-    const $next = document.getElementById("next");
 
     // click 이벤트
     click($summary, Summary);
