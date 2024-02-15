@@ -9,11 +9,17 @@ import { navigate } from "../../utils/navigate.js";
 export default function GameMode($container) {
   const init = () => {
     render();
-    click($container.querySelector(".unit0"), () => {
+    click($container.querySelector(".unit1"), () => {
       $container.querySelector(".queue-modal").style.display = "flex";
     });
     click($container.querySelector(".run-btn"), () => {
       $container.querySelector(".queue-modal").style.display = "none";
+    });
+    click($container.querySelector(".unit0"), () => {
+      navigate("/in-game");
+    });
+    click($container.querySelector(".unit2"), () => {
+      navigate("/custom-game-list");
     });
   };
 
