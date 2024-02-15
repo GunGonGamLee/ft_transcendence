@@ -7,6 +7,7 @@ import WaitingRoom from "../pages/waiting-room/page.js";
 import Login from "../pages/login/page.js";
 import CustomGameList from "../pages/custom-game-list/page.js";
 import Auth from "../pages/auth/page.js";
+import InGame from "../pages/in-game/page.js";
 
 /**
  * 원하는 경로에 따라 렌더링할 컴포넌트를 정의합니다.
@@ -19,4 +20,5 @@ export const routes = [
   { path: /^\/histories$/, page: Histories, header: MainHeader },
   { path: /^\/waiting-room$/, page: WaitingRoom, header: MainHeader },
   { path: /^\/custom-game-list$/, page: CustomGameList, header: MainHeader },
+  { path: /^\/in-game$/, page: InGame, header: MainHeader}
 ];

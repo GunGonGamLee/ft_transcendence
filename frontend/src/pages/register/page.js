@@ -7,8 +7,7 @@ import { getCookie } from "../../utils/cookie.js";
  * @param {HTMLElement} $container
  */
 export default function Register($container) {
-  this.$container = $container;
-  this.isValidAuthBtn = true;
+  let isValidAuthBtn = true;
   let authStateInput = {
     command: "인증번호를 적어라",
     placeholder: "인증번호는 6글자다.",
@@ -17,15 +16,15 @@ export default function Register($container) {
   };
 
   let [getAuthState, setAuthState] = useState(authStateInput, this, "render");
-  this.init = () => {
+  const init = () => {
     this.render();
-    this.setAuthEvent();
-    this.setResendAuthEmailButton();
+    setAuthEvent();
+    setResendAuthEmailButton();
   };
 
   this.render = () => {
     importCss("../../../assets/css/register.css");
-    this.$container.innerHTML = `
+    $container.innerHTML = `
      <div class="register-container">
        <div class="title">사십 이 초-월</div>
        <div class="white-box">
@@ -39,7 +38,7 @@ export default function Register($container) {
     `;
   };
 
-  this.setNicknameState = () => {
+  const setNicknameState = () => {
     let nicknameStateInput = {
       command: "별명을 적어라",
       placeholder: "최대 8글자 가능하다.",
@@ -47,7 +46,7 @@ export default function Register($container) {
       pattern: "^[가-힣]{1,8}$",
     };
     setAuthState(nicknameStateInput);
-    this.setNicknameEvent();
+    setNicknameEvent();
   };
   /**
    * @description request option을 반환합니다.
@@ -55,7 +54,7 @@ export default function Register($container) {
    * @param {string} key
    * @returns {RequestInit | undefined}
    */
-  this.getRequestOptions = (jwt, key) => {
+  const getRequestOptions = (jwt, key) => {
     return {
       method: "POST",
       mode: "cors",
@@ -66,16 +65,16 @@ export default function Register($container) {
       },
       // 'code' 변수를 JSON 본문에 포함합니다
       body: JSON.stringify({
-        [key]: this.$container.querySelector("#register-form input").value,
+        [key]: $container.querySelector("#register-form input").value,
       }),
     };
   };
 
-  this.fetchAuthCode = () => {
+  const fetchAuthCode = () => {
     const jwtToken = getCookie("jwt");
     fetch(
       `${BACKEND}/login/verification-code/`,
-      this.getRequestOptions(jwtToken, "code"),
+      getRequestOptions(jwtToken, "code"),
     )
       .then((response) => {
         // 인증코드 잘못된 경우
@@ -111,7 +110,7 @@ export default function Register($container) {
           }
           // is_noob 값에 따라 적절한 처리 실행
           if (data.is_noob === "True") {
-            this.setNicknameState();
+            setNicknameState();
           } else {
             navigate("/game-mode");
           }
@@ -121,11 +120,11 @@ export default function Register($container) {
       .catch((error) => console.error("Error:", error)); // 에러 처리
   };
 
-  this.fetchNickname = () => {
+  const fetchNickname = () => {
     const jwtToken = localStorage.getItem("jwtToken");
     fetch(
       `${BACKEND}/users/nickname/`,
-      this.getRequestOptions(jwtToken, "nickname"),
+      getRequestOptions(jwtToken, "nickname"),
     )
       .then((response) => {
         // 인증코드 잘못된 경우
@@ -134,7 +133,7 @@ export default function Register($container) {
           return;
         }
         if (response.status === 400) {
-          this.turnToWarning("이미 있다....");
+          turnToWarning("이미 있다....");
           return;
         }
         // jwt 토큰 잘못된 경우
@@ -156,56 +155,56 @@ export default function Register($container) {
       .catch((error) => console.error("Error:", error)); // 에러 처리
   };
 
-  this.turnToWarning = (warning) => {
-    this.$container.querySelector("#register-form input").value = "";
-    this.$container.querySelector(".white-box").style.borderColor = "red";
-    this.$container.querySelector(".white-box div:last-child").innerHTML =
+  const turnToWarning = (warning) => {
+    $container.querySelector("#register-form input").value = "";
+    $container.querySelector(".white-box").style.borderColor = "red";
+    $container.querySelector(".white-box div:last-child").innerHTML =
       warning;
   };
 
-  this.setAuthEvent = () => {
-    const $registerInput = this.$container.querySelector(
+  const setAuthEvent = () => {
+    const $registerInput = $container.querySelector(
       "#register-form input",
     );
-    this.$container
+    $container
       .querySelector("#register-form")
       .addEventListener("submit", (e) => {
         e.preventDefault();
         if ($registerInput.value.length !== 6) {
-          this.turnToWarning("인증번호는 6글자다.");
+          turnToWarning("인증번호는 6글자다.");
           return;
         }
-        this.fetchAuthCode();
+        fetchAuthCode();
       });
   };
 
-  this.setNicknameEvent = () => {
-    this.$container
+  const setNicknameEvent = () => {
+    $container
       .querySelector("#register-form")
       .addEventListener("submit", (e) => {
         e.preventDefault();
-        this.fetchNickname();
+        fetchNickname();
       });
   };
 
-  this.setResendAuthEmailButton = () => {
-    this.$container
+  const setResendAuthEmailButton = () => {
+    $container
       .querySelector(".register-container")
       .insertAdjacentHTML(
         "beforeend",
         `<div class="resend-auth-btn">인증코드 재 전송</div>`,
       );
 
-    const $authBtn = this.$container.querySelector(".resend-auth-btn");
+    const $authBtn = $container.querySelector(".resend-auth-btn");
 
     $authBtn.addEventListener("click", () => {
-      if (this.isValidAuthBtn === false) return;
-      this.isValidAuthBtn = false;
+      if (isValidAuthBtn === false) return;
+      isValidAuthBtn = false;
       $authBtn.innerText = "1분 후에 눌러라";
 
       // fetch 함수를 사용하여 서버에 요청을 보냅니다
       const jwtToken = localStorage.getItem("jwtToken");
-      fetch(`${BACKEND}/login/email/`, this.getRequestOptions(jwtToken, "code"))
+      fetch(`${BACKEND}/login/email/`, getRequestOptions(jwtToken, "code"))
         .then((response) => response.json()) // 응답을 JSON으로 파싱
         .then((data) => {
           // 서버로부터 받은 JWT 토큰을 로컬 스토리지에 저장
@@ -216,11 +215,11 @@ export default function Register($container) {
         .catch((error) => console.error("Error:", error)); // 에러 처리
 
       setTimeout(() => {
-        this.isValidAuthBtn = true;
+        isValidAuthBtn = true;
         $authBtn.innerText = "인증코드 재 전송";
       }, 60000);
     });
   };
 
-  this.init();
+  init();
 }
