@@ -2,10 +2,10 @@ import {importCss} from '../../utils/importCss.js'
 
 
 export default function FriendsInfoModal(isVisible) {
-    importCss('../../../assets/css/friendsInfoModal.css')
+    importCss('../../../assets/css/friendsInfoModal.css');
 
     return `
-        <div class="friends-info-modal-wrapper">
+        <div class="friends-info-modal-wrapper" id="friends-list-wrapper">
             <div class="friends-info-modal-wrapper" id="friends-list">
                 
             </div>

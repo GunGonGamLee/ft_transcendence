@@ -3,6 +3,9 @@ import { navigate } from "../../utils/navigate.js";
 import { click } from "../../utils/clickEvent.js";
 import { BACKEND } from "../../global.js";
 import { getCookie } from "../../utils/cookie.js";
+import roomCreateModal from "../../pages/custom-game-list/room-create-modal.js";
+import friendsInfoModal from "./friends-info-modal.js";
+
 
 /**
  * 사용자 전적 페이지에 사용하는 header 컴포넌트
@@ -14,7 +17,7 @@ export default function historiesHeader($container) {
     : (this.$container = $container);
   this.imagePath = "../../../assets/images";
 
-  this.init = () => {
+  const init = () => {
     fetch(`${BACKEND}/users/me`, {
       method: "GET",
       headers: {
@@ -30,11 +33,39 @@ export default function historiesHeader($container) {
         // TODO => 에러 페이지로 이동
         navigate("/");
       }
+
+
+    });
+
+
+    // 뒤로가기 버튼 클릭 이벤트
+    click(document.getElementById("go-back"), () => {
+      history.back();
+    });
+    // 사용자 정보 클릭 이벤트
+    click(document.getElementById("user-info"), () => {
+      navigate("/histories");
+    });
+    // TODO => 친구 목록 버튼 클릭 이벤트
+    click(document.getElementById("friends"), () => {
+      console.log($container.querySelector("#friends-list-wrapper"));
+      document.getElementById("friends-list-wrapper").style.display = "block";
+    });
+    // 메인 타이틀 클릭 이벤트
+    click(document.getElementById("title"), () => {
+      navigate("/game-mode");
     });
   };
 
+  let renderFriendsInfoModal = () => {
+    const modalHtml = friendsInfoModal();
+    console.log(modalHtml);
+    $container.insertAdjacentHTML("beforeend", modalHtml);
+    console.log($container);
+  }
+
   importCss("../../../assets/fonts/font.css");
-  this.render = (nickname, avatar_file_name) => {
+  let render = (nickname, avatar_file_name) => {
     this.$container.innerHTML = `
         <div class="main header-wrapper">
             <div class="main" id="left-side">
@@ -50,25 +81,7 @@ export default function historiesHeader($container) {
             </div>
         </div>
         `;
+  }
 
-    // 뒤로가기 버튼 클릭 이벤트
-    click(document.getElementById("go-back"), () => {
-      history.back();
-    });
-    // 사용자 정보 클릭 이벤트
-    click(document.getElementById("user-info"), () => {
-      navigate("/histories");
-    });
-    // TODO => 친구 목록 버튼 클릭 이벤트
-    click(document.getElementById("friends"), () => {
-      // navigate("/friends");
-    });
-    // 메인 타이틀 클릭 이벤트
-    click(document.getElementById("title"), () => {
-      navigate("/game-mode");
-    });
-  };
-
-  this.init();
-  this.render();
+  init();
 }
