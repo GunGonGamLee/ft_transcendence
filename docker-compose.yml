@@ -1,22 +1,26 @@
 version: '3.0'
 
 services:
-  # hashicorp_vault:
-  #   build:
-  #     context: ./vault
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - 8200:8200
-  #   volumes:
-  #     - "/Users/sejokim/desktop/volumes/vault/file:/vault/file"
-  #     - "/Users/sejokim/desktop/volumes/vault/logs:/vault/logs"
-  #     - "/Users/sejokim/desktop/volumes/vault/config:/vault/config"
-  #   environment:
-  #     VAULT_ADDR: "http://hashicorp_vault:8200"
-  #   cap_add:
-  #     - IPC_LOCK
-  #   networks:
-  #     - app_network
+  hashicorp_vault:
+    build:
+      context: ./vault
+      dockerfile: Dockerfile
+    ports:
+      - 8200:8200
+    volumes:
+      # - "/Users/sejokim/desktop/volumes/vault/file:/vault/file"
+      # - "/Users/sejokim/desktop/volumes/vault/logs:/vault/logs"
+      # - "/Users/sejokim/desktop/volumes/vault/config:/vault/config"
+      - "./volumes/vault/file:/vault/file"
+      - "./volumes/vault/logs:/vault/logs"
+      - "./volumes/vault/config:/vault/config"
+
+    environment:
+      VAULT_ADDR: "http://hashicorp_vault:8200"
+    cap_add:
+      - IPC_LOCK
+    networks:
+      - app_network
 
   django_node_app:
     build: .
@@ -27,6 +31,8 @@ services:
       - app_network
     volumes:
       - static-volume:/backend/static
+    env_file:
+      - ./.env
     environment:
     # DB
       DB_HOST: ${DB_HOST}
@@ -55,8 +61,8 @@ services:
       INTRA42_USERINFO_API: ${INTRA42_USERINFO_API}
       DJANGO_SETTING_MODULE: "src.settings"
 
-    # depends_on:
-      # - hashicorp_vault
+    depends_on:
+      - hashicorp_vault
 
   nginx:
     build: ./nginx

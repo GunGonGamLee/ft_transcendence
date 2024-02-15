@@ -35,6 +35,7 @@ class User(AbstractUser):
     rating = models.PositiveIntegerField(default=0)  # 레이팅
     avatar = models.PositiveSmallIntegerField(null=True, choices=AVATAR_CHOICES)  # 아바타 이미지
     verification_code = models.CharField(max_length=6, blank=True, null=True)   # 이메일 인증 코드
+    is_online = models.BooleanField(default=False) # 온라인 여부
 
     class Meta:
         db_table = 'users'
