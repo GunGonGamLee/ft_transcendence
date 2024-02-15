@@ -11,3 +11,9 @@ const getAPIUrl = () => {
 
 export const BACKEND = getAPIUrl();
 export const HISTORIES_IMAGE_PATH = "../../../assets/images";
+
+export const MODE = {
+  casual: "캐주얼 모드",
+  tournament: "토너먼트 모드",
+  one_on_one: "1 vs 1 모드",
+};

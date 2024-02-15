@@ -4,7 +4,7 @@ import { importCss } from "../../utils/importCss.js";
 import Summary from "./summary-page.js";
 import CustomHistories from "./casual-page.js";
 import TournamentHistories from "./tournament-page.js";
-import { HISTORIES_IMAGE_PATH } from "../../global.js";
+import { HISTORIES_IMAGE_PATH, MODE } from "../../global.js";
 
 export default function Histories($container) {
   this.$container = $container;
@@ -24,18 +24,18 @@ export default function Histories($container) {
             <div class="histories" id="casual-menu-wrapper">
                 <div class="histories casual-toggle" id="casual">
                     <img class="histories" src="${HISTORIES_IMAGE_PATH}/setting.png" alt="casual-mode">
-                    캐주얼 모드
+                    ${MODE.casual}
                 </div>
                 <div class="histories casual-toggle" id="toggle">
                     <ul class="histories">
-                        <li>1 vs 1 모드</li>
-                        <li>토너먼트 모드</li>
+                        <li>${MODE.one_on_one}</li>
+                        <li>${MODE.tournament}</li>
                     </ul>
                 </div>
             </div>
            <div class="histories title" id="tournament">
                <img class="histories" src="${HISTORIES_IMAGE_PATH}/tournament_logo.png" alt="tournament">
-               토너먼트 모드
+               ${MODE.tournament}
            </div>
         </nav>
         `;

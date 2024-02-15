@@ -1,3 +1,5 @@
+import { MODE } from "../../global.js";
+
 export default async function Summary() {
   this.$container = document.getElementById("content");
   this.$pagination = document.getElementById("pagination");
@@ -95,11 +97,11 @@ export default async function Summary() {
           <span>${props.rating}</span>
         </div>
         <div class="histories summary" id="casual-win-rate">
-          <span>캐주얼 모드 승률: </span>
+          <span>${MODE.casual} 승률: </span>
           <span>${props.casual_win_rate}%</span>
         </div>
         <div class="histories summary" id="tournament-win-rate">
-          <span>토너먼트 모드 승률: </span>
+          <span>${MODE.tournament} 승률: </span>
           <span>${props.tournament_win_rate}%</span>
         </div>
       </div>
