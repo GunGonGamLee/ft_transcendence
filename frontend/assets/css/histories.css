@@ -254,7 +254,7 @@ footer.histories {
     font-size: 3.2vh;
 }
 
-.histories.summary #user-info {
+.histories.summary#user-info {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -265,7 +265,7 @@ footer.histories {
     cursor: unset;
 }
 
-.histories.summary #user-info > img {
+.histories.summary#user-info > img {
     width: 12vw;
     margin-bottom: 1vh;
 }

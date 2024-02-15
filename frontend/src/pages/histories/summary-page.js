@@ -43,7 +43,7 @@ export default async function Summary() {
         <div class="histories summary" id="user-info">
             ${this.renderUserInfo({ nickname, avatar })}
         </div>
-        <div class="histories summary" id="histories-info">
+        <div class="histories summary" id="data">
             ${this.renderHistoriesSummary({ rating, win_rate, casual_win_rate, tournament_win_rate })}
         </div>
     </div>
@@ -91,19 +91,17 @@ export default async function Summary() {
    */
   this.renderHistoriesSummary = (props) => {
     return `
-      <div class="histories summary" id="data">
-        <div class="histories summary" id="rating">
-          <span>Rating: </span>
-          <span>${props.rating}</span>
-        </div>
-        <div class="histories summary" id="casual-win-rate">
-          <span>${MODE.casual} 승률: </span>
-          <span>${props.casual_win_rate}%</span>
-        </div>
-        <div class="histories summary" id="tournament-win-rate">
-          <span>${MODE.tournament} 승률: </span>
-          <span>${props.tournament_win_rate}%</span>
-        </div>
+      <div class="histories summary" id="rating">
+        <span>Rating: </span>
+        <span>${props.rating}</span>
+      </div>
+      <div class="histories summary" id="casual-win-rate">
+        <span>${MODE.casual} 승률: </span>
+        <span>${props.casual_win_rate}%</span>
+      </div>
+      <div class="histories summary" id="tournament-win-rate">
+        <span>${MODE.tournament} 승률: </span>
+        <span>${props.tournament_win_rate}%</span>
       </div>
     `;
   };
