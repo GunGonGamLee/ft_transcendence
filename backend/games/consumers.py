@@ -7,6 +7,9 @@ from django.db.models import Min, Count
 from django.core.exceptions import ValidationError
 from channels.db import database_sync_to_async
 from asgiref.sync import sync_to_async
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class GameConsumer(AsyncWebsocketConsumer):
@@ -19,9 +22,11 @@ class GameConsumer(AsyncWebsocketConsumer):
         self.serializer = None
 
     async def connect(self):
+        logger.info("[게임방 입장] connect")
         await self.handle_connection()
 
     async def disconnect(self, close_code):
+        logger.info("[게임방 입장] disconnect")
         if await self.is_invalid_user():
             return
         else:
@@ -36,6 +41,7 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def is_invalid_user(self):
         user = self.scope['user']
         from django.contrib.auth.models import AnonymousUser
+        logger.info(f"[게임방 입장] user : {user}")
         return isinstance(user, AnonymousUser)
 
     async def reject_invalid_user(self):
@@ -50,6 +56,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.game_id = int(game_id)
             self.user = self.scope['user']
             if self.game_id == 0:
+                logger.info(f"[게임방 입장] 빠른 입장")
                 count = await self.count_casual_games()
                 if count == 0:
                     await self.create_room()
@@ -85,6 +92,7 @@ class GameConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def create_room(self):
         self.game = Game.objects.create(title="보보봉", password=None, mode=random.choice([0, 1]), status=0, manager=self.user)
+        logger.info(f"[게임방 입장] 게임방 생성 : {self.game.id}")
 
     @database_sync_to_async
     def save_game_object_by_id(self):
@@ -128,6 +136,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 await database_sync_to_async(self.game.save)()
             else:
                 raise ValidationError('Invalid game id')
+        logger.info(f"[게임방 입장] 게임방 입장 성공 : {self.game.id}")
 
     async def is_full(self):
         player1 = await sync_to_async(self.game.__getattribute__)('player1_id')
