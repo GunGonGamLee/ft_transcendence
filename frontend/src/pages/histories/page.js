@@ -33,7 +33,7 @@ export default function Histories($container) {
                     </ul>
                 </div>
             </div>
-           <div class="histories title" id="tournament">
+           <div class="histories" id="tournament">
                <img class="histories" src="${HISTORIES_IMAGE_PATH}/tournament_logo.png" alt="tournament">
                ${MODE.tournament}
            </div>
