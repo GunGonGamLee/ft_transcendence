@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from users.models import User
+from games.models import GameRecordView
 from src.choices import MODE_CHOICES_DICT, AVATAR_CHOICES_DICT
 
 
@@ -11,5 +12,46 @@ class UserMeInfoSerializer(serializers.ModelSerializer):
         model = User
         fields = ['nickname', 'avatar_file_name']
 
-    def get_avatar_file_name(self, user):
+    @staticmethod
+    def get_avatar_file_name(user):
         return AVATAR_CHOICES_DICT.get(user.avatar)
+
+
+class UserInfoSerializer(serializers.ModelSerializer):
+
+    avatar_file_name = serializers.SerializerMethodField()
+    custom_1v1_win_rate = serializers.SerializerMethodField()
+    custom_tournament_win_rate = serializers.SerializerMethodField()
+    rank_win_rate = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ['nickname', 'avatar_file_name', 'rating', 'custom_1v1_win_rate', 'custom_tournament_win_rate', 'rank_win_rate']
+
+    @staticmethod
+    def get_avatar_file_name(user):
+        return AVATAR_CHOICES_DICT.get(user.avatar)
+
+    @staticmethod
+    def get_custom_1v1_win_rate(user):
+        match = GameRecordView.objects.filter(user_id=user.id, mode=0).count()
+        if match == 0:
+            return 0
+        wins = user.custom_1vs1_wins
+        return wins / match * 100
+
+    @staticmethod
+    def get_custom_tournament_win_rate(user):
+        match = GameRecordView.objects.filter(user_id=user.id, mode=1).count()
+        if match == 0:
+            return 0
+        wins = user.custom_tournament_wins
+        return wins / match * 100
+
+    @staticmethod
+    def get_rank_win_rate(user):
+        match = GameRecordView.objects.filter(user_id=user.id, mode=2).count()
+        if match == 0:
+            return 0
+        wins = user.rank_wins
+        return wins / match * 100
