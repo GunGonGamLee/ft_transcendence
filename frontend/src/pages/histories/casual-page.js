@@ -3,7 +3,7 @@ import {
   hoverChangeCursor,
 } from "../../utils/hoverEvent.js";
 import { click } from "../../utils/clickEvent.js";
-import CustomHistoriesDetails from "./custom-histories-details.js";
+import CasualHistoriesDetails from "./casual-histories-details.js";
 import { addPaginationOnClickProperty } from "../../utils/pagination.js";
 
 /**
@@ -154,7 +154,7 @@ export default async function CustomHistories(mode) {
       );
       hoverChangeCursor($listItemDiv, "pointer");
       click($listItemDiv, () => {
-        CustomHistoriesDetails.bind(this, id, "1vs1")();
+        CasualHistoriesDetails.bind(this, id, "1vs1")();
       });
       $listWrapper.appendChild($listItemDiv);
     }

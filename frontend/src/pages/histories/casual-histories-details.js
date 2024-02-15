@@ -1,8 +1,8 @@
-export default async function CustomHistoriesDetails(gameId, mode) {
+export default async function CasualHistoriesDetails(gameId, mode) {
   this.init = () => {
-    this.textContent = '';
-    let $pagination = document.getElementById('pagination');
-    $pagination.style.display = 'none';
+    this.textContent = "";
+    let $pagination = document.getElementById("pagination");
+    $pagination.style.display = "none";
   };
 
   this.useState = async () => {
@@ -11,27 +11,27 @@ export default async function CustomHistoriesDetails(gameId, mode) {
       id: gameId,
       mode,
       player1: {
-        nickname: 'hyojocho',
-        avatar: '../../../assets/images/avatar/blue.png',
+        nickname: "hyojocho",
+        avatar: "../../../assets/images/avatar/blue.png",
         rating: 2130,
         score: 4,
         is_winner: true,
       },
       player2: {
-        nickname: 'yena',
-        avatar: '../../../assets/images/avatar/green.png',
+        nickname: "yena",
+        avatar: "../../../assets/images/avatar/green.png",
         rating: 110,
         score: 1,
         is_winner: false,
       },
-      date: '2024.01.26 13:53',
-      playtime: '00:05:23',
+      date: "2024.01.26 13:53",
+      playtime: "00:05:23",
     };
   };
 
   this.setState = () => {};
 
-  this.renderPlayer = player => {
+  this.renderPlayer = (player) => {
     return `
       <div class="histories one-on-one" id="player">
         <div class="histories one-on-one" id="player-avatar">
@@ -60,7 +60,7 @@ export default async function CustomHistoriesDetails(gameId, mode) {
 
   this.render1vs1Details = () => {
     this.insertAdjacentHTML(
-      'afterbegin',
+      "afterbegin",
       `
       <div class="histories one-on-one" id="details-wrapper">
         <div class="histories one-on-one" id="players">
@@ -77,9 +77,9 @@ export default async function CustomHistoriesDetails(gameId, mode) {
   };
 
   this.render = () => {
-    if (mode === '1vs1') {
+    if (mode === "1vs1") {
       this.render1vs1Details();
-    } else if (mode === 'tournament') {
+    } else if (mode === "tournament") {
       // this.renderTournamentDetails();
     }
   };

@@ -159,8 +159,8 @@ nav.histories > div {
 }
 
 nav.histories > div:hover,
-nav.histories > div#custom-menu-wrapper > div#custom:hover,
-nav.histories > div#custom-menu-wrapper > div#toggle > ul.histories > li:hover {
+nav.histories > div#casual-menu-wrapper > div#casual:hover,
+nav.histories > div#casual-menu-wrapper > div#toggle > ul.histories > li:hover {
     cursor: pointer;
     color: #29ABE2;
     font-family: Galmuri11-Bold, serif;
@@ -179,13 +179,13 @@ nav.histories > div img {
     margin-right: 2vh;
 }
 
-nav.histories #custom-menu-wrapper {
+nav.histories #casual-menu-wrapper {
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
 }
 
-.histories.custom-toggle#toggle {
+.histories.casual-toggle#toggle {
     position: absolute;
     display: none;
     justify-content: center;
@@ -195,13 +195,13 @@ nav.histories #custom-menu-wrapper {
     z-index: 1;
 }
 
-.histories.custom-toggle ul {
+.histories.casual-toggle ul {
     border: 3px solid #29ABE2;
     background: #0000009c;
     padding-left: 0;
 }
 
-.histories.custom-toggle li {
+.histories.casual-toggle li {
     padding: 1.5vh;
     color: #aaaaaa;
 }
