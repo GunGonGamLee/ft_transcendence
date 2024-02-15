@@ -9,7 +9,7 @@ import time
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ENV_PATH = os.path.join(BASE_DIR, '..', '.env')
 env = environ.Env()
-DEBUG = True
+DEBUG = False
 env.read_env(env_file=ENV_PATH)
 
 def wait_for_vault_client(client, retries=5, delay=5):
@@ -86,6 +86,23 @@ else:
     EMAIL_HOST_PASSWORD = read_response['data']['data']['EMAIL_HOST_PASSWORD']
     SECRET_KEY = LOG_KEY
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        '': {  # 'root' logger
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+    },
+}
+
+
 # logging settings
 
 # LOGGING = {
@@ -121,15 +138,17 @@ else:
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-ALLOWED_HOSTS = ['localhost']
-CORS_ALLOW_ALL_ORIGINS = False
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://localhost:8000",
-]
+ALLOWED_HOSTS = ['*']
+
+CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000",
+#     "http://localhost:8000",
+# ]
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
     'channels',
     'users.apps.UsersConfig',
     'games.apps.GamesConfig',
@@ -143,14 +162,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'rest_framework_simplejwt',
-
     'django.contrib.sites',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
-
-    'corsheaders',
 ]
 
 AUTH_USER_MODEL = 'users.User'
@@ -187,13 +203,13 @@ TEMPLATES = [
     },
 ]
 
-
 ASGI_APPLICATION = "src.asgi.application"
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels.layers.InMemoryChannelLayer'
     }
 }
+use_websockets = True
 WSGI_APPLICATION = 'src.wsgi.application'
 
 if DEBUG:
