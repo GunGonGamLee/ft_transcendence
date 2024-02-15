@@ -36,6 +36,9 @@ class User(AbstractUser):
     avatar = models.PositiveSmallIntegerField(null=True, choices=AVATAR_CHOICES)  # 아바타 이미지
     verification_code = models.CharField(max_length=6, blank=True, null=True)   # 이메일 인증 코드
     is_online = models.BooleanField(default=False) # 온라인 여부
+    custom_1vs1_wins = models.IntegerField(default=0)
+    custom_tournament_wins = models.IntegerField(default=0)
+    rank_wins = models.IntegerField(default=0)
 
     class Meta:
         db_table = 'users'
