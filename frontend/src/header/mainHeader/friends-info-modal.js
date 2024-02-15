@@ -1,7 +1,7 @@
 import {importCss} from '../../utils/importCss.js'
 
 
-export default function FriendsInfoModal(isVisible) {
+export default function friendsInfoModal(isVisible) {
     importCss('../../../assets/css/friendsInfoModal.css');
 
     return `
