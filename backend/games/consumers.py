@@ -80,7 +80,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def count_casual_games(self):
-        return CasualGameView.objects.aggregate(Count('game_id'))
+        return CasualGameView.objects.aggregate(Count('game_id'))['game_id__count']
 
     @database_sync_to_async
     def create_room(self):
