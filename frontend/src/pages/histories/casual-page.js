@@ -1,7 +1,3 @@
-import {
-  hoverChangeBorder,
-  hoverChangeCursor,
-} from "../../utils/hoverEvent.js";
 import { click } from "../../utils/clickEvent.js";
 import CasualHistoriesDetails from "./casual-histories-details.js";
 import { addPaginationOnClickProperty } from "../../utils/pagination.js";
@@ -139,7 +135,7 @@ export default async function CustomHistories(mode) {
       $listWrapper.insertAdjacentHTML(
         "beforeend",
         `
-        <div class="histories list-item" data-item-id="${id}">
+        <div class="histories casual list-item" data-item-id="${id}">
             ${this.renderPlayer(player1)}
             ${this.renderGameMode()}
             ${this.renderPlayer(player2)}
@@ -147,12 +143,6 @@ export default async function CustomHistories(mode) {
       `,
       );
       let $listItemDiv = $listWrapper.lastElementChild;
-      hoverChangeBorder(
-        $listItemDiv,
-        "3px solid transparent",
-        "3px solid #29ABE2",
-      );
-      hoverChangeCursor($listItemDiv, "pointer");
       click($listItemDiv, () => {
         CasualHistoriesDetails.bind(this, id, "1vs1")();
       });
@@ -166,12 +156,12 @@ export default async function CustomHistories(mode) {
    */
   this.renderPlayer = (data) => {
     return `
-      <div class="histories player">
-        <div class="histories avatar">
-            <img class="histories" src="${data.avatar}" alt="player1-avatar">
+      <div class="histories casual player">
+        <div class="histories casual avatar">
+            <img class="histories casual" src="${data.avatar}" alt="player1-avatar">
         </div>
-        <div class="histories nickname">${data.nickname}</div>
-        <div class="histories rating">Rating: ${data.rating}</div>
+        <div class="histories casual nickname">${data.nickname}</div>
+        <div class="histories casual rating">Rating: ${data.rating}</div>
       </div>
     `;
   };
@@ -182,8 +172,8 @@ export default async function CustomHistories(mode) {
   this.renderGameMode = () => {
     if (this.mode === "1vs1") {
       return `
-        <div class="histories game-mode">
-            <img class="histories" src="../../../assets/images/1vs1_logo.png" alt="1v1">
+        <div class="histories casual game-mode">
+            <img class="histories causal logo" src="../../../assets/images/1vs1_logo.png" alt="1v1">
         </div>
       `;
     } else if (this.mode === "tournament") {
