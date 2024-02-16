@@ -26,6 +26,7 @@ export default function MainHeader($container) {
         response.json().then((data) => {
           setUserInfo(data);
         });
+        new WebSocket('wss://localhost/ws/friend_status/');
       } else {
         // TODO => 에러 페이지로 이동
         navigate("/");
