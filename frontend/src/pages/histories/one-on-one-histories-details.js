@@ -1,6 +1,6 @@
 import { HISTORIES_IMAGE_PATH } from "../../global.js";
 
-export default async function CasualHistoriesDetails(gameId, mode) {
+export default async function OneOnOneHistoriesDetails(gameId, mode) {
   this.init = () => {
     this.textContent = "";
     let $pagination = document.getElementById("pagination");
@@ -60,7 +60,7 @@ export default async function CasualHistoriesDetails(gameId, mode) {
     `;
   };
 
-  this.render1vs1Details = () => {
+  this.renderOneOnOneDetails = () => {
     this.insertAdjacentHTML(
       "afterbegin",
       `
@@ -79,7 +79,7 @@ export default async function CasualHistoriesDetails(gameId, mode) {
   };
 
   this.render = () => {
-    this.render1vs1Details();
+    this.renderOneOnOneDetails();
   };
 
   this.init();

@@ -1,5 +1,5 @@
 import { click } from "../../utils/clickEvent.js";
-import CasualHistoriesDetails from "./casual-histories-details.js";
+import OneOnOneHistoriesDetails from "./one-on-one-histories-details.js";
 import { addPaginationOnClickProperty } from "../../utils/pagination.js";
 import { HISTORIES_IMAGE_PATH } from "../../global.js";
 
@@ -7,7 +7,7 @@ import { HISTORIES_IMAGE_PATH } from "../../global.js";
  * 사용자 지정 모드의 전적 리스트를 렌더링합니다.
  * @constructor 전적 리스트의 게임 모드
  */
-export default async function CasualHistories() {
+export default async function OneOnOneHistories() {
   this.$customList = document.getElementById("content");
   this.$pagination = document.getElementById("pagination");
 
@@ -135,7 +135,7 @@ export default async function CasualHistories() {
       );
       let $listItemDiv = $listWrapper.lastElementChild;
       click($listItemDiv, () => {
-        CasualHistoriesDetails.bind(this, id, "1vs1")();
+        OneOnOneHistoriesDetails.bind(this, id, "1vs1")();
       });
       $listWrapper.appendChild($listItemDiv);
     }

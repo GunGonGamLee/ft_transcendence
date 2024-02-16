@@ -2,7 +2,7 @@ import { hoverToggle } from "../../utils/hoverEvent.js";
 import { click } from "../../utils/clickEvent.js";
 import { importCss } from "../../utils/importCss.js";
 import Summary from "./summary-page.js";
-import CasualHistories from "./casual-page.js";
+import OneOnOneHistories from "./one-on-one-page.js";
 import TournamentHistories from "./tournament-page.js";
 import { HISTORIES_IMAGE_PATH, MODE } from "../../global.js";
 
@@ -93,9 +93,9 @@ export default function Histories($container) {
 
     // click 이벤트
     click($summary, Summary);
-    click($casual, CasualHistories.bind($content, "1vs1"));
+    click($casual, OneOnOneHistories.bind($content, "1vs1"));
     click($tournament, TournamentHistories.bind($content, false));
-    click($toggleItems[0], CasualHistories.bind($content, "1vs1")); // 1 vs 1 모드 선택 시 실행
+    click($toggleItems[0], OneOnOneHistories.bind($content, "1vs1")); // 1 vs 1 모드 선택 시 실행
     click($toggleItems[1], TournamentHistories.bind($content, true)); // 토너먼트 모드 선택 시 실행
 
     // toggle 이벤트
