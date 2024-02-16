@@ -76,22 +76,10 @@
 }
 
 .histories.list-item .histories.avatar {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    width: 8vw;
-    height: 8vw;
-    overflow: hidden;
+    height: 12vh;
 }
 
-.histories.list-item .histories.avatar > img {
-    position: absolute;
-    top: 0.1vw;
-    width: 12vw;
-    height: 12vw;
-}
-
+.histories.list-item .histories.avatar,
 .histories.list-item .player > div:not(:last-child) {
     margin-bottom: 1vh;
 }
@@ -130,6 +118,10 @@
     margin: 6vh 0.5vw 0 0;
 }
 
+.histories#pagination > img:hover {
+    cursor: pointer;
+}
+
 .histories#pagination > #prev {
     transform: rotate(180deg);
 }
@@ -139,7 +131,7 @@
 
 /********** Histories Mode Select **********/
 
-.histories#mode {
+nav.histories {
     display: flex;
     justify-content: space-evenly;
     align-items: center;
@@ -150,11 +142,19 @@
     margin-top: 3vh;
 }
 
-.histories#mode > div {
+nav.histories > div {
     padding: 1vh 0;
 }
 
-.histories#mode div {
+nav.histories > div:hover,
+nav.histories > div#casual-menu-wrapper > div#casual:hover,
+nav.histories > div#casual-menu-wrapper > div#toggle > ul.histories > li:hover {
+    cursor: pointer;
+    color: #29ABE2;
+    font-family: Galmuri11-Bold, serif;
+}
+
+nav.histories div {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -162,18 +162,18 @@
     font-family: Galmuri11, serif;
 }
 
-.histories#mode > div img {
+nav.histories > div img {
     width: 4vh;
     margin-right: 2vh;
 }
 
-.histories#mode #custom-menu-wrapper {
+nav.histories #casual-menu-wrapper {
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
 }
 
-.histories.custom-toggle#toggle {
+.histories.casual-toggle#toggle {
     position: absolute;
     display: none;
     justify-content: center;
@@ -183,14 +183,16 @@
     z-index: 1;
 }
 
-.histories.custom-toggle ul {
+.histories.casual-toggle ul {
     border: 3px solid #29ABE2;
     background: #0000009c;
+    padding-left: 0;
 }
 
-.histories.custom-toggle li {
+.histories.casual-toggle li {
     padding: 1.5vh;
     color: #aaaaaa;
+    text-align: center;
 }
 
 /************ Histories Search *************/
@@ -241,7 +243,7 @@ footer.histories {
     font-size: 3.2vh;
 }
 
-.histories.summary #user-info {
+.histories.summary#user-info {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -249,10 +251,11 @@ footer.histories {
     width: 20%;
     height: 100%;
     margin-right: 2vw;
+    cursor: unset;
 }
 
-.histories.summary #user-info > img {
-    width: 12vw;
+.histories.summary#user-info > img {
+    height: 30vh;
     margin-bottom: 1vh;
 }
 
@@ -290,7 +293,7 @@ footer.histories {
 }
 
 .histories.one-on-one#player-avatar > img {
-    height: 25vh;
+    height: 20vh;
 }
 
 .histories.one-on-one#player-info {
@@ -364,6 +367,10 @@ footer.histories {
     font-size: 2.5vh;
 }
 
+.histories.tournament.player-avatar {
+    height: 12vh;
+}
+
 .histories.tournament.player-ranking.first {
     width: 5vw;
     margin-bottom: 0 !important;
@@ -381,7 +388,7 @@ footer.histories {
 }
 
 .histories.tournament.opponents > .opponents-avatar {
-    width: 4.5vh;
+    height: 4.5vh;
 }
 
 .histories.tournament.opponents > .opponents-nickname {
@@ -509,4 +516,8 @@ footer.histories {
 
 .winner-icon {
     height: 6vh;
+}
+
+.winner-color {
+    color: #FF52A0;
 }

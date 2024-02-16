@@ -1,7 +1,7 @@
 import { importCss } from "../../utils/importCss.js";
 import { navigate } from "../../utils/navigate.js";
 import { click } from "../../utils/clickEvent.js";
-import { BACKEND } from "../../global.js";
+import { BACKEND, HISTORIES_IMAGE_PATH } from "../../global.js";
 import { getCookie } from "../../utils/cookie.js";
 import useState from "../../utils/useState.js";
 
@@ -11,7 +11,6 @@ import useState from "../../utils/useState.js";
  */
 export default function MainHeader($container) {
   this.$container = $container;
-  this.imagePath = "../../../assets/images";
 
   const init = () => {
     alert("메인헤더 컴포넌트가 생성되었습니다.");
@@ -49,9 +48,9 @@ export default function MainHeader($container) {
             <div class="main" id="right-side">
                 <div class="main" id="user-info">
                     <span class="main" id="nickname">${nickname}</span>
-                    <img src="${this.imagePath}/avatar/${avatar_file_name}" alt="아바타" id="user-avatar">
+                    <img src="${HISTORIES_IMAGE_PATH}/avatar/${avatar_file_name}" alt="아바타" id="user-avatar">
                 </div>
-                <img src="${this.imagePath}/friends.png" alt="친구 목록" id="friends">
+                <img src="${HISTORIES_IMAGE_PATH}/friends.png" alt="친구 목록" id="friends">
             </div>
         </div>
         `,
