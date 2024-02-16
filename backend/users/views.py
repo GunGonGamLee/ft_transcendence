@@ -1,4 +1,3 @@
-import jwt
 import random
 from rest_framework.views import APIView
 from rest_framework import status
@@ -11,15 +10,13 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
-from .serializers import UserInfoSerializer
+from .serializers import UserMeInfoSerializer, UserInfoSerializer
+from src.exceptions import AuthenticationException
 
 
 class SetNicknameView(APIView):
     @swagger_auto_schema(tags=['/api/users'],
                          operation_description="사용자 닉네임 저장 API",
-                         manual_parameters=[
-                             openapi.Parameter('Authorization', openapi.IN_HEADER, description='JWT Token',
-                                               type=openapi.TYPE_STRING), ],
                          request_body=openapi.Schema(
                              type=openapi.TYPE_OBJECT,
                              properties={'nickname': openapi.Schema(type=openapi.TYPE_STRING, description='닉네임')},
@@ -38,24 +35,17 @@ class SetNicknameView(APIView):
             user.avatar = random.randint(0, 4)
             user.save()
             return Response(status=status.HTTP_201_CREATED)
-        except jwt.ExpiredSignatureError:
-            return JsonResponse({'error': 'Token has expired'}, status=status.HTTP_401_UNAUTHORIZED)
-        except jwt.InvalidTokenError:
-            return JsonResponse({'error': 'Invalid token'}, status=status.HTTP_401_UNAUTHORIZED)
+        except AuthenticationException as e:
+            return JsonResponse({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
         except ValidationError as e:
             return JsonResponse({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
-        except User.DoesNotExist:
-            return JsonResponse({'err_msg': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
         except IntegrityError:
             return JsonResponse({'err_msg': 'duplicate nickname'}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            return JsonResponse({'error': e.__class__.__name__}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return JsonResponse({'error': f"[{e.__class__.__name__}] {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @swagger_auto_schema(tags=['/api/users'],
                          operation_description="사용자 닉네임 수정 API",
-                         manual_parameters=[
-                             openapi.Parameter('Authorization', openapi.IN_HEADER, description='JWT Token',
-                                               type=openapi.TYPE_STRING), ],
                          request_body=openapi.Schema(
                              type=openapi.TYPE_OBJECT,
                              properties={'nickname': openapi.Schema(type=openapi.TYPE_STRING, description='닉네임')},
@@ -73,42 +63,52 @@ class SetNicknameView(APIView):
             user.nickname = nickname
             user.save()
             return Response(status=status.HTTP_200_OK)
-        except jwt.ExpiredSignatureError:
-            return JsonResponse({'error': 'Token has expired'}, status=status.HTTP_401_UNAUTHORIZED)
-        except jwt.InvalidTokenError:
-            return JsonResponse({'error': 'Invalid token'}, status=status.HTTP_401_UNAUTHORIZED)
+        except AuthenticationException as e:
+            return JsonResponse({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
         except ValidationError as e:
             return JsonResponse({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
-        except User.DoesNotExist:
-            return JsonResponse({'err_msg': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
         except IntegrityError:
             return JsonResponse({'err_msg': 'duplicate nickname'}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            return JsonResponse({'error': e.__class__.__name__}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return JsonResponse({'error': f"[{e.__class__.__name__}] {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-class UserInfoView(APIView):
+class UserMeInfoView(APIView):
     @swagger_auto_schema(
         tags=['/api/users'],
         operation_description="사용자 정보 API",
-        manual_parameters=[
-            openapi.Parameter('Authorization', openapi.IN_HEADER, description='Bearer JWT Token', type=openapi.TYPE_STRING)],
-        responses={200: openapi.Response('Successful Response', schema=UserInfoSerializer),
+        responses={200: openapi.Response('Successful Response', schema=UserMeInfoSerializer),
                    401: 'Bad Unauthorized',
                    404: 'NOT FOUND',
                    500: 'SERVER_ERROR'})
     def get(self, request):
         try:
             user = AuthUtils.validate_jwt_token_and_get_user(request)
-            serializer = UserInfoSerializer(user)
+            serializer = UserMeInfoSerializer(user)
             return JsonResponse(serializer.data, status=status.HTTP_200_OK)
-        except jwt.ExpiredSignatureError:
-            return JsonResponse({'error': 'Token has expired'}, status=status.HTTP_401_UNAUTHORIZED)
-        except jwt.InvalidTokenError:
-            return JsonResponse({'error': 'Invalid token'}, status=status.HTTP_401_UNAUTHORIZED)
-        except ValidationError as e:
+        except AuthenticationException as e:
+            return JsonResponse({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
+        except Exception as e:
+            return JsonResponse({'error': f"[{e.__class__.__name__}] {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class UserInfoView(APIView):
+    @swagger_auto_schema(
+        tags=['/api/users'],
+        operation_description="사용자 전적 API",
+        responses={200: openapi.Response('Successful Response', schema=UserInfoSerializer),
+                   401: 'Bad Unauthorized',
+                   404: 'NOT FOUND',
+                   500: 'SERVER_ERROR'})
+    def get(self, request, nickname):
+        try:
+            user = AuthUtils.validate_jwt_token_and_get_user(request)
+            user2 = User.objects.get(nickname=nickname)
+            serializer = UserInfoSerializer(user2)
+            return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+        except AuthenticationException as e:
             return JsonResponse({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
         except User.DoesNotExist:
             return JsonResponse({'err_msg': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            return JsonResponse({'error': e.__class__.__name__}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return JsonResponse({'error': f"[{e.__class__.__name__}] {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

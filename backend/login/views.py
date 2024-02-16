@@ -16,7 +16,7 @@ from drf_yasg import openapi
 from .serializers import VerificationCodeSerializer
 from rest_framework.response import Response
 from django.core.exceptions import ValidationError
-from src.exceptions import GetDataException
+from src.exceptions import GetDataException, AuthenticationException, TokenCreateException
 from requests.exceptions import RequestException
 from src.utils import get_request_body_value
 
@@ -85,16 +85,17 @@ class OAuthCallbackView(APIView):
             access_token = self.get_access_token(code)
             email = self.get_email(access_token)
             user = User.objects.get(email=email)
+            send_and_save_verification_code(user)
+            auth_token = create_jwt_token(user, 3)
+            target_url = EMAIL_AUTH_URI + "?" + urlencode({
+                'token': auth_token,
+            })
+            response = redirect(target_url)
+            response.set_cookie('jwt', auth_token)
+            return response
         except User.DoesNotExist:
-            user = User.objects.create_user(email=email)
-        except GetDataException as e:
-            return JsonResponse({'err_msg': e.message_dict}, status=status.HTTP_400_BAD_REQUEST)
-        except RequestException:
-            return JsonResponse({'err_msg': 'get access token error'}, status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            return JsonResponse({'error': e.__class__.__name__}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        finally:
             try:
+                user = User.objects.create_user(email=email)
                 send_and_save_verification_code(user)
                 auth_token = create_jwt_token(user, 3)
                 target_url = EMAIL_AUTH_URI + "?" + urlencode({
@@ -105,6 +106,12 @@ class OAuthCallbackView(APIView):
                 return response
             except Exception as e:
                 return JsonResponse({'error': e.__class__.__name__}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except GetDataException as e:
+            return JsonResponse({'err_msg': e.message_dict}, status=status.HTTP_400_BAD_REQUEST)
+        except RequestException:
+            return JsonResponse({'err_msg': 'get access token error'}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return JsonResponse({'error': f"[{e.__class__.__name__}] {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def get_access_token(self, code):
         token_response = requests.post(
@@ -146,13 +153,16 @@ class Intra42CallbackView(OAuthCallbackView):
 
 
 def create_jwt_token(user: User, expiration_days: int):
-    payload = {
-        'user_email': user.email,
-        'exp': datetime.utcnow() + timedelta(days=expiration_days),
-    }
-    token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
-    token = token.decode('utf-8') if isinstance(token, bytes) else token
-    return token
+    try:
+        payload = {
+            'user_email': user.email,
+            'exp': datetime.utcnow() + timedelta(days=expiration_days),
+        }
+        token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+        token = token.decode('utf-8') if isinstance(token, bytes) else token
+        return token
+    except Exception as e:
+        raise TokenCreateException(f"[{e.__class__.__name__}] {e}")
 
 
 def send_and_save_verification_code(user):
@@ -194,16 +204,12 @@ class VerificationCodeView(APIView):
                 return response
             else:
                 return JsonResponse({'err_msg': '인증코드가 일치하지 않습니다.'}, status=status.HTTP_400_BAD_REQUEST)
-        except jwt.ExpiredSignatureError:
-            return JsonResponse({'error': 'Token has expired'}, status=status.HTTP_401_UNAUTHORIZED)
-        except jwt.InvalidTokenError:
-            return JsonResponse({'error': 'Invalid token'}, status=status.HTTP_401_UNAUTHORIZED)
+        except AuthenticationException as e:
+            return JsonResponse({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
         except ValidationError as e:
             return JsonResponse({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
-        except User.DoesNotExist:
-            return JsonResponse({'err_msg': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            return JsonResponse({'error': e.__class__.__name__}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return JsonResponse({'error': f"[{e.__class__.__name__}] {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class VerificationCodeAgainView(APIView):
@@ -224,27 +230,27 @@ class VerificationCodeAgainView(APIView):
             response = JsonResponse({'token': auth_token}, status=status.HTTP_200_OK)
             response.set_cookie('jwt', auth_token)
             return response
-
-        except jwt.ExpiredSignatureError:
-            return JsonResponse({'error': 'Token has expired'}, status=status.HTTP_401_UNAUTHORIZED)
-        except jwt.InvalidTokenError:
-            return JsonResponse({'error': 'Invalid token'}, status=status.HTTP_401_UNAUTHORIZED)
+        except AuthenticationException as e:
+            return JsonResponse({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
         except ValidationError as e:
             return JsonResponse({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
-        except User.DoesNotExist:
-            return JsonResponse({'err_msg': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+        except TokenCreateException as e:
+            return JsonResponse({'error': e.messages}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         except Exception as e:
-            return JsonResponse({'error': e.__class__.__name__}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return JsonResponse({'error': f"[{e.__class__.__name__}] {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class AuthUtils:
     @staticmethod
     def validate_jwt_token_and_get_user(request):
-        if settings.DEBUG:
-            jwt_token = request.headers.get('Authorization').split(' ')[1]
-        else:
-            jwt_token = request.COOKIES.get('jwt')
-        decoded_token = jwt.decode(jwt_token, SECRET_KEY, algorithms=['HS256'])
-        user_email = decoded_token.get('user_email')
-        user = User.objects.get(email=user_email)
-        return user
+        try:
+            if settings.DEBUG:
+                jwt_token = request.headers.get('Authorization').split(' ')[1]
+            else:
+                jwt_token = request.COOKIES.get('jwt')
+            decoded_token = jwt.decode(jwt_token, SECRET_KEY, algorithms=['HS256'])
+            user_email = decoded_token.get('user_email')
+            user = User.objects.get(email=user_email)
+            return user
+        except Exception as e:
+            raise AuthenticationException(f"[{e.__class__.__name__}] {e}")
