@@ -192,6 +192,7 @@ nav.histories #casual-menu-wrapper {
 .histories.casual-toggle li {
     padding: 1.5vh;
     color: #aaaaaa;
+    text-align: center;
 }
 
 /************ Histories Search *************/
