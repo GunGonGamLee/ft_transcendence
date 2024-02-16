@@ -71,3 +71,6 @@ volumes/
 
 ## backend static ignore
 /backend/static/
+
+## frontend SPA ignore
+/frontend/index.html
