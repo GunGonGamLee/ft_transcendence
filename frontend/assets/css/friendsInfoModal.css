@@ -84,7 +84,7 @@
 .friend-card-wrapper {
     display: grid;
     grid-gap: 7%;
-    grid-template-columns: 2fr 4fr 1fr;
+    grid-template-columns: 1fr 4fr 1fr;
     justify-items: center;
     align-items: center;
     margin: 7%;
