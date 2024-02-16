@@ -8,6 +8,7 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from login.views import AuthUtils
 from src.utils import *
+from src.exceptions import AuthenticationException
 
 
 class FriendsView(APIView):
@@ -34,7 +35,8 @@ class FriendsView(APIView):
 
             response_data = {'friends': friend_list}
             return Response(response_data, status=status.HTTP_200_OK)
-        
+        except AuthenticationException as e:
+            return Response({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
         except User.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
@@ -68,7 +70,8 @@ class FriendsView(APIView):
         
             Friend.objects.create(user_id=current_user, friend_id=requested_friend, status=Friend.PENDING)
             return Response({'message': 'Friend request sent'}, status=status.HTTP_200_OK)
-
+        except AuthenticationException as e:
+            return Response({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
         except User.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
@@ -100,12 +103,14 @@ class FriendsView(APIView):
             Friend.objects.filter(user_id=current_user, friend_id=requested_friend, status=Friend.ACCEPTED).delete()
             Friend.objects.filter(user_id=requested_friend, friend_id=current_user, status=Friend.ACCEPTED).delete()
             return Response({'message': 'Friend deleted'}, status=status.HTTP_200_OK)
-        
+        except AuthenticationException as e:
+            return Response({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
         except User.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            
+
+
 class AcceptFriendView(APIView):
     @swagger_auto_schema(
         tags=['/api/friends/accept'],
@@ -135,7 +140,9 @@ class AcceptFriendView(APIView):
             friend_request.save()
 
             return Response({'message': 'Friend request Accepted'}, status=status.HTTP_200_OK)
-        
+
+        except AuthenticationException as e:
+            return Response({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
         except User.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
@@ -169,6 +176,8 @@ class RejectFriendView(APIView):
 
             return Response({'message': 'Friend request rejected'}, status=status.HTTP_200_OK)
 
+        except AuthenticationException as e:
+            return Response({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
         except User.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:

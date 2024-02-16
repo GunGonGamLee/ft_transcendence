@@ -1,10 +1,8 @@
-import jwt
 import random
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
 from django.http import JsonResponse
-from users.models import User
 from games.models import Game, CasualGameView
 from login.views import AuthUtils
 from src.utils import get_request_body_value
@@ -15,6 +13,7 @@ from django.db import transaction
 from django.db.models import Min, Count
 from games.serializers import GameRoomSerializer
 from django.core.exceptions import ValidationError
+from src.exceptions import AuthenticationException
 
 
 class GameView(APIView):
@@ -52,13 +51,8 @@ class GameView(APIView):
             else:
                 self.create_room(title, password, mode, user)
                 return Response(status=status.HTTP_201_CREATED)
-
-        except jwt.ExpiredSignatureError:
-            return JsonResponse({'error': 'Token has expired'}, status=status.HTTP_401_UNAUTHORIZED)
-        except jwt.InvalidTokenError:
-            return JsonResponse({'error': 'Invalid token'}, status=status.HTTP_401_UNAUTHORIZED)
-        except User.DoesNotExist:
-            return JsonResponse({'err_msg': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+        except AuthenticationException as e:
+            return JsonResponse({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
         except BadRequest:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
@@ -133,12 +127,8 @@ class GameRoomView(APIView):
                     serializer = GameRoomSerializer(game)
                     return JsonResponse(serializer.data, status=status.HTTP_200_OK)
 
-        except jwt.ExpiredSignatureError:
-            return JsonResponse({'error': 'Token has expired'}, status=status.HTTP_401_UNAUTHORIZED)
-        except jwt.InvalidTokenError:
-            return JsonResponse({'error': 'Invalid token'}, status=status.HTTP_401_UNAUTHORIZED)
-        except User.DoesNotExist:
-            return JsonResponse({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+        except AuthenticationException as e:
+            return JsonResponse({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
         except Game.DoesNotExist:
             return JsonResponse({'error': 'Game not found.'}, status=status.HTTP_404_NOT_FOUND)
         except ValueError:
