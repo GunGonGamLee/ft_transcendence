@@ -7,7 +7,7 @@ import { addPaginationOnClickProperty } from "../../utils/pagination.js";
  * @param mode {string} 전적 리스트의 게임 모드 ("1vs1" 또는 "tournament")
  * @constructor 전적 리스트의 게임 모드
  */
-export default async function CustomHistories(mode) {
+export default async function CasualHistories(mode) {
   this.$customList = document.getElementById("content");
   this.$pagination = document.getElementById("pagination");
 
