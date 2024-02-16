@@ -4,7 +4,6 @@ export default async function TournamentHistoriesDetails(id) {
   this.needToRender = true;
   this.imagePath = "../../../assets/images";
 
-  // TODO => 이전 버튼 클릭 시 컴포넌트가 중복되는 문제 해결해야 함
   this.init = () => {
     this.textContent = "";
     addPaginationOnClickProperty(
