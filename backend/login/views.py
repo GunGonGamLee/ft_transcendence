@@ -20,6 +20,8 @@ from src.exceptions import GetDataException
 from requests.exceptions import RequestException
 from src.utils import get_request_body_value
 import logging
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 logger = logging.getLogger(__name__)
 
@@ -260,3 +262,24 @@ class AuthUtils:
         user_email = decoded_token.get('user_email')
         user = User.objects.get(email=user_email)
         return user
+    
+class LogoutView(APIView):
+    @swagger_auto_schema(tags=['/api/login'], operation_description="로그아웃 API",
+                        responses={200: 'OK', 401: 'Unauthorized', 500: 'SERVER_ERROR'})
+    def post(self, request):
+        try:
+            user = AuthUtils.validate_jwt_token_and_get_user(request)
+            logging.info(f"User {user.email} is validated")
+            response = JsonResponse({'message': '로그아웃 되었습니다.'}, status=status.HTTP_200_OK)
+            response.delete_cookie('jwt')
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                f"friend_status_{user.id}",
+                {
+                    'type': 'friend_status_message',
+                    'message': {'user_id': user.id, 'status': 'offline'}
+                }
+            )
+            return response
+        except Exception as e:
+            return JsonResponse({'error': e.__class__.__name__}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
