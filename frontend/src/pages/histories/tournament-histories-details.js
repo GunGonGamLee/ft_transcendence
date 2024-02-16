@@ -1,8 +1,8 @@
 import { addPaginationOnClickProperty } from "../../utils/pagination.js";
+import { HISTORIES_IMAGE_PATH } from "../../global.js";
 
 export default async function TournamentHistoriesDetails(id) {
   this.needToRender = true;
-  this.imagePath = "../../../assets/images";
 
   this.init = () => {
     this.textContent = "";
@@ -19,36 +19,36 @@ export default async function TournamentHistoriesDetails(id) {
     this.newState = {
       match1: {
         player1: {
-          avatar: "luke_skywalker",
+          avatar: "luke_skywalker.png",
           nickname: "hyojocho",
           rating: 1234,
         },
         player2: {
-          avatar: "chewbacca",
+          avatar: "chewbacca.png",
           nickname: "yena",
           rating: 110,
         },
       },
       match2: {
         player1: {
-          avatar: "han_solo",
+          avatar: "han_solo.png",
           nickname: "sejokim",
           rating: 5,
         },
         player2: {
-          avatar: "darth_vader",
+          avatar: "darth_vader.png",
           nickname: "Polarbear",
           rating: 1234,
         },
       },
       match3: {
         player1: {
-          avatar: "chewbacca",
+          avatar: "chewbacca.png",
           nickname: "yena",
           rating: 110,
         },
         player2: {
-          avatar: "han_solo",
+          avatar: "han_solo.png",
           nickname: "sejokim",
           rating: 1234,
         },
@@ -83,7 +83,7 @@ export default async function TournamentHistoriesDetails(id) {
       "afterbegin",
       `
             <div class="histories tournament match player1">
-                <img src="${this.imagePath}/avatar/${matchData.player1.avatar}.png" alt="avatar">
+                <img src="${HISTORIES_IMAGE_PATH}/avatar/${matchData.player1.avatar}" alt="avatar">
                 <div class="histories tournament match nickname">
                     ${matchData.player1.nickname}
                 </div>
@@ -92,7 +92,7 @@ export default async function TournamentHistoriesDetails(id) {
                 </div>
             </div>
             <div class="histories tournament match player2">
-                <img src="${this.imagePath}/avatar/${matchData.player2.avatar}.png" alt="avatar">
+                <img src="${HISTORIES_IMAGE_PATH}/avatar/${matchData.player2.avatar}" alt="avatar">
                 <div class="histories tournament match nickname">
                     ${matchData.player2.nickname}
                 </div>
@@ -117,11 +117,11 @@ export default async function TournamentHistoriesDetails(id) {
       finalData.winner === finalData.player2.nickname ? "visible" : "hidden";
     return `
     <div class="histories tournament final winner">
-        <img src="${this.imagePath}/winner.png" alt="winner" style="visibility: ${winnerVisibilityOfPlayer1}">
+        <img src="${HISTORIES_IMAGE_PATH}/winner.png" alt="winner" style="visibility: ${winnerVisibilityOfPlayer1}">
     </div>
     <div></div>
     <div class="histories tournament final winner">
-        <img src="${this.imagePath}/winner.png" alt="winner" style="visibility: ${winnerVisibilityOfPlayer2}">
+        <img src="${HISTORIES_IMAGE_PATH}/winner.png" alt="winner" style="visibility: ${winnerVisibilityOfPlayer2}">
     </div>
     `;
   };
@@ -134,7 +134,7 @@ export default async function TournamentHistoriesDetails(id) {
   this.renderTournamentPlayers = (finalData) => {
     return `
     <div class="histories tournament final player1">
-        <img src="${this.imagePath}/avatar/${finalData.player1.avatar}.png" alt="avatar">
+        <img src="${HISTORIES_IMAGE_PATH}/avatar/${finalData.player1.avatar}" alt="avatar">
         <div class="histories tournament nickname">
             ${finalData.player1.nickname}
         </div>
@@ -143,10 +143,10 @@ export default async function TournamentHistoriesDetails(id) {
         </div>
     </div>
     <div class="histories tournament final trophy">
-        <img src="${this.imagePath}/tournament_logo.png" alt="tournament_logo">
+        <img src="${HISTORIES_IMAGE_PATH}/tournament_logo.png" alt="tournament_logo">
     </div>
     <div class="histories tournament final player2">
-        <img src="${this.imagePath}/avatar/${finalData.player2.avatar}.png" alt="avatar">
+        <img src="${HISTORIES_IMAGE_PATH}/avatar/${finalData.player2.avatar}" alt="avatar">
         <div class="histories tournament match nickname">
             ${finalData.player2.nickname}
         </div>
@@ -233,7 +233,7 @@ export default async function TournamentHistoriesDetails(id) {
   this.renderTournamentPlayer = (playerInfo) => {
     return `
         <div class="histories tournament result final-player">
-            <img src="${this.imagePath}/avatar/${playerInfo.avatar}.png" alt="avatar" class="result avatar">
+            <img src="${HISTORIES_IMAGE_PATH}/avatar/${playerInfo.avatar}" alt="avatar" class="result avatar">
             <div class="histories tournament result nickname">
                 ${playerInfo.nickname}
             </div>
@@ -297,7 +297,7 @@ export default async function TournamentHistoriesDetails(id) {
     $firstPlace.insertAdjacentHTML(
       "beforebegin",
       `
-        <img src="${this.imagePath}/winner.png" alt="winner" class="winner-icon">
+        <img src="${HISTORIES_IMAGE_PATH}/winner.png" alt="winner" class="winner-icon">
         `,
     );
   };
