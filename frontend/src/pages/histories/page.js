@@ -9,6 +9,10 @@ import { HISTORIES_IMAGE_PATH, MODE } from "../../global.js";
 export default function Histories($container) {
   this.$container = $container;
 
+  const init = () => {
+    this.$container.textContent = "";
+  };
+
   const render = () => {
     renderLayout();
     renderList();
@@ -102,6 +106,7 @@ export default function Histories($container) {
     let $toggle = document.getElementById("toggle");
     hoverToggle($casualMenuWrapper, $toggle, "flex");
   };
+  init();
   render();
   addEventListenersToLayout();
 }
