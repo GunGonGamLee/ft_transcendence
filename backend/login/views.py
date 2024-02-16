@@ -19,6 +19,9 @@ from django.core.exceptions import ValidationError
 from src.exceptions import GetDataException
 from requests.exceptions import RequestException
 from src.utils import get_request_body_value
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 BASE_URL = 'http://localhost:8000/'
@@ -85,16 +88,17 @@ class OAuthCallbackView(APIView):
             access_token = self.get_access_token(code)
             email = self.get_email(access_token)
             user = User.objects.get(email=email)
+            send_and_save_verification_code(user)
+            auth_token = create_jwt_token(user, 3)
+            target_url = EMAIL_AUTH_URI + "?" + urlencode({
+                'token': auth_token,
+            })
+            response = redirect(target_url)
+            response.set_cookie('jwt', auth_token)
+            return response
         except User.DoesNotExist:
-            user = User.objects.create_user(email=email)
-        except GetDataException as e:
-            return JsonResponse({'err_msg': e.message_dict}, status=status.HTTP_400_BAD_REQUEST)
-        except RequestException:
-            return JsonResponse({'err_msg': 'get access token error'}, status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            return JsonResponse({'error': e.__class__.__name__}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        finally:
             try:
+                user = User.objects.create_user(email=email)
                 send_and_save_verification_code(user)
                 auth_token = create_jwt_token(user, 3)
                 target_url = EMAIL_AUTH_URI + "?" + urlencode({
@@ -104,7 +108,15 @@ class OAuthCallbackView(APIView):
                 response.set_cookie('jwt', auth_token)
                 return response
             except Exception as e:
+                logger.info(f"2 : {e.__class__.__name__}: {e}")
                 return JsonResponse({'error': e.__class__.__name__}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except GetDataException as e:
+            return JsonResponse({'err_msg': e.message_dict}, status=status.HTTP_400_BAD_REQUEST)
+        except RequestException:
+            return JsonResponse({'err_msg': 'get access token error'}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            logger.info(f"1 : {e.__class__.__name__}: {e}")
+            return JsonResponse({'error': e.__class__.__name__}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def get_access_token(self, code):
         token_response = requests.post(
