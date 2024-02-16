@@ -14,7 +14,6 @@ export default function MainHeader($container) {
   this.imagePath = "../../../assets/images";
 
   const init = () => {
-    alert("메인헤더 컴포넌트가 생성되었습니다.");
     fetch(`${BACKEND}/users/me`, {
       method: "GET",
       headers: {
