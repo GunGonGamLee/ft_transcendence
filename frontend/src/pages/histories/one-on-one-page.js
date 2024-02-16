@@ -11,7 +11,7 @@ export default async function OneOnOneHistories() {
   this.$customList = document.getElementById("content");
   this.$pagination = document.getElementById("pagination");
 
-  this.init = () => {
+  const init = () => {
     this.$customList.textContent = "";
     this.$pagination.style.display = "block";
     addPaginationOnClickProperty(
@@ -24,7 +24,7 @@ export default async function OneOnOneHistories() {
     this.needToRender = true;
   };
 
-  this.useState = async () => {
+  const useState = async () => {
     // TODO => backend로부터 데이터 받아오기
     this.newState = [
       {
@@ -90,7 +90,7 @@ export default async function OneOnOneHistories() {
     ];
   };
 
-  this.setState = () => {
+  const setState = () => {
     if (this.state === this.newState) {
       this.needToRender = false;
       return;
@@ -105,7 +105,7 @@ export default async function OneOnOneHistories() {
    * 2. 게임 모드(1 vs 1 로고 또는 토너먼트 로고)를 렌더링합니다.
    * 3. 플레이어 2의 정보를 렌더링합니다.
    */
-  this.render = () => {
+  const render = () => {
     this.$customList.insertAdjacentHTML(
       "afterbegin",
       `
@@ -113,23 +113,23 @@ export default async function OneOnOneHistories() {
         `,
     );
     let $listWrapper = document.getElementById("list-wrapper");
-    this.render1vs1($listWrapper);
+    render1vs1($listWrapper);
   };
 
   /**
    * 사용자 지정 게임의 1 vs 1 모드 전적 리스트를 렌더링합니다.
    * @param $listWrapper {HTMLElement} 전적 리스트를 렌더링할 <div> 엘리먼트
    */
-  this.render1vs1 = ($listWrapper) => {
+  const render1vs1 = ($listWrapper) => {
     for (let data of this.state) {
       const { id, player1, player2 } = data;
       $listWrapper.insertAdjacentHTML(
         "beforeend",
         `
         <div class="histories casual list-item" data-item-id="${id}">
-            ${this.renderPlayer(player1)}
-            ${this.renderGameMode()}
-            ${this.renderPlayer(player2)}
+            ${renderPlayer(player1)}
+            ${renderGameMode()}
+            ${renderPlayer(player2)}
         </div>
       `,
       );
@@ -145,7 +145,7 @@ export default async function OneOnOneHistories() {
    * 전적 리스트의 플레이어 정보를 렌더링합니다.
    * @param data {{avatar: string, nickname: string, rating: string}} 전적 리스트의 플레이어 정보
    */
-  this.renderPlayer = (data) => {
+  const renderPlayer = (data) => {
     return `
       <div class="histories casual player">
         <img class="histories casual avatar" src="${HISTORIES_IMAGE_PATH}/avatar/${data.avatar}" alt="player1-avatar">
@@ -158,7 +158,7 @@ export default async function OneOnOneHistories() {
   /**
    * 전적 리스트의 게임 모드(1 vs 1 로고 또는 토너먼트 로고)를 렌더링합니다.
    */
-  this.renderGameMode = () => {
+  const renderGameMode = () => {
     return `
       <div class="histories casual game-mode">
         <img class="histories causal logo" src= "${HISTORIES_IMAGE_PATH}/1vs1_logo.png" alt="1v1">
@@ -166,8 +166,8 @@ export default async function OneOnOneHistories() {
     `;
   };
 
-  this.init();
-  await this.useState();
-  this.setState();
-  this.render();
+  init();
+  await useState();
+  setState();
+  render();
 }

@@ -4,17 +4,17 @@ import { HISTORIES_IMAGE_PATH } from "../../global.js";
 export default async function TournamentHistoriesDetails(id) {
   this.needToRender = true;
 
-  this.init = () => {
+  const init = () => {
     this.textContent = "";
     addPaginationOnClickProperty(
       "prev",
       "next",
-      this.renderTournamentTree,
-      this.renderTournamentResult,
+      renderTournamentTree,
+      renderTournamentResult,
     );
   };
 
-  this.useState = async () => {
+  const useState = async () => {
     // TODO => 백엔드에서 토너먼트 모드에 대한 데이터를 받아오기
     this.newState = {
       match1: {
@@ -58,16 +58,16 @@ export default async function TournamentHistoriesDetails(id) {
     };
   };
 
-  this.setState = () => {
+  const setState = () => {
     if (this.newState !== this.state) {
       this.state = this.newState;
       this.needToRender = true;
     } else this.needToRender = false;
   };
 
-  this.render = () => {
+  const render = () => {
     if (this.needToRender) {
-      this.renderTournamentTree();
+      renderTournamentTree();
     }
   };
 
@@ -76,7 +76,7 @@ export default async function TournamentHistoriesDetails(id) {
    * @param $treeWrapper {HTMLElement} 대진표를 렌더링할 wrapper
    * @param matchData {object} 경기 정보
    */
-  this.renderMatch = ($treeWrapper, matchData) => {
+  const renderMatch = ($treeWrapper, matchData) => {
     let $match = document.createElement("div");
     $match.className = "histories tournament match";
     $match.insertAdjacentHTML(
@@ -110,7 +110,7 @@ export default async function TournamentHistoriesDetails(id) {
    * @param finalData {object} 결승전 정보
    * @returns {string} 결승전의 승리 아이콘을 렌더링하는 HTML
    */
-  this.renderFinalWinner = (finalData) => {
+  const renderFinalWinner = (finalData) => {
     let winnerVisibilityOfPlayer1 =
       finalData.winner === finalData.player1.nickname ? "visible" : "hidden";
     let winnerVisibilityOfPlayer2 =
@@ -131,7 +131,7 @@ export default async function TournamentHistoriesDetails(id) {
    * @param finalData {object} 결승전 정보
    * @returns {string} 결승전의 플레이어 정보를 렌더링하는 HTML
    */
-  this.renderTournamentPlayers = (finalData) => {
+  const renderTournamentPlayers = (finalData) => {
     return `
     <div class="histories tournament final player1">
         <img src="${HISTORIES_IMAGE_PATH}/avatar/${finalData.player1.avatar}" alt="avatar">
@@ -162,15 +162,15 @@ export default async function TournamentHistoriesDetails(id) {
    * @param $treeWrapper {HTMLElement} 대진표를 렌더링할 wrapper
    * @param finalData {object} 결승전 정보
    */
-  this.renderFinal = ($treeWrapper, finalData) => {
+  const renderFinal = ($treeWrapper, finalData) => {
     let $final = document.createElement("div");
     $final.className = "histories tournament";
     $final.id = "final";
     $final.insertAdjacentHTML(
       "afterbegin",
       `
-            ${this.renderFinalWinner(finalData)}
-            ${this.renderTournamentPlayers(finalData)}
+            ${renderFinalWinner(finalData)}
+            ${renderTournamentPlayers(finalData)}
     `,
     );
     $treeWrapper.appendChild($final);
@@ -179,14 +179,14 @@ export default async function TournamentHistoriesDetails(id) {
   /**
    * 토너먼트 대진표를 렌더링합니다.
    */
-  this.renderTournamentTree = () => {
-    this.init();
+  const renderTournamentTree = () => {
+    init();
     let $treeWrapper = document.createElement("div");
     $treeWrapper.id = "tree-wrapper";
     $treeWrapper.className = "histories tournament";
-    this.renderMatch($treeWrapper, this.state.match1);
-    this.renderFinal($treeWrapper, this.state.match3);
-    this.renderMatch($treeWrapper, this.state.match2);
+    renderMatch($treeWrapper, this.state.match1);
+    renderFinal($treeWrapper, this.state.match3);
+    renderMatch($treeWrapper, this.state.match2);
     this.appendChild($treeWrapper);
   };
 
@@ -196,7 +196,7 @@ export default async function TournamentHistoriesDetails(id) {
    * 2. match1, match2의 player1, player2 중 match3의 플레이어가 아닌 플레이어를 others에 추가합니다.
    * @returns {{firstPlayer, secondPlayer, others: {}}} 토너먼트 결과
    */
-  this.getResult = () => {
+  const getResult = () => {
     const { match1, match2, match3 } = this.state;
     let firstPlayer,
       secondPlayer,
@@ -230,7 +230,7 @@ export default async function TournamentHistoriesDetails(id) {
    * @param playerInfo {object} 토너먼트 참가자 정보
    * @returns {string} 토너먼트 참가자 정보를 렌더링하는 HTML
    */
-  this.renderTournamentPlayer = (playerInfo) => {
+  const renderTournamentPlayer = (playerInfo) => {
     return `
         <div class="histories tournament result final-player">
             <img src="${HISTORIES_IMAGE_PATH}/avatar/${playerInfo.avatar}" alt="avatar" class="result avatar">
@@ -248,14 +248,14 @@ export default async function TournamentHistoriesDetails(id) {
    * 토너먼트 결과에 따라 podium의 높이를 설정합니다.
    * @param constant {number} podium의 높이를 설정하는 상수
    */
-  this.setPodiumHeight = (constant) => {
+  const setPodiumHeight = (constant) => {
     const $firstPodium = document.getElementById("first-podium");
     const $secondPodium = document.getElementById("second-podium");
     const $othersPodium = document.getElementById("others-podium");
 
     $firstPodium.style.height = constant * 3 + "vh";
     $secondPodium.style.height = constant * 2 + "vh";
-    $othersPodium.style.height = constant * 1 + "vh";
+    $othersPodium.style.height = constant + "vh";
   };
 
   /**
@@ -263,25 +263,25 @@ export default async function TournamentHistoriesDetails(id) {
    * @param result {object} 토너먼트 결과
    * @param $resultWrapper {HTMLElement}토너먼트 결과를 렌더링할 wrapper
    */
-  this.renderResult = (result, $resultWrapper) => {
+  const renderResult = (result, $resultWrapper) => {
     $resultWrapper.insertAdjacentHTML(
       "afterbegin",
       `
       <div class="histories tournament result-column">
         <div class="result-column rating">2등</div>
-        ${this.renderTournamentPlayer(result.secondPlayer)}
+        ${renderTournamentPlayer(result.secondPlayer)}
         <div class="histories podium" id="second-podium"></div>
       </div>
       <div class="histories tournament result-column">
         <div class="result-column rating first-place">1등</div>
-        ${this.renderTournamentPlayer(result.firstPlayer)}
+        ${renderTournamentPlayer(result.firstPlayer)}
         <div class="histories podium" id="first-podium"></div>
       </div>
       <div class="histories tournament result-column">
         <div class="result-column rating">그 외</div>
         <div class="histories tournament result others">
-            ${this.renderTournamentPlayer(result.others.player1)}
-            ${this.renderTournamentPlayer(result.others.player2)}
+            ${renderTournamentPlayer(result.others.player1)}
+            ${renderTournamentPlayer(result.others.player2)}
         </div>
         <div class="histories podium" id="others-podium"></div>
       </div>
@@ -292,7 +292,7 @@ export default async function TournamentHistoriesDetails(id) {
   /**
    * 1등 아이콘을 렌더링합니다.
    */
-  this.renderWinnerIcon = () => {
+  const renderWinnerIcon = () => {
     let $firstPlace = document.querySelector(".first-place");
     $firstPlace.insertAdjacentHTML(
       "beforebegin",
@@ -305,20 +305,20 @@ export default async function TournamentHistoriesDetails(id) {
   /**
    * 토너먼트 결과를 렌더링합니다.
    */
-  this.renderTournamentResult = () => {
-    this.init();
+  const renderTournamentResult = () => {
+    init();
     let $resultWrapper = document.createElement("div");
     $resultWrapper.id = "result-wrapper";
     $resultWrapper.className = "histories tournament";
-    const result = this.getResult();
-    this.renderResult(result, $resultWrapper);
+    const result = getResult();
+    renderResult(result, $resultWrapper);
     this.appendChild($resultWrapper);
-    this.setPodiumHeight(4);
-    this.renderWinnerIcon();
+    setPodiumHeight(4);
+    renderWinnerIcon();
   };
 
-  this.init();
-  await this.useState();
-  this.setState();
-  this.render();
+  init();
+  await useState();
+  setState();
+  render();
 }

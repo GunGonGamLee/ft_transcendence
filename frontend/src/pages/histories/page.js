@@ -9,12 +9,12 @@ import { HISTORIES_IMAGE_PATH, MODE } from "../../global.js";
 export default function Histories($container) {
   this.$container = $container;
 
-  this.render = () => {
-    this.renderLayout();
-    this.renderList();
+  const render = () => {
+    renderLayout();
+    renderList();
   };
 
-  this.renderNav = () => {
+  const renderNav = () => {
     return `
         <nav class="histories">
             <div class="histories" id="summary">
@@ -41,7 +41,7 @@ export default function Histories($container) {
         `;
   };
 
-  this.renderFooter = () => {
+  const renderFooter = () => {
     return `
         <footer class="histories">
             <div class="histories" id="search-wrapper">
@@ -60,22 +60,22 @@ export default function Histories($container) {
    * 헤더, 그리고 개요-캐주얼 모드-토너먼트 모드를 선택할 수 있는 버튼들을 렌더링합니다.
    * 이는 전적 리스트의 페이지의 레이아웃으로 추후 공통 모듈로 분리할 수 있습니다.
    */
-  this.renderLayout = () => {
+  const renderLayout = () => {
     importCss("../../../assets/css/histories.css");
     this.$container.insertAdjacentHTML(
       "afterbegin",
       `
         <div class="histories" id="content-wrapper">
-            ${this.renderNav()}
+            ${renderNav()}
             <div class="histories" id="content">
             </div>
-            ${this.renderFooter()}
+            ${renderFooter()}
         </div>
         `,
     );
   };
 
-  this.renderList = () => {
+  const renderList = () => {
     let $content = document.getElementById("content");
     Summary.bind($content)();
   };
@@ -83,7 +83,7 @@ export default function Histories($container) {
   /**
    * 레이아웃 엘리먼트에 이벤트 리스너를 추가합니다.
    */
-  this.addEventListenersToLayout = () => {
+  const addEventListenersToLayout = () => {
     const $content = document.getElementById("content");
     const $summary = document.getElementById("summary");
     const $casualMenuWrapper = document.getElementById("casual-menu-wrapper");
@@ -102,6 +102,6 @@ export default function Histories($container) {
     let $toggle = document.getElementById("toggle");
     hoverToggle($casualMenuWrapper, $toggle, "flex");
   };
-  this.render();
-  this.addEventListenersToLayout();
+  render();
+  addEventListenersToLayout();
 }

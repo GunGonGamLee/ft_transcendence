@@ -255,7 +255,7 @@ footer.histories {
 }
 
 .histories.summary#user-info > img {
-    width: 12vw;
+    height: 30vh;
     margin-bottom: 1vh;
 }
 
