@@ -6,7 +6,7 @@ export default function friendsInfoModal(isVisible) {
 
     const friends = [
         {
-            username: 'hyojocho',
+            username: '효조초다호호호호',
             avatarImagePath: '../../assets/images/avatar/darth_vader.png',
             iconImagePath: '../../assets/images/trash.png'
         },
@@ -15,6 +15,11 @@ export default function friendsInfoModal(isVisible) {
             avatarImagePath: '../../assets/images/avatar/han_solo.png',
             iconImagePath: '../../assets/images/trash.png'
         },
+        {
+            username: 'sejokim',
+            avatarImagePath: '../../assets/images/avatar/luke_skywalker.png',
+            iconImagePath: '../../assets/images/trash.png'
+        }
         // 배열은 최대 8개의 친구 정보 객체를 담을 수 있음
         // ...
     ];
@@ -24,14 +29,14 @@ export default function friendsInfoModal(isVisible) {
         const { username, avatarImagePath, iconImagePath } = friend;
         return `
         <div class="friend-card-wrapper">
-            <div class="avatar-image">
-                <image src="${avatarImagePath}"></image>
+            <div>
+                <image class="avatar-image" src="${avatarImagePath}"></image>
             </div>
             <div class="user-name">
                 ${username}
             </div>
-            <div class="icon">
-                <image src="${iconImagePath}"></image>
+            <div >
+                <image class="icon" src="${iconImagePath}"></image>
             </div>
         </div>
     `;

@@ -67,7 +67,30 @@
     font-family: Galmuri11-Bold, serif;
 }
 
-.friend-card-wrapper img {
-    height: 8vh;
-    width: 4vw;
+.friend-card-wrapper {
+    display: grid;
+    grid-gap: 7%;
+    grid-template-columns: 1fr 3fr 1fr;
+    justify-items: center;
+    align-items: center;
+    margin: 7%;
+    padding: 3%;
+    font-size: 2.5vh;
+    font-family: Galmuri11-Bold, serif;
+    color: black;
+    background-color: white;
+    border: 0.3vw solid #07F7B0;
+}
+
+.friend-card-wrapper .user-name {
+    text-align: left;
+    width: 100%;
+}
+
+.friend-card-wrapper .avatar-image {
+    height: 7vh;
+}
+
+.friend-card-wrapper .icon {
+    height: 4vh;
 }
