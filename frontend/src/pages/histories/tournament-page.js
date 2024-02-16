@@ -1,13 +1,11 @@
 import TournamentHistoriesDetails from "./tournament-histories-details.js";
 import { click, onClick } from "../../utils/clickEvent.js";
 import { addPaginationOnClickProperty } from "../../utils/pagination.js";
+import { HISTORIES_IMAGE_PATH } from "../../global.js";
 
 export default async function TournamentHistories(isCustomMode) {
   this.$pagination = document.getElementById("pagination");
   this.needToRender = true;
-  this.imagePath = "../../../assets/images";
-  this.avatarPath = `${this.imagePath}/avatar`;
-
   this.init = () => {
     this.textContent = "";
     this.$pagination.style.display = "block";
@@ -32,24 +30,24 @@ export default async function TournamentHistories(isCustomMode) {
         id: 1,
         player: {
           nickname: "hyojocho",
-          avatar: "blue_bust",
+          avatar: "luke_skywalker.png",
           ranking: 1,
         },
         opponents: [
           {
             nickname: "yena",
-            avatar: "green_bust",
+            avatar: "chewbacca.png",
+            ranking: 3,
+          },
+          {
+            nickname: "yena",
+            avatar: "chewbacca.png",
             ranking: 2,
           },
           {
             nickname: "yena",
-            avatar: "green_bust",
-            ranking: 3,
-          },
-          {
-            nickname: "yena",
-            avatar: "green_bust",
-            ranking: 3,
+            avatar: "chewbacca.png",
+            ranking: 1,
           },
         ],
         date: "2023.01.30 13:55:23",
@@ -58,23 +56,23 @@ export default async function TournamentHistories(isCustomMode) {
         id: 2,
         player: {
           nickname: "hyojocho",
-          avatar: "blue_bust",
+          avatar: "luke_skywalker.png",
           ranking: 3,
         },
         opponents: [
           {
             nickname: "yena",
-            avatar: "green_bust",
+            avatar: "chewbacca.png",
             ranking: 3,
           },
           {
             nickname: "yena",
-            avatar: "green_bust",
+            avatar: "chewbacca.png",
             ranking: 2,
           },
           {
             nickname: "yena",
-            avatar: "green_bust",
+            avatar: "chewbacca.png",
             ranking: 1,
           },
         ],
@@ -84,23 +82,23 @@ export default async function TournamentHistories(isCustomMode) {
         id: 3,
         player: {
           nickname: "hyojocho",
-          avatar: "blue_bust",
+          avatar: "luke_skywalker.png",
           ranking: 3,
         },
         opponents: [
           {
             nickname: "yena",
-            avatar: "green_bust",
+            avatar: "chewbacca.png",
             ranking: 3,
           },
           {
             nickname: "yena",
-            avatar: "green_bust",
+            avatar: "chewbacca.png",
             ranking: 2,
           },
           {
             nickname: "yena",
-            avatar: "green_bust",
+            avatar: "chewbacca.png",
             ranking: 1,
           },
         ],
@@ -110,23 +108,23 @@ export default async function TournamentHistories(isCustomMode) {
         id: 4,
         player: {
           nickname: "hyojocho",
-          avatar: "blue_bust",
+          avatar: "luke_skywalker.png",
           ranking: 3,
         },
         opponents: [
           {
             nickname: "yena",
-            avatar: "green_bust",
+            avatar: "chewbacca.png",
             ranking: 3,
           },
           {
             nickname: "yena",
-            avatar: "green_bust",
+            avatar: "chewbacca.png",
             ranking: 2,
           },
           {
             nickname: "yena",
-            avatar: "green_bust",
+            avatar: "chewbacca.png",
             ranking: 1,
           },
         ],
@@ -156,7 +154,7 @@ export default async function TournamentHistories(isCustomMode) {
     `;
     if (ranking === 1) {
       html += `
-        <img class="histories" src="${this.imagePath}/winner.png" alt="first">
+        <img class="histories" src="${HISTORIES_IMAGE_PATH}/winner.png" alt="first">
       `;
     }
     html += `
@@ -183,9 +181,7 @@ export default async function TournamentHistories(isCustomMode) {
     }
     return `
     <div class="histories tournament player">
-      <div class="histories tournament player-avatar">
-        <img class="histories" src="${this.avatarPath}/${avatar}.png" alt="avatar">
-      </div>
+      <img class="histories tournament player-avatar" src="${HISTORIES_IMAGE_PATH}/avatar/${avatar}" alt="avatar">
       <div class="histories tournament player-nickname" ${fontColor}>
         ${nickname}
       </div>
@@ -205,15 +201,13 @@ export default async function TournamentHistories(isCustomMode) {
       let fontColor = "";
       if (opponent.ranking === 1) {
         imageTag = `
-          <img class="histories" src="${this.imagePath}/winner.png" alt="first">
+          <img class="histories" src="${HISTORIES_IMAGE_PATH}/winner.png" alt="first">
        `;
         fontColor = `style="color: #FF52A0"`;
       }
       html +=
         `
-      <div class="histories tournament opponents-avatar">
-        <img class="histories" src = "${this.avatarPath}/${opponent.avatar}.png" alt="avatar">
-      </div>
+      <img class="histories tournament opponents-avatar" src = "${HISTORIES_IMAGE_PATH}/avatar/${opponent.avatar}" alt="avatar">
       <div class="histories tournament opponents-nickname" ${fontColor}>
         ${opponent.nickname}
         <div class="histories tournament opponents-ranking first">
