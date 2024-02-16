@@ -14,6 +14,7 @@ export default function MainHeader($container) {
   this.imagePath = "../../../assets/images";
 
   const init = () => {
+    alert("메인헤더 컴포넌트가 생성되었습니다.");
     fetch(`${BACKEND}/users/me`, {
       method: "GET",
       headers: {
@@ -26,7 +27,8 @@ export default function MainHeader($container) {
         response.json().then((data) => {
           setUserInfo(data);
         });
-        new WebSocket('wss://localhost/ws/friend_status/');
+        // alert("웹소켓 연결!");
+        new WebSocket("wss://localhost/ws/friend_status/");
       } else {
         // TODO => 에러 페이지로 이동
         navigate("/");
