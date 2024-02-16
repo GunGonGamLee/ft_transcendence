@@ -37,6 +37,16 @@
     height: 100%;
 }
 
+#user-search {
+    overflow: auto;
+    overflow-y: scroll;
+}
+
+#friend-request-list {
+    overflow: auto;
+    overflow-y: scroll;
+}
+
 #user-search-wrapper {
     color: #FF52A0;
 }
@@ -74,7 +84,7 @@
 .friend-card-wrapper {
     display: grid;
     grid-gap: 7%;
-    grid-template-columns: 1fr 3fr 1fr;
+    grid-template-columns: 2fr 4fr 1fr;
     justify-items: center;
     align-items: center;
     margin: 7%;
@@ -83,7 +93,11 @@
     font-family: Galmuri11-Bold, serif;
     color: black;
     background-color: white;
-    border: 0.3vw solid #07F7B0;
+    border: 0.3vw solid;
+}
+
+.friend-card-wrapper.with-additional-icon {
+    grid-template-columns: 2fr 4fr 1fr 1fr; /* 추가 아이콘 있는 경우 */
 }
 
 .friend-card-wrapper .user-name {
