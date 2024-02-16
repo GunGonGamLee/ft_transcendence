@@ -108,15 +108,15 @@ export default function WaitingRoom($container) {
           <img class="room-lock" alt="lock" src="../../../assets/images/password.png" style="margin-left: 5vw; margin-bottom: 0.4vh; width: 2vw; height: 2.8vh; -webkit-user-drag: none; user-select: none;">
           <div class="room-name-text" style="margin-left: 1vw; font-size: 3vh;font-family: Galmuri11,serif; color: white">${roomTitle} | ${gameMode}</div>
         </div>
-          <div class="room-password-modal" style="position: fixed; top: 22vh; left: 1vw; display: none; margin-left: 5vw; font-size: 1.5vh; color: white; font-family: Galmuri11,serif">
-            <span style="background-color: black; padding: 0.4vh;">${password}</span>
-          </div>
-          <div class="user-box-wrapper" style="width: 100vw; height: 65vh; display : flex; flex-direction: row">
+        <div class="room-password-modal" style="position: fixed; top: 22vh; left: 1vw; display: none; margin-left: 5vw; font-size: 1.5vh; color: white; font-family: Galmuri11,serif">
+          <span style="background-color: black; padding: 0.4vh;">${password}</span>
+        </div>
+        <div class="user-box-wrapper" style="width: 100vw; height: 65vh; display : flex; flex-direction: row">
           ${userBox(gameModeNum, props)}
-          </div>
-          <div class="start-btn-wrapper" style="width: 100vw; height: 10vh; display: flex; justify-content: center; align-items: center">
-            <button class="start-btn" style="background: linear-gradient(to bottom, #D80000, #FF0000); font-family: Galmuri11-Bold, serif; color: white; border: 4px solid darkred; padding: 10px 40px; text-align: center; text-decoration: none; display: inline-block; font-size: 32px; margin: 4px 2px; cursor: pointer; border-radius: 5vh;">START</button>
-          </div>
+        </div>
+        <div class="start-btn-wrapper" style="width: 100vw; height: 10vh; display: flex; justify-content: center; align-items: center">
+          <button class="start-btn" style="background: linear-gradient(to bottom, #D80000, #FF0000); font-family: Galmuri11-Bold, serif; color: white; border: 4px solid darkred; padding: 10px 40px; text-align: center; text-decoration: none; display: inline-block; font-size: 32px; margin: 4px 2px; cursor: pointer; border-radius: 5vh;">START</button>
+        </div>
       </div>
     `;
   };
