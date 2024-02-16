@@ -1,4 +1,4 @@
-import { MODE } from "../../global.js";
+import { HISTORIES_IMAGE_PATH, MODE } from "../../global.js";
 
 export default async function Summary() {
   this.$container = document.getElementById("content");
@@ -66,7 +66,7 @@ export default async function Summary() {
     // TODO => API 요청으로 await 해서 데이터 받아오기
     return {
       nickname: "yena",
-      avatar: "../../../assets/images/avatar/green.png",
+      avatar: "chewbacca.png",
       rating: 2103,
       win_rate: 43,
       casual_win_rate: 52,
@@ -80,7 +80,7 @@ export default async function Summary() {
    */
   this.renderUserInfo = (props) => {
     return `
-        <img class="histories summary" src="${props.avatar}" alt="avatar">
+        <img class="histories summary" src="${HISTORIES_IMAGE_PATH}/avatar/${props.avatar}" alt="avatar">
         <span>${props.nickname}</span>
     `;
   };

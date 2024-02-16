@@ -5,10 +5,9 @@ import { HISTORIES_IMAGE_PATH } from "../../global.js";
 
 /**
  * 사용자 지정 모드의 전적 리스트를 렌더링합니다.
- * @param mode {string} 전적 리스트의 게임 모드 ("1vs1" 또는 "tournament")
  * @constructor 전적 리스트의 게임 모드
  */
-export default async function CasualHistories(mode) {
+export default async function CasualHistories() {
   this.$customList = document.getElementById("content");
   this.$pagination = document.getElementById("pagination");
 
@@ -27,72 +26,68 @@ export default async function CasualHistories(mode) {
 
   this.useState = async () => {
     // TODO => backend로부터 데이터 받아오기
-    if (mode === "1vs1") {
-      this.newState = [
-        {
-          id: 1,
-          player1: {
-            nickname: "hyojocho",
-            avatar: "luke_skywalker.png",
-            rating: 2130,
-            is_winner: true,
-          },
-          player2: {
-            nickname: "yena",
-            avatar: "chewbacca.png",
-            rating: 110,
-            is_winner: false,
-          },
+    this.newState = [
+      {
+        id: 1,
+        player1: {
+          nickname: "hyojocho",
+          avatar: "luke_skywalker.png",
+          rating: 2130,
+          is_winner: true,
         },
-        {
-          id: 2,
-          player1: {
-            nickname: "hyojocho",
-            avatar: "luke_skywalker.png",
-            rating: 2130,
-            is_winner: true,
-          },
-          player2: {
-            nickname: "yena",
-            avatar: "chewbacca.png",
-            rating: 110,
-            is_winner: false,
-          },
+        player2: {
+          nickname: "yena",
+          avatar: "chewbacca.png",
+          rating: 110,
+          is_winner: false,
         },
-        {
-          id: 3,
-          player1: {
-            nickname: "hyojocho",
-            avatar: "luke_skywalker.png",
-            rating: 2130,
-            is_winner: true,
-          },
-          player2: {
-            nickname: "yena",
-            avatar: "chewbacca.png",
-            rating: 110,
-            is_winner: false,
-          },
+      },
+      {
+        id: 2,
+        player1: {
+          nickname: "hyojocho",
+          avatar: "luke_skywalker.png",
+          rating: 2130,
+          is_winner: true,
         },
-        {
-          id: 4,
-          player1: {
-            nickname: "hyojocho",
-            avatar: "chewbacca.png",
-            rating: 2130,
-            is_winner: true,
-          },
-          player2: {
-            nickname: "donghyk2",
-            avatar: "han_solo.png",
-            rating: 2120,
-            is_winner: false,
-          },
+        player2: {
+          nickname: "yena",
+          avatar: "chewbacca.png",
+          rating: 110,
+          is_winner: false,
         },
-      ];
-    } else if (mode === "tournament") {
-      // TODO => 토너먼트 모드 데이터 받아오기
-    }
+      },
+      {
+        id: 3,
+        player1: {
+          nickname: "hyojocho",
+          avatar: "luke_skywalker.png",
+          rating: 2130,
+          is_winner: true,
+        },
+        player2: {
+          nickname: "yena",
+          avatar: "chewbacca.png",
+          rating: 110,
+          is_winner: false,
+        },
+      },
+      {
+        id: 4,
+        player1: {
+          nickname: "hyojocho",
+          avatar: "chewbacca.png",
+          rating: 2130,
+          is_winner: true,
+        },
+        player2: {
+          nickname: "donghyk2",
+          avatar: "han_solo.png",
+          rating: 2120,
+          is_winner: false,
+        },
+      },
+    ];
   };
 
   this.setState = () => {
@@ -118,12 +113,7 @@ export default async function CasualHistories(mode) {
         `,
     );
     let $listWrapper = document.getElementById("list-wrapper");
-    if (mode === "1vs1") {
-      this.render1vs1($listWrapper);
-    } else if (mode === "tournament") {
-      console.log("TODO => 토너먼트 모드");
-      // this.renderTournament($listWrapper);
-    }
+    this.render1vs1($listWrapper);
   };
 
   /**
@@ -169,14 +159,11 @@ export default async function CasualHistories(mode) {
    * 전적 리스트의 게임 모드(1 vs 1 로고 또는 토너먼트 로고)를 렌더링합니다.
    */
   this.renderGameMode = () => {
-    if (this.mode === "1vs1") {
-      return `
-        <div class="histories casual game-mode">
-            <img class="histories causal logo" src= "${HISTORIES_IMAGE_PATH}/1vs1_logo.png" alt="1v1">
-        </div>
-      `;
-    } else if (this.mode === "tournament") {
-    }
+    return `
+      <div class="histories casual game-mode">
+        <img class="histories causal logo" src= "${HISTORIES_IMAGE_PATH}/1vs1_logo.png" alt="1v1">
+      </div>
+    `;
   };
 
   this.init();

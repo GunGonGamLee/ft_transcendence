@@ -1,3 +1,5 @@
+import { HISTORIES_IMAGE_PATH } from "../../global.js";
+
 export default async function CasualHistoriesDetails(gameId, mode) {
   this.init = () => {
     this.textContent = "";
@@ -12,14 +14,14 @@ export default async function CasualHistoriesDetails(gameId, mode) {
       mode,
       player1: {
         nickname: "hyojocho",
-        avatar: "../../../assets/images/avatar/blue.png",
+        avatar: "luke_skywalker.png",
         rating: 2130,
         score: 4,
         is_winner: true,
       },
       player2: {
         nickname: "yena",
-        avatar: "../../../assets/images/avatar/green.png",
+        avatar: "chewbacca.png",
         rating: 110,
         score: 1,
         is_winner: false,
@@ -35,7 +37,7 @@ export default async function CasualHistoriesDetails(gameId, mode) {
     return `
       <div class="histories one-on-one" id="player">
         <div class="histories one-on-one" id="player-avatar">
-          <img class="histories one-on-one" src="${player.avatar}" alt="player-avatar">
+          <img class="histories one-on-one" src="${HISTORIES_IMAGE_PATH}/avatar/${player.avatar}" alt="player-avatar">
         </div>
         <div class="histories one-on-one" id="player-info">
           <div class="histories one-on-one" id="player-nickname">${player.nickname}</div>
@@ -77,11 +79,7 @@ export default async function CasualHistoriesDetails(gameId, mode) {
   };
 
   this.render = () => {
-    if (mode === "1vs1") {
-      this.render1vs1Details();
-    } else if (mode === "tournament") {
-      // this.renderTournamentDetails();
-    }
+    this.render1vs1Details();
   };
 
   this.init();
