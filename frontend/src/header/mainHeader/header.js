@@ -2,7 +2,7 @@ import { importCss } from "../../utils/importCss.js";
 import { navigate } from "../../utils/navigate.js";
 import { click } from "../../utils/clickEvent.js";
 import { BACKEND, HISTORIES_IMAGE_PATH } from "../../global.js";
-import { getCookie } from "../../utils/cookie.js";
+import { getCookie, deleteCookie } from "../../utils/cookie.js";
 import useState from "../../utils/useState.js";
 
 /**
@@ -72,7 +72,7 @@ export default function MainHeader($container) {
     });
     // 로그아웃 버튼 클릭 이벤트
     click(document.getElementById("logout"), () => {
-      fetch("/api/login/logout", {
+      fetch(BACKEND + "/login/logout/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -81,6 +81,7 @@ export default function MainHeader($container) {
       }).then((response) => {
         if (response.status === 200) {
           navigate("/");
+          deleteCookie("jwt");
         }
       });
     });
