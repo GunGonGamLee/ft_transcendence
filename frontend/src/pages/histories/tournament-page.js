@@ -1,5 +1,5 @@
 import TournamentHistoriesDetails from "./tournament-histories-details.js";
-import { click, onClick } from "../../utils/clickEvent.js";
+import { click } from "../../utils/clickEvent.js";
 import { addPaginationOnClickProperty } from "../../utils/pagination.js";
 import { HISTORIES_IMAGE_PATH } from "../../global.js";
 
