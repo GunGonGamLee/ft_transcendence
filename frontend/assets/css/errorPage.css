@@ -10,7 +10,7 @@
 
 .error-code {
     color: rgba(0, 0, 0, 0.20);
-    font-size: 130px;
+    font-size: 20vh;
     font-family: 'Galmuri11-Bold', serif;
     font-weight: 700;
     word-wrap: break-word;
@@ -19,7 +19,7 @@
 
 .error-comment {
     color: white;
-    font-size: 70px;
+    font-size: 10vh;
     font-family: 'Galmuri11-Bold', serif;
     font-weight: 700;
     word-wrap: break-word;

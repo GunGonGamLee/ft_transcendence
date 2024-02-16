@@ -16,7 +16,7 @@
 .title {
     text-align: center;
     color: #FBFF3E;
-    font-size: 64px;
+    font-size: 8vh;
     font-family: 'Galmuri11', serif;
     font-weight: 700;
 }
@@ -33,10 +33,10 @@
 }
 
 .prompt-text {
-    margin-top: 10vh;
+    margin-top: 6vh;
     text-align: center;
     color: white;
-    font-size: 60px;
+    font-size: 8vh;
     font-family: 'Galmuri11', serif;
 }
 
@@ -44,7 +44,7 @@
     margin-top: 5vh;
     text-align: center;
     font-family: 'Galmuri11', serif;
-    font-size: 45px;
+    font-size: 5vh;
     height: 10vh;
     width: 30vw;
 }
@@ -53,7 +53,7 @@
     margin-top: 3vh;
     text-align: center;
     color: red;
-    font-size: 20px;
+    font-size: 3vh;
     font-family: 'Galmuri11-Bold', serif;
 }
 
