@@ -21,8 +21,8 @@ class FriendsView(APIView):
         try:
             current_user = AuthUtils.validate_jwt_token_and_get_user(request)
         
-            friends_relations = Friend.objects.filter(user_id=current_user).filter(status=Friend.ACCEPTED) \
-            | Friend.objects.filter(friend_id=current_user).filter(status=Friend.ACCEPTED)
+            friends_relations = Friend.objects.filter(user_id=current_user).filter(status=1) \
+            | Friend.objects.filter(friend_id=current_user).filter(status=1)
 
             friend_list = []
             for relation in friends_relations:
@@ -68,7 +68,7 @@ class FriendsView(APIView):
                 or Friend.objects.filter(user_id=requested_friend, friend_id=current_user).exists():
                 return Response({'error': 'Already friends or friend request pending'}, status=status.HTTP_409_CONFLICT)
         
-            Friend.objects.create(user_id=current_user, friend_id=requested_friend, status=Friend.PENDING)
+            Friend.objects.create(user_id=current_user, friend_id=requested_friend, status=0)
             return Response({'message': 'Friend request sent'}, status=status.HTTP_200_OK)
         except AuthenticationException as e:
             return Response({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
@@ -96,12 +96,12 @@ class FriendsView(APIView):
 
             requested_nickname = get_request_body_value(request, 'nickname')
             requested_friend = get_object_or_404(User, nickname=requested_nickname)
-            if not Friend.objects.filter(user_id=current_user, friend_id=requested_friend, status=Friend.ACCEPTED).exists() \
-                and not Friend.objects.filter(user_id=requested_friend, friend_id=current_user, status=Friend.ACCEPTED).exists():
+            if not Friend.objects.filter(user_id=current_user, friend_id=requested_friend, status=1).exists() \
+                and not Friend.objects.filter(user_id=requested_friend, friend_id=current_user, status=1).exists():
                 return Response({'error': 'Not friends'}, status=status.HTTP_409_CONFLICT)
             
-            Friend.objects.filter(user_id=current_user, friend_id=requested_friend, status=Friend.ACCEPTED).delete()
-            Friend.objects.filter(user_id=requested_friend, friend_id=current_user, status=Friend.ACCEPTED).delete()
+            Friend.objects.filter(user_id=current_user, friend_id=requested_friend, status=1).delete()
+            Friend.objects.filter(user_id=requested_friend, friend_id=current_user, status=1).delete()
             return Response({'message': 'Friend deleted'}, status=status.HTTP_200_OK)
         except AuthenticationException as e:
             return Response({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
@@ -132,11 +132,11 @@ class AcceptFriendView(APIView):
             requested_nickname = get_request_body_value(request, 'nickname')
             requested_friend = get_object_or_404(User, nickname=requested_nickname)
 
-            friend_request = Friend.objects.filter(user_id=requested_friend, friend_id=current_user, status=Friend.PENDING).first()
+            friend_request = Friend.objects.filter(user_id=requested_friend, friend_id=current_user, status=0).first()
             if not friend_request:
                 return Response({'error': 'No friend request pending'}, status=status.HTTP_404_NOT_FOUND)
             
-            friend_request.status = Friend.ACCEPTED
+            friend_request.status = 1
             friend_request.save()
 
             return Response({'message': 'Friend request Accepted'}, status=status.HTTP_200_OK)
@@ -168,10 +168,10 @@ class RejectFriendView(APIView):
             requested_nickname = get_request_body_value(request, 'nickname')
             requested_friend = get_object_or_404(User, nickname=requested_nickname)
 
-            friend_request = Friend.objcets.filter(user_id=requested_friend, friend_id=current_user, status=Friend.PENDING).first()
+            friend_request = Friend.objects.filter(user_id=requested_friend, friend_id=current_user, status=0).first()
             if not friend_request:
                 return Response({'error': 'No friend request pending'}, status=status.HTTP_404_NOT_FOUND)
-            friend_request.status = Friend.REJECTED
+            friend_request.status = 2
             friend_request.save()
 
             return Response({'message': 'Friend request rejected'}, status=status.HTTP_200_OK)

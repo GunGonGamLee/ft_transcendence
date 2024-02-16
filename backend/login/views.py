@@ -244,7 +244,6 @@ class VerificationCodeAgainView(APIView):
         except Exception as e:
             return JsonResponse({'error': f"[{e.__class__.__name__}] {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
 class AuthUtils:
     @staticmethod
     def validate_jwt_token_and_get_user(request):
@@ -259,7 +258,7 @@ class AuthUtils:
             return user
         except Exception as e:
             raise AuthenticationException(f"[{e.__class__.__name__}] {e}")
-    
+
 class LogoutView(APIView):
     @swagger_auto_schema(tags=['/api/login'], operation_description="로그아웃 API",
                         responses={200: 'OK', 401: 'Unauthorized', 500: 'SERVER_ERROR'})
