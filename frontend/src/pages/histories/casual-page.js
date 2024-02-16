@@ -1,6 +1,7 @@
 import { click } from "../../utils/clickEvent.js";
 import CasualHistoriesDetails from "./casual-histories-details.js";
 import { addPaginationOnClickProperty } from "../../utils/pagination.js";
+import { HISTORIES_IMAGE_PATH } from "../../global.js";
 
 /**
  * 사용자 지정 모드의 전적 리스트를 렌더링합니다.
@@ -32,13 +33,13 @@ export default async function CasualHistories(mode) {
           id: 1,
           player1: {
             nickname: "hyojocho",
-            avatar: "../../../assets/images/avatar/red.png",
+            avatar: "luke_skywalker.png",
             rating: 2130,
             is_winner: true,
           },
           player2: {
             nickname: "yena",
-            avatar: "../../../assets/images/avatar/blue.png",
+            avatar: "chewbacca.png",
             rating: 110,
             is_winner: false,
           },
@@ -47,13 +48,13 @@ export default async function CasualHistories(mode) {
           id: 2,
           player1: {
             nickname: "hyojocho",
-            avatar: "../../../assets/images/avatar/red.png",
+            avatar: "luke_skywalker.png",
             rating: 2130,
             is_winner: true,
           },
           player2: {
             nickname: "yena",
-            avatar: "../../../assets/images/avatar/blue.png",
+            avatar: "chewbacca.png",
             rating: 110,
             is_winner: false,
           },
@@ -62,13 +63,13 @@ export default async function CasualHistories(mode) {
           id: 3,
           player1: {
             nickname: "hyojocho",
-            avatar: "../../../assets/images/avatar/red.png",
+            avatar: "luke_skywalker.png",
             rating: 2130,
             is_winner: true,
           },
           player2: {
             nickname: "yena",
-            avatar: "../../../assets/images/avatar/blue.png",
+            avatar: "chewbacca.png",
             rating: 110,
             is_winner: false,
           },
@@ -77,13 +78,13 @@ export default async function CasualHistories(mode) {
           id: 4,
           player1: {
             nickname: "hyojocho",
-            avatar: "../../../assets/images/avatar/red.png",
+            avatar: "chewbacca.png",
             rating: 2130,
             is_winner: true,
           },
           player2: {
             nickname: "donghyk2",
-            avatar: "../../../assets/images/avatar/green.png",
+            avatar: "han_solo.png",
             rating: 2120,
             is_winner: false,
           },
@@ -158,7 +159,7 @@ export default async function CasualHistories(mode) {
     return `
       <div class="histories casual player">
         <div class="histories casual avatar">
-            <img class="histories casual" src="${data.avatar}" alt="player1-avatar">
+            <img class="histories casual" src="${HISTORIES_IMAGE_PATH}/avatar/${data.avatar}" alt="player1-avatar">
         </div>
         <div class="histories casual nickname">${data.nickname}</div>
         <div class="histories casual rating">Rating: ${data.rating}</div>
@@ -173,7 +174,7 @@ export default async function CasualHistories(mode) {
     if (this.mode === "1vs1") {
       return `
         <div class="histories casual game-mode">
-            <img class="histories causal logo" src="../../../assets/images/1vs1_logo.png" alt="1v1">
+            <img class="histories causal logo" src= "${HISTORIES_IMAGE_PATH}/1vs1_logo.png" alt="1v1">
         </div>
       `;
     } else if (this.mode === "tournament") {
