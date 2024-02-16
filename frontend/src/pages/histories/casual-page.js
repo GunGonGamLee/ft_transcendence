@@ -158,9 +158,7 @@ export default async function CasualHistories(mode) {
   this.renderPlayer = (data) => {
     return `
       <div class="histories casual player">
-        <div class="histories casual avatar">
-            <img class="histories casual" src="${HISTORIES_IMAGE_PATH}/avatar/${data.avatar}" alt="player1-avatar">
-        </div>
+        <img class="histories casual avatar" src="${HISTORIES_IMAGE_PATH}/avatar/${data.avatar}" alt="player1-avatar">
         <div class="histories casual nickname">${data.nickname}</div>
         <div class="histories casual rating">Rating: ${data.rating}</div>
       </div>

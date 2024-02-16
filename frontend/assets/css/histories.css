@@ -76,22 +76,10 @@
 }
 
 .histories.list-item .histories.avatar {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    width: 8vw;
-    height: 8vw;
-    overflow: hidden;
+    height: 12vh;
 }
 
-.histories.list-item .histories.avatar > img {
-    position: absolute;
-    top: 0.1vw;
-    width: 12vw;
-    height: 12vw;
-}
-
+.histories.list-item .histories.avatar,
 .histories.list-item .player > div:not(:last-child) {
     margin-bottom: 1vh;
 }
