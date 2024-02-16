@@ -47,7 +47,7 @@ export default async function TournamentHistories(isCustomMode) {
           {
             nickname: "yena",
             avatar: "chewbacca.png",
-            ranking: 1,
+            ranking: 3,
           },
         ],
         date: "2023.01.30 13:55:23",
@@ -197,23 +197,18 @@ export default async function TournamentHistories(isCustomMode) {
   this.renderOpponents = (opponents) => {
     let html = `<div class= "histories tournament opponents">`;
     for (let opponent of opponents) {
-      let imageTag = "";
-      let fontColor = "";
+      let imageDisplay = `style="display: none"`;
+      let fontColor = `style="color: white"`;
       if (opponent.ranking === 1) {
-        imageTag = `
-          <img class="histories" src="${HISTORIES_IMAGE_PATH}/winner.png" alt="first">
-       `;
+        imageDisplay = `style="display: block"`;
         fontColor = `style="color: #FF52A0"`;
       }
-      html +=
-        `
+      html += `
       <img class="histories tournament opponents-avatar" src = "${HISTORIES_IMAGE_PATH}/avatar/${opponent.avatar}" alt="avatar">
       <div class="histories tournament opponents-nickname" ${fontColor}>
         ${opponent.nickname}
         <div class="histories tournament opponents-ranking first">
-      ` +
-        imageTag +
-        `
+          <img class="histories" src="${HISTORIES_IMAGE_PATH}/winner.png" alt="first" ${imageDisplay}>
         </div>
       </div>
       `;

@@ -517,3 +517,7 @@ footer.histories {
 .winner-icon {
     height: 6vh;
 }
+
+.winner-color {
+    color: #FF52A0;
+}
