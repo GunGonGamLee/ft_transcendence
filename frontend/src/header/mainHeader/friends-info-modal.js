@@ -100,8 +100,8 @@ export default function friendsInfoModal(isVisible) {
         // accept.png 아이콘일 경우에만 추가할 HTML 조각을 정의
         const additionalIconHTML = imagePath === '../../assets/images/accept.png' ?
             `<div>
-            <img class="icon" src="../../assets/images/close.png" />
-        </div>` : '';
+                <img class="icon" src="../../assets/images/close.png" />
+            </div>` : '';
         // 조건에 따라 클래스 추가
         const wrapperClass = imagePath === '../../assets/images/accept.png' ? 'friend-card-wrapper with-additional-icon' : 'friend-card-wrapper';
 
