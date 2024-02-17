@@ -13,7 +13,7 @@ class UserMeInfoSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_avatar_file_name(user):
-        return str(user.avatar)
+        return str(user.avatar).split('/')[-1]
 
 
 class UserInfoSerializer(serializers.ModelSerializer):
