@@ -19,8 +19,12 @@ from .serializers import UserMeInfoSerializer, UserInfoSerializer, UserAvatarUpl
 
 
 class SetNicknameView(APIView):
-    @swagger_auto_schema(tags=['/api/users'],
+
+    @swagger_auto_schema(
+        tags=['/api/users'],
         operation_description="사용자 닉네임 저장 API",
+        manual_parameters=[
+            openapi.Parameter('Authorization', openapi.IN_HEADER, 'JWT Token', type=openapi.TYPE_STRING)],
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={'nickname': openapi.Schema(type=openapi.TYPE_STRING, description='닉네임')},
@@ -49,8 +53,12 @@ class SetNicknameView(APIView):
             return JsonResponse({
                 'error': f"[{e.__class__.__name__}] {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    @swagger_auto_schema(tags=['/api/users'],
+
+    @swagger_auto_schema(
+        tags=['/api/users'],
         operation_description="사용자 닉네임 수정 API",
+        manual_parameters=[
+            openapi.Parameter('Authorization', openapi.IN_HEADER, 'JWT Token', type=openapi.TYPE_STRING)],
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={'nickname': openapi.Schema(type=openapi.TYPE_STRING, description='닉네임')},
@@ -83,6 +91,8 @@ class UserMeInfoView(APIView):
     @swagger_auto_schema(
         tags=['/api/users'],
         operation_description="사용자 정보 API",
+        manual_parameters=[
+            openapi.Parameter('Authorization', openapi.IN_HEADER, 'JWT Token', type=openapi.TYPE_STRING)],
         responses={200: openapi.Response('Successful Response', schema=UserMeInfoSerializer),
                    401: 'Bad Unauthorized',
                    404: 'NOT FOUND',
@@ -103,13 +113,15 @@ class UserInfoView(APIView):
     @swagger_auto_schema(
         tags=['/api/users'],
         operation_description="사용자 전적 API",
+        manual_parameters=[
+            openapi.Parameter('Authorization', openapi.IN_HEADER, 'JWT Token', type=openapi.TYPE_STRING)],
         responses={200: openapi.Response('Successful Response', schema=UserInfoSerializer),
                    401: 'Bad Unauthorized',
                    404: 'NOT FOUND',
                    500: 'SERVER_ERROR'})
     def get(self, request, nickname):
         try:
-            user = AuthUtils.validate_jwt_token_and_get_user(request)
+            AuthUtils.validate_jwt_token_and_get_user(request)
             user2 = User.objects.get(nickname=nickname)
             serializer = UserInfoSerializer(user2)
             return JsonResponse(serializer.data, status=status.HTTP_200_OK)

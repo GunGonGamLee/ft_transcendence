@@ -4,6 +4,8 @@ import { click } from "../../utils/clickEvent.js";
 import { BACKEND, HISTORIES_IMAGE_PATH } from "../../global.js";
 import { getCookie, deleteCookie } from "../../utils/cookie.js";
 import useState from "../../utils/useState.js";
+import friendsInfoModal from "./friends-info-modal.js"
+import roomCreateModal from "../../pages/custom-game-list/room-create-modal.js";
 
 /**
  * 사용자 전적 페이지에 사용하는 header 컴포넌트
@@ -85,8 +87,13 @@ export default function MainHeader($container) {
       });
     });
     // TODO => 친구 목록 버튼 클릭 이벤트
-    click(document.getElementById("friends"), () => {
-      // navigate("/friends");
+    document.getElementById("friends").addEventListener("click", () => {
+      const infoWrapper = document.getElementById("friends-info-wrapper");
+      if (infoWrapper.style.display === "grid") {
+        infoWrapper.style.display = "none";
+      } else {
+        infoWrapper.style.display = "grid";
+      }
     });
     // 메인 타이틀 클릭 이벤트
     click(document.getElementById("title"), () => {
@@ -94,7 +101,15 @@ export default function MainHeader($container) {
     });
   };
 
+  let renderFriendsInfoModal = (bodyElements) => {
+    const modalHtml = friendsInfoModal();
+    bodyElements.insertAdjacentHTML("beforeend", modalHtml);
+  }
+
   importCss("../../../assets/fonts/font.css");
   init();
+  const bodyElements =  document.getElementById("app");
+  renderFriendsInfoModal(bodyElements);
+
   let [getUserInfo, setUserInfo] = useState({}, this, "render");
 }

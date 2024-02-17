@@ -1,0 +1,115 @@
+#friends-info-wrapper {
+    display : none;
+    position: absolute;
+    top: 12vh;
+    height: calc(100% - 12vh);
+    width: 100%;
+    padding: 10vh 5vw;
+    background-color: #000000c4;
+}
+
+.friends-info-modal-wrapper {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3vw;
+}
+
+.list-subject {
+    font-size: 3.5vh;
+    font-family: Galmuri11-Bold, serif;
+}
+
+.list-wrapper {
+    display: flex;
+    flex-direction: column;
+    background-color: transparent;
+    height: 68vh;
+}
+
+#friends-list-wrapper {
+    color: #07F7B0;
+}
+
+#friends-list {
+    overflow: auto;
+    overflow-y: scroll;
+    max-height: 100%;
+    border: 0.3vw solid #07F7B0;
+    height: 100%;
+}
+
+#user-search {
+    overflow: auto;
+    overflow-y: scroll;
+}
+
+#friend-request-list {
+    overflow: auto;
+    overflow-y: scroll;
+}
+
+#user-search-wrapper {
+    color: #FF52A0;
+}
+
+#user-search {
+    border: 0.3vw solid #FF52A0;
+    height: 100%;
+}
+
+#friend-request-list-wrapper {
+    color: #29ABE2;
+}
+
+#friend-request-list {
+    border: 0.3vw solid #29ABE2;
+    height: 100%;
+}
+
+#search-form img {
+    height: 5vh;
+    width: 5vh;
+}
+
+#search-form input {
+    border: 0.3vw solid #FF52A0;
+    background-color: transparent;
+    color: white;
+    padding: 0.8vh 1vw;
+    margin: 1.3vh 0 1.3vh 1vh;
+    width: calc(100% - 5vh - 0.6vw - 1vh);
+    font-size: 2.5vh;
+    font-family: Galmuri11-Bold, serif;
+}
+
+.friend-card-wrapper {
+    display: grid;
+    grid-gap: 7%;
+    grid-template-columns: 1fr 4fr 1fr;
+    justify-items: center;
+    align-items: center;
+    margin: 7%;
+    padding: 3%;
+    font-size: 2.5vh;
+    font-family: Galmuri11-Bold, serif;
+    color: black;
+    background-color: white;
+    border: 0.3vw solid;
+}
+
+.friend-card-wrapper.with-additional-icon {
+    grid-template-columns: 2fr 4fr 1fr 1fr; /* 추가 아이콘 있는 경우 */
+}
+
+.friend-card-wrapper .user-name {
+    text-align: left;
+    width: 100%;
+}
+
+.friend-card-wrapper .avatar-image {
+    height: 7vh;
+}
+
+.friend-card-wrapper .icon {
+    height: 4vh;
+}
