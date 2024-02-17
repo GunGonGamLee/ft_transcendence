@@ -1,6 +1,8 @@
 import random
 from rest_framework.views import APIView
-from rest_framework import status
+from rest_framework.generics import CreateAPIView, GenericAPIView
+from rest_framework import status, renderers
+from rest_framework.parsers import FormParser, MultiPartParser, FileUploadParser
 from rest_framework.response import Response
 from django.http import JsonResponse
 from users.models import User
@@ -10,7 +12,7 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
-from .serializers import UserMeInfoSerializer, UserInfoSerializer
+from .serializers import UserMeInfoSerializer, UserInfoSerializer, UserAvatarUploadSerializer
 from src.exceptions import AuthenticationException
 
 
@@ -112,3 +114,40 @@ class UserInfoView(APIView):
             return JsonResponse({'err_msg': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return JsonResponse({'error': f"[{e.__class__.__name__}] {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class UserAvatarView(APIView):
+    parser_classes = (MultiPartParser,)
+    serializer_class = UserAvatarUploadSerializer
+    renderer_classes = (renderers.JSONRenderer,)
+
+    @swagger_auto_schema(
+        tags=['/api/users'],
+        operation_description="사용자 프로필 이미지 업로드 API",
+        responses={200: 'Successful Response',
+                   401: 'Bad Unauthorized',
+                   404: 'NOT FOUND',
+                   500: 'SERVER_ERROR'},
+        manual_parameters=[
+            openapi.Parameter(
+                'nickname',
+                openapi.IN_PATH,
+                type=openapi.TYPE_STRING,
+                description='유저 닉네임',
+                required=True),
+            openapi.Parameter(
+                'avatar',
+                openapi.IN_FORM,
+                type=openapi.TYPE_FILE,
+                description='프로필 이미지',
+                required=True
+            ),
+        ],
+        content_type='multipart/form-data'
+    )
+    def post(self, request, nickname):
+        serializer = UserAvatarUploadSerializer(data=request.FILES['avatar'])
+        if serializer.is_valid():
+            return JsonResponse(status=status.HTTP_201_CREATED, data=serializer.data)
+        else:
+            return JsonResponse({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
