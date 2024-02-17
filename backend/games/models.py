@@ -56,6 +56,7 @@ class GameRecordView(models.Model):
     game_id = models.IntegerField()
     mode = models.IntegerField()
     user_id = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         managed = False
