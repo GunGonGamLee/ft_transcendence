@@ -52,7 +52,7 @@ class GameView(APIView):
                 self.create_room(title, password, mode, user)
                 return Response(status=status.HTTP_201_CREATED)
         except AuthenticationException as e:
-            return JsonResponse({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
+            return JsonResponse({'error': e.message}, status=status.HTTP_401_UNAUTHORIZED)
         except BadRequest:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
@@ -127,13 +127,13 @@ class GameRoomView(APIView):
                     return JsonResponse(serializer.data, status=status.HTTP_200_OK)
 
         except AuthenticationException as e:
-            return JsonResponse({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
+            return JsonResponse({'error': e.message}, status=status.HTTP_401_UNAUTHORIZED)
         except Game.DoesNotExist:
             return JsonResponse({'error': 'Game not found.'}, status=status.HTTP_404_NOT_FOUND)
         except ValueError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         except ValidationError as e:
-            return JsonResponse({'error': e.messages}, status=status.HTTP_409_CONFLICT)
+            return JsonResponse({'error': e.message}, status=status.HTTP_409_CONFLICT)
         except Exception as e:
             return JsonResponse({'error': e.__class__.__name__, 'message':str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
