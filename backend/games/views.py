@@ -15,7 +15,7 @@ from games.serializers import GameRoomSerializer, PvPResultSerializer, Tournamen
 from django.core.exceptions import ValidationError
 from src.exceptions import AuthenticationException, VerificationException
 from users.models import User
-from src.choices import MODE_CHOICES_DICT 
+from src.choices import MODE_CHOICES_DICT
 from django.core.paginator import Paginator, EmptyPage
 
 
@@ -225,7 +225,11 @@ class GameResultListView(APIView):
                     total_pages=paginator.num_pages,
                     many=True
                 )
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            serialized_data_with_total_pages = {
+                'total_pages': paginator.num_pages,
+                'data': serializer.data
+            }
+            return Response(serialized_data_with_total_pages, status=status.HTTP_200_OK)
         except AuthenticationException as e:
             return JsonResponse({'error': e.message}, status=status.HTTP_401_UNAUTHORIZED)
         except User.DoesNotExist:
