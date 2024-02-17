@@ -175,7 +175,25 @@ class GameRoomView(APIView):
                 game.save()
             else:
                 raise ValidationError('꽉 찬 방입니다.')
+
+
 class GameResultListView(APIView):
+    @swagger_auto_schema(
+        tags=['/api/games'],
+        operation_description="게임 전적 목록 API",
+        manual_parameters=[
+            openapi.Parameter('Authorization', openapi.IN_HEADER, 'JWT Token', type=openapi.TYPE_STRING),
+            openapi.Parameter('user', openapi.IN_QUERY, '사용자 닉네임', type=openapi.TYPE_STRING),
+            openapi.Parameter('mode', openapi.IN_QUERY, 'casual_1vs1, casual_tournament, rank', type=openapi.TYPE_STRING),
+            openapi.Parameter('page', openapi.IN_QUERY, '페이지 번호', type=openapi.TYPE_INTEGER),
+            openapi.Parameter('limit', openapi.IN_QUERY, '한 페이지 당 개수', type=openapi.TYPE_INTEGER),
+        ],
+        responses={
+            200: 'OK (mode에 따라 응답이 달라집니다)',
+            400: 'BAD_REQUEST',
+            401: 'UNAUTHORIZED',
+            404: 'NOT_FOUND',
+            500: 'SERVER_ERROR'})
     def get(self, request):
         try:
             AuthUtils.validate_jwt_token_and_get_user(request)
