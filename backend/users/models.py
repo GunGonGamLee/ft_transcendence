@@ -1,12 +1,5 @@
-import os
-
-from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
-from src.choices import AVATAR_CHOICES
-
-from src.settings import BASE_DIR
-
-from src import settings
+from django.db import models
 
 
 class UserManager(BaseUserManager):
