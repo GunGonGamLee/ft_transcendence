@@ -153,10 +153,13 @@ class UserAvatarView(APIView):
     )
     def post(self, request, nickname):
         avatar_file = request.FILES['avatar']
-        avatar_file.name = f"{nickname}.png"
+        user = AuthUtils.validate_jwt_token_and_get_user(request)
+        if user.nickname != nickname:
+            return JsonResponse(status=status.HTTP_401_UNAUTHORIZED, data={'error': 'Unauthorized'})
         serializer = UserAvatarUploadSerializer(data={'avatar': avatar_file})
         if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(status=status.HTTP_201_CREATED, data=serializer.data)
+            user.avatar = avatar_file
+            user.save(update_fields=['avatar'])
+            return JsonResponse(status=status.HTTP_201_CREATED, data={'avatar': user.avatar.url})
         else:
             return JsonResponse({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
