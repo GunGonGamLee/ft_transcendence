@@ -1,40 +1,42 @@
 import random
-from rest_framework.views import APIView
-from rest_framework.generics import CreateAPIView, GenericAPIView
-from rest_framework import status, renderers
-from rest_framework.parsers import FormParser, MultiPartParser, FileUploadParser
-from rest_framework.response import Response
-from django.http import JsonResponse
-from users.models import User
-from login.views import AuthUtils
-from src.utils import get_request_body_value
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
-from django.db import IntegrityError
+
 from django.core.exceptions import ValidationError
-from .serializers import UserMeInfoSerializer, UserInfoSerializer, UserAvatarUploadSerializer
+from django.db import IntegrityError
+from django.http import JsonResponse
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from login.views import AuthUtils
+from rest_framework import status, renderers
+from rest_framework.parsers import MultiPartParser
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from src.choices import AVATAR_CHOICES_DICT
 from src.exceptions import AuthenticationException
+from src.utils import get_request_body_value
+from users.models import User
+
+from .serializers import UserMeInfoSerializer, UserInfoSerializer, UserAvatarUploadSerializer
 
 
 class SetNicknameView(APIView):
     @swagger_auto_schema(tags=['/api/users'],
-                         operation_description="사용자 닉네임 저장 API",
-                         request_body=openapi.Schema(
-                             type=openapi.TYPE_OBJECT,
-                             properties={'nickname': openapi.Schema(type=openapi.TYPE_STRING, description='닉네임')},
-                             required=['nickname']),
-                         responses={
-                                    201: 'CREATED',
-                                    400: 'BAD_REQUEST',
-                                    401: 'UNAUTHORIZED',
-                                    404: 'NOT_FOUND',
-                                    500: 'SERVER_ERROR'})
+        operation_description="사용자 닉네임 저장 API",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={'nickname': openapi.Schema(type=openapi.TYPE_STRING, description='닉네임')},
+            required=['nickname']),
+        responses={
+            201: 'CREATED',
+            400: 'BAD_REQUEST',
+            401: 'UNAUTHORIZED',
+            404: 'NOT_FOUND',
+            500: 'SERVER_ERROR'})
     def post(self, request):
         try:
             user = AuthUtils.validate_jwt_token_and_get_user(request)
             nickname = get_request_body_value(request, 'nickname')
             user.nickname = nickname
-            user.avatar = random.randint(0, 4)
+            user.avatar = AVATAR_CHOICES_DICT[random.randint(0, 4)]
             user.save()
             return Response(status=status.HTTP_201_CREATED)
         except AuthenticationException as e:
@@ -44,20 +46,21 @@ class SetNicknameView(APIView):
         except IntegrityError:
             return JsonResponse({'err_msg': 'duplicate nickname'}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            return JsonResponse({'error': f"[{e.__class__.__name__}] {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return JsonResponse({
+                'error': f"[{e.__class__.__name__}] {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @swagger_auto_schema(tags=['/api/users'],
-                         operation_description="사용자 닉네임 수정 API",
-                         request_body=openapi.Schema(
-                             type=openapi.TYPE_OBJECT,
-                             properties={'nickname': openapi.Schema(type=openapi.TYPE_STRING, description='닉네임')},
-                             required=['nickname']),
-                         responses={
-                                    200: 'OK',
-                                    400: 'BAD_REQUEST',
-                                    401: 'UNAUTHORIZED',
-                                    404: 'NOT_FOUND',
-                                    500: 'SERVER_ERROR'})
+        operation_description="사용자 닉네임 수정 API",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={'nickname': openapi.Schema(type=openapi.TYPE_STRING, description='닉네임')},
+            required=['nickname']),
+        responses={
+            200: 'OK',
+            400: 'BAD_REQUEST',
+            401: 'UNAUTHORIZED',
+            404: 'NOT_FOUND',
+            500: 'SERVER_ERROR'})
     def patch(self, request):
         try:
             user = AuthUtils.validate_jwt_token_and_get_user(request)
@@ -72,7 +75,8 @@ class SetNicknameView(APIView):
         except IntegrityError:
             return JsonResponse({'err_msg': 'duplicate nickname'}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            return JsonResponse({'error': f"[{e.__class__.__name__}] {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return JsonResponse({
+                'error': f"[{e.__class__.__name__}] {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class UserMeInfoView(APIView):
@@ -89,9 +93,10 @@ class UserMeInfoView(APIView):
             serializer = UserMeInfoSerializer(user)
             return JsonResponse(serializer.data, status=status.HTTP_200_OK)
         except AuthenticationException as e:
-            return JsonResponse({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
+            return JsonResponse({'error': str(e)}, status=status.HTTP_401_UNAUTHORIZED)
         except Exception as e:
-            return JsonResponse({'error': f"[{e.__class__.__name__}] {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return JsonResponse({
+                'error': f"[{e.__class__.__name__}] {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class UserInfoView(APIView):
@@ -109,11 +114,12 @@ class UserInfoView(APIView):
             serializer = UserInfoSerializer(user2)
             return JsonResponse(serializer.data, status=status.HTTP_200_OK)
         except AuthenticationException as e:
-            return JsonResponse({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
+            return JsonResponse({'error': str(e)}, status=status.HTTP_401_UNAUTHORIZED)
         except User.DoesNotExist:
             return JsonResponse({'err_msg': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            return JsonResponse({'error': f"[{e.__class__.__name__}] {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return JsonResponse({
+                'error': f"[{e.__class__.__name__}] {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class UserAvatarView(APIView):
@@ -146,8 +152,11 @@ class UserAvatarView(APIView):
         content_type='multipart/form-data'
     )
     def post(self, request, nickname):
-        serializer = UserAvatarUploadSerializer(data=request.FILES['avatar'])
+        avatar_file = request.FILES['avatar']
+        avatar_file.name = f"{nickname}.png"
+        serializer = UserAvatarUploadSerializer(data={'avatar': avatar_file})
         if serializer.is_valid():
+            serializer.save()
             return JsonResponse(status=status.HTTP_201_CREATED, data=serializer.data)
         else:
             return JsonResponse({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
