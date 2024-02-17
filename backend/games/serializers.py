@@ -97,3 +97,50 @@ class PvPResultSerializer(serializers.ModelSerializer):
         else:
             return PlayerSerializer(game.manager).data
 
+
+class TournamentResultSerializer(serializers.ModelSerializer):
+
+    id = serializers.SerializerMethodField()
+    date = serializers.SerializerMethodField()
+    player = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Game
+        fields = ['id', 'date', 'player']
+
+    def __init__(self, *args, **kwargs):
+        user_id = kwargs.pop('user_id', None)
+        total_pages = kwargs.pop('total_pages')
+        self.user_id = user_id
+        self.total_pages = total_pages
+        self.pos = None
+        super().__init__(*args, **kwargs)
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        game = Game.objects.get(id=instance['game_id'])
+        opponents_data = []
+        players = [game.manager, game.player1, game.player2, game.player3]
+        for i, player in enumerate(players):
+            if i == self.pos:
+                continue
+            opponents_data.append(PlayerSerializer(player).data)
+        data['opponents'] = opponents_data
+        data['total_pages'] = self.total_pages
+        return data
+
+    def get_id(self, game):
+        return game['game_id']
+
+    def get_date(self, game):
+        game = Game.objects.get(id=game['game_id'])
+        return game.created_at
+
+    def get_player(self, game):
+        game_id = game['game_id']
+        game = Game.objects.get(id=game_id)
+        players = [game.manager, game.player1, game.player2, game.player3]
+        for pos, player in enumerate(players):
+            if self.user_id == player.id:
+                self.pos = pos
+                return PlayerSerializer(player).data
