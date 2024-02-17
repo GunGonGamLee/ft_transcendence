@@ -6,6 +6,8 @@ from src.choices import AVATAR_CHOICES
 
 from src.settings import BASE_DIR
 
+from src import settings
+
 
 class UserManager(BaseUserManager):
     def create_user(self, email, **extra_fields):
@@ -39,7 +41,7 @@ class User(AbstractUser):
     rating = models.PositiveIntegerField(default=0)  # 레이팅
     avatar = models.ImageField(
         null=True,
-        upload_to='../../frontend/src/assets/avatars',
+        upload_to='avatar/',
     )  # 아바타 이미지
     verification_code = models.CharField(max_length=6, blank=True, null=True)   # 이메일 인증 코드
     is_online = models.BooleanField(default=False) # 온라인 여부

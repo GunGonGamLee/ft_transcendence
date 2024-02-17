@@ -302,3 +302,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Cookie settings
 SESSION_COOKIE_HTTPONLY = True
+
+# Assets Root
+MEDIA_ROOT = os.path.join(BASE_DIR, 'frontend', 'assets', 'images')
