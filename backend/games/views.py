@@ -207,7 +207,7 @@ class GameResultListView(APIView):
             limit = self.validate_limit(request.GET.get('limit', 4))
 
             serializer = None
-            queryset = GameRecordView.objects.filter(mode=mode, user_id=user.id).values('game_id', 'mode', 'user_id').order_by('-created_at')
+            queryset = GameRecordView.objects.filter(mode=mode, user_id=user.id).values('game_id', 'mode', 'user_id').order_by('-started_at')
             paginator = Paginator(queryset, limit)
             paginated_queryset = paginator.page(page)
 

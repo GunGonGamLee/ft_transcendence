@@ -134,7 +134,7 @@ class TournamentResultSerializer(serializers.ModelSerializer):
 
     def get_date(self, game):
         game = Game.objects.get(id=game['game_id'])
-        return game.created_at
+        return game.started_at
 
     def get_player(self, game):
         game_id = game['game_id']
