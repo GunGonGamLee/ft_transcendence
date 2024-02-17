@@ -17,23 +17,23 @@ from src.exceptions import AuthenticationException
 
 
 class GameView(APIView):
-    @swagger_auto_schema(tags=['/api/games'],
-                         operation_description="게임방 생성 API",
-                         manual_parameters=[
-                             openapi.Parameter('Authorization', openapi.IN_HEADER, description='Bearer JWT Token',
-                                               type=openapi.TYPE_STRING), ],
-                         request_body=openapi.Schema(
-                             type=openapi.TYPE_OBJECT,
-                             properties={'title': openapi.Schema(type=openapi.TYPE_STRING, description='게임방 제목'),
-                                         'password': openapi.Schema(type=openapi.TYPE_STRING, description='비밀번호'),
-                                         'mode': openapi.Schema(type=openapi.TYPE_STRING, description='게임 모드'),},
-                             required=['title', 'password', 'mode']),
-                         responses={
-                                    201: 'CREATED',
-                                    400: 'BAD_REQUEST',
-                                    401: 'UNAUTHORIZED',
-                                    404: 'NOT_FOUND',
-                                    500: 'SERVER_ERROR'})
+    @swagger_auto_schema(
+        tags=['/api/games'],
+        operation_description="게임방 생성 API",
+        manual_parameters=[
+            openapi.Parameter('Authorization', openapi.IN_HEADER, 'JWT Token', type=openapi.TYPE_STRING)],
+        request_body=openapi.Schema(
+             type=openapi.TYPE_OBJECT,
+             properties={'title': openapi.Schema(type=openapi.TYPE_STRING, description='게임방 제목'),
+                         'password': openapi.Schema(type=openapi.TYPE_STRING, description='비밀번호'),
+                         'mode': openapi.Schema(type=openapi.TYPE_STRING, description='게임 모드'),},
+             required=['title', 'password', 'mode']),
+        responses={
+                201: 'CREATED',
+                400: 'BAD_REQUEST',
+                401: 'UNAUTHORIZED',
+                404: 'NOT_FOUND',
+                500: 'SERVER_ERROR'})
     def post(self, request):
         try:
             user = AuthUtils.validate_jwt_token_and_get_user(request)
@@ -81,22 +81,21 @@ class GameView(APIView):
 
 
 class GameRoomView(APIView):
-    @swagger_auto_schema(tags=['/api/games'],
-                         operation_description="게임방 입장 API",
-                         manual_parameters=[
-                             openapi.Parameter('Authorization', openapi.IN_HEADER, description='Bearer JWT Token',
-                                               type=openapi.TYPE_STRING),
-                             openapi.Parameter('game_id', openapi.IN_PATH, description='게임 방 id',
-                                               type=openapi.TYPE_STRING),
-                         ],
-                         responses={
-                             200: 'OK',
-                             201: 'CREATED',
-                             400: 'BAD_REQUEST',
-                             401: 'UNAUTHORIZED',
-                             404: 'NOT_FOUND',
-                             409: 'CONFLICT',
-                             500: 'SERVER_ERROR'})
+    @swagger_auto_schema(
+        tags=['/api/games'],
+        operation_description="게임방 입장 API",
+        manual_parameters=[
+            openapi.Parameter('Authorization', openapi.IN_HEADER, 'JWT Token', type=openapi.TYPE_STRING),
+            openapi.Parameter('game_id', openapi.IN_PATH, '게임 방 id', type=openapi.TYPE_STRING),
+        ],
+        responses={
+            200: 'OK',
+            201: 'CREATED',
+            400: 'BAD_REQUEST',
+            401: 'UNAUTHORIZED',
+            404: 'NOT_FOUND',
+            409: 'CONFLICT',
+            500: 'SERVER_ERROR'})
     @transaction.atomic
     def post(self, request, game_id):
         try:

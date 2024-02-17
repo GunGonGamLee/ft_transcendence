@@ -179,6 +179,8 @@ class VerificationCodeView(APIView):
     @swagger_auto_schema(
         tags=['/api/login'],
         operation_description="유저가 입력한 2차 이메일 인증 코드를 검증 API",
+        manual_parameters=[
+            openapi.Parameter('Authorization', openapi.IN_HEADER, 'JWT Token', type=openapi.TYPE_STRING)],
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={'code': openapi.Schema(type=openapi.TYPE_STRING, description='2차 인증 코드')},
@@ -216,6 +218,8 @@ class VerificationCodeAgainView(APIView):
     @swagger_auto_schema(
         tags=['/api/login'],
         operation_description="이메일 인증 코드를 재발급 받는 API.",
+        manual_parameters=[
+            openapi.Parameter('Authorization', openapi.IN_HEADER, 'JWT Token', type=openapi.TYPE_STRING)],
         responses={200: openapi.Response('Successful Response', schema=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={'token': openapi.Schema(type=openapi.TYPE_STRING, description='JWT 1차 토큰')})),
