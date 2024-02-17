@@ -13,7 +13,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['nickname', 'avatar_file_name', 'rating']
 
     def get_avatar_file_name(self, user):
-        return AVATAR_CHOICES_DICT.get(user.avatar)
+        return str(user.avatar)
 
 
 class GameRoomSerializer(serializers.ModelSerializer):

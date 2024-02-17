@@ -1,6 +1,10 @@
+import os
+
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from src.choices import AVATAR_CHOICES
+
+from src.settings import BASE_DIR
 
 
 class UserManager(BaseUserManager):
@@ -33,7 +37,10 @@ class User(AbstractUser):
     email = models.EmailField('이메일 주소', unique=True, max_length=254)  # 이메일
     nickname = models.CharField(max_length=8, unique=True, blank=True, null=True)  # 닉네임
     rating = models.PositiveIntegerField(default=0)  # 레이팅
-    avatar = models.PositiveSmallIntegerField(null=True, choices=AVATAR_CHOICES)  # 아바타 이미지
+    avatar = models.ImageField(
+        null=True,
+        upload_to='../../frontend/src/assets/avatars',
+    )  # 아바타 이미지
     verification_code = models.CharField(max_length=6, blank=True, null=True)   # 이메일 인증 코드
     is_online = models.BooleanField(default=False) # 온라인 여부
     custom_1vs1_wins = models.IntegerField(default=0)
