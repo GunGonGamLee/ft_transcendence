@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
 from django.http import JsonResponse
-from games.models import Game, CasualGameView
+from games.models import Game, CasualGameView, GameRecordView
 from login.views import AuthUtils
 from src.utils import get_request_body_value
 from django.core.exceptions import BadRequest
@@ -11,9 +11,12 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from django.db import transaction
 from django.db.models import Min, Count
-from games.serializers import GameRoomSerializer
+from games.serializers import GameRoomSerializer, PvPResultSerializer, TournamentResultSerializer
 from django.core.exceptions import ValidationError
-from src.exceptions import AuthenticationException
+from src.exceptions import AuthenticationException, VerificationException
+from users.models import User
+from src.choices import MODE_CHOICES_DICT 
+from django.core.paginator import Paginator, EmptyPage
 
 
 class GameView(APIView):
@@ -185,6 +188,26 @@ class GameResultListView(APIView):
             page = self.validate_page(request.GET.get('page', 0))
             limit = self.validate_limit(request.GET.get('limit', 4))
 
+            serializer = None
+            queryset = GameRecordView.objects.filter(mode=mode, user_id=user.id).values('game_id', 'mode', 'user_id').order_by('-created_at')
+            paginator = Paginator(queryset, limit)
+            paginated_queryset = paginator.page(page)
+
+            if mode == 0:   # 1vs1
+                serializer = PvPResultSerializer(
+                    instance=paginated_queryset,
+                    user_id=user.id,
+                    total_pages=paginator.num_pages,
+                    many=True
+                )
+            else:   # tournament
+                serializer = TournamentResultSerializer(
+                    instance=paginated_queryset,
+                    user_id=user.id,
+                    total_pages=paginator.num_pages,
+                    many=True
+                )
+            return Response(serializer.data, status=status.HTTP_200_OK)
         except AuthenticationException as e:
             return JsonResponse({'error': e.message}, status=status.HTTP_401_UNAUTHORIZED)
         except User.DoesNotExist:
