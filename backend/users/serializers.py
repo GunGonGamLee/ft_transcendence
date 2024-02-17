@@ -55,3 +55,10 @@ class UserInfoSerializer(serializers.ModelSerializer):
             return 0
         wins = user.rank_wins
         return wins / match * 100
+
+
+class UserAvatarUploadSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ['avatar']
