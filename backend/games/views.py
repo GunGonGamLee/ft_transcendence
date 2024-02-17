@@ -17,6 +17,9 @@ from src.exceptions import AuthenticationException, VerificationException
 from users.models import User
 from src.choices import MODE_CHOICES_DICT
 from django.core.paginator import Paginator, EmptyPage
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class GameView(APIView):
@@ -205,6 +208,8 @@ class GameResultListView(APIView):
             mode = self.validate_mode(request.GET.get('mode'))
             page = self.validate_page(request.GET.get('page', 0))
             limit = self.validate_limit(request.GET.get('limit', 4))
+
+            logging.info(f"[유저 전적 목록 API] user : {nickname}, mode : {mode}, page : {page}, limit : {limit}")
 
             serializer = None
             queryset = GameRecordView.objects.filter(mode=mode, user_id=user.id).values('game_id', 'mode', 'user_id').order_by('-started_at')
