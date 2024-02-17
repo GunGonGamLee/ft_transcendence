@@ -25,7 +25,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
 BASE_URL = 'http://localhost:8000/'
 GOOGLE_CALLBACK_URI = BASE_URL + 'api/login/google/callback/'
 INTRA42_CALLBACK_URI = BASE_URL + 'api/login/intra42/callback'
@@ -52,7 +51,7 @@ else:
 
 class OAuthLoginView(APIView):
     @swagger_auto_schema(tags=['/api/login'], operation_description="소셜 로그인 창으로 페이지 redirect",
-                         responses={302: "Redirect to Another Location"})
+        responses={302: "Redirect to Another Location"})
     def get(self, request):
         authorize_api_url = self.authorize_api
         client_id = self.client_id
@@ -78,12 +77,12 @@ class Intra42LoginView(OAuthLoginView):
 
 class OAuthCallbackView(APIView):
     @swagger_auto_schema(tags=['/api/login'],
-                         operation_description="사용자의 이메일로 2차 인증 코드를 보내는 API",
-                         manual_parameters=[
-                             openapi.Parameter('token', openapi.IN_QUERY, description="1일 뒤에 만료하는 JWT 토큰", type=openapi.TYPE_STRING)],
-                         responses={302: "Redirect to Front Page",
-                                    400: 'BAD_REQUEST',
-                                    500: 'SERVER_ERROR'})
+        operation_description="사용자의 이메일로 2차 인증 코드를 보내는 API",
+        manual_parameters=[
+            openapi.Parameter('token', openapi.IN_QUERY, description="1일 뒤에 만료하는 JWT 토큰", type=openapi.TYPE_STRING)],
+        responses={302: "Redirect to Front Page",
+                   400: 'BAD_REQUEST',
+                   500: 'SERVER_ERROR'})
     def get(self, request):
         try:
             code = request.GET.get('code')
@@ -116,7 +115,8 @@ class OAuthCallbackView(APIView):
         except RequestException:
             return JsonResponse({'err_msg': 'get access token error'}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            return JsonResponse({'error': f"[{e.__class__.__name__}] {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return JsonResponse({
+                'error': f"[{e.__class__.__name__}] {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def get_access_token(self, code):
         token_response = requests.post(
@@ -210,11 +210,12 @@ class VerificationCodeView(APIView):
             else:
                 return JsonResponse({'err_msg': '인증코드가 일치하지 않습니다.'}, status=status.HTTP_400_BAD_REQUEST)
         except AuthenticationException as e:
-            return JsonResponse({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
+            return JsonResponse({'error': str(e)}, status=status.HTTP_401_UNAUTHORIZED)
         except ValidationError as e:
             return JsonResponse({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
         except Exception as e:
-            return JsonResponse({'error': f"[{e.__class__.__name__}] {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return JsonResponse({
+                'error': f"[{e.__class__.__name__}] {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class VerificationCodeAgainView(APIView):
@@ -242,16 +243,17 @@ class VerificationCodeAgainView(APIView):
         except TokenCreateException as e:
             return JsonResponse({'error': e.messages}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         except Exception as e:
-            return JsonResponse({'error': f"[{e.__class__.__name__}] {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return JsonResponse({
+                'error': f"[{e.__class__.__name__}] {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 class AuthUtils:
     @staticmethod
     def validate_jwt_token_and_get_user(request):
         try:
-            if settings.DEBUG:
+            jwt_token = request.COOKIES.get('jwt')
+            if jwt_token is None:
                 jwt_token = request.headers.get('Authorization').split(' ')[1]
-            else:
-                jwt_token = request.COOKIES.get('jwt')
             decoded_token = jwt.decode(jwt_token, SECRET_KEY, algorithms=['HS256'])
             user_email = decoded_token.get('user_email')
             user = User.objects.get(email=user_email)
@@ -259,9 +261,10 @@ class AuthUtils:
         except Exception as e:
             raise AuthenticationException(f"[{e.__class__.__name__}] {e}")
 
+
 class LogoutView(APIView):
     @swagger_auto_schema(tags=['/api/login'], operation_description="로그아웃 API",
-                        responses={200: 'OK', 401: 'Unauthorized', 500: 'SERVER_ERROR'})
+        responses={200: 'OK', 401: 'Unauthorized', 500: 'SERVER_ERROR'})
     def post(self, request):
         try:
             user = AuthUtils.validate_jwt_token_and_get_user(request)
