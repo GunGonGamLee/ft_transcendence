@@ -2,7 +2,7 @@ import { importCss } from "../../utils/importCss.js";
 import { navigate } from "../../utils/navigate.js";
 import { click } from "../../utils/clickEvent.js";
 import { BACKEND, HISTORIES_IMAGE_PATH } from "../../global.js";
-import { getCookie } from "../../utils/cookie.js";
+import { getCookie, deleteCookie } from "../../utils/cookie.js";
 import useState from "../../utils/useState.js";
 
 /**
@@ -46,9 +46,15 @@ export default function MainHeader($container) {
             </div>
             <div class="main" id="title">사십 이 초-월</div>
             <div class="main" id="right-side">
-                <div class="main" id="user-info">
-                    <span class="main" id="nickname">${nickname}</span>
-                    <img src="${HISTORIES_IMAGE_PATH}/avatar/${avatar_file_name}" alt="아바타" id="user-avatar">
+                <div class="btn-group">
+                    <button class="btn btn-secondary btn-lg dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="user-info">
+                        <span class="main user-info-element" id="nickname">${nickname}</span>
+                        <img class="main user-info-element" src="${HISTORIES_IMAGE_PATH}/avatar/${avatar_file_name}" alt="아바타" id="user-avatar">
+                    </button>
+                    <ul class="dropdown-menu user-info">
+                        <li><div id="go-histories">내 기록 보기</div></li>
+                        <li><div id="logout">떠나기</div></li>
+                    </ul>
                 </div>
                 <img src="${HISTORIES_IMAGE_PATH}/friends.png" alt="친구 목록" id="friends">
             </div>
@@ -61,8 +67,23 @@ export default function MainHeader($container) {
       history.back();
     });
     // 사용자 정보 클릭 이벤트
-    click(document.getElementById("user-info"), () => {
+    click(document.getElementById("go-histories"), () => {
       navigate("/histories");
+    });
+    // 로그아웃 버튼 클릭 이벤트
+    click(document.getElementById("logout"), () => {
+      fetch(BACKEND + "/login/logout/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getCookie("jwt")}`,
+        },
+      }).then((response) => {
+        if (response.status === 200) {
+          navigate("/");
+          deleteCookie("jwt");
+        }
+      });
     });
     // TODO => 친구 목록 버튼 클릭 이벤트
     click(document.getElementById("friends"), () => {

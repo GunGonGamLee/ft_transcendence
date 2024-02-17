@@ -61,12 +61,44 @@ header {
     width: 6vh;
 }
 
-.header-wrapper .main#right-side > #user-info > #user-name {
-    font-size: 2vh;
+.header-wrapper span.main#nickname {
+    font-size: 3.5vh;
 }
 
 .header-wrapper .main#right-side > #friends {
     width: 8vh;
+}
+
+.header-wrapper .main .btn-group .btn-secondary#user-info {
+    background-color: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+}
+
+.header-wrapper .main.user-info-element {
+    margin-right: 2vh;
+}
+
+.header-wrapper .dropdown-menu.user-info {
+    border: 2px solid #29ABE2;
+    color: white;
+    padding: 1vh 1vw;
+    background-color: rgba(0, 0, 0, 0.75);
+}
+
+.header-wrapper .dropdown-menu.user-info > li {
+    font-size: 3vh;
+    color: #aaaaaa;
+}
+
+.header-wrapper .dropdown-menu.user-info > li:not(:last-child) {
+    margin-bottom: 1vh;
+}
+
+.header-wrapper .dropdown-menu.user-info > li:hover {
+    color: white;
+    cursor: pointer;
 }
 
 #title:hover, #go-back:hover, #user-info:hover, #friends:hover {
