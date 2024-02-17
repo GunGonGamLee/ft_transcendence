@@ -17,6 +17,7 @@ class Game(models.Model):
     match2 = models.ForeignKey('Result', related_name='result_match2', on_delete=models.SET_NULL, null=True, blank=True)
     match3 = models.ForeignKey('Result', related_name='result_match3', on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    started_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         db_table = 'games'
@@ -56,6 +57,7 @@ class GameRecordView(models.Model):
     game_id = models.IntegerField()
     mode = models.IntegerField()
     user_id = models.IntegerField()
+    started_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         managed = False
