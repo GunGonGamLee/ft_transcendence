@@ -172,3 +172,68 @@ class GameRoomView(APIView):
                 game.save()
             else:
                 raise ValidationError('꽉 찬 방입니다.')
+class GameResultListView(APIView):
+    def get(self, request):
+        try:
+            AuthUtils.validate_jwt_token_and_get_user(request)
+
+            nickname = request.GET.get('user')
+            if nickname is None:
+                raise VerificationException('wrong user')
+            user = User.objects.get(nickname=nickname)
+            mode = self.validate_mode(request.GET.get('mode'))
+            page = self.validate_page(request.GET.get('page', 0))
+            limit = self.validate_limit(request.GET.get('limit', 4))
+
+        except AuthenticationException as e:
+            return JsonResponse({'error': e.message}, status=status.HTTP_401_UNAUTHORIZED)
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'user doesn\'t exist'}, status=status.HTTP_404_NOT_FOUND)
+        except VerificationException as e:
+            return JsonResponse({'error': e.message}, status=status.HTTP_400_BAD_REQUEST)
+        except IndexError:
+            return JsonResponse({'error': 'bad request(query parameter)'}, status=status.HTTP_400_BAD_REQUEST)
+        except EmptyPage:
+            return JsonResponse({'error': 'Page out of range'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return JsonResponse({'error': e.__class__.__name__, 'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @staticmethod
+    def validate_mode(mode):
+        try:
+            if mode is None:
+                raise VerificationException('mode value is wrong')
+            mode_num = None
+            for key, value in MODE_CHOICES_DICT.items():
+                if value == mode:
+                    mode_num = key
+            if mode_num is None:
+                raise VerificationException('mode value is wrong')
+            if 0 <= mode_num <= 2:
+                return mode_num
+            else:
+                raise VerificationException('mode value is wrong')
+        except Exception as e:
+            raise VerificationException(f"[{e.__class__.__name__}] {e}")
+
+    @staticmethod
+    def validate_page(page):
+        try:
+            if page is None:
+                raise VerificationException('page value is wrong')
+            page = int(page)
+            return page
+        except Exception as e:
+            raise VerificationException(f"[{e.__class__.__name__}] {e}")
+
+    @staticmethod
+    def validate_limit(limit):
+        try:
+            if limit is None:
+                raise VerificationException('limit value is wrong')
+            limit = int(limit)
+            if limit <= 0:
+                raise VerificationException('limit value is wrong')
+            return limit
+        except Exception as e:
+            raise VerificationException(f"[{e.__class__.__name__}] {e}")
