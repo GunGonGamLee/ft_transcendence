@@ -65,8 +65,13 @@ export default function MainHeader($container) {
       navigate("/histories");
     });
     // TODO => 친구 목록 버튼 클릭 이벤트
-    click(document.getElementById("friends"), () => {
-      // navigate("/friends");
+    document.getElementById("friends").addEventListener("click", () => {
+      const infoWrapper = document.getElementById("friends-info-wrapper");
+      if (infoWrapper.style.display === "flex") {
+        infoWrapper.style.display = "none";
+      } else {
+        infoWrapper.style.display = "flex";
+      }
     });
     // 메인 타이틀 클릭 이벤트
     click(document.getElementById("title"), () => {

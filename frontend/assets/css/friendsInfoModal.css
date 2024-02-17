@@ -1,4 +1,5 @@
 #friends-info-wrapper {
+    display : none;
     position: absolute;
     top: 12vh;
     height: calc(100% - 12vh);
