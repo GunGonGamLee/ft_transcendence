@@ -302,6 +302,8 @@ class GameResultView(APIView):
 
             if game.mode == 0:
                 serializer = PvPResultSerializer(game, user_id=user.id, many=False)
+            elif game.mode == 1 or game.mode == 2:
+                serializer = TournamentResultSerializer(game, many=False)
 
             return Response(serializer.data, status=status.HTTP_200_OK)
 
