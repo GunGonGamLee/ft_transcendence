@@ -137,7 +137,7 @@ class GameRoomView(APIView):
         except Game.DoesNotExist:
             return JsonResponse({'error': 'Game not found.'}, status=status.HTTP_404_NOT_FOUND)
         except ValueError:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse({'error': 'Invalid game_id'}, status=status.HTTP_400_BAD_REQUEST)
         except ValidationError as e:
             return JsonResponse({'error': e.message}, status=status.HTTP_409_CONFLICT)
         except Exception as e:
