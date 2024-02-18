@@ -144,3 +144,62 @@ class TournamentResultListSerializer(serializers.ModelSerializer):
             if self.user_id == player.id:
                 self.pos = pos
                 return PlayerSerializer(player).data
+
+
+class PvPResultSerializer(serializers.ModelSerializer):
+
+    player1 = serializers.SerializerMethodField()
+    player2 = serializers.SerializerMethodField()
+    start_time = serializers.SerializerMethodField()
+    playtime = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Game
+        fields = ['player1', 'player2', 'start_time', 'playtime']
+
+    def __init__(self, *args, **kwargs):
+        user_id = kwargs.pop('user_id', None)
+        self.user_id = user_id
+        super().__init__(*args, **kwargs)
+
+    def get_player1(self, game):
+        match = game.match1
+        score = None
+        if self.user_id == match.player1.id:
+            user = match.player1
+            score = match.player1_score
+        else:
+            user = match.player2
+            score = match.player2_score
+        data = PlayerSerializer(user).data
+        data['score'] = score
+        if self.user_id == match.winner.id:
+            data['winner'] = True
+        else:
+            data['winner'] = False
+        return data
+
+    def get_player2(self, game):
+        match = game.match1
+        score = None
+        if self.user_id == match.player1.id:
+            user = match.player2
+            score = match.player2_score
+        else:
+            user = match.player1
+            score = match.player1_score
+        data = PlayerSerializer(user).data
+        data['score'] = score
+        if self.user_id == match.winner.id:
+            data['winner'] = False
+        else:
+            data['winner'] = True
+        return data
+
+    def get_start_time(self, game):
+        match = game.match1
+        return match.started_at
+
+    def get_playtime(self, game):
+        match = game.match1
+        return match.playtime
