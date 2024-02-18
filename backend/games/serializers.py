@@ -61,7 +61,7 @@ class PlayerSerializer(serializers.Serializer):
         return AVATAR_CHOICES_DICT.get(user.avatar)
 
 
-class PvPResultSerializer(serializers.ModelSerializer):
+class PvPResultListSerializer(serializers.ModelSerializer):
 
     id = serializers.SerializerMethodField()
     player1 = serializers.SerializerMethodField()
@@ -98,7 +98,7 @@ class PvPResultSerializer(serializers.ModelSerializer):
             return PlayerSerializer(game.manager).data
 
 
-class TournamentResultSerializer(serializers.ModelSerializer):
+class TournamentResultListSerializer(serializers.ModelSerializer):
 
     id = serializers.SerializerMethodField()
     date = serializers.SerializerMethodField()

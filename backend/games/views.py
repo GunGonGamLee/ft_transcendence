@@ -217,14 +217,14 @@ class GameResultListView(APIView):
             paginated_queryset = paginator.page(page)
 
             if mode == 0:   # 1vs1
-                serializer = PvPResultSerializer(
+                serializer = PvPResultListSerializer(
                     instance=paginated_queryset,
                     user_id=user.id,
                     total_pages=paginator.num_pages,
                     many=True
                 )
             else:   # tournament
-                serializer = TournamentResultSerializer(
+                serializer = TournamentResultListSerializer(
                     instance=paginated_queryset,
                     user_id=user.id,
                     total_pages=paginator.num_pages,
