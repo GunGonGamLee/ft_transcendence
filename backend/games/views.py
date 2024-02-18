@@ -290,6 +290,18 @@ class GameResultListView(APIView):
 
 
 class GameResultView(APIView):
+    @swagger_auto_schema(
+        tags=['/api/games'],
+        operation_description="게임 전적 API",
+        manual_parameters=[
+            openapi.Parameter('Authorization', openapi.IN_HEADER, 'JWT Token', type=openapi.TYPE_STRING),
+            openapi.Parameter('user', openapi.IN_QUERY, '사용자 닉네임', type=openapi.TYPE_STRING),
+        ],
+        responses={
+            200: 'OK (mode에 따라 응답이 달라집니다)',
+            400: 'BAD_REQUEST',
+            401: 'UNAUTHORIZED',
+            500: 'SERVER_ERROR'})
     def get(self, request, game_id):
         try:
             AuthUtils.validate_jwt_token_and_get_user(request)
