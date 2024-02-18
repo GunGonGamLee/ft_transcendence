@@ -294,21 +294,23 @@ class GameResultView(APIView):
         try:
             AuthUtils.validate_jwt_token_and_get_user(request)
             nickname = request.GET.get('user')
-            if nickname is None:
-                raise VerificationException('wrong user')
-            user = User.objects.get(nickname=nickname)
             game = Game.objects.get(id=int(game_id))
+            if nickname is None and game.mode == 0:
+                raise VerificationException('Invalid user')
             serializer = None
-
             if game.mode == 0:
+                user = User.objects.get(nickname=nickname)
                 serializer = PvPResultSerializer(game, user_id=user.id, many=False)
             elif game.mode == 1 or game.mode == 2:
                 serializer = TournamentResultSerializer(game, many=False)
-
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         except AuthenticationException as e:
             return JsonResponse({'error': e.message}, status=status.HTTP_401_UNAUTHORIZED)
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'user doesn\'t exist'}, status=status.HTTP_404_NOT_FOUND)
+        except Game.DoesNotExist:
+            return JsonResponse({'error': 'Game doesn\'t exist'}, status=status.HTTP_404_NOT_FOUND)
         except ValueError:
             return JsonResponse({'error': 'Invalid game_id'}, status=status.HTTP_400_BAD_REQUEST)
         except VerificationException as e:
