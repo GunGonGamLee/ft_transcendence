@@ -11,7 +11,7 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from django.db import transaction
 from django.db.models import Min, Count
-from games.serializers import GameRoomSerializer, PvPResultSerializer, TournamentResultSerializer
+from games.serializers import GameRoomSerializer, PvPResultListSerializer, TournamentResultListSerializer, PvPResultSerializer, TournamentResultSerializer
 from django.core.exceptions import ValidationError
 from src.exceptions import AuthenticationException, VerificationException
 from users.models import User
@@ -287,3 +287,29 @@ class GameResultListView(APIView):
             return limit
         except Exception as e:
             raise VerificationException(f"[{e.__class__.__name__}] {e}")
+
+
+class GameResultView(APIView):
+    def get(self, request, game_id):
+        try:
+            AuthUtils.validate_jwt_token_and_get_user(request)
+            nickname = request.GET.get('user')
+            if nickname is None:
+                raise VerificationException('wrong user')
+            user = User.objects.get(nickname=nickname)
+            game = Game.objects.get(id=int(game_id))
+            serializer = None
+
+            if game.mode == 0:
+                serializer = PvPResultSerializer(game, user_id=user.id, many=False)
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except AuthenticationException as e:
+            return JsonResponse({'error': e.message}, status=status.HTTP_401_UNAUTHORIZED)
+        except ValueError:
+            return JsonResponse({'error': 'Invalid game_id'}, status=status.HTTP_400_BAD_REQUEST)
+        except VerificationException as e:
+            return JsonResponse({'error': e.message}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return JsonResponse({'error': e.__class__.__name__, 'message':str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
