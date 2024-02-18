@@ -1,19 +1,12 @@
 from rest_framework import serializers
-from games.models import Game, GameRecordView
+from games.models import Game, GameRecordView, Result
 from users.models import User
-from src.choices import MODE_CHOICES_DICT, AVATAR_CHOICES_DICT
 
 
 class UserSerializer(serializers.ModelSerializer):
-
-    avatar_file_name = serializers.SerializerMethodField()
-
     class Meta:
         model = User
-        fields = ['nickname', 'avatar_file_name', 'rating']
-
-    def get_avatar_file_name(self, user):
-        return AVATAR_CHOICES_DICT.get(user.avatar)
+        fields = ['nickname', 'avatar', 'rating']
 
 
 class GameRoomSerializer(serializers.ModelSerializer):
@@ -50,17 +43,6 @@ class GameRoomSerializer(serializers.ModelSerializer):
         return data
 
 
-class PlayerSerializer(serializers.Serializer):
-
-    nickname = serializers.CharField()
-    avatar = serializers.SerializerMethodField()
-    rating = serializers.IntegerField()
-
-    @staticmethod
-    def get_avatar(user):
-        return AVATAR_CHOICES_DICT.get(user.avatar)
-
-
 class PvPResultListSerializer(serializers.ModelSerializer):
 
     id = serializers.SerializerMethodField()
@@ -85,17 +67,17 @@ class PvPResultListSerializer(serializers.ModelSerializer):
         game_id = game['game_id']
         game = Game.objects.get(id=game_id)
         if self.user_id == game.manager.id:
-            return PlayerSerializer(game.manager).data
+            return UserSerializer(game.manager).data
         else:
-            return PlayerSerializer(game.player1).data
+            return UserSerializer(game.player1).data
 
     def get_player2(self, game):
         game_id = game['game_id']
         game = Game.objects.get(id=game_id)
         if self.user_id == game.manager.id:
-            return PlayerSerializer(game.player1).data
+            return UserSerializer(game.player1).data
         else:
-            return PlayerSerializer(game.manager).data
+            return UserSerializer(game.manager).data
 
 
 class TournamentResultListSerializer(serializers.ModelSerializer):
@@ -124,7 +106,7 @@ class TournamentResultListSerializer(serializers.ModelSerializer):
         for i, player in enumerate(players):
             if i == self.pos:
                 continue
-            opponents_data.append(PlayerSerializer(player).data)
+            opponents_data.append(UserSerializer(player).data)
         data['opponents'] = opponents_data
         data['total_pages'] = self.total_pages
         return data
@@ -143,7 +125,7 @@ class TournamentResultListSerializer(serializers.ModelSerializer):
         for pos, player in enumerate(players):
             if self.user_id == player.id:
                 self.pos = pos
-                return PlayerSerializer(player).data
+                return UserSerializer(player).data
 
 
 class PvPResultSerializer(serializers.ModelSerializer):
@@ -171,7 +153,7 @@ class PvPResultSerializer(serializers.ModelSerializer):
         else:
             user = match.player2
             score = match.player2_score
-        data = PlayerSerializer(user).data
+        data = UserSerializer(user).data
         data['score'] = score
         if self.user_id == match.winner.id:
             data['winner'] = True
@@ -188,7 +170,7 @@ class PvPResultSerializer(serializers.ModelSerializer):
         else:
             user = match.player1
             score = match.player1_score
-        data = PlayerSerializer(user).data
+        data = UserSerializer(user).data
         data['score'] = score
         if self.user_id == match.winner.id:
             data['winner'] = False
