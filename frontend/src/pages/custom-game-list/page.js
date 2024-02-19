@@ -203,15 +203,24 @@ export default function CustomGameList($container) {
     }
 
     const addEventListenersToLayout = () => {
+        // querySelectorAll로 룸 리스트 각각의 요소들을 담은 변수
         const $roomContents = document.querySelectorAll(".game-room-list.room-info");
+        // 아직 사용하지는 않았지만 페이지네이션 오른쪽, 왼쪽 요소를 담고 있는 변수
         const $paginationBefore = document.getElementById("pagination-arrow-left");
         const $paginationAfter = document.getElementById("pagination-arrow-right");
+        // 방만들기 버튼 요소
         const $createRoomButton = document.getElementById("create-room");
+        // 방만들기 모달 요소
         const $roomCreateModal = document.getElementById("room-create-modal-wrapper");
-        const $modalClose = document.getElementById("modal-close");
+        // 방만들기 모달 닫기 아이콘
+        const $roomCreateModalClose = document.getElementById("room-create-modal-close");
+        // 걸러보기 아이콘
         const $roomSearchFilter = document.getElementById("room-filter");
+        // 걸러보기 토글
         const $modeFilterToggle= document.getElementById("toggle");
+        // 패스워드 모달 요소
         const $passwordModal = document.getElementById("password-modal-wrapper");
+        // 패스워드 모달 닫기 아이콘
         const $passwordModalClose = document.getElementById("password-modal-close");
 
 
@@ -221,7 +230,7 @@ export default function CustomGameList($container) {
         });
 
         // 방만들기 모달 닫기
-        click($modalClose, () => {
+        click($roomCreateModalClose, () => {
             $roomCreateModal.style.display = "none";
         });
 
