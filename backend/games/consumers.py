@@ -189,7 +189,7 @@ class RankGameConsumer(AsyncWebsocketConsumer):
                 channel,
                 {
                     'type': 'game_message',
-                    'message': json.dumps({"game_id": game.id})
+                    'message': {"game_id": game.id}
                 }
             )
 
@@ -213,7 +213,6 @@ class RankGameConsumer(AsyncWebsocketConsumer):
             raise e
     
     async def game_message(self, event):
-        message = event['message']
         await self.send(text_data=json.dumps({
-            'message': message
+            'message': event['message']
         }))
