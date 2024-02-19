@@ -53,12 +53,13 @@ header {
     align-items: center;
 }
 
-.header-wrapper .main#right-side > #user-info > * {
-    margin-right: 3vh;
+.header-wrapper .main#right-side #user-info > * {
+    margin-right: 2vh;
 }
 
-.header-wrapper .main#right-side > #user-info > #user-avatar {
+.header-wrapper .main#right-side #user-info > #user-avatar {
     width: 6vh;
+    max-height: 10vh;
 }
 
 .header-wrapper span.main#nickname {
