@@ -11,7 +11,7 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from django.db import transaction
 from django.db.models import Min, Count
-from games.serializers import GameRoomSerializer, PvPResultSerializer, TournamentResultSerializer
+from games.serializers import GameRoomSerializer, PvPResultListSerializer, TournamentResultListSerializer, PvPResultSerializer, TournamentResultSerializer
 from django.core.exceptions import ValidationError
 from src.exceptions import AuthenticationException, VerificationException
 from users.models import User
@@ -137,7 +137,7 @@ class GameRoomView(APIView):
         except Game.DoesNotExist:
             return JsonResponse({'error': 'Game not found.'}, status=status.HTTP_404_NOT_FOUND)
         except ValueError:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse({'error': 'Invalid game_id'}, status=status.HTTP_400_BAD_REQUEST)
         except ValidationError as e:
             return JsonResponse({'error': e.message}, status=status.HTTP_409_CONFLICT)
         except Exception as e:
@@ -217,14 +217,14 @@ class GameResultListView(APIView):
             paginated_queryset = paginator.page(page)
 
             if mode == 0:   # 1vs1
-                serializer = PvPResultSerializer(
+                serializer = PvPResultListSerializer(
                     instance=paginated_queryset,
                     user_id=user.id,
                     total_pages=paginator.num_pages,
                     many=True
                 )
             else:   # tournament
-                serializer = TournamentResultSerializer(
+                serializer = TournamentResultListSerializer(
                     instance=paginated_queryset,
                     user_id=user.id,
                     total_pages=paginator.num_pages,
@@ -287,3 +287,45 @@ class GameResultListView(APIView):
             return limit
         except Exception as e:
             raise VerificationException(f"[{e.__class__.__name__}] {e}")
+
+
+class GameResultView(APIView):
+    @swagger_auto_schema(
+        tags=['/api/games'],
+        operation_description="게임 전적 API",
+        manual_parameters=[
+            openapi.Parameter('Authorization', openapi.IN_HEADER, 'JWT Token', type=openapi.TYPE_STRING),
+            openapi.Parameter('user', openapi.IN_QUERY, '사용자 닉네임', type=openapi.TYPE_STRING),
+        ],
+        responses={
+            200: 'OK (mode에 따라 응답이 달라집니다)',
+            400: 'BAD_REQUEST',
+            401: 'UNAUTHORIZED',
+            500: 'SERVER_ERROR'})
+    def get(self, request, game_id):
+        try:
+            AuthUtils.validate_jwt_token_and_get_user(request)
+            nickname = request.GET.get('user')
+            game = Game.objects.get(id=int(game_id))
+            if nickname is None and game.mode == 0:
+                raise VerificationException('Invalid user')
+            serializer = None
+            if game.mode == 0:
+                user = User.objects.get(nickname=nickname)
+                serializer = PvPResultSerializer(game, user_id=user.id, many=False)
+            elif game.mode == 1 or game.mode == 2:
+                serializer = TournamentResultSerializer(game, many=False)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except AuthenticationException as e:
+            return JsonResponse({'error': e.message}, status=status.HTTP_401_UNAUTHORIZED)
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'user doesn\'t exist'}, status=status.HTTP_404_NOT_FOUND)
+        except Game.DoesNotExist:
+            return JsonResponse({'error': 'Game doesn\'t exist'}, status=status.HTTP_404_NOT_FOUND)
+        except ValueError:
+            return JsonResponse({'error': 'Invalid game_id'}, status=status.HTTP_400_BAD_REQUEST)
+        except VerificationException as e:
+            return JsonResponse({'error': e.message}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return JsonResponse({'error': e.__class__.__name__, 'message':str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
