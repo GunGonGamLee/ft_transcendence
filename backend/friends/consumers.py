@@ -67,7 +67,7 @@ class FriendStatusConsumer(AsyncWebsocketConsumer):
             
     async def friend_status_message(self, event):
         if event['message']['status'] == 'offline':
-            await self.close()
+            await self.disconnect()
 
     @database_sync_to_async
     def get_user_friends(self):

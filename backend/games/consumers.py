@@ -8,6 +8,8 @@ from django.core.exceptions import ValidationError
 from channels.db import database_sync_to_async
 from asgiref.sync import sync_to_async
 import logging
+from django.contrib.auth.models import AnonymousUser
+from users.models import User
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +42,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def is_invalid_user(self):
         user = self.scope['user']
-        from django.contrib.auth.models import AnonymousUser
         logger.info(f"[게임방 입장] user : {user}")
         return isinstance(user, AnonymousUser)
 
@@ -153,3 +154,65 @@ class GameConsumer(AsyncWebsocketConsumer):
         data = event["data"]
 
         await self.send(text_data=json.dumps({"data": data}))
+
+class RankGameConsumer(AsyncWebsocketConsumer):
+    game_queue = []
+    async def connect(self):
+        user = self.scope['user']
+        if isinstance(user, AnonymousUser):
+            await self.close(code=4001)
+            return
+        await self.accept()
+        self.game_queue.append(user.id)
+        logging.info(f'User {user.nickname} 연결되었어요')
+        
+        if len(self.game_queue) >= 4:
+            try:
+                await self.create_game()
+                self.game_queue.clear()
+                logging.info('게임이 생성되고 대기열이 모두 초기화되었어요.')
+            except Exception as e:
+                logging.error(e)
+
+    async def disconnect(self, close_code):
+        user = self.scope['user']
+        if user.id in self.game_queue:
+            self.game_queue.remove(user.id)
+            logging.info(f'User {user.nickname} 이 연결을 끊었어요.')
+            
+    async def create_game(self):
+        users = await sync_to_async(self.get_users)(self.game_queue[:4])
+        game = await sync_to_async(self.create_game_instance)(users)
+        for user_id in self.game_queue[:4]:
+            channel = f'user_{user_id}'
+            await self.channel_layer.send(
+                channel,
+                {
+                    'type': 'game_message',
+                    'message': {"game_id": game.id}
+                }
+            )
+
+    @staticmethod
+    def get_users(user_ids):
+        return [User.objects.get(id=user_id) for user_id in user_ids]
+            
+    @staticmethod
+    def create_game_instance(users):
+        try:
+            game = Game.objects.create(
+                mode = 2,
+                status = 2,
+                manager = users[0],
+                player1 = users[1],
+                player2 = users[2],
+                player3 = users[3],
+            )
+            return game
+        except Exception as e:
+            raise e
+    
+    async def game_message(self, event):
+        await self.send(text_data=json.dumps({
+            'message': event['message']
+        }))

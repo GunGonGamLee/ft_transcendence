@@ -14,6 +14,7 @@ services:
       - "./volumes/vault/file:/vault/file"
       - "./volumes/vault/logs:/vault/logs"
       - "./volumes/vault/config:/vault/config"
+      - cert-volume:/vault/certs
 
     environment:
       VAULT_ADDR: "http://hashicorp_vault:8200"
@@ -31,6 +32,7 @@ services:
       - app_network
     volumes:
       - static-volume:/backend/static
+      - cert-volume:/backend/certs
     env_file:
       - ./.env
     environment:
@@ -70,6 +72,7 @@ services:
     volumes:
       - "./frontend:/usr/share/nginx/html"
       - static-volume:/usr/share/nginx/html/static
+      - cert-volume:/etc/nginx/certs
       # - "/Users/sejokim/desktop/volumes/nginx/logs:/var/log/nginx"
     logging:
       options:
@@ -138,6 +141,7 @@ services:
 
 volumes:
   static-volume:
+  cert-volume:
 
 networks:
   app_network:
