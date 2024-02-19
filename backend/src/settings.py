@@ -10,6 +10,7 @@ env = environ.Env()
 DEBUG = False
 env.read_env(env_file=ENV_PATH)
 
+
 def wait_for_vault_client(client, retries=5, delay=5):
     for i in range(retries):
         try:
@@ -37,7 +38,7 @@ if DEBUG:
     SECRET_KEY = config('LOG_KEY')
 
     # Intra 42
-    INTRA42_AUTHORIZE_API= config('INTRA42_AUTHORIZE_API')
+    INTRA42_AUTHORIZE_API = config('INTRA42_AUTHORIZE_API')
     INTRA42_TOKEN_API = config('INTRA42_TOKEN_API')
     INTRA42_CLIENT_ID = config('INTRA42_CLIENT_ID')
     INTRA42_CLIENT_SECRET = config('INTRA42_CLIENT_SECRET')
@@ -99,7 +100,6 @@ LOGGING = {
         },
     },
 }
-
 
 # logging settings
 
@@ -268,7 +268,6 @@ SOCIALACCOUNT_PROVIDERS = {
     },
 }
 
-
 SITE_ID = 2
 
 ACCOUNT_EMAIL_REQUIRED = True
@@ -300,3 +299,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Cookie settings
 SESSION_COOKIE_HTTPONLY = True
+
+# Assets Root
+FRONTEND_ROOT = Path(BASE_DIR).parent / 'frontend'
+MEDIA_ROOT = os.path.join(FRONTEND_ROOT, 'assets', 'images')
+MEDIA_URL = '/images/'

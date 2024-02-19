@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from users.models import User
 from games.models import GameRecordView
-from src.choices import MODE_CHOICES_DICT, AVATAR_CHOICES_DICT
 
 
 class UserMeInfoSerializer(serializers.ModelSerializer):
@@ -14,7 +13,7 @@ class UserMeInfoSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_avatar_file_name(user):
-        return AVATAR_CHOICES_DICT.get(user.avatar)
+        return str(user.avatar).split('/')[-1]
 
 
 class UserInfoSerializer(serializers.ModelSerializer):
@@ -30,7 +29,7 @@ class UserInfoSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_avatar_file_name(user):
-        return AVATAR_CHOICES_DICT.get(user.avatar)
+        return str(user.avatar)
 
     @staticmethod
     def get_custom_1v1_win_rate(user):
@@ -55,3 +54,11 @@ class UserInfoSerializer(serializers.ModelSerializer):
             return 0
         wins = user.rank_wins
         return wins / match * 100
+
+
+class UserAvatarUploadSerializer(serializers.ModelSerializer):
+    avatar = serializers.ImageField()
+
+    class Meta:
+        model = User
+        fields = ['avatar']
