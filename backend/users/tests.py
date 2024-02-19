@@ -50,12 +50,9 @@ class AvatarUpdateTest(TestCase):
             format='multipart',
             headers={'Authorization': f'Bearer {self.token}'}
         )
-        self.assertIsNotNone(request.FILES['avatar'])
+        self.assertEqual(self.image.open('rb').read(), request.FILES['avatar'].file.read())
 
     def test_avatar_upload_duplicate(self):
-        pass
-
-    def test_avatar_upload_fail(self):
         pass
 
     def test_avatar_upload_invalid(self):
