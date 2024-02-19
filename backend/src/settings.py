@@ -9,7 +9,7 @@ import time
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ENV_PATH = os.path.join(BASE_DIR, '..', '.env')
 env = environ.Env()
-DEBUG = True
+DEBUG = False
 env.read_env(env_file=ENV_PATH)
 
 
