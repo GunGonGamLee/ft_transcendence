@@ -185,7 +185,8 @@ class RankGameConsumer(AsyncWebsocketConsumer):
         game = await sync_to_async(self.create_game_instance)(users)
         for user_id in self.game_queue[:4]:
             channel = f'user_{user_id}'
-            await self.channel_layer.send(
+            await self.channel_layer.group_add(channel, self.channel_name)
+            await self.channel_layer.group_send(
                 channel,
                 {
                     'type': 'game_message',
