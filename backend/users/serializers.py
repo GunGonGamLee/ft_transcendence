@@ -5,31 +5,31 @@ from games.models import GameRecordView
 
 class UserMeInfoSerializer(serializers.ModelSerializer):
 
-    avatar_file_name = serializers.SerializerMethodField()
+    avatar = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ['nickname', 'avatar_file_name']
+        fields = ['nickname', 'avatar']
 
     @staticmethod
-    def get_avatar_file_name(user):
+    def get_avatar(user):
         return str(user.avatar).split('/')[-1]
 
 
 class UserInfoSerializer(serializers.ModelSerializer):
 
-    avatar_file_name = serializers.SerializerMethodField()
+    avatar = serializers.SerializerMethodField()
     custom_1v1_win_rate = serializers.SerializerMethodField()
     custom_tournament_win_rate = serializers.SerializerMethodField()
     rank_win_rate = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ['nickname', 'avatar_file_name', 'rating', 'custom_1v1_win_rate', 'custom_tournament_win_rate', 'rank_win_rate']
+        fields = ['nickname', 'avatar', 'rating', 'custom_1v1_win_rate', 'custom_tournament_win_rate', 'rank_win_rate']
 
     @staticmethod
-    def get_avatar_file_name(user):
-        return str(user.avatar)
+    def get_avatar(user):
+        return str(user.avatar).split('/')[-1]
 
     @staticmethod
     def get_custom_1v1_win_rate(user):
