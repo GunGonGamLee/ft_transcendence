@@ -1,5 +1,4 @@
 import {click} from "../../utils/clickEvent.js"
-// import GameRoomList from "./game-room-list.js"
 import {importCss} from '../../utils/importCss.js'
 import roomCreateModal from './room-create-modal.js'
 import {hoverToggle} from '../../utils/hoverEvent.js'
