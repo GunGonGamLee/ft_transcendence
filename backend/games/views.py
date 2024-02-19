@@ -24,6 +24,21 @@ logger = logging.getLogger(__name__)
 
 
 class GameView(APIView):
+    @swagger_auto_schema(
+        tags=['/api/games'],
+        operation_description="게임방 목록 API",
+        manual_parameters=[
+            openapi.Parameter('Authorization', openapi.IN_HEADER, 'JWT Token', type=openapi.TYPE_STRING),
+            openapi.Parameter('mode', openapi.IN_QUERY, '0: 1 vs 1, 1: 토너먼트, 2: 전체, defulat=2', type=openapi.TYPE_STRING),
+            openapi.Parameter('page', openapi.IN_QUERY, '페이지 번호(미 입력시 1)', type=openapi.TYPE_INTEGER),
+            openapi.Parameter('limit', openapi.IN_QUERY, '한 페이지 당 개수(미 입력시 4)', type=openapi.TYPE_INTEGER),
+        ],
+        responses={
+            200: openapi.Response('OK', schema=GameRoomListSerializer),
+            400: 'BAD_REQUEST',
+            401: 'UNAUTHORIZED',
+            404: 'NOT_FOUND',
+            500: 'SERVER_ERROR'})
     def get(self, request):
         try:
             AuthUtils.validate_jwt_token_and_get_user(request)
