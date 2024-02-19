@@ -55,9 +55,7 @@ class PvPResultListSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
         user_id = kwargs.pop('user_id', None)
-        total_pages = kwargs.pop('total_pages')
         self.user_id = user_id
-        self.total_pages = total_pages
         super().__init__(*args, **kwargs)
 
     def get_id(self, game):
@@ -92,9 +90,7 @@ class TournamentResultListSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
         user_id = kwargs.pop('user_id', None)
-        total_pages = kwargs.pop('total_pages')
         self.user_id = user_id
-        self.total_pages = total_pages
         self.pos = None
         super().__init__(*args, **kwargs)
 
@@ -108,7 +104,6 @@ class TournamentResultListSerializer(serializers.ModelSerializer):
                 continue
             opponents_data.append(UserSerializer(player).data)
         data['opponents'] = opponents_data
-        data['total_pages'] = self.total_pages
         return data
 
     def get_id(self, game):

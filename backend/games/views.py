@@ -69,7 +69,8 @@ class GameView(APIView):
         game = Game.objects.create(title=title, password=password, mode=mode, status=0, manager=user)
         return game.id
 
-    def check_mode(self, mode):
+    @staticmethod
+    def check_mode(mode):
         if mode == "casual_1v1":
             return 0
         elif mode == "casual_tournament":
@@ -81,7 +82,8 @@ class GameView(APIView):
         else:
             raise BadRequest
 
-    def is_title_already_exist(self, title):
+    @staticmethod
+    def is_title_already_exist(title):
         existing_games = Game.objects.filter(title=title)
         return existing_games.exists()
 
@@ -143,7 +145,8 @@ class GameRoomView(APIView):
         except Exception as e:
             return JsonResponse({'error': e.__class__.__name__, 'message':str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    def is_full(self, game, mode):
+    @staticmethod
+    def is_full(game, mode):
         player1 = game.player1_id
         player2 = game.player2_id
         player3 = game.player3_id
@@ -154,7 +157,8 @@ class GameRoomView(APIView):
             return True
         return False
 
-    def enter_game(self, game, user, mode):
+    @staticmethod
+    def enter_game(game, user, mode):
         player1 = game.player1_id
         player2 = game.player2_id
         player3 = game.player3_id
@@ -206,8 +210,8 @@ class GameResultListView(APIView):
                 raise VerificationException('wrong user')
             user = User.objects.get(nickname=nickname)
             mode = self.validate_mode(request.GET.get('mode'))
-            page = self.validate_page(request.GET.get('page', 0))
-            limit = self.validate_limit(request.GET.get('limit', 4))
+            page = PaginationUtils.validate_page(request.GET.get('page', 1))
+            limit = PaginationUtils.validate_limit(request.GET.get('limit', 4))
 
             logging.info(f"[유저 전적 목록 API] user : {nickname}, mode : {mode}, page : {page}, limit : {limit}")
 
@@ -220,14 +224,12 @@ class GameResultListView(APIView):
                 serializer = PvPResultListSerializer(
                     instance=paginated_queryset,
                     user_id=user.id,
-                    total_pages=paginator.num_pages,
                     many=True
                 )
             else:   # tournament
                 serializer = TournamentResultListSerializer(
                     instance=paginated_queryset,
                     user_id=user.id,
-                    total_pages=paginator.num_pages,
                     many=True
                 )
             serialized_data_with_total_pages = {
@@ -263,28 +265,6 @@ class GameResultListView(APIView):
                 return mode_num
             else:
                 raise VerificationException('mode value is wrong')
-        except Exception as e:
-            raise VerificationException(f"[{e.__class__.__name__}] {e}")
-
-    @staticmethod
-    def validate_page(page):
-        try:
-            if page is None:
-                raise VerificationException('page value is wrong')
-            page = int(page)
-            return page
-        except Exception as e:
-            raise VerificationException(f"[{e.__class__.__name__}] {e}")
-
-    @staticmethod
-    def validate_limit(limit):
-        try:
-            if limit is None:
-                raise VerificationException('limit value is wrong')
-            limit = int(limit)
-            if limit <= 0:
-                raise VerificationException('limit value is wrong')
-            return limit
         except Exception as e:
             raise VerificationException(f"[{e.__class__.__name__}] {e}")
 
