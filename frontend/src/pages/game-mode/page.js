@@ -12,6 +12,7 @@ export default function GameMode($container) {
     click($container.querySelector(".unit1"), () => {
       $container.querySelector(".queue-modal").style.display = "flex";
       $container.querySelector(".modal-backdrop").style.display = "block";
+      // this.ws = new WebSocket("ws://localhost:3000");
     });
     click($container.querySelector(".run-btn"), () => {
       $container.querySelector(".queue-modal").style.display = "none";
