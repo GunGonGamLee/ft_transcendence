@@ -165,7 +165,6 @@ export default function CustomGameList($container) {
      * @param $listWrapper {HTMLElement} 게임 방 리스트를 렌더링할 <div> 엘리먼트
      */
     let renderGameRoomList = ($listWrapper) => {
-        console.log($listWrapper);
         for (let data of gameRoomList) {
             const {room} = data;
             $listWrapper.insertAdjacentHTML("afterbegin", `
