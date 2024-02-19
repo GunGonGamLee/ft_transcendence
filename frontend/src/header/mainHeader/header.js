@@ -4,8 +4,7 @@ import { click } from "../../utils/clickEvent.js";
 import { BACKEND, HISTORIES_IMAGE_PATH } from "../../global.js";
 import { getCookie, deleteCookie } from "../../utils/cookie.js";
 import useState from "../../utils/useState.js";
-import friendsInfoModal from "./friends-info-modal.js"
-import roomCreateModal from "../../pages/custom-game-list/room-create-modal.js";
+import friendsInfoModal from "./friends-info-modal.js";
 
 /**
  * 사용자 전적 페이지에 사용하는 header 컴포넌트
@@ -104,11 +103,11 @@ export default function MainHeader($container) {
   let renderFriendsInfoModal = (bodyElements) => {
     const modalHtml = friendsInfoModal();
     bodyElements.insertAdjacentHTML("beforeend", modalHtml);
-  }
+  };
 
   importCss("../../../assets/fonts/font.css");
   init();
-  const bodyElements =  document.getElementById("app");
+  const bodyElements = document.getElementById("app");
   renderFriendsInfoModal(bodyElements);
 
   let [getUserInfo, setUserInfo] = useState({}, this, "render");
