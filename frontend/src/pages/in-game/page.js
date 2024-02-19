@@ -1,7 +1,14 @@
 import useState from "../../utils/useState.js";
 import scoreBar from "./scoreBar.js";
 
-export default function InGame($container) {
+/**
+ *
+ * @param {HTMLElement} $container
+ * @param {Object} info
+ * @constructor
+ */
+export default function InGame($container, info) {
+  console.log(info.mode);
   const scoreInput = { player1: 0, player2: 0 };
   let [getScore, setScore] = useState(scoreInput, this, "renderScoreBoard");
   let [getTime, setTime] = useState(0, this, "renderTime");
@@ -10,7 +17,9 @@ export default function InGame($container) {
     hideHeader();
     this.render();
     this.renderScoreBoard();
-    setInterval(() => {setTime(getTime() + 1)}, 1000);
+    setInterval(() => {
+      setTime(getTime() + 1);
+    }, 1000);
   };
   // TODO: 다른 페이지로 이동 시 이벤트 제거, mainheader 보이게 수정
   this.render = () => {
@@ -28,8 +37,9 @@ export default function InGame($container) {
 
   this.renderTime = () => {
     let time = getTime();
-    $container.querySelector(".time").innerText = `${Math.floor(time / 60)}:${time % 60 < 10 ? "0" + time % 60 : time % 60}`;
-  }
+    $container.querySelector(".time").innerText =
+      `${Math.floor(time / 60)}:${time % 60 < 10 ? "0" + (time % 60) : time % 60}`;
+  };
 
   const hideHeader = () => {
     document.querySelector("#header").style.display = "none";
@@ -40,43 +50,48 @@ export default function InGame($container) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // bar1 그리기
-    ctx.fillStyle = '#00FF00'; // 녹색
+    ctx.fillStyle = "#00FF00"; // 녹색
     ctx.fillRect(bar1.x, bar1.y, bar1.width, bar1.height);
 
     // bar2 그리기
-    ctx.fillStyle = '#FFFF00'; // 노란색
+    ctx.fillStyle = "#FFFF00"; // 노란색
     ctx.fillRect(bar2.x, bar2.y, bar2.width, bar2.height);
 
     // ball 그리기
     ctx.beginPath();
-    ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI*2, true);
-    ctx.fillStyle = '#FFFFFF'; // 흰색
+    ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2, true);
+    ctx.fillStyle = "#FFFFFF"; // 흰색
     ctx.fill();
   }
 
   init();
   const canvas = $container.querySelector("#gameCanvas");
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas.getContext("2d");
   canvas.width = 800;
   canvas.height = 400;
 
   // 초기 위치 설정
   let bar1 = { x: 10, y: canvas.height / 2 - 50, width: 20, height: 100 };
-  let bar2 = { x: canvas.width - 30, y: canvas.height / 2 - 50, width: 20, height: 100 };
+  let bar2 = {
+    x: canvas.width - 30,
+    y: canvas.height / 2 - 50,
+    width: 20,
+    height: 100,
+  };
   let ball = { x: canvas.width / 2, y: canvas.height / 2, radius: 10 };
 
-  window.addEventListener('keydown', (e) => {
+  window.addEventListener("keydown", (e) => {
     // bar1 이동
-    if (e.key === 'w' || e.key === 'W' || e.key === 'ㅈ') {
+    if (e.key === "w" || e.key === "W" || e.key === "ㅈ") {
       bar1.y = Math.max(bar1.y - 10, 0);
-    } else if (e.key === 's' || e.key === 'S' || e.key === 'ㄴ') {
+    } else if (e.key === "s" || e.key === "S" || e.key === "ㄴ") {
       bar1.y = Math.min(bar1.y + 10, canvas.height - bar1.height);
     }
 
     // bar2 이동
-    if (e.key === 'ArrowUp') {
+    if (e.key === "ArrowUp") {
       bar2.y = Math.max(bar2.y - 10, 0);
-    } else if (e.key === 'ArrowDown') {
+    } else if (e.key === "ArrowDown") {
       bar2.y = Math.min(bar2.y + 10, canvas.height - bar2.height);
     }
 

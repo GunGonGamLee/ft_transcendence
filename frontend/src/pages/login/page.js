@@ -94,7 +94,7 @@ export default function Login($container) {
           navigate("/game-mode");
           return true;
         } else if (response.status === 500) {
-          navigate("/error", 500);
+          navigate("/error", { errorCode: 500 });
           return true;
         } else {
           alert("알 수 없는 오류");
