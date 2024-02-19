@@ -31,7 +31,7 @@ export default function GameMode($container) {
       }
     });
     click($container.querySelector(".unit0"), () => {
-      navigate("/in-game");
+      navigate("/in-game", { mode: "rank" });
     });
     click($container.querySelector(".unit2"), () => {
       navigate("/custom-game-list");

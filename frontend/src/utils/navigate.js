@@ -1,12 +1,12 @@
 /**
  * @param  { string } to
- * @param  { number | boolean } errorCode
+ * @param {Object} info
  */
-export const navigate = (to, errorCode= false) => {
+export const navigate = (to, info = null) => {
   const historyChangeEvent = new CustomEvent("historychange", {
     detail: {
       to,
-      errorCode
+      info,
     },
   });
 

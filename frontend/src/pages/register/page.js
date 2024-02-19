@@ -89,7 +89,7 @@ export default function Register($container) {
           return;
         }
         if (response.status === 500) {
-          navigate("error", 500);
+          navigate("error", { errorCode: 500 });
           return;
         }
         if (response.status === 404) {
@@ -122,10 +122,7 @@ export default function Register($container) {
 
   const fetchNickname = () => {
     const jwtToken = localStorage.getItem("jwtToken");
-    fetch(
-      `${BACKEND}/users/nickname/`,
-      getRequestOptions(jwtToken, "nickname"),
-    )
+    fetch(`${BACKEND}/users/nickname/`, getRequestOptions(jwtToken, "nickname"))
       .then((response) => {
         // 인증코드 잘못된 경우
         if (response.status === 201) {
@@ -146,7 +143,7 @@ export default function Register($container) {
           return;
         }
         if (response.status === 500) {
-          navigate("error", 500);
+          navigate("error", { errorCode: 500 });
           return;
         }
         // 응답을 JSON으로 파싱
@@ -158,14 +155,11 @@ export default function Register($container) {
   const turnToWarning = (warning) => {
     $container.querySelector("#register-form input").value = "";
     $container.querySelector(".white-box").style.borderColor = "red";
-    $container.querySelector(".white-box div:last-child").innerHTML =
-      warning;
+    $container.querySelector(".white-box div:last-child").innerHTML = warning;
   };
 
   const setAuthEvent = () => {
-    const $registerInput = $container.querySelector(
-      "#register-form input",
-    );
+    const $registerInput = $container.querySelector("#register-form input");
     $container
       .querySelector("#register-form")
       .addEventListener("submit", (e) => {
