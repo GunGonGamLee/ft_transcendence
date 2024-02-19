@@ -4,19 +4,20 @@ import scoreBar from "./scoreBar.js";
 export default function InGame($container) {
   const scoreInput = { player1: 0, player2: 0 };
   let [getScore, setScore] = useState(scoreInput, this, "renderScoreBoard");
+  let [getTime, setTime] = useState(0, this, "renderTime");
 
   const init = () => {
     hideHeader();
     this.render();
     this.renderScoreBoard();
-    // addKeyEvents();
+    setInterval(() => {setTime(getTime() + 1)}, 1000);
   };
   // TODO: 다른 페이지로 이동 시 이벤트 제거, mainheader 보이게 수정
   this.render = () => {
     $container.innerHTML = `
 			${scoreBar()}
 			<div class="in-game" style="height: 100vh; width: 100vw; background-image: url('../../../assets/images/ingame_background.png'); background-size: cover">
-			<canvas id="gameCanvas" style="position: absolute; top: 12vh; left: 12vh; width: 88%; height: 88%;"></canvas>
+			<canvas id="gameCanvas" style="position: absolute; top: 12vh; left: calc((100vw - 88%) / 2); width: 88%; height: 88%;"></canvas>
 			`;
   };
   this.renderScoreBoard = () => {
@@ -24,9 +25,16 @@ export default function InGame($container) {
 				<span style="color: yellow; font-size: 6vh; margin: auto;">${getScore().player1} 대 ${getScore().player2}</span>
 		`;
   };
+
+  this.renderTime = () => {
+    let time = getTime();
+    $container.querySelector(".time").innerText = `${Math.floor(time / 60)}:${time % 60 < 10 ? "0" + time % 60 : time % 60}`;
+  }
+
   const hideHeader = () => {
     document.querySelector("#header").style.display = "none";
   };
+
   function draw() {
     // 화면 클리어
     ctx.clearRect(0, 0, canvas.width, canvas.height);
