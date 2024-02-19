@@ -27,7 +27,7 @@ class GameView(APIView):
     def get(self, request):
         try:
             AuthUtils.validate_jwt_token_and_get_user(request)
-            mode = self.validate_mode(request.GET.get('mode'))
+            mode = self.validate_mode(request.GET.get('mode', 2))
             page = PaginationUtils.validate_page(request.GET.get('page', 1))
             limit = PaginationUtils.validate_limit(request.GET.get('limit', 4))
             queryset = None
