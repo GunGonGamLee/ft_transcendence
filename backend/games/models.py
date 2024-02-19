@@ -62,3 +62,13 @@ class GameRecordView(models.Model):
     class Meta:
         managed = False
         db_table = 'game_record_view'
+
+
+class CasualGameListView(models.Model):
+    game_id = models.IntegerField(primary_key=True)
+    mode = models.PositiveSmallIntegerField()
+    status = models.PositiveSmallIntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'casual_game_list_view'
