@@ -60,7 +60,10 @@ export default function MainHeader($container) {
             </div>
         </div>
         `,
+
     );
+    const headerElement = document.getElementById("header");
+    renderFriendsInfoModal(headerElement);
 
     // 뒤로가기 버튼 클릭 이벤트
     click(document.getElementById("go-back"), () => {
@@ -100,15 +103,12 @@ export default function MainHeader($container) {
     });
   };
 
-  let renderFriendsInfoModal = (bodyElements) => {
+  let renderFriendsInfoModal = (headerElement) => {
     const modalHtml = friendsInfoModal();
-    bodyElements.insertAdjacentHTML("beforeend", modalHtml);
+    headerElement.insertAdjacentHTML("beforeend", modalHtml);
   };
 
   importCss("../../../assets/fonts/font.css");
   init();
-  const bodyElements = document.getElementById("app");
-  renderFriendsInfoModal(bodyElements);
-
   let [getUserInfo, setUserInfo] = useState({}, this, "render");
 }

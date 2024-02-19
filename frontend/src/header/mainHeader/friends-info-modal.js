@@ -94,7 +94,7 @@ export default function friendsInfoModal(isVisible) {
     ];
 
     function createInfoCard(friend, style = {}, image = {}) {
-        const { username, avatarImagePath, iconImagePath } = friend;
+        const { username, avatarImagePath} = friend;
         const borderColor = style.borderColor;
         const imagePath = image.iconImagePath;
         // accept.png 아이콘일 경우에만 추가할 HTML 조각을 정의
