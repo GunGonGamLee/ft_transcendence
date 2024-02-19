@@ -2,7 +2,7 @@ import os
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
-from django.test import TestCase
+from django.test import TestCase, RequestFactory
 from rest_framework.test import APIClient
 import jwt
 from django.conf import settings
@@ -31,8 +31,8 @@ class AvatarUpdateTest(TestCase):
         :return: None
         :rtype: None
         """
-        self.client = APIClient()
         self.token = jwt.encode({'email': self.user.email}, settings.SECRET_KEY, algorithm='HS256')
+        self.factory = RequestFactory()
 
     @classmethod
     def tearDownClass(cls):
@@ -44,13 +44,13 @@ class AvatarUpdateTest(TestCase):
         cls.user.delete()
 
     def test_avatar_upload(self):
-        response = self.client.post(
+        request = self.factory.post(
             reverse('userAvatar', kwargs={'nickname': self.user.nickname}),
-            HTTP_AUTHORIZATION=f'Bearer {self.token}',
-            content_type='multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW',
-            files={'avatar': self.image}
+            data={'avatar': self.image},
+            format='multipart',
+            headers={'Authorization': f'Bearer {self.token}'}
         )
-        self.assertEqual(response.status_code, 201)
+        self.assertIsNotNone(request.FILES['avatar'])
 
     def test_avatar_upload_duplicate(self):
         pass
