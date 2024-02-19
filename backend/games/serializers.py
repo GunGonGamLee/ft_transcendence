@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from games.models import Game, GameRecordView, Result
+from games.models import Game, GameRecordView, Result, CasualGameListView
 from users.models import User
 
 
@@ -43,6 +43,51 @@ class GameRoomSerializer(serializers.ModelSerializer):
         return data
 
 
+class GameRoomListSerializer(serializers.ModelSerializer):
+
+    id = serializers.SerializerMethodField()
+    title = serializers.SerializerMethodField()
+    is_secret = serializers.SerializerMethodField()
+    player_num = serializers.SerializerMethodField()
+    started = serializers.SerializerMethodField()
+
+    class Meta:
+        model = CasualGameListView
+        fields = ['id', 'title', 'is_secret', 'player_num', 'mode', 'started']
+
+    def get_id(self, game):
+        return game['game_id']
+
+    def get_title(self, game):
+        game = Game.objects.get(id=game['game_id'])
+        return game.title
+
+    def get_is_secret(self, game):
+        game = Game.objects.get(id=game['game_id'])
+        password = game.password
+        if password is None:
+            return False
+        return True
+
+    def get_player_num(self, game):
+        game = Game.objects.get(id=game['game_id'])
+        num = 0
+        if game.manager is not None:
+            num += 1
+        if game.player1 is not None:
+            num += 1
+        if game.player2 is not None:
+            num += 1
+        if game.player3 is not None:
+            num += 1
+        return num
+
+    def get_started(self, game):
+        if game['status'] == 2:
+            return True
+        return False
+
+
 class PvPResultListSerializer(serializers.ModelSerializer):
 
     id = serializers.SerializerMethodField()
@@ -55,9 +100,7 @@ class PvPResultListSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
         user_id = kwargs.pop('user_id', None)
-        total_pages = kwargs.pop('total_pages')
         self.user_id = user_id
-        self.total_pages = total_pages
         super().__init__(*args, **kwargs)
 
     def get_id(self, game):
@@ -92,9 +135,7 @@ class TournamentResultListSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
         user_id = kwargs.pop('user_id', None)
-        total_pages = kwargs.pop('total_pages')
         self.user_id = user_id
-        self.total_pages = total_pages
         self.pos = None
         super().__init__(*args, **kwargs)
 
@@ -108,7 +149,6 @@ class TournamentResultListSerializer(serializers.ModelSerializer):
                 continue
             opponents_data.append(UserSerializer(player).data)
         data['opponents'] = opponents_data
-        data['total_pages'] = self.total_pages
         return data
 
     def get_id(self, game):

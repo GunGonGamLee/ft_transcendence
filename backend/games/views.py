@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
 from django.http import JsonResponse
-from games.models import Game, CasualGameView, GameRecordView
+from games.models import Game, CasualGameView, GameRecordView, CasualGameListView
 from login.views import AuthUtils
 from src.utils import get_request_body_value
 from django.core.exceptions import BadRequest
@@ -11,11 +11,12 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from django.db import transaction
 from django.db.models import Min, Count
-from games.serializers import GameRoomSerializer, PvPResultListSerializer, TournamentResultListSerializer, PvPResultSerializer, TournamentResultSerializer
+from games.serializers import GameRoomSerializer, PvPResultListSerializer, TournamentResultListSerializer, PvPResultSerializer, TournamentResultSerializer, GameRoomListSerializer
 from django.core.exceptions import ValidationError
 from src.exceptions import AuthenticationException, VerificationException
 from users.models import User
 from src.choices import MODE_CHOICES_DICT
+from src.pagination_utils import PaginationUtils
 from django.core.paginator import Paginator, EmptyPage
 import logging
 
@@ -23,6 +24,71 @@ logger = logging.getLogger(__name__)
 
 
 class GameView(APIView):
+    @swagger_auto_schema(
+        tags=['/api/games'],
+        operation_description="게임방 목록 API",
+        manual_parameters=[
+            openapi.Parameter('Authorization', openapi.IN_HEADER, 'JWT Token', type=openapi.TYPE_STRING),
+            openapi.Parameter('mode', openapi.IN_QUERY, '0: 1 vs 1, 1: 토너먼트, 2: 전체, defulat=2', type=openapi.TYPE_STRING),
+            openapi.Parameter('page', openapi.IN_QUERY, '페이지 번호(미 입력시 1)', type=openapi.TYPE_INTEGER),
+            openapi.Parameter('limit', openapi.IN_QUERY, '한 페이지 당 개수(미 입력시 4)', type=openapi.TYPE_INTEGER),
+        ],
+        responses={
+            200: openapi.Response('OK', schema=GameRoomListSerializer),
+            400: 'BAD_REQUEST',
+            401: 'UNAUTHORIZED',
+            404: 'NOT_FOUND',
+            500: 'SERVER_ERROR'})
+    def get(self, request):
+        try:
+            AuthUtils.validate_jwt_token_and_get_user(request)
+            mode = self.validate_mode(request.GET.get('mode', 2))
+            page = PaginationUtils.validate_page(request.GET.get('page', 1))
+            limit = PaginationUtils.validate_limit(request.GET.get('limit', 4))
+            queryset = None
+            if mode == 0:
+                queryset = CasualGameListView.objects.filter(mode=mode).values('game_id', 'mode', 'status').order_by('-game_id')
+            elif mode == 1:
+                queryset = CasualGameListView.objects.filter(mode=mode).values('game_id', 'mode', 'status').order_by('-game_id')
+            elif mode == 2:
+                queryset = CasualGameListView.objects.all().values('game_id', 'mode', 'status').order_by('-game_id')
+            else:
+                raise VerificationException('mode value is wrong')
+
+            paginator = Paginator(queryset, limit)
+            paginated_queryset = paginator.page(page)
+            serializer = GameRoomListSerializer(
+                instance=paginated_queryset,
+                many=True
+            )
+            serialized_data_with_total_pages = {
+                'total_pages': paginator.num_pages,
+                'data': serializer.data
+            }
+            logging.info(f"[게임방 목록 API] mode : {mode}, page : {page}, limit : {limit}")
+            return Response(serialized_data_with_total_pages, status=status.HTTP_200_OK)
+
+        except AuthenticationException as e:
+            return JsonResponse({'error': e.message}, status=status.HTTP_401_UNAUTHORIZED)
+        except VerificationException as e:
+            return JsonResponse({'error': e.message}, status=status.HTTP_400_BAD_REQUEST)
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'user doesn\'t exist'}, status=status.HTTP_404_NOT_FOUND)
+        except EmptyPage:
+            return JsonResponse({'error': 'Page out of range'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return JsonResponse({'error': e.__class__.__name__, 'message':str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @staticmethod
+    def validate_mode(mode):
+        try:
+            if mode is None:
+                raise VerificationException('mode value is wrong')
+            mode = int(mode)
+            return mode
+        except Exception as e:
+            raise VerificationException(f"[{e.__class__.__name__}] {e}")
+
     @swagger_auto_schema(
         tags=['/api/games'],
         operation_description="게임방 생성 API",
@@ -69,7 +135,8 @@ class GameView(APIView):
         game = Game.objects.create(title=title, password=password, mode=mode, status=0, manager=user)
         return game.id
 
-    def check_mode(self, mode):
+    @staticmethod
+    def check_mode(mode):
         if mode == "casual_1v1":
             return 0
         elif mode == "casual_tournament":
@@ -81,7 +148,8 @@ class GameView(APIView):
         else:
             raise BadRequest
 
-    def is_title_already_exist(self, title):
+    @staticmethod
+    def is_title_already_exist(title):
         existing_games = Game.objects.filter(title=title)
         return existing_games.exists()
 
@@ -143,7 +211,8 @@ class GameRoomView(APIView):
         except Exception as e:
             return JsonResponse({'error': e.__class__.__name__, 'message':str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    def is_full(self, game, mode):
+    @staticmethod
+    def is_full(game, mode):
         player1 = game.player1_id
         player2 = game.player2_id
         player3 = game.player3_id
@@ -154,7 +223,8 @@ class GameRoomView(APIView):
             return True
         return False
 
-    def enter_game(self, game, user, mode):
+    @staticmethod
+    def enter_game(game, user, mode):
         player1 = game.player1_id
         player2 = game.player2_id
         player3 = game.player3_id
@@ -206,8 +276,8 @@ class GameResultListView(APIView):
                 raise VerificationException('wrong user')
             user = User.objects.get(nickname=nickname)
             mode = self.validate_mode(request.GET.get('mode'))
-            page = self.validate_page(request.GET.get('page', 0))
-            limit = self.validate_limit(request.GET.get('limit', 4))
+            page = PaginationUtils.validate_page(request.GET.get('page', 1))
+            limit = PaginationUtils.validate_limit(request.GET.get('limit', 4))
 
             logging.info(f"[유저 전적 목록 API] user : {nickname}, mode : {mode}, page : {page}, limit : {limit}")
 
@@ -220,14 +290,12 @@ class GameResultListView(APIView):
                 serializer = PvPResultListSerializer(
                     instance=paginated_queryset,
                     user_id=user.id,
-                    total_pages=paginator.num_pages,
                     many=True
                 )
             else:   # tournament
                 serializer = TournamentResultListSerializer(
                     instance=paginated_queryset,
                     user_id=user.id,
-                    total_pages=paginator.num_pages,
                     many=True
                 )
             serialized_data_with_total_pages = {
@@ -263,28 +331,6 @@ class GameResultListView(APIView):
                 return mode_num
             else:
                 raise VerificationException('mode value is wrong')
-        except Exception as e:
-            raise VerificationException(f"[{e.__class__.__name__}] {e}")
-
-    @staticmethod
-    def validate_page(page):
-        try:
-            if page is None:
-                raise VerificationException('page value is wrong')
-            page = int(page)
-            return page
-        except Exception as e:
-            raise VerificationException(f"[{e.__class__.__name__}] {e}")
-
-    @staticmethod
-    def validate_limit(limit):
-        try:
-            if limit is None:
-                raise VerificationException('limit value is wrong')
-            limit = int(limit)
-            if limit <= 0:
-                raise VerificationException('limit value is wrong')
-            return limit
         except Exception as e:
             raise VerificationException(f"[{e.__class__.__name__}] {e}")
 
