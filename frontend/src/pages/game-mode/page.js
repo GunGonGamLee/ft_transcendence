@@ -7,16 +7,28 @@ import { navigate } from "../../utils/navigate.js";
  */
 
 export default function GameMode($container) {
+  this.ws = null;
   const init = () => {
     render();
     click($container.querySelector(".unit1"), () => {
       $container.querySelector(".queue-modal").style.display = "flex";
       $container.querySelector(".modal-backdrop").style.display = "block";
-      // this.ws = new WebSocket("ws://localhost:3000");
+      console.log("clicked");
+      this.ws = new WebSocket("wss://localhost/ws/rankgames/");
+      console.log("ws ok");
+      this.ws.onmessage = (event) => {
+        console.log(event.data);
+        const data = JSON.parse(event.data);
+        console.log(data);
+        console.log("Game started. Game ID: ", data.message.game_id);
+      };
     });
     click($container.querySelector(".run-btn"), () => {
       $container.querySelector(".queue-modal").style.display = "none";
       $container.querySelector(".modal-backdrop").style.display = "none";
+      if (this.ws) {
+        this.ws.close();
+      }
     });
     click($container.querySelector(".unit0"), () => {
       navigate("/in-game");
