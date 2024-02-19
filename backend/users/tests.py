@@ -1,12 +1,12 @@
 import os
 
-from django.core.files.uploadedfile import SimpleUploadedFile
-from django.urls import reverse
-from django.test import TestCase, RequestFactory
-from rest_framework.test import APIClient
 import jwt
 from django.conf import settings
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import TestCase, RequestFactory
+from django.urls import reverse
 from users.models import User
+from users.views import UserAvatarView
 
 
 class AvatarUpdateTest(TestCase):
@@ -20,8 +20,7 @@ class AvatarUpdateTest(TestCase):
         :return: None
         :rtype: None
         """
-        cls.user = User.objects.create_user(nickname='test', email='skdpwls153@naver.com')
-        cls.user.save()
+        cls.user = User.objects.create_user(nickname='tester', email='test@test.com')
         cls.image_path = os.path.join(os.path.dirname(__file__), 'test.jpeg')
         cls.image = SimpleUploadedFile('test.jpeg', open(cls.image_path, 'rb').read(), content_type='image/jpeg')
 
@@ -31,7 +30,7 @@ class AvatarUpdateTest(TestCase):
         :return: None
         :rtype: None
         """
-        self.token = jwt.encode({'email': self.user.email}, settings.SECRET_KEY, algorithm='HS256')
+        self.token = jwt.encode({'user_email': self.user.email}, settings.SECRET_KEY, algorithm='HS256')
         self.factory = RequestFactory()
 
     @classmethod
@@ -41,7 +40,6 @@ class AvatarUpdateTest(TestCase):
         :return: None
         :rtype: None
         """
-        cls.user.delete()
 
     def test_avatar_upload(self):
         request = self.factory.post(
@@ -59,7 +57,16 @@ class AvatarUpdateTest(TestCase):
         pass
 
     def test_avatar_upload_unauthorized(self):
-        pass
+        request = self.factory.post(
+            reverse('userAvatar', kwargs={'nickname': '예나'}),
+            data={'avatar': self.image},
+            format='multipart',
+            headers={'Authorization': f'Bearer {self.token}'}
+        )
+        view = UserAvatarView()
+        view.setup(request)
+        response = view.post(request, '예나')
+        self.assertEqual(401, response)
 
     def test_avatar_upload_server_error(self):
         pass
