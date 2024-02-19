@@ -166,7 +166,7 @@ class RankGameConsumer(AsyncWebsocketConsumer):
         self.game_queue.append(user.id)
         logging.info(f'User {user.nickname} 연결되었어요')
         
-        if len(self.game_queue) >= 4:
+        if len(self.game_queue) >= 1:
             try:
                 await self.create_game()
                 self.game_queue.clear()
@@ -185,7 +185,8 @@ class RankGameConsumer(AsyncWebsocketConsumer):
         game = await sync_to_async(self.create_game_instance)(users)
         for user_id in self.game_queue[:4]:
             channel = f'user_{user_id}'
-            await self.channel_layer.send(
+            await self.channel_layer.group_add(channel, self.channel_name)
+            await self.channel_layer.group_send(
                 channel,
                 {
                     'type': 'game_message',
@@ -204,9 +205,9 @@ class RankGameConsumer(AsyncWebsocketConsumer):
                 mode = 2,
                 status = 2,
                 manager = users[0],
-                player1 = users[1],
-                player2 = users[2],
-                player3 = users[3],
+                # player1 = users[1],
+                # player2 = users[2],
+                # player3 = users[3],
             )
             return game
         except Exception as e:
