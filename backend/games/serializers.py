@@ -4,9 +4,16 @@ from users.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
+
+    avatar = serializers.SerializerMethodField()
+
     class Meta:
         model = User
         fields = ['nickname', 'avatar', 'rating']
+
+    @staticmethod
+    def get_avatar(user):
+        return str(user.avatar).split('/')[-1]
 
 
 class GameRoomSerializer(serializers.ModelSerializer):
