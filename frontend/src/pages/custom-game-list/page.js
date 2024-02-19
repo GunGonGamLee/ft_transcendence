@@ -16,7 +16,7 @@ export default function CustomGameList($container) {
     const renderLayout = () => {
         importCss('../../../assets/css/customGameList.css')
 
-        $container.insertAdjacentHTML("afterbegin", `
+        $container.innerHTML = `
             <div class="custom-game-list" id="content-wrapper">
                 <div class="custom-game-list" id="game-room-list-wrapper">
                 </div>
@@ -44,7 +44,7 @@ export default function CustomGameList($container) {
                         </div> 
                     </a>
             </footer>
-        `)
+        `;
     }
 
     // 임시 gameRoomList 오브젝트
@@ -183,9 +183,9 @@ export default function CustomGameList($container) {
     const renderList = () => {
         let $list = document.getElementById("game-room-list-wrapper");
 
-        $list.insertAdjacentHTML("afterbegin", `
+        $list.innerHTML = `
             <div class="game-room-list" id="list-wrapper"></div>
-            `);
+            `;
 
         let $listWrapper = document.getElementById("list-wrapper");
 
