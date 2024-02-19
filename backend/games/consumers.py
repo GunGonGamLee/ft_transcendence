@@ -206,8 +206,8 @@ class RankGameConsumer(AsyncWebsocketConsumer):
                 status = 2,
                 manager = users[0],
                 player1 = users[1],
-                # player2 = users[2],
-                # player3 = users[3],
+                player2 = users[2],
+                player3 = users[3],
             )
             return game
         except Exception as e:
