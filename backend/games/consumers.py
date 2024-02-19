@@ -166,7 +166,7 @@ class RankGameConsumer(AsyncWebsocketConsumer):
         self.game_queue.append(user.id)
         logging.info(f'User {user.nickname} 연결되었어요')
         
-        if len(self.game_queue) >= 1:
+        if len(self.game_queue) >= 4:
             try:
                 await self.create_game()
                 self.game_queue.clear()
