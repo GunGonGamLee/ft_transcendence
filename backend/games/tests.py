@@ -24,7 +24,7 @@ class PingPongGameTestCase(TestCase):
         self.user.delete()
 
     def test_set_ball(self):
-        self.ping_pong_game.ball.set_direction(45)
+        self.ping_pong_game.ball.set_direction((-1, 0))
         self.ping_pong_game.ball.set_speed(10)
         self.ping_pong_game.ball.set_x_y(10, 10)
         self.assertEqual(self.ping_pong_game.ball.direction, 45)

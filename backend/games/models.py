@@ -1,4 +1,6 @@
+import random
 from datetime import datetime
+from turtledemo import clock
 
 from django.db import models
 from users.models import User
@@ -103,22 +105,24 @@ class Ball:
     - x: float
     - y: float
     - speed: float
-    - direction: float
+    - direction: tuple
     """
     radius: float
     x: float
     y: float
     speed: float
-    direction: float
+    direction: tuple
 
-    def __init__(self, radius, x, y, speed, direction):
+    def __init__(self, radius, x, y):
         self.radius = radius
         self.x = x
         self.y = y
-        self.speed = speed
-        self.direction = direction
+        self.speed = 10
+        self.direction = (random.uniform(-1, 1), random.uniform(-1, 1))
 
-    def set_direction(self, direction):
+    def set_direction(self, direction: tuple):
+        if direction[0] > 1 or direction[0] < -1 or direction[1] > 1 or direction[1] < -1:
+            raise ValueError('direction must be in range of -1 to 1')
         self.direction = direction
 
     def set_speed(self, speed):
@@ -129,8 +133,8 @@ class Ball:
         self.y = y
 
     def move(self):
-        self.x += self.speed * cos(self.direction)
-        self.y += self.speed * sin(self.direction)
+        self.x += self.speed * self.direction[0]
+        self.y += self.speed * self.direction[1]
 
 
 class Racket:
@@ -210,6 +214,6 @@ class PingPongGame:
         """
         self.player = Player(User.objects.get(nickname=nickname), 0)
         self.map = Map(map_info[0], map_info[1])
-        self.ball = Ball(ball_info[0], ball_info[1], ball_info[2], 0, 0)
+        self.ball = Ball(ball_info[0], ball_info[1], ball_info[2])
         self.racket = Racket(racket_info[0], racket_info[1], racket_info[2], racket_info[3], racket_info[4])
         self.started_at = datetime.now()
