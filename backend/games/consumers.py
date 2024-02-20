@@ -24,17 +24,6 @@ class GameConsumer(AsyncWebsocketConsumer):
         self.serializer = None
 
     async def connect(self):
-        logger.info("[게임방 입장] connect")
-        await self.handle_connection()
-
-    async def disconnect(self, close_code):
-        logger.info("[게임방 입장] disconnect")
-        if await self.is_invalid_user():
-            return
-        else:
-            await self.channel_layer.group_discard(self.game_group_name, self.channel_name)
-
-    async def handle_connection(self):
         if await self.is_invalid_user():
             await self.reject_invalid_user()
         else:
@@ -81,13 +70,13 @@ class GameConsumer(AsyncWebsocketConsumer):
         self.game.save()
 
     async def is_invalid_user(self):
-        user = self.scope['user']
-        logger.info(f"[게임방 입장] user : {user}")
-        return isinstance(user, AnonymousUser)
+        self.user = self.scope['user']
+        return isinstance(self.user, AnonymousUser)
 
     async def reject_invalid_user(self):
         await self.accept()
         await self.send(text_data=json.dumps({"error": "Invalid user"}))
+        logger.info("Invalid user")
         await self.close()
 
     async def process_valid_user(self):
@@ -95,9 +84,8 @@ class GameConsumer(AsyncWebsocketConsumer):
             await self.accept()
             game_id = self.scope["url_route"]["kwargs"]["game_id"]
             self.game_id = int(game_id)
-            self.user = self.scope['user']
             if self.game_id == 0:
-                logger.info(f"[게임방 입장] 빠른 입장")
+                logger.info(f"[게임방 입장] {self.user.nickname} - 빠른 입장")
                 count = await self.count_casual_games()
                 if count == 0:
                     await self.create_room()
@@ -177,7 +165,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 await database_sync_to_async(self.game.save)()
             else:
                 raise ValidationError('Invalid game id')
-        logger.info(f"[게임방 입장] 게임방 입장 성공 : {self.game.id}")
+        logger.info(f"[게임방 입장] {self.user.nickname} - {self.game_id}번 방 입장")
 
     async def is_full(self):
         player1 = await sync_to_async(self.game.__getattribute__)('player1_id')
@@ -192,11 +180,13 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def game_info(self, event):
         data = event["data"]
-
         await self.send(text_data=json.dumps({"data": data}))
 
+
 class RankGameConsumer(AsyncWebsocketConsumer):
+
     game_queue = []
+
     async def connect(self):
         user = self.scope['user']
         if isinstance(user, AnonymousUser):
@@ -242,12 +232,12 @@ class RankGameConsumer(AsyncWebsocketConsumer):
     def create_game_instance(users):
         try:
             game = Game.objects.create(
-                mode = 2,
-                status = 2,
-                manager = users[0],
-                player1 = users[1],
-                player2 = users[2],
-                player3 = users[3],
+                mode=2,
+                status=2,
+                manager=users[0],
+                player1=users[1],
+                player2=users[2],
+                player3=users[3],
             )
             return game
         except Exception as e:
