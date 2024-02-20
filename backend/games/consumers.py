@@ -40,6 +40,46 @@ class GameConsumer(AsyncWebsocketConsumer):
         else:
             await self.process_valid_user()
 
+    async def disconnect(self, close_code):
+        if await self.is_invalid_user():
+            logger.info("[게임방 퇴장] Invalid user")
+            return
+        else:
+            await self.delete_user()
+
+    @database_sync_to_async
+    def delete_user(self):
+        if self.game.mode == 0:  # PvP
+            if self.user == self.game.manager:
+                if self.game.player1:
+                    self.game.manager, self.game.player1 = self.game.player1, None
+                    self.game.status = 0
+                else:
+                    self.game.delete()
+            elif self.user == self.game.player1:
+                self.game.player1 = None
+                self.game.status = 0
+        else:  # Tournament
+            if self.user == self.game.manager:
+                for i in range(1, 4):
+                    player = getattr(self.game, f"player{i}")
+                    if player:
+                        self.game.manager = player
+                        setattr(self.game, f"player{i}", None)
+                        break
+                else:
+                    self.game.delete()
+            else:
+                for i in range(1, 4):
+                    player = getattr(self.game, f"player{i}")
+                    if self.user == player:
+                        setattr(self.game, f"player{i}", None)
+                        if i == 3:
+                            self.game.status = 0
+                        break
+        logger.info(f"[게임방 퇴장] {self.user.nickname} - {self.game_id}번 방 퇴장")
+        self.game.save()
+
     async def is_invalid_user(self):
         user = self.scope['user']
         logger.info(f"[게임방 입장] user : {user}")
