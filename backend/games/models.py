@@ -1,6 +1,5 @@
 import random
 from datetime import datetime
-from turtledemo import clock
 
 from django.db import models
 from users.models import User
