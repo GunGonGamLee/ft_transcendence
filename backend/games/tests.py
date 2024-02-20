@@ -17,7 +17,7 @@ class PingPongGameTestCase(TestCase):
             '테스터',
             (1920, 1080),
             (10, 1920 / 2, 1080 / 2),
-            (10, 20, 0, 1080 / 2 - 10)
+            (10, 20, 0, 1080 / 2 - 10, 10)
         )
 
     def tearDown(self):
@@ -32,7 +32,10 @@ class PingPongGameTestCase(TestCase):
         self.assertEqual(self.ping_pong_game.ball.x, 10)
         self.assertEqual(self.ping_pong_game.ball.y, 10)
 
-    def test_set_racket(self):
+    def test_set_racket_position(self):
         self.ping_pong_game.racket.set_x_y(10, 10)
         self.assertEqual(self.ping_pong_game.racket.x, 10)
         self.assertEqual(self.ping_pong_game.racket.y, 10)
+
+    def test_move_ball(self):
+        self.ping_pong_game.ball.set_direction(-1)

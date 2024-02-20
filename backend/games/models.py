@@ -128,6 +128,10 @@ class Ball:
         self.x = x
         self.y = y
 
+    def move(self):
+        self.x += self.speed * cos(self.direction)
+        self.y += self.speed * sin(self.direction)
+
 
 class Racket:
     """
@@ -138,17 +142,20 @@ class Racket:
     - height: float
     - x: float
     - y: float
+    - speed: float
     """
     width: float
     height: float
     x: float
     y: float
+    speed: float
 
-    def __init__(self, width, height, x, y):
+    def __init__(self, width, height, x, y, speed):
         self.width = width
         self.height = height
         self.x = x
         self.y = y
+        self.speed = speed
 
     def set_x_y(self, x, y):
         self.x = x
@@ -189,7 +196,7 @@ class PingPongGame:
     started_at: datetime
 
     def __init__(self, nickname: str, map_info: (float, float),
-                 ball_info: (float, float, float), racket_info: (float, float, float, float)):
+                 ball_info: (float, float, float), racket_info: (float, float, float, float, float)):
         """
         Args:
         :param nickname: 플레이어의 닉네임
@@ -198,11 +205,11 @@ class PingPongGame:
         :type map_info: (float, float)
         :param ball_info: 공의 반지름, x좌표, y좌표
         :type ball_info: (float, float, float)
-        :param racket_info: 라켓의 너비, 높이, x좌표, y좌표
-        :type racket_info: (float, float, float, float)
+        :param racket_info: 라켓의 너비, 높이, x좌표, y좌표, 속도
+        :type racket_info: (float, float, float, float, float)
         """
         self.player = Player(User.objects.get(nickname=nickname), 0)
         self.map = Map(map_info[0], map_info[1])
         self.ball = Ball(ball_info[0], ball_info[1], ball_info[2], 0, 0)
-        self.racket = Racket(racket_info[0], racket_info[1], racket_info[2], racket_info[3])
+        self.racket = Racket(racket_info[0], racket_info[1], racket_info[2], racket_info[3], racket_info[4])
         self.started_at = datetime.now()
