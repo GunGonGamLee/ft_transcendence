@@ -175,9 +175,20 @@ class PingPongGame:
     started_at: datetime
 
     def __init__(self, nickname: str, map_info: (float, float),
-                 ball_radius: float, racket_info: (float, float, float, float)):
+                 ball_info: (float, float, float), racket_info: (float, float, float, float)):
+        """
+        Args:
+        :param nickname: 플레이어의 닉네임
+        :type nickname: str
+        :param map_info: 맵의 너비와 높이
+        :type map_info: (float, float)
+        :param ball_info: 공의 반지름, x좌표, y좌표
+        :type ball_info: (float, float, float)
+        :param racket_info: 라켓의 너비, 높이, x좌표, y좌표
+        :type racket_info: (float, float, float, float)
+        """
         self.player = Player(User.objects.get(nickname=nickname), 0)
         self.map = Map(map_info.width, map_info.height)
-        self.ball = Ball(ball_radius, map_info.width / 2, map_info.height / 2, 0, 0)
+        self.ball = Ball(ball_info.radius, ball_info.x, ball_info.y, 0, 0)
         self.racket = Racket(racket_info.width, racket_info.height, racket_info.x, racket_info.y)
         self.started_at = datetime.now()
