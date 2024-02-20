@@ -118,6 +118,16 @@ class Ball:
         self.speed = speed
         self.direction = direction
 
+    def set_direction(self, direction):
+        self.direction = direction
+
+    def set_speed(self, speed):
+        self.speed = speed
+
+    def set_x_y(self, x, y):
+        self.x = x
+        self.y = y
+
 
 class Racket:
     """
