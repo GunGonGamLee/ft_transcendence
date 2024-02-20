@@ -1,3 +1,5 @@
+import random
+
 from django.test import TestCase
 
 from games.models import PingPongGame
@@ -27,10 +29,15 @@ class PingPongGameTestCase(TestCase):
         self.ping_pong_game.ball.set_direction((-1, 0))
         self.ping_pong_game.ball.set_speed(10)
         self.ping_pong_game.ball.set_x_y(10, 10)
-        self.assertEqual(self.ping_pong_game.ball.direction, 45)
+        self.assertEqual(self.ping_pong_game.ball.direction, (-1, 0))
         self.assertEqual(self.ping_pong_game.ball.speed, 10)
         self.assertEqual(self.ping_pong_game.ball.x, 10)
         self.assertEqual(self.ping_pong_game.ball.y, 10)
+
+    def test_set_ball_direction_fail(self):
+        direction = (random.uniform(1.1, 2), random.uniform(-1, 1))
+        with self.assertRaises(ValueError):
+            self.ping_pong_game.ball.set_direction(direction)
 
     def test_set_racket_position(self):
         self.ping_pong_game.racket.set_x_y(10, 10)
@@ -38,4 +45,4 @@ class PingPongGameTestCase(TestCase):
         self.assertEqual(self.ping_pong_game.racket.y, 10)
 
     def test_move_ball(self):
-        self.ping_pong_game.ball.set_direction(-1)
+        self.ping_pong_game.ball.set_direction((-1, 0))
