@@ -36,7 +36,7 @@ export default function MainHeader($container) {
   };
 
   this.render = () => {
-    const { nickname, avatar_file_name } = getUserInfo();
+    const { nickname, avatar } = getUserInfo();
     this.$container.insertAdjacentHTML(
       "beforeend",
       `
@@ -49,7 +49,7 @@ export default function MainHeader($container) {
                 <div class="btn-group">
                     <button class="btn btn-secondary btn-lg dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="user-info">
                         <span class="main user-info-element" id="nickname">${nickname}</span>
-                        <img class="main user-info-element" src="${HISTORIES_IMAGE_PATH}/avatar/${avatar_file_name}" alt="아바타" id="user-avatar">
+                        <img class="main user-info-element" src="${HISTORIES_IMAGE_PATH}/avatar/${avatar}" alt="아바타" id="user-avatar">
                     </button>
                     <ul class="dropdown-menu user-info">
                         <li><div id="go-histories">내 기록 보기</div></li>
@@ -60,7 +60,6 @@ export default function MainHeader($container) {
             </div>
         </div>
         `,
-
     );
     renderFriendsInfoModal(headerElement);
 
