@@ -188,7 +188,7 @@ class PingPongGame:
         :type racket_info: (float, float, float, float)
         """
         self.player = Player(User.objects.get(nickname=nickname), 0)
-        self.map = Map(map_info.width, map_info.height)
-        self.ball = Ball(ball_info.radius, ball_info.x, ball_info.y, 0, 0)
-        self.racket = Racket(racket_info.width, racket_info.height, racket_info.x, racket_info.y)
+        self.map = Map(map_info[0], map_info[1])
+        self.ball = Ball(ball_info[0], ball_info[1], ball_info[2], 0, 0)
+        self.racket = Racket(racket_info[0], racket_info[1], racket_info[2], racket_info[3])
         self.started_at = datetime.now()
