@@ -40,8 +40,8 @@ export default function CustomGameList($container) {
         <div class="custom-game-list" id="room-filter" style="color: rgb(255, 255, 255); font-family: Galmuri11, serif;">
             <div class="histories game-mode-toggle" id="toggle">
                 <ul class="histories">
-                    <li>1 vs 1 모드</li>
-                    <li>토너먼트 모드</li>
+                    <li id="1vs1-filter-btn" style="color: yellow" >1 vs 1 모드</li>
+                    <li id="tournament-filter-btn" style="color: yellow;">토너먼트 모드</li>
                 </ul>
             </div>
             <div class="custom-game-list" id="room-filter">
@@ -174,11 +174,40 @@ export default function CustomGameList($container) {
         updateGameRoomList();
       }
     });
+
+    // 방 걸러보기
+    const $1vs1FilterBtn = $container.querySelector("#1vs1-filter-btn");
+    const $tournamentFilterBtn = $container.querySelector(
+      "#tournament-filter-btn",
+    );
+
+    click($1vs1FilterBtn, () => {
+      if (mode === 2) {
+        mode = 1;
+        $1vs1FilterBtn.style.color = "white";
+      } else {
+        mode = 2;
+        $1vs1FilterBtn.style.color = "yellow";
+      }
+      console.log("1vs1");
+      updateGameRoomList();
+    });
+
+    click($tournamentFilterBtn, () => {
+      if (mode === 2) {
+        mode = 0;
+        $tournamentFilterBtn.style.color = "white";
+      } else {
+        mode = 2;
+        $tournamentFilterBtn.style.color = "yellow";
+      }
+      console.log("tournament");
+      updateGameRoomList();
+    });
   };
 
-  // 임시 gameRoomList 오브젝트
-
   /*
+  임시 gameRoomList 오브젝트
   id	number	게임방 테이블의 ID값
 	title	string	방 제목
 	is_secret	boolean	비밀번호 여부
