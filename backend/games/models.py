@@ -150,6 +150,10 @@ class Racket:
         self.x = x
         self.y = y
 
+    def set_x_y(self, x, y):
+        self.x = x
+        self.y = y
+
 
 class Map:
     """
