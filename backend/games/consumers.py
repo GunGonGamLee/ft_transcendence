@@ -24,30 +24,59 @@ class GameConsumer(AsyncWebsocketConsumer):
         self.serializer = None
 
     async def connect(self):
-        logger.info("[게임방 입장] connect")
-        await self.handle_connection()
-
-    async def disconnect(self, close_code):
-        logger.info("[게임방 입장] disconnect")
-        if await self.is_invalid_user():
-            return
-        else:
-            await self.channel_layer.group_discard(self.game_group_name, self.channel_name)
-
-    async def handle_connection(self):
         if await self.is_invalid_user():
             await self.reject_invalid_user()
         else:
             await self.process_valid_user()
 
+    async def disconnect(self, close_code):
+        if await self.is_invalid_user():
+            logger.info("[게임방 퇴장] Invalid user")
+            return
+        else:
+            await self.delete_user()
+
+    @database_sync_to_async
+    def delete_user(self):
+        if self.game.mode == 0:  # PvP
+            if self.user == self.game.manager:
+                if self.game.player1:
+                    self.game.manager, self.game.player1 = self.game.player1, None
+                    self.game.status = 0
+                else:
+                    self.game.delete()
+            elif self.user == self.game.player1:
+                self.game.player1 = None
+                self.game.status = 0
+        else:  # Tournament
+            if self.user == self.game.manager:
+                for i in range(1, 4):
+                    player = getattr(self.game, f"player{i}")
+                    if player:
+                        self.game.manager = player
+                        setattr(self.game, f"player{i}", None)
+                        break
+                else:
+                    self.game.delete()
+            else:
+                for i in range(1, 4):
+                    player = getattr(self.game, f"player{i}")
+                    if self.user == player:
+                        setattr(self.game, f"player{i}", None)
+                        if i == 3:
+                            self.game.status = 0
+                        break
+        logger.info(f"[게임방 퇴장] {self.user.nickname} - {self.game_id}번 방 퇴장")
+        self.game.save()
+
     async def is_invalid_user(self):
-        user = self.scope['user']
-        logger.info(f"[게임방 입장] user : {user}")
-        return isinstance(user, AnonymousUser)
+        self.user = self.scope['user']
+        return isinstance(self.user, AnonymousUser)
 
     async def reject_invalid_user(self):
         await self.accept()
         await self.send(text_data=json.dumps({"error": "Invalid user"}))
+        logger.info("[게임방 입장] Invalid user")
         await self.close()
 
     async def process_valid_user(self):
@@ -55,9 +84,8 @@ class GameConsumer(AsyncWebsocketConsumer):
             await self.accept()
             game_id = self.scope["url_route"]["kwargs"]["game_id"]
             self.game_id = int(game_id)
-            self.user = self.scope['user']
             if self.game_id == 0:
-                logger.info(f"[게임방 입장] 빠른 입장")
+                logger.info(f"[게임방 입장] {self.user.nickname} - 빠른 입장")
                 count = await self.count_casual_games()
                 if count == 0:
                     await self.create_room()
@@ -137,7 +165,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 await database_sync_to_async(self.game.save)()
             else:
                 raise ValidationError('Invalid game id')
-        logger.info(f"[게임방 입장] 게임방 입장 성공 : {self.game.id}")
+        logger.info(f"[게임방 입장] {self.user.nickname} - {self.game_id}번 방 입장")
 
     async def is_full(self):
         player1 = await sync_to_async(self.game.__getattribute__)('player1_id')
@@ -152,11 +180,13 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def game_info(self, event):
         data = event["data"]
-
         await self.send(text_data=json.dumps({"data": data}))
 
+
 class RankGameConsumer(AsyncWebsocketConsumer):
+
     game_queue = []
+
     async def connect(self):
         user = self.scope['user']
         if isinstance(user, AnonymousUser):
@@ -164,13 +194,13 @@ class RankGameConsumer(AsyncWebsocketConsumer):
             return
         await self.accept()
         self.game_queue.append(user.id)
-        logging.info(f'User {user.nickname} 연결되었어요')
+        logging.info(f'[RANK] User {user.nickname} 연결되었어요')
         
         if len(self.game_queue) >= 4:
             try:
                 await self.create_game()
                 self.game_queue.clear()
-                logging.info('게임이 생성되고 대기열이 모두 초기화되었어요.')
+                logging.info('[RANK] 게임이 생성되고 대기열이 모두 초기화되었어요.')
             except Exception as e:
                 logging.error(e)
 
@@ -178,7 +208,7 @@ class RankGameConsumer(AsyncWebsocketConsumer):
         user = self.scope['user']
         if user.id in self.game_queue:
             self.game_queue.remove(user.id)
-            logging.info(f'User {user.nickname} 이 연결을 끊었어요.')
+            logging.info(f'[RANK] User {user.nickname} 이 연결을 끊었어요.')
             
     async def create_game(self):
         users = await sync_to_async(self.get_users)(self.game_queue[:4])
@@ -202,12 +232,12 @@ class RankGameConsumer(AsyncWebsocketConsumer):
     def create_game_instance(users):
         try:
             game = Game.objects.create(
-                mode = 2,
-                status = 2,
-                manager = users[0],
-                player1 = users[1],
-                player2 = users[2],
-                player3 = users[3],
+                mode=2,
+                status=2,
+                manager=users[0],
+                player1=users[1],
+                player2=users[2],
+                player3=users[3],
             )
             return game
         except Exception as e:
