@@ -89,6 +89,10 @@ class Player:
     user: User
     score: int
 
+    def __init__(self, user, score):
+        self.user = user
+        self.score = score
+
 
 class Ball:
     """
@@ -107,6 +111,13 @@ class Ball:
     speed: float
     direction: float
 
+    def __init__(self, radius, x, y, speed, direction):
+        self.radius = radius
+        self.x = x
+        self.y = y
+        self.speed = speed
+        self.direction = direction
+
 
 class Racket:
     """
@@ -123,6 +134,12 @@ class Racket:
     x: float
     y: float
 
+    def __init__(self, width, height, x, y):
+        self.width = width
+        self.height = height
+        self.x = x
+        self.y = y
+
 
 class Map:
     """
@@ -134,6 +151,10 @@ class Map:
     """
     width: float
     height: float
+
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
 
 
 class PingPongGame:
@@ -152,3 +173,11 @@ class PingPongGame:
     ball: Ball
     racket: Racket
     started_at: datetime
+
+    def __init__(self, nickname: str, map_info: (float, float),
+                 ball_radius: float, racket_info: (float, float, float, float)):
+        self.player = Player(User.objects.get(nickname=nickname), 0)
+        self.map = Map(map_info.width, map_info.height)
+        self.ball = Ball(ball_radius, map_info.width / 2, map_info.height / 2, 0, 0)
+        self.racket = Racket(racket_info.width, racket_info.height, racket_info.x, racket_info.y)
+        self.started_at = datetime.now()
