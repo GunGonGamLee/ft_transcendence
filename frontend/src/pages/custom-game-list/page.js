@@ -21,18 +21,18 @@ export default function CustomGameList($container) {
                 <div class="custom-game-list" id="game-room-list-wrapper">
                 </div>
                 <div class="custom-game-list" id="pagination-arrow-wrapper">
-                    <a class="custom-game-list" id="pagination-arrow-left" style="color: rgb(255, 255, 255); font-family: Galmuri11, serif;">
+                    <div class="custom-game-list" id="pagination-arrow-left" style="color: rgb(255, 255, 255); font-family: Galmuri11, serif;">
                         <
-                    </a>
-                    <a class="custom-game-list" id="pagination-arrow-right" style="color: rgb(255, 255, 255); font-family: Galmuri11, serif;" role="button" >
+                    </div>
+                    <div class="custom-game-list" id="pagination-arrow-right" style="color: rgb(255, 255, 255); font-family: Galmuri11, serif;" role="button" >
                         >
-                    </a>
+                    </div>
                 </div>
             </div>
             <footer class="custom-game-list" id="game-room-options-wrapper">
-                    <a class="custom-game-list" id="quick-join" style="color: rgb(255, 255, 255); font-family: Galmuri11, serif;">신속히 입장</a>
-                    <a class="custom-game-list" id="create-room" style="color: rgb(255, 255, 255); font-family: Galmuri11, serif;">방 만들기</a>
-                    <a class="custom-game-list" id="room-filter" style="color: rgb(255, 255, 255); font-family: Galmuri11, serif;">
+                    <div class="custom-game-list" id="quick-join" style="color: rgb(255, 255, 255); font-family: Galmuri11, serif;">신속히 입장</div>
+                    <div class="custom-game-list" id="create-room" style="color: rgb(255, 255, 255); font-family: Galmuri11, serif;">방 만들기</div>
+                    <div class="custom-game-list" id="room-filter" style="color: rgb(255, 255, 255); font-family: Galmuri11, serif;">
                         <div class="histories game-mode-toggle" id="toggle">
                             <ul class="histories">
                                 <li>1 vs 1 모드</li>
@@ -42,7 +42,7 @@ export default function CustomGameList($container) {
                         <div class="custom-game-list" id="room-filter">
                             방 걸러보기
                         </div> 
-                    </a>
+                    </div>
             </footer>
         `;
     }
@@ -242,7 +242,7 @@ export default function CustomGameList($container) {
             click($roomContent, () => {
                 const $roomWrapper = $roomContent.closest('.room-wrapper');
 
-                // isSecret: '.is-secret' 클래스를 가진 요소의 존재 여부로 판단
+                // isSecret: '.is-secret' 클래스를 가진 요소의 존재 여부로 비밀방인지 판단
                 const isSecret = $roomWrapper.querySelector('.is-secret') !== null;
 
                 // isWaiting: roomStatus 요소의 텍스트 내용으로 '대기중'인지 판단
@@ -262,12 +262,15 @@ export default function CustomGameList($container) {
 
                 // RGB 색상에서 RGBA 색상으로 변환하여 배경색으로 설정 (20% 투명도 적용)
                 const backgroundColor = borderColor.replace('rgb', 'rgba').replace(')', ', 0.2)');
-                style.backgroundColor = backgroundColor;
+
+                // 수정된 부분: 요소의 style 속성에 직접 backgroundColor 설정
+                this.style.backgroundColor = backgroundColor;
             });
 
             // mouseleave 이벤트 리스너
             $roomContent.addEventListener('mouseleave', function() {
-                style.backgroundColor = ''; // 배경색을 초기화 (CSS 스타일로 돌아감)
+                // 배경색을 원래 상태(투명)로 되돌림
+                this.style.backgroundColor = ''; // 또는 초기 설정한 배경색으로 지정
             });
         });
 
