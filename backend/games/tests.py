@@ -8,27 +8,21 @@ from users.models import User
 # Create your tests here.
 
 class PingPongGameTestCase(TestCase):
-    user = None
-
-    @classmethod
-    def setUpClass(cls):
-        cls.user = User.objects.create_user(
+    def setUp(self):
+        self.user = User.objects.create_user(
             nickname='테스터',
             email='test@test.com',
         )
-        cls.ping_pong_game = PingPongGame(
+        self.ping_pong_game = PingPongGame(
             '테스터',
             (1920, 1080),
-            (10, 1920/2, 1080/2),
-            (10, 20, 0, 1080/2 - 10)
+            (10, 1920 / 2, 1080 / 2),
+            (10, 20, 0, 1080 / 2 - 10)
         )
 
-    def setUp(self):
-        pass
+    def tearDown(self):
+        self.user.delete()
 
-    @classmethod
-    def tearDownClass(cls):
-        cls.user.delete()
-
-    def test_ping_pong_game(self):
-        pass
+    def test_set_ball_direction(self):
+        self.ping_pong_game.ball.set_direction(45)
+        self.assertEqual(self.ping_pong_game.ball.direction, 45)
