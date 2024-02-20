@@ -31,3 +31,8 @@ class PingPongGameTestCase(TestCase):
         self.assertEqual(self.ping_pong_game.ball.speed, 10)
         self.assertEqual(self.ping_pong_game.ball.x, 10)
         self.assertEqual(self.ping_pong_game.ball.y, 10)
+
+    def test_set_racket(self):
+        self.ping_pong_game.racket.set_x_y(10, 10)
+        self.assertEqual(self.ping_pong_game.racket.x, 10)
+        self.assertEqual(self.ping_pong_game.racket.y, 10)
