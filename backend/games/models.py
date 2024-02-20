@@ -1,10 +1,11 @@
+from datetime import datetime
+
 from django.db import models
 from users.models import User
 from src.choices import MODE_CHOICES, STATUS_CHOICES
 
 
 class Game(models.Model):
-
     mode = models.PositiveSmallIntegerField(choices=MODE_CHOICES)
     title = models.CharField(null=True, blank=True)
     password = models.CharField(null=True, blank=True)
@@ -72,3 +73,82 @@ class CasualGameListView(models.Model):
     class Meta:
         managed = False
         db_table = 'casual_game_list_view'
+
+
+##############################################################
+# PingPong 게임 정보를 담는 클래스. 데이터베이스에 저장되지 않음.         #
+##############################################################
+class Player:
+    """
+    플레이어 정보를 담는 클래스
+
+    Attributes:
+    - user: User
+    - score: int
+    """
+    user: User
+    score: int
+
+
+class Ball:
+    """
+    공 정보를 담는 클래스
+
+    Attributes:
+    - radius: float
+    - x: float
+    - y: float
+    - speed: float
+    - direction: float
+    """
+    radius: float
+    x: float
+    y: float
+    speed: float
+    direction: float
+
+
+class Racket:
+    """
+    라켓 정보를 담는 클래스
+
+    Attributes:
+    - width: float
+    - height: float
+    - x: float
+    - y: float
+    """
+    width: float
+    height: float
+    x: float
+    y: float
+
+
+class Map:
+    """
+    맵 정보를 담는 클래스
+
+    Attributes:
+    - width: float
+    - height: float
+    """
+    width: float
+    height: float
+
+
+class PingPongGame:
+    """
+    핑퐁 게임 정보를 담는 클래스
+
+    Attributes:
+    - player: Player
+    - map: Map
+    - ball: Ball
+    - racket: Racket
+    - started_at: datetime
+    """
+    player: Player
+    map: Map
+    ball: Ball
+    racket: Racket
+    started_at: datetime
