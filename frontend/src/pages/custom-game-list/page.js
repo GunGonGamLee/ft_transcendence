@@ -5,8 +5,13 @@ import { hoverToggle } from "../../utils/hoverEvent.js";
 import passwordModal from "./password-modal.js";
 import useState from "../../utils/useState.js";
 import gameRoomList from "./gameRoomlist.js";
+import { BACKEND } from "../../global.js";
 
 export default function CustomGameList($container) {
+  let mode = 2; // 0: 1 vs 1, 1: 토너먼트, 2: 전체, defulat=2
+  let pagination = 1;
+  let maxPage = 1;
+
   const init = () => {
     renderLayout();
     this.renderGameRoomList();
@@ -16,36 +21,36 @@ export default function CustomGameList($container) {
     importCss("../../../assets/css/customGameList.css");
 
     $container.innerHTML = `
-            <div class="custom-game-list" id="content-wrapper">
-                <div class="custom-game-list" id="game-room-list-wrapper">
-									<div class="game-room-list" id="list-wrapper"></div>
-                </div>
-                <div class="custom-game-list" id="pagination-arrow-wrapper">
-                    <div class="custom-game-list" id="pagination-arrow-left" style="color: rgb(255, 255, 255); font-family: Galmuri11, serif;">
-                        <
-                    </div>
-                    <div class="custom-game-list" id="pagination-arrow-right" style="color: rgb(255, 255, 255); font-family: Galmuri11, serif;" role="button" >
-                        >
-                    </div>
-                </div>
-            </div>
-            <footer class="custom-game-list" id="game-room-options-wrapper">
-              <div class="custom-game-list" id="quick-join" style="color: rgb(255, 255, 255); font-family: Galmuri11, serif;">신속히 입장</div>
-              <div class="custom-game-list" id="create-room" style="color: rgb(255, 255, 255); font-family: Galmuri11, serif;">방 만들기</div>
-              <div class="custom-game-list" id="room-filter" style="color: rgb(255, 255, 255); font-family: Galmuri11, serif;">
-                  <div class="histories game-mode-toggle" id="toggle">
-                      <ul class="histories">
-                          <li>1 vs 1 모드</li>
-                          <li>토너먼트 모드</li>
-                      </ul>
-                  </div>
-                  <div class="custom-game-list" id="room-filter">
-                      방 걸러보기
-                  </div> 
+      <div class="custom-game-list" id="content-wrapper">
+          <div class="custom-game-list" id="game-room-list-wrapper">
+			<div class="game-room-list" id="list-wrapper"></div>
+          </div>
+          <div class="custom-game-list" id="pagination-arrow-wrapper">
+              <div class="custom-game-list" id="pagination-arrow-left" style="color: rgb(255, 255, 255); font-family: Galmuri11, serif;">
+                  <
               </div>
-            </footer>
-						${roomCreateModal()}
-						${passwordModal()}
+              <div class="custom-game-list" id="pagination-arrow-right" style="color: rgb(255, 255, 255); font-family: Galmuri11, serif;" role="button" >
+                  >
+              </div>
+          </div>
+      </div>
+      <footer class="custom-game-list" id="game-room-options-wrapper">
+        <div class="custom-game-list" id="quick-join" style="color: rgb(255, 255, 255); font-family: Galmuri11, serif;">신속히 입장</div>
+        <div class="custom-game-list" id="create-room" style="color: rgb(255, 255, 255); font-family: Galmuri11, serif;">방 만들기</div>
+        <div class="custom-game-list" id="room-filter" style="color: rgb(255, 255, 255); font-family: Galmuri11, serif;">
+            <div class="histories game-mode-toggle" id="toggle">
+                <ul class="histories">
+                    <li>1 vs 1 모드</li>
+                    <li>토너먼트 모드</li>
+                </ul>
+            </div>
+            <div class="custom-game-list" id="room-filter">
+                방 걸러보기
+            </div> 
+        </div>
+      </footer>
+			${roomCreateModal()}
+			${passwordModal()}
         `;
   };
   /**
@@ -55,7 +60,7 @@ export default function CustomGameList($container) {
   this.renderGameRoomList = () => {
     let $listWrapper = $container.querySelector("#list-wrapper");
     $listWrapper.innerHTML = "";
-    let curGameRoomList = getGameRoomList();
+    let curGameRoomList = getGameRoomList().data;
     for (let data of curGameRoomList) {
       $listWrapper.insertAdjacentHTML(
         "afterbegin",
@@ -154,48 +159,87 @@ export default function CustomGameList($container) {
     click($passwordModalClose, () => {
       $passwordModal.style.display = "none";
     });
+
+    // 페이지네이션
+    click($paginationBefore, () => {
+      if (pagination > 1) {
+        pagination -= 1;
+        updateGameRoomList();
+      }
+    });
+
+    click($paginationAfter, () => {
+      if (pagination < maxPage) {
+        pagination += 1;
+        updateGameRoomList();
+      }
+    });
   };
 
   // 임시 gameRoomList 오브젝트
 
-  let gameRoomListInput = [
-    {
-      gameMode: "1 vs 1",
-      gameModeImage: "../../../assets/images/1vs1_logo.png",
-      countOfPlayers: "1/2",
-      roomTitle: "핑포로로로롱",
-      roomStatus: "대기중",
-      isSecret: "../../assets/images/password.png",
-    },
-    {
-      gameMode: "1 vs 1",
-      gameModeImage: "../../../assets/images/1vs1_logo.png",
-      countOfPlayers: "2/2",
-      roomTitle: "너만 오면 ㄱ",
-      roomStatus: "게임중",
-      isSecret: "../../assets/images/password.png",
-    },
-    {
-      gameMode: "토너먼트",
-      gameModeImage: "../../../assets/images/tournament_logo.png",
-      roomTitle: "Im king of pingpong lalalalaalalalala",
-      countOfPlayers: "1/4",
-      roomStatus: "대기중",
-    },
-    {
-      gameMode: "토너먼트",
-      gameModeImage: "../../../assets/images/tournament_logo.png",
-      roomTitle: "다 뎀비라!",
-      countOfPlayers: "4/4",
-      roomStatus: "게임중",
-    },
-  ];
+  /*
+  id	number	게임방 테이블의 ID값
+	title	string	방 제목
+	is_secret	boolean	비밀번호 여부
+	player_num	number	게임방에 참가한 사람의 수
+	mode	number	0: 1 vs 1, 1: 토너먼트
+	started	boolean	게임 시작 여부 (true: 게임중, false: 대기방)
+  */
+
+  let gameRoomListInput = {
+    total_pages: 2,
+    data: [
+      {
+        id: 1,
+        title: "핑포로로로롱",
+        is_secret: true,
+        player_num: 4,
+        mode: 1,
+        started: false,
+      },
+      {
+        id: 1,
+        title: "안 비밀방",
+        is_secret: false,
+        player_num: 2,
+        mode: 0,
+        started: true,
+      },
+      {
+        id: 1,
+        title: "핑포로로로롱",
+        is_secret: true,
+        player_num: 4,
+        mode: 1,
+        started: false,
+      },
+      {
+        id: 1,
+        title: "핑포로로로롱",
+        is_secret: true,
+        player_num: 4,
+        mode: 1,
+        started: true,
+      },
+    ],
+  };
 
   let [getGameRoomList, setGameRoomList] = useState(
     gameRoomListInput,
     this,
     "renderGameRoomList",
   );
+
+  let updateGameRoomList = () => {
+    fetch(`${BACKEND}/games/?mode=${mode}&page=${pagination}`).then((res) => {
+      res.json().then((data) => {
+        maxPage = data.total_pages;
+        setGameRoomList(data);
+      });
+    });
+  };
   init();
   addEventListenersToLayout();
+  setInterval(updateGameRoomList, 1000);
 }

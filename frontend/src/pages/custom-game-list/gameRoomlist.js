@@ -4,7 +4,7 @@
  * @returns {object} 스타일 정보를 담은 객체
  */
 let getRoomStyle = (room) => {
-  let borderColor = room.roomStatus === "대기중" ? "#08F6B0" : "#FF79C5";
+  let borderColor = room.started === false ? "#08F6B0" : "#FF79C5";
   let textColor = borderColor; // 텍스트 색상을 테두리 색상과 동일하게 설정
   // HEX 색상에서 RGB 값으로 변환
   let r = parseInt(borderColor.substring(1, 3), 16);
@@ -23,40 +23,46 @@ let getRoomStyle = (room) => {
  * @returns {string} 비밀방 여부에 따른 HTML 문자열
  */
 let getSecretRoomHTML = (room) => {
-  return room.isSecret
+  return room.is_secret
     ? `<div class="game-room-list is-secret">
-                <img class="game-room-list" src="${room.isSecret}" alt="is-secret">
-             </div>`
+       	<img class="game-room-list" src="../../assets/images/password.png" alt="is-secret">
+       </div>`
     : "";
 };
 
 export default function gameRoomList(room) {
   let isSecretHTML = getSecretRoomHTML(room);
   let { borderColor, textColor, shadowColor } = getRoomStyle(room);
+  let gameMode = room.mode === 0 ? "1 vs 1" : "토너먼트";
+  let gameModeImage =
+    room.mode === 0
+      ? "../../../assets/images/1vs1_logo.png"
+      : "../../../assets/images/tournament_logo.png";
+  let roomStatus = room.started ? "게임중" : "대기중";
 
   return `
             <div class="game-room-list room-info" id="room-content" style="color: rgb(255, 255, 255); font-family: Galmuri11, serif; border: 1px solid ${borderColor}; box-shadow: 0 0 1rem 0.5rem ${shadowColor}; border-radius: 10px; width: 100%;">
                 <div class="game-room-list column">
                     <div class="game-room-list game-mode">
-                        <img class="game-room-list" id= "game-mode-image" src="${room.gameModeImage}" alt="game-mode">
+                        <img class="game-room-list" id= "game-mode-image" src="${gameModeImage}" alt="game-mode">
                     </div>
                 </div>
                 <div class="game-room-list column">
                     <div class="game-room-list row">
                         <div class="game-room-list room-title">
-                            ${room.roomTitle}
+                            ${room.title}
                         </div>
                         ${isSecretHTML}
                     </div>
                     <div class="game-room-list row">
                         <div class="game-room-list count-of-players">
-                            ${room.countOfPlayers}
+                            ${room.player_num}/${(room.mode + 1) * 2}
                         </div>
                         <div class="game-room-list game-mode-name">
-                            ${room.gameMode}
+                            ${gameMode}
                         </div>
                         <div class="game-room-list room-status" style="color: ${textColor};">
-                            ${room.roomStatus}
+                            ${roomStatus}
                         </div>
                     </div>
                 </div>
