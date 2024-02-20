@@ -95,50 +95,9 @@ class Player:
         self.score = score
 
 
-class Ball:
-    """
-    공 정보를 담는 클래스
-
-    Attributes:
-    - radius: float
-    - x: float
-    - y: float
-    - speed: float
-    - direction: tuple
-    """
-    radius: float
-    x: float
-    y: float
-    speed: float
-    direction: tuple
-
-    def __init__(self, radius, x, y):
-        self.radius = radius
-        self.x = x
-        self.y = y
-        self.speed = 10
-        self.direction = (random.uniform(-1, 1), random.uniform(-1, 1))
-
-    def set_direction(self, direction: tuple):
-        if direction[0] > 1 or direction[0] < -1 or direction[1] > 1 or direction[1] < -1:
-            raise ValueError('direction must be in range of -1 to 1')
-        self.direction = direction
-
-    def set_speed(self, speed):
-        self.speed = speed
-
-    def set_x_y(self, x, y):
-        self.x = x
-        self.y = y
-
-    def move(self):
-        self.x += self.speed * self.direction[0]
-        self.y += self.speed * self.direction[1]
-
-
 class Racket:
     """
-    라켓 정보를 담는 클래스
+    라켓 정보를 담는 클래스. xy 좌표는 라켓의 좌상단을 기준으로 한다.
 
     Attributes:
     - width: float
@@ -181,6 +140,68 @@ class Map:
         self.height = height
 
 
+class Ball:
+    """
+    공 정보를 담는 클래스
+
+    Attributes:
+    - radius: float
+    - x: float
+    - y: float
+    - speed: float
+    - direction: tuple
+    """
+    radius: float
+    x: float
+    y: float
+    speed: float
+    direction: tuple
+
+    def __init__(self, radius, x, y):
+        self.radius = radius
+        self.x = x
+        self.y = y
+        self.speed = 10
+        self.direction = (random.uniform(-1, 1), random.uniform(-1, 1))
+
+    def set_direction(self, direction: tuple):
+        if direction[0] > 1 or direction[0] < -1 or direction[1] > 1 or direction[1] < -1:
+            raise ValueError('direction must be in range of -1 to 1')
+        self.direction = direction
+
+    def set_speed(self, speed):
+        self.speed = speed
+
+    def set_x_y(self, x, y):
+        self.x = x
+        self.y = y
+
+    def move(self):
+        self.x += self.speed * self.direction[0]
+        self.y += self.speed * self.direction[1]
+
+    def hit_objects(self, racket: Racket, map: Map):
+        """
+        공이 라켓이나 맵에 부딪혔는지 확인하는 함수
+        :param racket: 라켓
+        :type racket: Racket
+        :param map: 맵
+        :type map: Map
+        :return: 부딪혔으면 True, 아니면 False
+        :rtype: bool
+        """
+        left_point = self.x - self.radius
+        right_point = self.x + self.radius
+        top_point = self.y - self.radius
+        bottom_point = self.y + self.radius
+
+        racket_left_point = racket.x -
+        if left_point <= 0 or right_point >= map.width:
+            return True
+        if top_point <= 0 or bottom_point >= map.height:
+            return True
+
+
 class PingPongGame:
     """
     핑퐁 게임 정보를 담는 클래스
@@ -216,3 +237,13 @@ class PingPongGame:
         self.ball = Ball(ball_info[0], ball_info[1], ball_info[2])
         self.racket = Racket(racket_info[0], racket_info[1], racket_info[2], racket_info[3], racket_info[4])
         self.started_at = datetime.now()
+
+        def move_ball():
+            """
+            공을 움직이는 함수
+            :return: None
+            :rtype: None
+            """
+            self.ball.move()
+            if self.ball.hit_objects(self.racket, self.map):
+                self.ball.bounce()
