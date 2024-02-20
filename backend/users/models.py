@@ -23,6 +23,7 @@ class User(AbstractUser):
     first_name = None
     last_name = None
     is_staff = None
+    last_login = None
 
     USERNAME_FIELD = 'email'  # 이메일을 주 사용자 식별자로 설정
     REQUIRED_FIELDS = []  # email은 USERNAME_FIELD로 사용되므로 여기서 제외
