@@ -23,6 +23,11 @@ class PingPongGameTestCase(TestCase):
     def tearDown(self):
         self.user.delete()
 
-    def test_set_ball_direction(self):
+    def test_set_ball(self):
         self.ping_pong_game.ball.set_direction(45)
+        self.ping_pong_game.ball.set_speed(10)
+        self.ping_pong_game.ball.set_x_y(10, 10)
         self.assertEqual(self.ping_pong_game.ball.direction, 45)
+        self.assertEqual(self.ping_pong_game.ball.speed, 10)
+        self.assertEqual(self.ping_pong_game.ball.x, 10)
+        self.assertEqual(self.ping_pong_game.ball.y, 10)
