@@ -30,9 +30,9 @@ class FriendsView(APIView):
                 friend_data = {
                     'nickname' : friend.nickname,
                     'is_online' : friend.is_online,
+                    'avatar' : friend.avatar,
                 }
                 friend_list.append(friend_data)
-
             response_data = {'friends': friend_list}
             return Response(response_data, status=status.HTTP_200_OK)
         except AuthenticationException as e:
