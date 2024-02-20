@@ -61,6 +61,7 @@ export default function MainHeader($container) {
         </div>
         `,
     );
+    const headerElement = document.getElementById("header");
     renderFriendsInfoModal(headerElement);
 
     // 뒤로가기 버튼 클릭 이벤트
@@ -108,7 +109,5 @@ export default function MainHeader($container) {
 
   importCss("../../../assets/fonts/font.css");
   init();
-  const headerElement = document.getElementById("header");
-
   let [getUserInfo, setUserInfo] = useState({}, this, "render");
 }
