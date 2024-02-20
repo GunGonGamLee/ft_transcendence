@@ -76,7 +76,7 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def reject_invalid_user(self):
         await self.accept()
         await self.send(text_data=json.dumps({"error": "Invalid user"}))
-        logger.info("Invalid user")
+        logger.info("[게임방 입장] Invalid user")
         await self.close()
 
     async def process_valid_user(self):
@@ -194,13 +194,13 @@ class RankGameConsumer(AsyncWebsocketConsumer):
             return
         await self.accept()
         self.game_queue.append(user.id)
-        logging.info(f'User {user.nickname} 연결되었어요')
+        logging.info(f'[RANK] User {user.nickname} 연결되었어요')
         
         if len(self.game_queue) >= 4:
             try:
                 await self.create_game()
                 self.game_queue.clear()
-                logging.info('게임이 생성되고 대기열이 모두 초기화되었어요.')
+                logging.info('[RANK] 게임이 생성되고 대기열이 모두 초기화되었어요.')
             except Exception as e:
                 logging.error(e)
 
@@ -208,7 +208,7 @@ class RankGameConsumer(AsyncWebsocketConsumer):
         user = self.scope['user']
         if user.id in self.game_queue:
             self.game_queue.remove(user.id)
-            logging.info(f'User {user.nickname} 이 연결을 끊었어요.')
+            logging.info(f'[RANK] User {user.nickname} 이 연결을 끊었어요.')
             
     async def create_game(self):
         users = await sync_to_async(self.get_users)(self.game_queue[:4])
