@@ -30,7 +30,7 @@ class FriendsView(APIView):
                 friend_data = {
                     'nickname' : friend.nickname,
                     'is_online' : friend.is_online,
-                    'avatar' : friend.avatar,
+                    'avatar' : friend.avatar.split('/')[-1],
                 }
                 friend_list.append(friend_data)
             response_data = {'friends': friend_list}
