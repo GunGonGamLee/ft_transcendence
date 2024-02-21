@@ -12,7 +12,6 @@ env = environ.Env()
 DEBUG = False
 env.read_env(env_file=ENV_PATH)
 
-
 def wait_for_vault_client(client, retries=5, delay=5):
     for i in range(retries):
         try:
@@ -60,7 +59,7 @@ if DEBUG:
 else:
     VAULT_URL = env('VAULT_URL')
     VAULT_TOKEN = env('VAULT_TOKEN')
-    client = hvac.Client(url=VAULT_URL, token=VAULT_TOKEN)
+    client = hvac.Client(url=VAULT_URL, token=VAULT_TOKEN, verify='/backend/certs/rootCA.pem')
 
     wait_for_vault_client(client)
     secret_path = "sejokim"
