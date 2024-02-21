@@ -1,9 +1,6 @@
 import random
-
 from django.test import TestCase
-
 from games.models import PingPongGame, Ball, Racket, Player, PingPongMap
-
 from users.models import User
 
 
