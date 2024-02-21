@@ -227,6 +227,34 @@ class Ball:
         """
         self.direction = (self.direction[0] * bounce_direction[0], self.direction[1] * bounce_direction[1])
 
+    def is_goal_in(self, ping_pong_map: PingPongMap):
+        """
+        골인했는지 확인하는 함수
+        :param ping_pong_map: 맵
+        :type ping_pong_map: PingPongMap
+        :return: 골인했으면 True, 아니면 False
+        :rtype: list
+        """
+        if self.x < 0:
+            return [True, False]
+        elif self.x > ping_pong_map.width:
+            return [False, True]
+        else:
+            return [False, False]
+
+    def reset(self, ping_pong_map: PingPongMap):
+        """
+        공을 초기화하는 함수
+        :param ping_pong_map: 맵
+        :type ping_pong_map: PingPongMap
+        :return: None
+        :rtype: None
+        """
+        self.x = ping_pong_map.width / 2
+        self.y = ping_pong_map.height / 2
+        self.speed = 10
+        self.direction = (random.uniform(-1, 1), random.uniform(-1, 1))
+
 
 class PingPongGame:
     """
@@ -265,17 +293,30 @@ class PingPongGame:
         self.ball = ball
         self.started_at = datetime.now()
 
-        def move_ball():
-            """
-            공을 움직이는 함수
-            :return: None
-            :rtype: None
-            """
-            self.ball.move()
-            if self.ball.hit_wall(self.ping_pong_map):
-                self.ball.bounce((1, -1))
-            elif self.ball.hit_racket(self.left_side_player.racket) or self.ball.hit_racket(self.right_side_player.racket):
-                self.ball.bounce((-1, 1))
-            elif self.ball.is_goal_in():
-                self.update_score(self.left_side_player, self.right_side_player, self.ball)
-                self.ball.reset()
+    def update_score(self, whether_score_a_goal: list):
+        """
+        점수를 업데이트하는 함수
+        :param whether_score_a_goal: 골을 넣었는지 확인하는 리스트
+        :type whether_score_a_goal: list
+        :return: None
+        :rtype: None
+        """
+        if whether_score_a_goal[0]:
+            self.right_side_player.score += 1
+        elif whether_score_a_goal[1]:
+            self.left_side_player.score += 1
+
+    def move_ball(self):
+        """
+        공을 움직이는 함수
+        :return: None
+        :rtype: None
+        """
+        self.ball.move()
+        if self.ball.hit_wall(self.ping_pong_map):
+            self.ball.bounce((1, -1))
+        elif self.ball.hit_racket(self.left_side_player.racket) or self.ball.hit_racket(self.right_side_player.racket):
+            self.ball.bounce((-1, 1))
+        if whether_score_a_goal := self.ball.is_goal_in(self.ping_pong_map):
+            self.update_score(whether_score_a_goal)
+            self.ball.reset(self.ping_pong_map)
