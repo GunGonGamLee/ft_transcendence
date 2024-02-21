@@ -221,6 +221,9 @@ export default function CustomGameList($container) {
       updateGameRoomList();
     });
   };
+  this.unmount = () => {
+    clearInterval(intervalId);
+  };
 
   /*
   임시 gameRoomList 오브젝트
@@ -254,6 +257,5 @@ export default function CustomGameList($container) {
   };
   init();
   addEventListenersToLayout();
-  setInterval(updateGameRoomList, 1000);
+  const intervalId = setInterval(updateGameRoomList, 1000);
 }
-// TODO: unmount 함수 추가
