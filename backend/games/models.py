@@ -203,13 +203,9 @@ class Ball:
             return True
         return False
 
-    def hit_objects(self, left_racket: Racket, right_racket: Racket, ping_pong_map: PingPongMap):
+    def hit_wall(self, ping_pong_map: PingPongMap):
         """
-        공이 라켓이나 맵에 부딪혔는지 확인하는 함수
-        :param left_racket: 왼쪽 라켓
-        :type left_racket: Racket
-        :param right_racket: 오른쪽 라켓
-        :type right_racket: Racket
+        공이 맵에 부딪혔는지 확인하는 함수
         :param ping_pong_map: 맵
         :type ping_pong_map: PingPongMap
         :return: 부딪혔으면 True, 아니면 False
@@ -221,10 +217,15 @@ class Ball:
         # 공이 벽에 부딪혔는지 확인
         if top_point <= 0 or bottom_point >= ping_pong_map.height:
             return True
-        # 공이 라켓에 부딪혔는지 확인
-        if self.hit_racket(left_racket) or self.hit_racket(right_racket):
-            return True
         return False
+
+    def bounce(self, bounce_direction=tuple):
+        """
+        공을 튕기는 함수
+        :param bounce_direction: 튕길 방향
+        :type bounce_direction: tuple
+        """
+        self.direction = (self.direction[0] * bounce_direction[0], self.direction[1] * bounce_direction[1])
 
 
 class PingPongGame:
@@ -271,8 +272,10 @@ class PingPongGame:
             :rtype: None
             """
             self.ball.move()
-            if self.ball.hit_objects(self.left_side_player.racket, self.right_side_player.racket, self.ping_pong_map):
-                self.ball.bounce()
+            if self.ball.hit_wall(self.ping_pong_map):
+                self.ball.bounce((1, -1))
+            elif self.ball.hit_racket(self.left_side_player.racket) or self.ball.hit_racket(self.right_side_player.racket):
+                self.ball.bounce((-1, 1))
             elif self.ball.is_goal_in():
                 self.update_score(self.left_side_player, self.right_side_player, self.ball)
                 self.ball.reset()

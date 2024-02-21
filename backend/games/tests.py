@@ -57,27 +57,30 @@ class PingPongGameTestCase(TestCase):
         ball_x = self.ping_pong_game.left_side_player.racket.x + self.ping_pong_game.left_side_player.racket.width
         ball_y = self.ping_pong_game.left_side_player.racket.y
         self.ping_pong_game.ball.set_x_y(ball_x, ball_y)
-        self.assertEqual(self.ping_pong_game.ball.hit_objects(
+        self.assertEqual(self.ping_pong_game.ball.hit_racket(
             self.ping_pong_game.left_side_player.racket,
-            self.ping_pong_game.right_side_player.racket,
-            self.ping_pong_game.ping_pong_map
         ), True)
+        self.assertEqual(self.ping_pong_game.ball.hit_racket(
+            self.ping_pong_game.right_side_player.racket,
+        ), False)
 
     def test_hit_wall(self):
         ball_x = self.ping_pong_game.ping_pong_map.width / 2
         ball_y = 0
         self.ping_pong_game.ball.set_x_y(ball_x, ball_y)
-        self.assertEqual(self.ping_pong_game.ball.hit_objects(
-            self.ping_pong_game.left_side_player.racket,
-            self.ping_pong_game.right_side_player.racket,
+        self.assertEqual(self.ping_pong_game.ball.hit_wall(
             self.ping_pong_game.ping_pong_map
         ), True)
 
     def test_hit_nothing(self):
-        self.assertEqual(self.ping_pong_game.ball.hit_objects(
-            self.ping_pong_game.left_side_player.racket,
-            self.ping_pong_game.right_side_player.racket,
+        self.assertEqual(self.ping_pong_game.ball.hit_wall(
             self.ping_pong_game.ping_pong_map
+        ), False)
+        self.assertEqual(self.ping_pong_game.ball.hit_racket(
+            self.ping_pong_game.left_side_player.racket,
+        ), False)
+        self.assertEqual(self.ping_pong_game.ball.hit_racket(
+            self.ping_pong_game.right_side_player.racket,
         ), False)
 
     def test_move_ball(self):
