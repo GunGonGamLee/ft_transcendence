@@ -185,11 +185,31 @@ class Ball:
         self.x += self.speed * self.direction[0]
         self.y += self.speed * self.direction[1]
 
-    def hit_objects(self, racket: Racket, ping_pong_map: PingPongMap):
+    def hit_racket(self, racket: Racket):
         """
-        공이 라켓이나 맵에 부딪혔는지 확인하는 함수
+        공이 라켓에 부딪혔는지 확인하는 함수
         :param racket: 라켓
         :type racket: Racket
+        :return: 부딪혔으면 True, 아니면 False
+        :rtype: bool
+        """
+        racket_hit_point_max_range = math.sqrt(pow(racket.width / 2, 2) + pow(racket.height / 2, 2)) + self.radius
+        racket_hit_point_min_range = racket.width / 2 + self.radius
+        racket_center_pos = (racket.x + racket.width / 2, racket.y + racket.height / 2)
+        a = math.fabs(racket_center_pos[0] - self.x)
+        b = math.fabs(racket_center_pos[1] - self.y)
+        c = math.sqrt(pow(a, 2) + pow(b, 2))  # 피타고라스 정리를 이용하여 공과 라켓의 중심 사이의 거리를 구함
+        if racket_hit_point_min_range <= c <= racket_hit_point_max_range:
+            return True
+        return False
+
+    def hit_objects(self, left_racket: Racket, right_racket: Racket, ping_pong_map: PingPongMap):
+        """
+        공이 라켓이나 맵에 부딪혔는지 확인하는 함수
+        :param left_racket: 왼쪽 라켓
+        :type left_racket: Racket
+        :param right_racket: 오른쪽 라켓
+        :type right_racket: Racket
         :param ping_pong_map: 맵
         :type ping_pong_map: PingPongMap
         :return: 부딪혔으면 True, 아니면 False
@@ -201,15 +221,8 @@ class Ball:
         # 공이 벽에 부딪혔는지 확인
         if top_point <= 0 or bottom_point >= ping_pong_map.height:
             return True
-
         # 공이 라켓에 부딪혔는지 확인
-        racket_hit_point_max_range = math.sqrt(pow(racket.width / 2, 2) + pow(racket.height / 2, 2)) + self.radius
-        racket_hit_point_min_range = racket.width / 2 + self.radius
-        racket_center_pos = (racket.x + racket.width / 2, racket.y + racket.height / 2)
-        a = math.fabs(racket_center_pos[0] - self.x)
-        b = math.fabs(racket_center_pos[1] - self.y)
-        c = math.sqrt(pow(a, 2) + pow(b, 2))  # 피타고라스 정리를 이용하여 공과 라켓의 중심 사이의 거리를 구함
-        if racket_hit_point_min_range <= c <= racket_hit_point_max_range:
+        if self.hit_racket(left_racket) or self.hit_racket(right_racket):
             return True
         return False
 
