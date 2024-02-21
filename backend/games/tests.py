@@ -53,5 +53,27 @@ class PingPongGameTestCase(TestCase):
         self.assertEqual(self.ping_pong_game.left_side_player.racket.x, 10)
         self.assertEqual(self.ping_pong_game.left_side_player.racket.y, 10)
 
+    def test_hit_racket(self):
+        ball_x = self.ping_pong_game.left_side_player.racket.x + self.ping_pong_game.left_side_player.racket.width
+        ball_y = self.ping_pong_game.left_side_player.racket.y
+        self.ping_pong_game.ball.set_x_y(ball_x, ball_y)
+        self.assertEqual(self.ping_pong_game.ball.hit_objects(
+            self.ping_pong_game.left_side_player.racket,
+            self.ping_pong_game.ping_pong_map
+        ), True)
+        self.assertEqual(self.ping_pong_game.ball.hit_objects(
+            self.ping_pong_game.right_side_player.racket,
+            self.ping_pong_game.ping_pong_map
+        ), False)
+
+    def test_hit_wall(self):
+        ball_x = self.ping_pong_game.ping_pong_map.width / 2
+        ball_y = 0
+        self.ping_pong_game.ball.set_x_y(ball_x, ball_y)
+        self.assertEqual(self.ping_pong_game.ball.hit_objects(
+            self.ping_pong_game.left_side_player.racket,
+            self.ping_pong_game.ping_pong_map
+        ), True)
+
     def test_move_ball(self):
         self.ping_pong_game.ball.set_direction((-1, 0))
