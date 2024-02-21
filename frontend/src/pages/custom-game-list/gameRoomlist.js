@@ -24,8 +24,8 @@ let getRoomStyle = (room) => {
  */
 let getSecretRoomHTML = (room) => {
   return room.is_secret
-    ? `<div class="game-room-list is-secret">
-       	<img class="game-room-list" src="../../assets/images/password.png" alt="is-secret">
+    ? `<div>
+       	<img class="game-room-list is-secret" src="../../assets/images/password.png" alt="is-secret">
        </div>`
     : "";
 };

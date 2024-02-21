@@ -61,15 +61,29 @@ export default function CustomGameList($container) {
     let $listWrapper = $container.querySelector("#list-wrapper");
     $listWrapper.innerHTML = "";
     let curGameRoomList = getGameRoomList().data;
-    for (let data of curGameRoomList) {
+    if (curGameRoomList == null) {
       $listWrapper.insertAdjacentHTML(
         "afterbegin",
         `
+              <div style="position: absolute; top: 40vh; left: 40vw;">               
+               <div class="spinner-border text-light" style="width: 10vh; height: 10vh" role="status">
+                  <span class="visually-hidden">Loading...</span>
+               </div>
+               <span>Fetching data....</span>
+              </div> 
+            `,
+      );
+    } else {
+      for (let data of curGameRoomList) {
+        $listWrapper.insertAdjacentHTML(
+          "afterbegin",
+          `
                 <div class="game-room-list room-wrapper">
                     ${gameRoomList(data)}
                 </div>
             `,
-      );
+        );
+      }
     }
   };
 
@@ -169,27 +183,28 @@ export default function CustomGameList($container) {
     });
 
     click($paginationAfter, () => {
-      if (pagination < maxPage) {
+      if (pagination <= maxPage) {
         pagination += 1;
         updateGameRoomList();
       }
     });
 
     // 방 걸러보기
-    const $1vs1FilterBtn = $container.querySelector("#1vs1-filter-btn");
-    const $tournamentFilterBtn = $container.querySelector(
-      "#tournament-filter-btn",
+    const $1vs1FilterBtn = document.getElementById("1vs1-filter-btn");
+    const $tournamentFilterBtn = document.getElementById(
+      "tournament-filter-btn",
     );
 
     click($1vs1FilterBtn, () => {
       if (mode === 2) {
         mode = 1;
         $1vs1FilterBtn.style.color = "white";
-      } else {
+      } else if (mode === 1) {
         mode = 2;
         $1vs1FilterBtn.style.color = "yellow";
+      } else {
+        return;
       }
-      console.log("1vs1");
       updateGameRoomList();
     });
 
@@ -197,11 +212,12 @@ export default function CustomGameList($container) {
       if (mode === 2) {
         mode = 0;
         $tournamentFilterBtn.style.color = "white";
-      } else {
+      } else if (mode === 0) {
         mode = 2;
         $tournamentFilterBtn.style.color = "yellow";
+      } else {
+        return;
       }
-      console.log("tournament");
       updateGameRoomList();
     });
   };
@@ -217,41 +233,8 @@ export default function CustomGameList($container) {
   */
 
   let gameRoomListInput = {
-    total_pages: 2,
-    data: [
-      {
-        id: 1,
-        title: "핑포로로로롱",
-        is_secret: true,
-        player_num: 4,
-        mode: 1,
-        started: false,
-      },
-      {
-        id: 1,
-        title: "안 비밀방",
-        is_secret: false,
-        player_num: 2,
-        mode: 0,
-        started: true,
-      },
-      {
-        id: 1,
-        title: "핑포로로로롱",
-        is_secret: true,
-        player_num: 4,
-        mode: 1,
-        started: false,
-      },
-      {
-        id: 1,
-        title: "핑포로로로롱",
-        is_secret: true,
-        player_num: 4,
-        mode: 1,
-        started: true,
-      },
-    ],
+    total_pages: 1,
+    data: null,
   };
 
   let [getGameRoomList, setGameRoomList] = useState(
@@ -265,6 +248,7 @@ export default function CustomGameList($container) {
       res.json().then((data) => {
         maxPage = data.total_pages;
         setGameRoomList(data);
+        console.log(data);
       });
     });
   };
@@ -272,3 +256,4 @@ export default function CustomGameList($container) {
   addEventListenersToLayout();
   setInterval(updateGameRoomList, 1000);
 }
+// TODO: unmount 함수 추가
