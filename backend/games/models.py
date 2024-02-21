@@ -1,3 +1,4 @@
+import math
 import random
 from datetime import datetime
 
@@ -87,8 +88,8 @@ class Racket:
     Attributes:
     - width: float
     - height: float
-    - x: float
-    - y: float
+    - x: float (좌상단 x 좌표)
+    - y: float (좌상단 y 좌표)
     - speed: float
     """
     width: float
@@ -194,17 +195,23 @@ class Ball:
         :return: 부딪혔으면 True, 아니면 False
         :rtype: bool
         """
-        left_point = self.x - self.radius
-        right_point = self.x + self.radius
         top_point = self.y - self.radius
         bottom_point = self.y + self.radius
 
-        racket_left_point = racket.x - racket.width / 2
-
-        if left_point <= 0 or right_point >= ping_pong_map.width:
-            return True
+        # 공이 벽에 부딪혔는지 확인
         if top_point <= 0 or bottom_point >= ping_pong_map.height:
             return True
+
+        # 공이 라켓에 부딪혔는지 확인
+        racket_hit_point_max_range = math.sqrt(pow(racket.width / 2, 2) + pow(racket.height / 2, 2)) + self.radius
+        racket_hit_point_min_range = racket.width / 2 + self.radius
+        racket_center_pos = (racket.x + racket.width / 2, racket.y + racket.height / 2)
+        a = math.fabs(racket_center_pos[0] - self.x)
+        b = math.fabs(racket_center_pos[1] - self.y)
+        c = math.sqrt(pow(a, 2) + pow(b, 2))  # 피타고라스 정리를 이용하여 공과 라켓의 중심 사이의 거리를 구함
+        if racket_hit_point_min_range <= c <= racket_hit_point_max_range:
+            return True
+        return False
 
 
 class PingPongGame:
