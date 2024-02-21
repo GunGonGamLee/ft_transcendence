@@ -189,8 +189,8 @@ class Ball:
         공이 라켓이나 맵에 부딪혔는지 확인하는 함수
         :param racket: 라켓
         :type racket: Racket
-        :param map: 맵
-        :type map: Map
+        :param ping_pong_map: 맵
+        :type ping_pong_map: PingPongMap
         :return: 부딪혔으면 True, 아니면 False
         :rtype: bool
         """
