@@ -237,9 +237,9 @@ class Ball:
         :return: 골인했으면 True, 아니면 False
         :rtype: list
         """
-        if self.x < 0:
+        if self.x <= 0:
             return [True, False]
-        elif self.x > ping_pong_map.width:
+        elif self.x >= ping_pong_map.width:
             return [False, True]
         else:
             return [False, False]
