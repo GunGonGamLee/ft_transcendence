@@ -9,6 +9,9 @@ from drf_yasg.utils import swagger_auto_schema
 from login.views import AuthUtils
 from src.utils import *
 from src.exceptions import AuthenticationException
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class FriendsView(APIView):
@@ -30,7 +33,7 @@ class FriendsView(APIView):
                 friend_data = {
                     'nickname' : friend.nickname,
                     'is_online' : friend.is_online,
-                    'avatar' : friend.avatar.split('/')[-1],
+                    'avatar' : str(friend.avatar).split('/')[-1],
                 }
                 friend_list.append(friend_data)
             response_data = {'friends': friend_list}
@@ -180,5 +183,66 @@ class RejectFriendView(APIView):
             return Response({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
         except User.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+class FriendSearchView(APIView):
+    @swagger_auto_schema(
+        tags=['/api/friends/search/'],
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'nickname': openapi.Schema(type=openapi.TYPE_STRING, description='찾을 유저의 닉네임')
+            },
+            required=['nickname']),
+        manual_parameters=[
+            openapi.Parameter('Authorization', openapi.IN_HEADER, description='Bearer JWT Token', type=openapi.TYPE_STRING)],
+            response={200: "OK", 400: "닉네임을 받아오지 못했어요.", 404: "검색어로 시작하는 닉네임이 없어요.", 500: "Internal Server Error"}
+        )
+    def post(self, request):
+        try:
+            current_user = AuthUtils.validate_jwt_token_and_get_user(request)
+            nickname_start = get_request_body_value(request, 'nickname')
+            if not nickname_start:
+                return Response({'error': 'Nickname is required.'}, status=status.HTTP_400_BAD_REQUEST)
+            users = User.objects.filter(nickname__startswith=nickname_start).exclude(id=current_user.id)
+            if not users:
+                return Response({'error': 'No users found'}, status=status.HTTP_404_NOT_FOUND)
+            users_data = [{'nickname': user.nickname, 'is_online': user.is_online, 'avatar': str(user.avatar).split('/')[-1]} for user in users]
+        
+            return Response({'searchedUserList': users_data}, status=status.HTTP_200_OK)
+            
+        except AuthenticationException as e:
+            return Response({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class FriendPendingView(APIView):
+    @swagger_auto_schema(
+        tags=['/api/friends/pending/'],
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+        manual_parameters=[
+            openapi.Parameter('Authorization', openapi.IN_HEADER, description='Bearer JWT Token', type=openapi.TYPE_STRING)],
+            response={200: "OK", 401: "인증 오류", 500: "Internal Server Error"}
+        )
+    )
+    def get(self, request):
+        try:
+            current_user = AuthUtils.validate_jwt_token_and_get_user(request)
+            friend_requests = Friend.objects.filter(friend_id=current_user, status=0)
+            friend_request_list = []
+            for request in friend_requests:
+                user = request.user_id
+                user_data = {
+                    'nickname': user.nickname,
+                    'is_online': user.is_online,
+                    'avatar': str(user.avatar).split('/')[-1],
+                }
+                friend_request_list.append(user_data)
+            response_data = {'friendRequestList': friend_request_list}
+            return Response(response_data, status=status.HTTP_200_OK)
+        except AuthenticationException as e:
+            return Response({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
