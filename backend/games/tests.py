@@ -99,3 +99,9 @@ class PingPongGameTestCase(TestCase):
         self.assertEqual(self.ping_pong_game.ball.is_goal_in(
             self.ping_pong_game.ping_pong_map
         ), [False, True])
+
+    def test_ball_reset(self):
+        self.ping_pong_game.ball.set_x_y(0, 0)
+        self.ping_pong_game.ball.reset(self.ping_pong_game.ping_pong_map)
+        self.assertNotEqual(self.ping_pong_game.ball.x, 0)
+        self.assertNotEqual(self.ping_pong_game.ball.y, 0)
