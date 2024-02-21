@@ -6,6 +6,7 @@ import passwordModal from "./password-modal.js";
 import useState from "../../utils/useState.js";
 import gameRoomList from "./gameRoomlist.js";
 import { BACKEND } from "../../global.js";
+import { navigate } from "../../utils/navigate.js";
 
 export default function CustomGameList($container) {
   let mode = 2; // 0: 1 vs 1, 1: 토너먼트, 2: 전체, defulat=2
@@ -74,16 +75,17 @@ export default function CustomGameList($container) {
             `,
       );
     } else {
-      for (let data of curGameRoomList) {
+      curGameRoomList.forEach((data, index) => {
         $listWrapper.insertAdjacentHTML(
           "afterbegin",
-          `
-                <div class="game-room-list room-wrapper">
-                    ${gameRoomList(data)}
-                </div>
-            `,
+          `<div class="game-room-list room-wrapper room-id-${data.id}">
+                  ${gameRoomList(data)}
+                </div>`,
         );
-      }
+        click($listWrapper.querySelector(`.room-id-${data.id}`), () => {
+          navigate("/waiting-room", { id: data.id });
+        });
+      });
     }
   };
 
@@ -127,47 +129,47 @@ export default function CustomGameList($container) {
     // 방 걸러보기 토글
     hoverToggle($roomSearchFilter, $modeFilterToggle, "block");
 
-    // 대기중 && 자물쇠가 걸려있는 방 일때 패스워드 모달 열기
-    // roomContant에 마우스가 들어갈 떄 hover event 적용
-    $roomContents.forEach(($roomContent) => {
-      click($roomContent, () => {
-        const $roomWrapper = $roomContent.closest(".room-wrapper");
-
-        // isSecret: '.is-secret' 클래스를 가진 요소의 존재 여부로 비밀방인지 판단
-        const isSecret = $roomWrapper.querySelector(".is-secret") !== null;
-
-        // isWaiting: roomStatus 요소의 텍스트 내용으로 '대기중'인지 판단
-        const roomStatusElement = $roomWrapper.querySelector(".room-status");
-        const isWaiting =
-          roomStatusElement &&
-          roomStatusElement.textContent.trim() === "대기중";
-
-        // 비밀방이며 대기중인 경우, 패스워드 모달을 표시
-        if (isSecret && isWaiting) {
-          $passwordModal.style.display = "block";
-        }
-      });
-
-      // mouseenter 이벤트 리스너
-      $roomContent.addEventListener("mouseenter", function () {
-        const style = window.getComputedStyle(this);
-        const borderColor = style.borderColor;
-
-        // RGB 색상에서 RGBA 색상으로 변환하여 배경색으로 설정 (20% 투명도 적용)
-        const backgroundColor = borderColor
-          .replace("rgb", "rgba")
-          .replace(")", ", 0.2)");
-
-        // 수정된 부분: 요소의 style 속성에 직접 backgroundColor 설정
-        this.style.backgroundColor = backgroundColor;
-      });
-
-      // mouseleave 이벤트 리스너
-      $roomContent.addEventListener("mouseleave", function () {
-        // 배경색을 원래 상태(투명)로 되돌림
-        this.style.backgroundColor = ""; // 또는 초기 설정한 배경색으로 지정
-      });
-    });
+    // // 대기중 && 자물쇠가 걸려있는 방 일때 패스워드 모달 열기
+    // // roomContant에 마우스가 들어갈 떄 hover event 적용
+    // $roomContents.forEach(($roomContent) => {
+    //   click($roomContent, () => {
+    //     const $roomWrapper = $roomContent.closest(".room-wrapper");
+    //
+    //     // isSecret: '.is-secret' 클래스를 가진 요소의 존재 여부로 비밀방인지 판단
+    //     const isSecret = $roomWrapper.querySelector(".is-secret") !== null;
+    //
+    //     // isWaiting: roomStatus 요소의 텍스트 내용으로 '대기중'인지 판단
+    //     const roomStatusElement = $roomWrapper.querySelector(".room-status");
+    //     const isWaiting =
+    //       roomStatusElement &&
+    //       roomStatusElement.textContent.trim() === "대기중";
+    //
+    //     // 비밀방이며 대기중인 경우, 패스워드 모달을 표시
+    //     if (isSecret && isWaiting) {
+    //       $passwordModal.style.display = "block";
+    //     }
+    //   });
+    //
+    //   // mouseenter 이벤트 리스너
+    //   $roomContent.addEventListener("mouseenter", function () {
+    //     const style = window.getComputedStyle(this);
+    //     const borderColor = style.borderColor;
+    //
+    //     // RGB 색상에서 RGBA 색상으로 변환하여 배경색으로 설정 (20% 투명도 적용)
+    //     const backgroundColor = borderColor
+    //       .replace("rgb", "rgba")
+    //       .replace(")", ", 0.2)");
+    //
+    //     // 수정된 부분: 요소의 style 속성에 직접 backgroundColor 설정
+    //     this.style.backgroundColor = backgroundColor;
+    //   });
+    //
+    //   // mouseleave 이벤트 리스너
+    //   $roomContent.addEventListener("mouseleave", function () {
+    //     // 배경색을 원래 상태(투명)로 되돌림
+    //     this.style.backgroundColor = ""; // 또는 초기 설정한 배경색으로 지정
+    //   });
+    // });
 
     // 패스워드 모달 닫기
     click($passwordModalClose, () => {
@@ -220,6 +222,11 @@ export default function CustomGameList($container) {
       }
       updateGameRoomList();
     });
+
+    // 신속히 입장
+    click(document.getElementById("quick-join"), () => {
+      navigate("/waiting-room", { id: 0 });
+    });
   };
   this.unmount = () => {
     clearInterval(intervalId);
@@ -251,7 +258,7 @@ export default function CustomGameList($container) {
       res.json().then((data) => {
         maxPage = data.total_pages;
         setGameRoomList(data);
-        console.log(data);
+        // console.log(data);
       });
     });
   };

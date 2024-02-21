@@ -6,13 +6,15 @@ import useState from "../../utils/useState.js";
 import { click } from "../../utils/clickEvent.js";
 /**
  * @param {HTMLElement} $container
+ * @param {object} info
  */
-export default function WaitingRoom($container) {
+export default function WaitingRoom($container, info) {
   let roomTitle = "방 제목";
   let gameMode = "게임 모드";
   let password = "password";
   let gameModeNum = 4;
 
+  console.log(info);
   let props = [
     {
       img: "../../../assets/images/avatar/red_bust.png",
