@@ -1,10 +1,11 @@
 import json
 import random
+import urllib.parse
 from channels.generic.websocket import AsyncWebsocketConsumer
 from games.models import Game, CasualGameView
 from games.serializers import GameRoomSerializer
 from django.db.models import Min, Count
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, PermissionDenied
 from channels.db import database_sync_to_async
 from asgiref.sync import sync_to_async
 import logging
@@ -96,6 +97,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                     await self.game_join()
             else:
                 await self.save_game_object_by_id()
+                await self.can_join_game()
                 if await self.get_game_status() != 0 or await self.is_full():
                     raise ValidationError('invalid game id')
                 await self.game_join()
@@ -126,6 +128,17 @@ class GameConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def save_game_object_by_id(self):
         self.game = Game.objects.get(id=self.game_id)
+
+    @database_sync_to_async
+    def can_join_game(self):
+        query_string = self.scope['query_string'].decode()
+        query_params = urllib.parse.parse_qs(query_string)
+        user_input = query_params.get('password', [None])[0]
+        room_password = self.game.password
+        if room_password is None:
+            return
+        if room_password != user_input:
+            raise PermissionDenied("can't access")
 
     @database_sync_to_async
     def get_casual_games(self):
