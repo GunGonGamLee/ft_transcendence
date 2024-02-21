@@ -39,11 +39,11 @@ if DEBUG:
     SECRET_KEY = config('LOG_KEY')
 
     # Intra 42
+    BASE_URL = config('BASE_URL')
     INTRA42_AUTHORIZE_API = config('INTRA42_AUTHORIZE_API')
     INTRA42_TOKEN_API = config('INTRA42_TOKEN_API')
     INTRA42_CLIENT_ID = config('INTRA42_CLIENT_ID')
     INTRA42_CLIENT_SECRET = config('INTRA42_CLIENT_SECRET')
-    INTRA42_REDIRECT_URI = config('INTRA42_REDIRECT_URI')
     INTRA42_USERINFO_API = config('INTRA42_USERINFO_API')
 
     # Google Oauth
@@ -76,7 +76,6 @@ else:
     INTRA42_TOKEN_API = read_response['data']['data']['INTRA42_TOKEN_API']
     INTRA42_CLIENT_ID = read_response['data']['data']['INTRA42_CLIENT_ID']
     INTRA42_CLIENT_SECRET = read_response['data']['data']['INTRA42_CLIENT_SECRET']
-    INTRA42_REDIRECT_URI = read_response['data']['data']['INTRA42_REDIRECT_URI']
     INTRA42_USERINFO_API = read_response['data']['data']['INTRA42_USERINFO_API']
     GOOGLE_AUTHORIZE_API = read_response['data']['data']['GOOGLE_AUTHORIZE_API']
     GOOGLE_CLIENT_ID = read_response['data']['data']['GOOGLE_CLIENT_ID']
@@ -84,6 +83,7 @@ else:
     STATE = read_response['data']['data']['STATE']
     EMAIL_HOST_USER = read_response['data']['data']['EMAIL_HOST_USER']
     EMAIL_HOST_PASSWORD = read_response['data']['data']['EMAIL_HOST_PASSWORD']
+    BASE_URL = read_response['data']['data']['BASE_URL']
     SECRET_KEY = LOG_KEY
 
 LOGGING = {
