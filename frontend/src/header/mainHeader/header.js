@@ -4,7 +4,7 @@ import { click } from "../../utils/clickEvent.js";
 import { BACKEND, HISTORIES_IMAGE_PATH } from "../../global.js";
 import { getCookie, deleteCookie } from "../../utils/cookie.js";
 import useState from "../../utils/useState.js";
-import friendsInfoModal from "./friends-info-modal.js";
+// import friendsInfoModal from "./friends-info-modal.js";
 
 /**
  * 사용자 전적 페이지에 사용하는 header 컴포넌트
@@ -87,7 +87,7 @@ export default function MainHeader($container) {
         }
       });
     });
-    // TODO => 친구 목록 버튼 클릭 이벤트
+    // 친구 목록 버튼 클릭 이벤트
     document.getElementById("friends").addEventListener("click", () => {
       const infoWrapper = document.getElementById("friends-info-wrapper");
       if (infoWrapper.style.display === "grid") {
@@ -100,14 +100,104 @@ export default function MainHeader($container) {
     click(document.getElementById("title"), () => {
       navigate("/game-mode");
     });
+    click(document.getElementById("lalala"), () => {
+      console.log("haha");
+      setFriendsList(friendList);
+    });
   };
 
+  function createInfoCard(friend, style = {}, image = {}) {
+    const { username, avatarImagePath} = friend;
+    const borderColor = style.borderColor;
+    const imagePath = image.iconImagePath;
+    // accept.png 아이콘일 경우에만 추가할 HTML 조각을 정의
+    const additionalIconHTML = imagePath === '../../assets/images/accept.png' ?
+        `<div>
+                <img class="icon" src="../../assets/images/close.png" />
+            </div>` : '';
+    // 조건에 따라 클래스 추가
+    const wrapperClass = imagePath === '../../assets/images/accept.png' ? 'friend-card-wrapper with-additional-icon' : 'friend-card-wrapper';
+
+    return `
+        <div class="${wrapperClass}" style="border-color: ${borderColor};">
+            <div>
+                <img class="avatar-image" src="${avatarImagePath}" />
+            </div>
+            <div class="user-name">
+                ${username}
+            </div>
+            <div>
+                <img class="icon" src="${imagePath}" />
+            </div>
+            ${additionalIconHTML}
+        </div>
+    `;
+  }
+
+  const friendList = [
+    {
+      username: '효조초다호호호호',
+      avatarImagePath: '../../assets/images/avatar/darth_vader.png'
+    },
+    {
+      username: 'yena',
+      avatarImagePath: '../../assets/images/avatar/han_solo.png'
+    },
+    {
+      username: 'sejokim',
+      avatarImagePath: '../../assets/images/avatar/luke_skywalker.png'
+    },
+    {
+      username: 'sejokim',
+      avatarImagePath: '../../assets/images/avatar/luke_skywalker.png'
+    },
+    {
+      username: 'sejokim',
+      avatarImagePath: '../../assets/images/avatar/luke_skywalker.png'
+    },
+    {
+      username: 'sejokim',
+      avatarImagePath: '../../assets/images/avatar/luke_skywalker.png'
+    }
+  ];
+
   let renderFriendsInfoModal = (headerElement) => {
-    const modalHtml = friendsInfoModal();
-    headerElement.insertAdjacentHTML("beforeend", modalHtml);
+    importCss('../../../assets/css/friendsInfoModal.css');
+    headerElement.insertAdjacentHTML("beforeend", `
+        <div class="friends-info-modal-wrapper" id="friends-info-wrapper">
+            <div id="lalala">lalala</div>
+            <div class="list-wrapper" id="friends-list-wrapper">
+                
+            </div>
+            <div class="list-wrapper" id="user-search-wrapper">
+                
+            </div>
+            <div class="list-wrapper" id="friend-request-list-wrapper">
+                
+            </div>
+        </div>
+    `)
+  };
+
+  this.renderFriendsList = () => {
+    // 상태 관리 시스템으로부터 현재 친구 목록 상태를 가져옵니다.
+    const newFriendList = getFriendsList();
+    // 새로운 친구 목록을 기반으로 친구 카드를 생성합니다.
+    const newFriendCards = friendList.slice(0, 8).map(card =>
+        createInfoCard(card, {borderColor: '#07F7B0'}, {iconImagePath: '../../assets/images/trash.png'})).join('');
+    document.getElementById("friends-list-wrapper").innerHTML = `
+      <div class="list-subject">
+          친구 (${newFriendList.length} / 8)
+      </div>
+      <div id="friends-list">
+          ${newFriendCards}
+      </div>
+    `;
   };
 
   importCss("../../../assets/fonts/font.css");
   init();
   let [getUserInfo, setUserInfo] = useState({}, this, "render");
+  let [getFriendsList, setFriendsList] = useState({}, this, "renderFriendsList");
+
 }
