@@ -81,4 +81,21 @@ class PingPongGameTestCase(TestCase):
         ), False)
 
     def test_move_ball(self):
-        self.ping_pong_game.ball.set_direction((-1, 0))
+        self.ping_pong_game.ball.move()
+        self.assertNotEqual(self.ping_pong_game.ball.x, 0)
+        self.assertNotEqual(self.ping_pong_game.ball.y, 0)
+
+    def test_bounce(self):
+        self.ping_pong_game.ball.set_direction((1, 1))
+        self.ping_pong_game.ball.bounce((1, -1))
+        self.assertNotEqual(self.ping_pong_game.ball.direction, (1, 1))
+
+    def test_is_goal_in(self):
+        self.ping_pong_game.ball.set_x_y(0, self.ping_pong_game.ping_pong_map.height / 2)
+        self.assertEqual(self.ping_pong_game.ball.is_goal_in(
+            self.ping_pong_game.ping_pong_map
+        ), [True, False])
+        self.ping_pong_game.ball.set_x_y(self.ping_pong_game.ping_pong_map.width, self.ping_pong_game.ping_pong_map.height / 2)
+        self.assertEqual(self.ping_pong_game.ball.is_goal_in(
+            self.ping_pong_game.ping_pong_map
+        ), [False, True])
