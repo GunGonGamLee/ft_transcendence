@@ -298,15 +298,15 @@ class PingPongGame:
     def update_score(self, whether_score_a_goal: list):
         """
         점수를 업데이트하는 함수
-        :param whether_score_a_goal: 골을 넣었는지 확인하는 리스트
+        :param whether_score_a_goal: 골을 넣었는지 확인하는 리스트. [왼쪽 플레이어, 오른쪽 플레이어]
         :type whether_score_a_goal: list
         :return: None
         :rtype: None
         """
         if whether_score_a_goal[0]:
-            self.right_side_player.score += 1
-        elif whether_score_a_goal[1]:
             self.left_side_player.score += 1
+        elif whether_score_a_goal[1]:
+            self.right_side_player.score += 1
 
     def move_ball(self):
         """
