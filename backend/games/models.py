@@ -271,5 +271,8 @@ class PingPongGame:
             :rtype: None
             """
             self.ball.move()
-            if self.ball.hit_objects(self.racket, self.map):
+            if self.ball.hit_objects(self.left_side_player.racket, self.right_side_player.racket, self.ping_pong_map):
                 self.ball.bounce()
+            elif self.ball.is_goal_in():
+                self.update_score(self.left_side_player, self.right_side_player, self.ball)
+                self.ball.reset()
