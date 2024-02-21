@@ -226,6 +226,8 @@ class Ball:
         :type bounce_direction: tuple
         """
         self.direction = (self.direction[0] * bounce_direction[0], self.direction[1] * bounce_direction[1])
+        correction = random.uniform(0.9, 1.1)
+        self.direction = (self.direction[0] * correction, self.direction[1] * correction)
 
     def is_goal_in(self, ping_pong_map: PingPongMap):
         """
