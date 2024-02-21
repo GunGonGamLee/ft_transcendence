@@ -101,7 +101,7 @@ export default function MainHeader($container) {
       navigate("/game-mode");
     });
     click(document.getElementById("lalala"), () => {
-      console.log("haha");
+      fetch()
       setFriendsList(friendList);
     });
   };
@@ -195,9 +195,14 @@ export default function MainHeader($container) {
     `;
   };
 
+  this.renderFoundUserList = () => {
+    const newFoundUserList = getFoundUserList();
+    // const newFoundCards =
+  }
+
   importCss("../../../assets/fonts/font.css");
   init();
   let [getUserInfo, setUserInfo] = useState({}, this, "render");
   let [getFriendsList, setFriendsList] = useState({}, this, "renderFriendsList");
-
+  // let [getFoundUserList, setFoundUserList] = useState({}, this, "renderFoundUserList");
 }
