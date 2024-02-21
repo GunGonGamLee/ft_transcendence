@@ -88,7 +88,8 @@
 
 /* resize photo */
 .game-room-list.is-secret {
-    width: 4.5vw;
+    /*width: 2vh;*/
+    height: 2vh;
     object-fit: cover;
 }
 
