@@ -22,10 +22,11 @@ from src.utils import get_request_body_value
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 import logging
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
-BASE_URL = 'http://localhost:8000/'
+BASE_URL = settings.BASE_URL
 GOOGLE_CALLBACK_URI = BASE_URL + 'api/login/google/callback/'
 INTRA42_CALLBACK_URI = BASE_URL + 'api/login/intra42/callback'
 config = AutoConfig()
