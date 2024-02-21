@@ -79,21 +79,6 @@ class CasualGameListView(models.Model):
 ##############################################################
 # PingPong 게임 정보를 담는 클래스. 데이터베이스에 저장되지 않음.         #
 ##############################################################
-class Player:
-    """
-    플레이어 정보를 담는 클래스
-
-    Attributes:
-    - user: User
-    - score: int
-    """
-    user: User
-    score: int
-
-    def __init__(self, user, score):
-        self.user = user
-        self.score = score
-
 
 class Racket:
     """
@@ -124,7 +109,26 @@ class Racket:
         self.y = y
 
 
-class Map:
+class Player:
+    """
+    플레이어 정보를 담는 클래스
+
+    Attributes:
+    - user: User
+    - score: int
+    - racket: Racket
+    """
+    user: User
+    score: int
+    racket: Racket
+
+    def __init__(self, user: User, score: int, racket: Racket):
+        self.user = user
+        self.score = score
+        self.racket = racket
+
+
+class PingPongMap:
     """
     맵 정보를 담는 클래스
 
@@ -180,7 +184,7 @@ class Ball:
         self.x += self.speed * self.direction[0]
         self.y += self.speed * self.direction[1]
 
-    def hit_objects(self, racket: Racket, map: Map):
+    def hit_objects(self, racket: Racket, ping_pong_map: PingPongMap):
         """
         공이 라켓이나 맵에 부딪혔는지 확인하는 함수
         :param racket: 라켓
@@ -197,9 +201,9 @@ class Ball:
 
         racket_left_point = racket.x - racket.width / 2
 
-        if left_point <= 0 or right_point >= map.width:
+        if left_point <= 0 or right_point >= ping_pong_map.width:
             return True
-        if top_point <= 0 or bottom_point >= map.height:
+        if top_point <= 0 or bottom_point >= ping_pong_map.height:
             return True
 
 
@@ -216,29 +220,28 @@ class PingPongGame:
     """
     left_side_player: Player
     right_side_player: Player
-    map: Map
+    ping_pong_map: PingPongMap
     ball: Ball
-    racket: Racket
     started_at: datetime
 
-    def __init__(self, left_side_nickname: str, right_side_nickname: str, map_info: (float, float),
-                 ball_info: (float, float, float), racket_info: (float, float, float, float, float)):
+    def __init__(self,
+                 left_side_player: Player,
+                 right_side_player: Player,
+                 ping_pong_map: PingPongMap,
+                 ball: Ball):
         """
         Args:
-        :param nickname: 플레이어의 닉네임
-        :type nickname: str
-        :param map_info: 맵의 너비와 높이
-        :type map_info: (float, float)
-        :param ball_info: 공의 반지름, x좌표, y좌표
-        :type ball_info: (float, float, float)
-        :param racket_info: 라켓의 너비, 높이, x좌표, y좌표, 속도
-        :type racket_info: (float, float, float, float, float)
+        - left_side_player: Player
+        - right_side_player: Player
+        - map: Map
+        - ball: Ball
+        - left_side_racket: Racket
+        - right_side_racket: Racket
         """
-        self.left_side_player = Player(User.objects.get(nickname=left_side_nickname), 0)
-        self.right_side_player = Player(User.objects.get(nickname=right_side_nickname), 0)
-        self.map = Map(map_info[0], map_info[1])
-        self.ball = Ball(ball_info[0], ball_info[1], ball_info[2])
-        self.racket = Racket(racket_info[0], racket_info[1], racket_info[2], racket_info[3], racket_info[4])
+        self.left_side_player = left_side_player
+        self.right_side_player = right_side_player
+        self.ping_pong_map = ping_pong_map
+        self.ball = ball
         self.started_at = datetime.now()
 
         def move_ball():

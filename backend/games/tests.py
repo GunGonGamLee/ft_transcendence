@@ -2,12 +2,10 @@ import random
 
 from django.test import TestCase
 
-from games.models import PingPongGame
+from games.models import PingPongGame, Ball, Racket, Player, PingPongMap
 
 from users.models import User
 
-
-# Create your tests here.
 
 class PingPongGameTestCase(TestCase):
     def setUp(self):
@@ -19,11 +17,17 @@ class PingPongGameTestCase(TestCase):
             nickname='오른쪽',
             email='right@test.com',
         )
+        ping_pong_map = PingPongMap(1920, 1080)
+        ball = Ball(10, ping_pong_map.width / 2, ping_pong_map.height / 2)
+        left_side_racket = Racket(10, 100, 10, ping_pong_map.height / 2, speed=10)
+        right_side_racket = Racket(10, 100, ping_pong_map.width - 10, ping_pong_map.height / 2, speed=10)
+        left_side_player = Player(self.left_side_player, 0, racket=left_side_racket)
+        right_side_player = Player(self.right_side_player, 0, racket=right_side_racket)
         self.ping_pong_game = PingPongGame(
-            '테스터',
-            (1920, 1080),
-            (10, 1920 / 2, 1080 / 2),
-            (10, 20, 0, 1080 / 2 - 10, 10)
+            left_side_player=left_side_player,
+            right_side_player=right_side_player,
+            ping_pong_map=ping_pong_map,
+            ball=ball,
         )
 
     def tearDown(self):
@@ -45,9 +49,9 @@ class PingPongGameTestCase(TestCase):
             self.ping_pong_game.ball.set_direction(direction)
 
     def test_set_racket_position(self):
-        self.ping_pong_game.racket.set_x_y(10, 10)
-        self.assertEqual(self.ping_pong_game.racket.x, 10)
-        self.assertEqual(self.ping_pong_game.racket.y, 10)
+        self.ping_pong_game.left_side_player.racket.set_x_y(10, 10)
+        self.assertEqual(self.ping_pong_game.left_side_player.racket.x, 10)
+        self.assertEqual(self.ping_pong_game.left_side_player.racket.y, 10)
 
     def test_move_ball(self):
         self.ping_pong_game.ball.set_direction((-1, 0))
