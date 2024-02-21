@@ -38,7 +38,7 @@ RUN chmod +x /usr/local/bin/mkcert
 
 RUN mkcert -install
 RUN mkdir -p /etc/nginx/certs
-RUN mkcert -key-file /etc/nginx/certs/server.key -cert-file /etc/nginx/certs/server.crt localhost 127.0.0.1 ::1
+RUN mkcert -key-file /etc/nginx/certs/server.key -cert-file /etc/nginx/certs/server.crt "hashicorp_vault" localhost 127.0.0.1 ::1
 
 # Nginx 설정 파일 복사 및 모듈 로드
 COPY ./config/nginx.conf /etc/nginx/nginx.conf

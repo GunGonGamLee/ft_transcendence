@@ -25,7 +25,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-BASE_URL = 'http://localhost:8000/'
+BASE_URL = 'https://localhost:443/'
 GOOGLE_CALLBACK_URI = BASE_URL + 'api/login/google/callback/'
 INTRA42_CALLBACK_URI = BASE_URL + 'api/login/intra42/callback'
 config = AutoConfig()

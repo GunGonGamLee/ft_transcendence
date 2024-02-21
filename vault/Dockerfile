@@ -1,10 +1,11 @@
 FROM hashicorp/vault:latest
 
+RUN apk add --no-cache bash jq curl
+
 COPY entrypoints.sh /entrypoints.sh
 
-COPY ./config/vault.hcl /vault/config/vault.hcl
+COPY ./config/vault.hcl /vault
 
-RUN chmod +x /entrypoints.sh && \
-	apk add --no-cache jq
+RUN chmod +x /entrypoints.sh
 
 ENTRYPOINT ["/entrypoints.sh"]
