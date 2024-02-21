@@ -100,6 +100,14 @@ class PingPongGameTestCase(TestCase):
             self.ping_pong_game.ping_pong_map
         ), [False, True])
 
+    def test_update_score(self):
+        self.ping_pong_game.update_score([True, False])
+        self.assertEqual(self.ping_pong_game.left_side_player.score, 1)
+        self.assertEqual(self.ping_pong_game.right_side_player.score, 0)
+        self.ping_pong_game.update_score([False, True])
+        self.assertEqual(self.ping_pong_game.left_side_player.score, 1)
+        self.assertEqual(self.ping_pong_game.right_side_player.score, 1)
+
     def test_ball_reset(self):
         self.ping_pong_game.ball.set_x_y(0, 0)
         self.ping_pong_game.ball.reset(self.ping_pong_game.ping_pong_map)
