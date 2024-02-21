@@ -322,3 +322,4 @@ class PingPongGame:
         if whether_score_a_goal := self.ball.is_goal_in(self.ping_pong_map):
             self.update_score(whether_score_a_goal)
             self.ball.reset(self.ping_pong_map)
+        self.ball.speed += 1000 / 30 / 10  # 3fps씩 속도를 증가시킴
