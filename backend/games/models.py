@@ -195,7 +195,8 @@ class Ball:
         top_point = self.y - self.radius
         bottom_point = self.y + self.radius
 
-        racket_left_point = racket.x -
+        racket_left_point = racket.x - racket.width / 2
+
         if left_point <= 0 or right_point >= map.width:
             return True
         if top_point <= 0 or bottom_point >= map.height:
@@ -213,13 +214,14 @@ class PingPongGame:
     - racket: Racket
     - started_at: datetime
     """
-    player: Player
+    left_side_player: Player
+    right_side_player: Player
     map: Map
     ball: Ball
     racket: Racket
     started_at: datetime
 
-    def __init__(self, nickname: str, map_info: (float, float),
+    def __init__(self, left_side_nickname: str, right_side_nickname: str, map_info: (float, float),
                  ball_info: (float, float, float), racket_info: (float, float, float, float, float)):
         """
         Args:
@@ -232,7 +234,8 @@ class PingPongGame:
         :param racket_info: 라켓의 너비, 높이, x좌표, y좌표, 속도
         :type racket_info: (float, float, float, float, float)
         """
-        self.player = Player(User.objects.get(nickname=nickname), 0)
+        self.left_side_player = Player(User.objects.get(nickname=left_side_nickname), 0)
+        self.right_side_player = Player(User.objects.get(nickname=right_side_nickname), 0)
         self.map = Map(map_info[0], map_info[1])
         self.ball = Ball(ball_info[0], ball_info[1], ball_info[2])
         self.racket = Racket(racket_info[0], racket_info[1], racket_info[2], racket_info[3], racket_info[4])

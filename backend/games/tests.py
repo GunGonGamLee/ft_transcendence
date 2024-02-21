@@ -11,9 +11,13 @@ from users.models import User
 
 class PingPongGameTestCase(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(
-            nickname='테스터',
-            email='test@test.com',
+        self.left_side_player = User.objects.create_user(
+            nickname='왼쪽',
+            email='left@test.com',
+        )
+        self.right_side_player = User.objects.create_user(
+            nickname='오른쪽',
+            email='right@test.com',
         )
         self.ping_pong_game = PingPongGame(
             '테스터',
@@ -23,7 +27,8 @@ class PingPongGameTestCase(TestCase):
         )
 
     def tearDown(self):
-        self.user.delete()
+        self.left_side_player.delete()
+        self.right_side_player.delete()
 
     def test_set_ball(self):
         self.ping_pong_game.ball.set_direction((-1, 0))
