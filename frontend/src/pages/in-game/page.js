@@ -17,11 +17,15 @@ export default function InGame($container, info) {
     hideHeader();
     this.render();
     this.renderScoreBoard();
-    setInterval(() => {
+    this.intervalId = setInterval(() => {
       setTime(getTime() + 1);
     }, 1000);
   };
-  // TODO: 다른 페이지로 이동 시 이벤트 제거, mainheader 보이게 수정
+  this.unmount = () => {
+    clearInterval(this.intervalId);
+    document.querySelector("#header").style.display = "block";
+  };
+
   this.render = () => {
     $container.innerHTML = `
 			${scoreBar()}
