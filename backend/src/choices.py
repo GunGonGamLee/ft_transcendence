@@ -15,16 +15,15 @@ AVATAR_CHOICES_DICT = {
 }
 
 MODE_CHOICES = [
-    (0, "1vs1"),
+    (0, "casual_1vs1"),
     (1, "casual_tournament"),
     (2, "rank"),
 ]
 
-MODE_CHOICES_DICT = {
-    0: "casual_1vs1",
-    1: "casual_tournament",
-    2: "rank",
-    3: "local_tournament",
+MODE_CHOICES_DICT = dict(MODE_CHOICES)
+
+MODE_CHOICES_REVERSE_DICT = {
+    v: k for k, v in MODE_CHOICES_DICT.items()
 }
 
 STATUS_CHOICES = [
