@@ -109,7 +109,6 @@ export default function MainHeader($container) {
           response.json().then((data) => {
             setFriendsList(data);
           });
-          // new WebSocket("wss://localhost/ws/friend_status/");
         } else {
           navigate("/");
         }
@@ -125,24 +124,31 @@ export default function MainHeader($container) {
   };
 
   function createInfoCard(friend, style = {}, image = {}) {
-    const { username, avatarImagePath} = friend;
+    const {nickname, avatar, is_online} = friend;
+    // 아바타 이미지 경로 조정
+    const avatarImagePath = `../../assets/images/avatar/${avatar}`;
     const borderColor = style.borderColor;
     const imagePath = image.iconImagePath;
+
+    // `is_online`이 false일 경우 카드에 적용할 투명도 스타일
+    const opacityStyle = is_online ? '' : 'opacity: 0.5;';
+
     // accept.png 아이콘일 경우에만 추가할 HTML 조각을 정의
     const additionalIconHTML = imagePath === '../../assets/images/accept.png' ?
         `<div>
-                <img class="icon" src="../../assets/images/close.png" />
-            </div>` : '';
+            <img class="icon" src="../../assets/images/close.png" />
+        </div>` : '';
     // 조건에 따라 클래스 추가
     const wrapperClass = imagePath === '../../assets/images/accept.png' ? 'friend-card-wrapper with-additional-icon' : 'friend-card-wrapper';
 
+
     return `
-        <div class="${wrapperClass}" style="border-color: ${borderColor};">
+        <div class="${wrapperClass}" style="border-color: ${borderColor}; ${opacityStyle}">
             <div>
                 <img class="avatar-image" src="${avatarImagePath}" />
             </div>
             <div class="user-name">
-                ${username}
+                ${nickname}
             </div>
             <div>
                 <img class="icon" src="${imagePath}" />
@@ -183,18 +189,19 @@ export default function MainHeader($container) {
     // 새로운 친구 목록을 기반으로 친구 카드를 생성합니다.
     const newFriendCards = newFriendList.friends.slice(0, 8).map(card =>
         createInfoCard(card, {borderColor: '#07F7B0'}, {iconImagePath: '../../assets/images/trash.png'})).join('');
+
+    console.log(newFriendCards);
     document.getElementById("friends-list-wrapper").innerHTML = `
       <div class="list-subject">
-          친구 (${newFriendList.length} / 8)
+          친구 (${newFriendList.friends.length} / 8)
       </div>
       <div id="friends-list">
           ${newFriendCards}
       </div>
     `;
-
-    // todo->  "is_online": true 라면 그대로, false 라면 투명도를 줘야한다
-
   };
+
+
 
 
   importCss("../../../assets/fonts/font.css");
