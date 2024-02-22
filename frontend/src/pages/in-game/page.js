@@ -109,4 +109,5 @@ export default function InGame($container, info) {
   });
 
   draw(bar1, bar2, ball); // 초기 상태 그리기
+  runGame(canvas, bar1, bar2, ball);
 }
