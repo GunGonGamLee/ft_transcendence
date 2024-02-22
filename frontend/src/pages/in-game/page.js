@@ -191,6 +191,14 @@ export default function InGame($container, info) {
       return [false, false];
     };
 
+    const updateScore = (wheterScoreAGoal) => {
+      if (wheterScoreAGoal[0]) {
+        setScore.player1(getScore().player1 + 1);
+      } else if (wheterScoreAGoal[1]) {
+        setScore.player2(getScore().player2 + 1);
+      }
+    };
+
     moveBall();
   };
 
