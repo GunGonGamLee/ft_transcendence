@@ -1,5 +1,6 @@
 import useState from "../../utils/useState.js";
 import scoreBar from "./scoreBar.js";
+import { runGame } from "./runGame.js";
 
 /**
  *
@@ -81,33 +82,49 @@ export default function InGame($container, info) {
   canvas.height = 400;
 
   // 초기 위치 설정
-  let bar1 = { x: 10, y: canvas.height / 2 - 50, width: 20, height: 100 };
+  let bar1 = {
+    x: 10,
+    y: canvas.height / 2 - 50,
+    width: 20,
+    height: 100,
+    speed: 10,
+  };
   let bar2 = {
     x: canvas.width - 30,
     y: canvas.height / 2 - 50,
     width: 20,
     height: 100,
+    speed: 10,
   };
-  let ball = { x: canvas.width / 2, y: canvas.height / 2, radius: 10 };
+  let ball = {
+    x: canvas.width / 2,
+    y: canvas.height / 2,
+    radius: 10,
+    direction: {
+      x: Math.random() * 2 - 1,
+      y: Math.random() * 2 - 1,
+    },
+    speed: 10,
+  };
 
   window.addEventListener("keydown", (e) => {
     // bar1 이동
     if (e.key === "w" || e.key === "W" || e.key === "ㅈ") {
-      bar1.y = Math.max(bar1.y - 10, 0);
+      bar1.y = Math.max(bar1.y - bar1.speed, 0);
     } else if (e.key === "s" || e.key === "S" || e.key === "ㄴ") {
-      bar1.y = Math.min(bar1.y + 10, canvas.height - bar1.height);
+      bar1.y = Math.min(bar1.y + bar1.speed, canvas.height - bar1.height);
     }
 
     // bar2 이동
     if (e.key === "ArrowUp") {
-      bar2.y = Math.max(bar2.y - 10, 0);
+      bar2.y = Math.max(bar2.y - bar2.speed, 0);
     } else if (e.key === "ArrowDown") {
-      bar2.y = Math.min(bar2.y + 10, canvas.height - bar2.height);
+      bar2.y = Math.min(bar2.y + bar2.speed, canvas.height - bar2.height);
     }
 
     draw(bar1, bar2, ball); // 키보드 이벤트 후 상태를 반영하여 다시 그림
   });
 
   draw(bar1, bar2, ball); // 초기 상태 그리기
-  runGame(canvas, bar1, bar2, ball);
+  runGame(canvas, bar1, bar2, ball, draw);
 }
