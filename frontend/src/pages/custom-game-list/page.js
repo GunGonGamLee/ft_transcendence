@@ -268,7 +268,7 @@ export default function CustomGameList($container) {
           mode:
             $tournamentModeBtn.style.opacity === "1"
               ? "casual_tournament"
-              : "casual_lvs1",
+              : "casual_1vs1",
         }),
       }).then((res) => {
         console.log(res);
