@@ -28,7 +28,7 @@ export default function userBox(gameMode, props) {
           <div style="display: flex; justify-content: center; flex-direction: column; align-items: center; width: 4vw; height: 65vh;">
             <img alt="user" src="../../../assets/images/1vs1_logo.png" class="spacer28" style="width: 4vw; height: 8vh">
           </div>
-          ${userUnit(props[3])}
+          ${userUnit(null)}
           <div class="spacer" style="width: 4vw; height: 65vh"></div>
         `;
   }
