@@ -90,20 +90,38 @@ export default function MainHeader($container) {
     // 친구 목록 버튼 클릭 이벤트
     document.getElementById("friends").addEventListener("click", () => {
       const infoWrapper = document.getElementById("friends-info-wrapper");
+
       if (infoWrapper.style.display === "grid") {
         infoWrapper.style.display = "none";
       } else {
         infoWrapper.style.display = "grid";
       }
+
+      fetch(`${BACKEND}/friends/`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getCookie("jwt")}`,
+        },
+      }).then((response) => {
+        if (response.status === 200) {
+          // this.$container.textContent = "";
+          response.json().then((data) => {
+            setFriendsList(data);
+          });
+          // new WebSocket("wss://localhost/ws/friend_status/");
+        } else {
+          navigate("/");
+        }
+      });
     });
     // 메인 타이틀 클릭 이벤트
     click(document.getElementById("title"), () => {
       navigate("/game-mode");
     });
-    click(document.getElementById("lalala"), () => {
-      fetch()
-      setFriendsList(friendList);
-    });
+    // click(document.getElementById("lalala"), () => {
+    //
+    // });
   };
 
   function createInfoCard(friend, style = {}, image = {}) {
@@ -134,38 +152,10 @@ export default function MainHeader($container) {
     `;
   }
 
-  const friendList = [
-    {
-      username: '효조초다호호호호',
-      avatarImagePath: '../../assets/images/avatar/darth_vader.png'
-    },
-    {
-      username: 'yena',
-      avatarImagePath: '../../assets/images/avatar/han_solo.png'
-    },
-    {
-      username: 'sejokim',
-      avatarImagePath: '../../assets/images/avatar/luke_skywalker.png'
-    },
-    {
-      username: 'sejokim',
-      avatarImagePath: '../../assets/images/avatar/luke_skywalker.png'
-    },
-    {
-      username: 'sejokim',
-      avatarImagePath: '../../assets/images/avatar/luke_skywalker.png'
-    },
-    {
-      username: 'sejokim',
-      avatarImagePath: '../../assets/images/avatar/luke_skywalker.png'
-    }
-  ];
-
   let renderFriendsInfoModal = (headerElement) => {
     importCss('../../../assets/css/friendsInfoModal.css');
     headerElement.insertAdjacentHTML("beforeend", `
         <div class="friends-info-modal-wrapper" id="friends-info-wrapper">
-            <div id="lalala">lalala</div>
             <div class="list-wrapper" id="friends-list-wrapper">
                 
             </div>
@@ -179,11 +169,19 @@ export default function MainHeader($container) {
     `)
   };
 
+  // 받아 올 데이터
+  // friends": [
+  // {
+  //   "nickname": "sejokim",
+  //     "is_online": true,
+  //     "avatar": "https://example.com/path/to/sejokim_avatar.jpg"
+  // }
   this.renderFriendsList = () => {
     // 상태 관리 시스템으로부터 현재 친구 목록 상태를 가져옵니다.
     const newFriendList = getFriendsList();
+    console.log(newFriendList);
     // 새로운 친구 목록을 기반으로 친구 카드를 생성합니다.
-    const newFriendCards = friendList.slice(0, 8).map(card =>
+    const newFriendCards = newFriendList.friends.slice(0, 8).map(card =>
         createInfoCard(card, {borderColor: '#07F7B0'}, {iconImagePath: '../../assets/images/trash.png'})).join('');
     document.getElementById("friends-list-wrapper").innerHTML = `
       <div class="list-subject">
@@ -193,12 +191,11 @@ export default function MainHeader($container) {
           ${newFriendCards}
       </div>
     `;
+
+    // todo->  "is_online": true 라면 그대로, false 라면 투명도를 줘야한다
+
   };
 
-  this.renderFoundUserList = () => {
-    const newFoundUserList = getFoundUserList();
-    // const newFoundCards =
-  }
 
   importCss("../../../assets/fonts/font.css");
   init();
