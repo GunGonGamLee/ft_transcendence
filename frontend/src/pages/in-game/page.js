@@ -49,7 +49,13 @@ export default function InGame($container, info) {
     document.querySelector("#header").style.display = "none";
   };
 
-  function draw() {
+  /**
+   * 바 두 개와 공의 데이터를 받아서 화면에 그리는 함수.
+   * @param bar1 {object} x, y, width, height
+   * @param bar2 {object} x, y, width, height
+   * @param ball {object} x, y, radius
+   */
+  function draw(bar1, bar2, ball) {
     // 화면 클리어
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -99,8 +105,8 @@ export default function InGame($container, info) {
       bar2.y = Math.min(bar2.y + 10, canvas.height - bar2.height);
     }
 
-    draw(); // 키보드 이벤트 후 상태를 반영하여 다시 그림
+    draw(bar1, bar2, ball); // 키보드 이벤트 후 상태를 반영하여 다시 그림
   });
 
-  draw(); // 초기 상태 그리기
+  draw(bar1, bar2, ball); // 초기 상태 그리기
 }
