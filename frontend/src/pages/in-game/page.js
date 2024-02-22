@@ -1,6 +1,5 @@
 import useState from "../../utils/useState.js";
 import scoreBar from "./scoreBar.js";
-import { runGame } from "./runGame.js";
 
 /**
  *
@@ -126,5 +125,74 @@ export default function InGame($container, info) {
   });
 
   draw(bar1, bar2, ball); // 초기 상태 그리기
+
+  /**
+   * 게임 실행 함수
+   * @param canvas {HTMLElement} 게임이 실행될 캔버스
+   * @param bar1 {object} 바의 x, y, width, height, speed
+   * @param bar2 {object} 바의 x, y, width, height, speed
+   * @param ball {object} 공의 x, y, radius, direction, speed
+   * @param drawFunction {function} 캔버스를 그리는 함수
+   */
+  const runGame = (canvas, bar1, bar2, ball, drawFunction) => {
+    const moveBall = () => {
+      ball.x += ball.direction.x * ball.speed;
+      ball.y += ball.direction.y * ball.speed;
+      if (isBallHitWall(canvas, ball)) {
+        ball.direction.y *= -1;
+      } else if (isBallHitBar(bar1, ball) || isBallHitBar(bar2, ball)) {
+        ball.direction.x *= -1;
+      }
+      let wheterScoreAGoal = isBallHitGoal(canvas, ball);
+      if (wheterScoreAGoal[0] || wheterScoreAGoal[1]) {
+        updateScore(wheterScoreAGoal);
+      }
+    };
+
+    /**
+     * 공이 벽에 부딪혔는지 확인하는 함수
+     * @param canvas {HTMLElement} 게임이 실행될 캔버스
+     * @param ball {object} 공의 x, y, radius, direction, speed
+     */
+    const isBallHitWall = (canvas, ball) => {
+      let topPoint = ball.y - ball.radius;
+      let bottomPoint = ball.y + ball.radius;
+
+      return topPoint <= 0 || bottomPoint >= canvas.offsetHeight;
+    };
+
+    /**
+     * 공이 바에 부딪혔는지 확인하는 함수
+     * @param bar {object} 바의 x, y, width, height, speed
+     * @param ball {object} 공의 x, y, radius, direction, speed
+     * @returns {boolean} 바에 부딪혔으면 true, 아니면 false
+     */
+    const isBallHitBar = (bar, ball) => {
+      let maxRangeOfHitPoint =
+        Math.sqrt(Math.pow(bar.width / 2, 2) + Math.pow(bar.height / 2, 2)) +
+        ball.radius; // 바의 대각선 길이 + 공의 반지름 = 바의 중심으로부터 공의 중심까지의 거리 중 최대값
+      let minRangeOfHitPoint = bar.width / 2 + self.radius; // 바의 가로길이 / 2 + 공의 반지름 = 바의 중심으로부터 공의 중심까지의 거리 중 최소값
+      let barCenterPos = {
+        x: bar.x + bar.width / 2,
+        y: bar.y + bar.height / 2,
+      };
+      let a = Math.abs(barCenterPos.x - ball.x);
+      let b = Math.abs(barCenterPos.y - ball.y);
+      let c = Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
+      return minRangeOfHitPoint <= c && c <= maxRangeOfHitPoint;
+    };
+
+    const isBallHitGoal = (canvas, ball) => {
+      if (ball.x <= 0) {
+        return [true, false];
+      } else if (ball.x >= canvas.offsetWidth) {
+        return [false, true];
+      }
+      return [false, false];
+    };
+
+    moveBall();
+  };
+
   runGame(canvas, bar1, bar2, ball, draw);
 }
