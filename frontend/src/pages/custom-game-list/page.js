@@ -262,6 +262,9 @@ export default function CustomGameList($container) {
       console.log($tournamentModeBtn.style.opacity === "1");
       fetch(`${BACKEND}/games/`, {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           title: $roomNameInput.value,
           password: $passwordInput.value,
