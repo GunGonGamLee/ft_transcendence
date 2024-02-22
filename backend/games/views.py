@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from games.models import Game, CasualGameView, GameRecordView, CasualGameListView
 from login.views import AuthUtils
 from src.utils import get_request_body_value
-from django.core.exceptions import BadRequest
+from src.exceptions import BadRequest
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from django.db import transaction
@@ -19,6 +19,7 @@ from src.choices import MODE_CHOICES_DICT
 from src.pagination_utils import PaginationUtils
 from django.core.paginator import Paginator, EmptyPage
 import logging
+from src.choices import MODE_CHOICES_REVERSE_DICT
 
 logger = logging.getLogger(__name__)
 
@@ -106,6 +107,7 @@ class GameView(APIView):
                 401: 'UNAUTHORIZED',
                 404: 'NOT_FOUND',
                 500: 'SERVER_ERROR'})
+
     def post(self, request):
         try:
             user = AuthUtils.validate_jwt_token_and_get_user(request)
@@ -117,18 +119,18 @@ class GameView(APIView):
             password = password if password else None
 
             if (mode == 0 or mode == 1) and title is None:
-                raise BadRequest
+                raise BadRequest("title is required")
             elif self.is_title_already_exist(title) and title is not None:
-                raise BadRequest
+                raise BadRequest("title is already exist")
             else:
                 self.create_room(title, password, mode, user)
                 return Response(status=status.HTTP_201_CREATED)
         except AuthenticationException as e:
             return JsonResponse({'error': e.message}, status=status.HTTP_401_UNAUTHORIZED)
-        except BadRequest:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        except BadRequest as e:
+            return Response({'error': e.message}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            return JsonResponse({'error': e.__class__.__name__}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return JsonResponse({'error': e.__class__.__name__, 'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @staticmethod
     def create_room(title, password, mode, user):
@@ -137,16 +139,13 @@ class GameView(APIView):
 
     @staticmethod
     def check_mode(mode):
-        if mode == "casual_1v1":
-            return 0
-        elif mode == "casual_tournament":
-            return 1
-        elif mode == "rank":
-            return 2
-        elif mode == "local_tournament":
-            return 3
+        logger.info(f"{mode}")
+        logger.info(f"{MODE_CHOICES_REVERSE_DICT}")
+        if mode in MODE_CHOICES_REVERSE_DICT:
+            logger.info(f"{MODE_CHOICES_REVERSE_DICT[mode]}")
+            return MODE_CHOICES_REVERSE_DICT[mode]
         else:
-            raise BadRequest
+            raise ValueError("Invalid mode")
 
     @staticmethod
     def is_title_already_exist(title):
@@ -209,7 +208,7 @@ class GameRoomView(APIView):
         except ValidationError as e:
             return JsonResponse({'error': e.message}, status=status.HTTP_409_CONFLICT)
         except Exception as e:
-            return JsonResponse({'error': e.__class__.__name__, 'message':str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return JsonResponse({'error': e.__class__.__name__, 'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @staticmethod
     def is_full(game, mode):

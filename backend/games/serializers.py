@@ -25,7 +25,7 @@ class GameRoomSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Game
-        fields = ['title', 'password', 'mode', 'manager', 'player1', 'player2', 'player3']
+        fields = ['title', 'mode', 'manager', 'player1', 'player2', 'player3']
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
