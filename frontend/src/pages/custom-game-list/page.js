@@ -87,13 +87,24 @@ export default function CustomGameList($container) {
             document.getElementById("password-modal-wrapper").style.display =
               "block";
             // navigate("/waiting-room", { id: data.id });
-            // TODO: api 이식 대기
+            // TODO: 비번 맞으면 enterRoom 호출
           } else {
-            navigate("/waiting-room", { id: data.id });
+            enterRoom(data.id);
           }
         });
       });
     }
+  };
+
+  const enterRoom = (id) => {
+    fetch(`${BACKEND}/games/${id}/`, {
+      method: "POST",
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        res.id = id;
+        navigate("/waiting-room", res);
+      });
   };
 
   const addEventListenersToLayout = () => {
@@ -273,9 +284,12 @@ export default function CustomGameList($container) {
               ? "casual_tournament"
               : "casual_1vs1",
         }),
-      }).then((res) => {
-        console.log(res);
-      });
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          console.log(res);
+          // TODO: 방 만들기 성공시 waiting-room으로 이동
+        });
     });
   };
 
