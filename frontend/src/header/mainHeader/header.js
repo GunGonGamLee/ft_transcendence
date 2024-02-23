@@ -129,12 +129,19 @@ export default function MainHeader($container) {
                 }
             });
         });
+        // 유저찾기 검색 이벤트
+        document.getElementById('input').addEventListener('input', function(event) {
+            const userInput = event.target.value;
+            console.log('User input:', userInput);
+            fetch(`${BACKEND}/api/friends/search?nickname=${encodeURIComponent(userInput)}`, {
+                method: "GET",
+
+            })
+        })
         // 메인 타이틀 클릭 이벤트
         click(document.getElementById("title"), () => {
             navigate("/game-mode");
         });
-
-
     };
 
     function createInfoCard(friend, index, style = {}, image = {}) {
@@ -150,11 +157,10 @@ export default function MainHeader($container) {
         // accept.png 아이콘일 경우에만 추가할 HTML 조각을 정의
         const additionalIconHTML = imagePath === '../../assets/images/accept.png' ?
             `<div>
-            <img class="icon" src="../../assets/images/close.png" />
-        </div>` : '';
+                <img class="icon" src="../../assets/images/close.png" />
+            </div>` : '';
         // 조건에 따라 클래스 추가
         const wrapperClass = imagePath === '../../assets/images/accept.png' ? 'friend-card-wrapper with-additional-icon' : 'friend-card-wrapper';
-
 
         return `
         <div class="${wrapperClass}" style="border-color: ${borderColor}; ${opacityStyle}">
@@ -185,7 +191,7 @@ export default function MainHeader($container) {
                 </div>
                 <div id="search-form">
                     <image src="../../assets/images/search.png"></image>
-                    <input />
+                    <input id="input" />
                 </div>
                 <div id="user-search">
                 </div>
@@ -247,7 +253,6 @@ export default function MainHeader($container) {
     this.renderRequestersList = () => {
         const newRequestersList = getRequestersList();
 
-        console.log(newRequestersList);
         const newRequestersCards = newRequestersList.friendRequestList.map((card, index)=>
             createInfoCard(card, index, {borderColor: '#29ABE2'}, {iconImagePath: '../../assets/images/accept.png'})).join('');
 
@@ -261,12 +266,18 @@ export default function MainHeader($container) {
     `
     }
 
+    this.renderFoundUserList = () => {
+        const newRenderFoundUser = getFoundUserList();
+
+
+    }
+
 
     importCss("../../../assets/fonts/font.css");
     init();
     let [getUserInfo, setUserInfo] = useState({}, this, "render");
     let [getFriendsList, setFriendsList] = useState({}, this, "renderFriendsList");
     let [getRequestersList, setRequestersList] = useState({}, this, "renderRequestersList");
-    // let [getFoundUserList, setFoundUserList] = useState({}, this, "renderFoundUserList");
+    let [getFoundUserList, setFoundUserList] = useState({}, this, "renderFoundUserList");
 }
 
