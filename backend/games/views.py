@@ -122,8 +122,8 @@ class GameView(APIView):
             elif self.is_title_already_exist(title) and title is not None:
                 raise BadRequest("title is already exist")
             else:
-                self.create_room(title, password, mode, user)
-                return Response(status=status.HTTP_201_CREATED)
+                game_id = self.create_room(title, password, mode, user)
+                return Response({'id': game_id}, status=status.HTTP_201_CREATED)
         except AuthenticationException as e:
             return JsonResponse({'error': e.message}, status=status.HTTP_401_UNAUTHORIZED)
         except BadRequest as e:
