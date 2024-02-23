@@ -9,11 +9,10 @@ import scoreBar from "./scoreBar.js";
  */
 export default function InGame($container, info) {
   console.log(info.mode);
-  const scoreInput = { player1: 0, player2: 0 };
+  let scoreInput = { player1: 0, player2: 0 };
   let [getScore, setScore] = useState(scoreInput, this, "renderScoreBoard");
   let [getTime, setTime] = useState(0, this, "renderTime");
   let fps = (1 / 60) * 1000;
-  let speedCoefficient = 0.8;
 
   const init = () => {
     hideHeader();
@@ -37,7 +36,7 @@ export default function InGame($container, info) {
     $container.innerHTML = `
 			${scoreBar()}
 			<div class="in-game" style="height: 100vh; width: 100vw; background-image: url('../../../assets/images/ingame_background.png'); background-size: cover">
-			<canvas id="gameCanvas" style="position: absolute; top: 12vh; left: calc((100vw - 88%) / 2); width: 88%; height: 88%;"></canvas>
+			<canvas id="gameCanvas" style="position: absolute; top: 12vh; left: calc((100vw - 88%) / 2); width: 88%; height: 88%;border-left: 3px dotted white; border-right: 3px dotted white;"></canvas>
 			`;
   };
   this.renderScoreBoard = () => {
@@ -84,33 +83,35 @@ export default function InGame($container, info) {
   init();
   const canvas = $container.querySelector("#gameCanvas");
   const ctx = canvas.getContext("2d");
-  canvas.width = 800;
-  canvas.height = 400;
+  canvas.width = document.body.clientWidth * 0.8;
+  canvas.height = document.body.clientHeight * 0.88; // header의 height가 12vh이므로 88%만큼의 height를 가짐
+  console.log(canvas.clientTop, canvas.clientLeft, canvas.width, canvas.height);
 
   // 초기 위치 설정
-  let bar1 = {
-    x: 10,
-    y: canvas.height / 2 - 50,
-    width: 20,
-    height: 100,
+  let commonBarInfo = {
+    width: canvas.width * 0.02,
+    height: canvas.height * 0.3,
     speed: fps,
   };
-  let bar2 = {
-    x: canvas.width - 30,
+  let bar1 = {
+    x: 0,
     y: canvas.height / 2 - 50,
-    width: 20,
-    height: 100,
-    speed: 10,
+    ...commonBarInfo,
+  };
+  let bar2 = {
+    x: canvas.width - commonBarInfo.width,
+    y: canvas.height / 2 - 50,
+    ...commonBarInfo,
   };
   let ball = {
     x: canvas.width / 2,
     y: canvas.height / 2,
-    radius: 10,
+    radius: canvas.width * 0.02,
     direction: {
       x: Math.random() * 2 - 1,
       y: Math.random() * 2 - 1,
     },
-    speed: fps * speedCoefficient,
+    speed: fps,
   };
 
   window.addEventListener("keydown", (e) => {
@@ -127,11 +128,7 @@ export default function InGame($container, info) {
     } else if (e.key === "ArrowDown") {
       bar2.y = Math.min(bar2.y + bar2.speed, canvas.height - bar2.height);
     }
-
-    draw(bar1, bar2, ball); // 키보드 이벤트 후 상태를 반영하여 다시 그림
   });
-
-  draw(bar1, bar2, ball); // 초기 상태 그리기
 
   /**
    * 게임 실행 함수
@@ -143,27 +140,19 @@ export default function InGame($container, info) {
    */
   const runGame = (canvas, bar1, bar2, ball, drawFunction) => {
     const moveBall = () => {
-      ball.x += ball.direction.x * ball.speed;
-      ball.y += ball.direction.y * ball.speed;
-      ball.speed += 0.01;
       if (isBallHitBar(bar1, ball) || isBallHitBar(bar2, ball)) {
         ball.direction.x *= -1;
-        let correction = Math.random() * 2 - 1;
-        ball.direction.x =
-          ball.direction.x + correction > 1 ? 1 : ball.direction.x + correction;
-      }
-      if (isBallHitWall(canvas, ball)) {
+      } else if (isBallHitWall(canvas, ball)) {
         ball.direction.y *= -1;
-        let correction = Math.random() * 2 - 1;
-        ball.direction.y =
-          ball.direction.y + correction > 1 ? 1 : ball.direction.y + correction;
       }
-      let wheterScoreAGoal = isBallHitGoal(canvas, ball);
-      if (wheterScoreAGoal[0] || wheterScoreAGoal[1]) {
-        updateScore(wheterScoreAGoal);
+      ball.x = ball.x + ball.direction.x * ball.speed;
+      ball.y = ball.y + ball.direction.y * ball.speed;
+      drawFunction(bar1, bar2, ball);
+      let whetherScoreAGoal = isBallHitGoal(canvas, ball);
+      if (whetherScoreAGoal[0] || whetherScoreAGoal[1]) {
+        updateScore(whetherScoreAGoal);
         reset(ball, canvas);
       }
-      drawFunction(bar1, bar2, ball);
     };
 
     /**
@@ -175,7 +164,7 @@ export default function InGame($container, info) {
       let topPoint = ball.y - ball.radius;
       let bottomPoint = ball.y + ball.radius;
 
-      return topPoint <= 0 || bottomPoint >= canvas.height;
+      return topPoint <= 0 || bottomPoint >= canvas.clientHeight;
     };
 
     /**
@@ -185,6 +174,7 @@ export default function InGame($container, info) {
      * @returns {boolean} 바에 부딪혔으면 true, 아니면 false
      */
     const isBallHitBar = (bar, ball) => {
+      // TODO => Bar의 Width를 기준으로 하는 게 아니라 Bar가 없는 곳에 Ball이 있는지 위치를 기준으로 하기
       let maxRangeOfHitPoint =
         Math.sqrt(Math.pow(bar.width / 2, 2) + Math.pow(bar.height / 2, 2)) +
         ball.radius; // 바의 대각선 길이 + 공의 반지름 = 바의 중심으로부터 공의 중심까지의 거리 중 최대값
@@ -196,8 +186,10 @@ export default function InGame($container, info) {
       let a = Math.abs(barCenterPos.x - ball.x);
       let b = Math.abs(barCenterPos.y - ball.y);
       let c = Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
-      console.log(c, minRangeOfHitPoint, maxRangeOfHitPoint);
-      return minRangeOfHitPoint < c && c < maxRangeOfHitPoint;
+      return (
+        minRangeOfHitPoint <= c - bar.width - ball.radius &&
+        c - bar.width - ball.radius <= maxRangeOfHitPoint
+      );
     };
 
     const isBallHitGoal = (canvas, ball) => {
@@ -229,7 +221,14 @@ export default function InGame($container, info) {
         x: Math.random() * 2 - 1,
         y: Math.random() * 2 - 1,
       };
-      ball.speed = fps * speedCoefficient;
+      ball.speed = fps;
+    };
+
+    /**
+     * 최소값과 최대값 사이의 랜덤한 수를 반환하는 함수
+     */
+    const getRandomCoefficient = (min, max) => {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
     };
     moveBall();
   };
