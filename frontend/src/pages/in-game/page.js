@@ -36,7 +36,7 @@ export default function InGame($container, info) {
     $container.innerHTML = `
 			${scoreBar()}
 			<div class="in-game" style="height: 100vh; width: 100vw; background-image: url('../../../assets/images/ingame_background.png'); background-size: cover">
-			<canvas id="gameCanvas" style="position: absolute; top: 12vh; left: calc((100vw - 88%) / 2); width: 88%; height: 88%;border-left: 3px dotted white; border-right: 3px dotted white;"></canvas>
+			<canvas id="gameCanvas" style="position: absolute; top: 12vh; width: 100%; height: 88%;border-left: 3px dotted white; border-right: 3px dotted white;"></canvas>
 			`;
   };
   this.renderScoreBoard = () => {
@@ -68,6 +68,14 @@ export default function InGame($container, info) {
     // bar1 그리기
     ctx.fillStyle = "#00FF00"; // 녹색
     ctx.fillRect(bar1.x, bar1.y, bar1.width, bar1.height);
+    ctx.fillStyle = "#FF0000"; // 빨간색
+    ctx.arc(
+      bar1.x + bar1.width / 2,
+      bar1.y + bar1.height / 2,
+      3,
+      0,
+      Math.PI * 2,
+    );
 
     // bar2 그리기
     ctx.fillStyle = "#FFFF00"; // 노란색
@@ -83,7 +91,7 @@ export default function InGame($container, info) {
   init();
   const canvas = $container.querySelector("#gameCanvas");
   const ctx = canvas.getContext("2d");
-  canvas.width = document.body.clientWidth * 0.8;
+  canvas.width = document.body.clientWidth;
   canvas.height = document.body.clientHeight * 0.88; // header의 height가 12vh이므로 88%만큼의 height를 가짐
   console.log(canvas.clientTop, canvas.clientLeft, canvas.width, canvas.height);
 
@@ -164,7 +172,14 @@ export default function InGame($container, info) {
       let topPoint = ball.y - ball.radius;
       let bottomPoint = ball.y + ball.radius;
 
-      return topPoint <= 0 || bottomPoint >= canvas.clientHeight;
+      if (topPoint <= 0) {
+        ball.y += Math.abs(topPoint);
+        return true;
+      } else if (bottomPoint >= canvas.height) {
+        ball.y -= bottomPoint - canvas.height;
+        return true;
+      }
+      return false;
     };
 
     /**
@@ -174,10 +189,9 @@ export default function InGame($container, info) {
      * @returns {boolean} 바에 부딪혔으면 true, 아니면 false
      */
     const isBallHitBar = (bar, ball) => {
-      // TODO => Bar의 Width를 기준으로 하는 게 아니라 Bar가 없는 곳에 Ball이 있는지 위치를 기준으로 하기
       let maxRangeOfHitPoint =
         Math.sqrt(Math.pow(bar.width / 2, 2) + Math.pow(bar.height / 2, 2)) +
-        ball.radius; // 바의 대각선 길이 + 공의 반지름 = 바의 중심으로부터 공의 중심까지의 거리 중 최대값
+        ball.radius;
       let minRangeOfHitPoint = bar.width / 2 + ball.radius; // 바의 가로길이 / 2 + 공의 반지름 = 바의 중심으로부터 공의 중심까지의 거리 중 최소값
       let barCenterPos = {
         x: bar.x + bar.width / 2,
@@ -186,10 +200,26 @@ export default function InGame($container, info) {
       let a = Math.abs(barCenterPos.x - ball.x);
       let b = Math.abs(barCenterPos.y - ball.y);
       let c = Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
-      return (
-        minRangeOfHitPoint <= c - bar.width - ball.radius &&
-        c - bar.width - ball.radius <= maxRangeOfHitPoint
-      );
+      if (minRangeOfHitPoint <= c && c <= maxRangeOfHitPoint) {
+        console.log(`bar: ${bar1.x}, ${bar1.y} ${bar1.width}, ${bar1.height}`);
+        console.log(`ball: ${ball.x}, ${ball.y} ${ball.radius}`);
+        console.log(a, b, c);
+        console.log(
+          minRangeOfHitPoint + " <= " + c + " <= " + maxRangeOfHitPoint,
+        );
+        return true;
+      } else if (c < minRangeOfHitPoint) {
+        // 공이 바 안에 들어왔을 때 밀어버림
+        let deltaX = ball.x - bar.width / 2;
+        let deltaY = ball.y - bar.height / 2;
+        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+          ball.x += deltaX;
+        } else {
+          ball.y += deltaY;
+        }
+        return true;
+      }
+      return false;
     };
 
     const isBallHitGoal = (canvas, ball) => {
