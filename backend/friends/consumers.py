@@ -40,7 +40,7 @@ class FriendStatusConsumer(AsyncWebsocketConsumer):
             await set_user_online(self.user.id, online=False)
             logger.info(f"Websocket connection closed for user {self.user.id}")
             if hasattr(self, 'send_update_task') and self.send_update_task:
-                self.send_update_task.cancle()
+                self.send_update_task.cancel()
                 try:
                     await self.send_update_task
                 except asyncio.CancelledError:

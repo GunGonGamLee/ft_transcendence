@@ -40,7 +40,7 @@ class FriendsView(APIView):
             response_data = {'friends': friend_list}
             return Response(response_data, status=status.HTTP_200_OK)
         except AuthenticationException as e:
-            return Response({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'error': e.message}, status=status.HTTP_401_UNAUTHORIZED)
         except User.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
@@ -75,7 +75,7 @@ class FriendsView(APIView):
             Friend.objects.create(user_id=current_user, friend_id=requested_friend, status=0)
             return Response({'message': 'Friend request sent'}, status=status.HTTP_200_OK)
         except AuthenticationException as e:
-            return Response({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'error': e.message}, status=status.HTTP_401_UNAUTHORIZED)
         except User.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
@@ -108,7 +108,7 @@ class FriendsView(APIView):
             Friend.objects.filter(user_id=requested_friend, friend_id=current_user, status=1).delete()
             return Response({'message': 'Friend deleted'}, status=status.HTTP_200_OK)
         except AuthenticationException as e:
-            return Response({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'error': e.message}, status=status.HTTP_401_UNAUTHORIZED)
         except User.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
@@ -146,7 +146,7 @@ class AcceptFriendView(APIView):
             return Response({'message': 'Friend request Accepted'}, status=status.HTTP_200_OK)
 
         except AuthenticationException as e:
-            return Response({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'error': e.message}, status=status.HTTP_401_UNAUTHORIZED)
         except User.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
@@ -181,12 +181,12 @@ class RejectFriendView(APIView):
             return Response({'message': 'Friend request rejected'}, status=status.HTTP_200_OK)
 
         except AuthenticationException as e:
-            return Response({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'error': e.message}, status=status.HTTP_401_UNAUTHORIZED)
         except User.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
+
 class FriendSearchView(APIView):
     def get(self, request):
         try:
@@ -202,7 +202,7 @@ class FriendSearchView(APIView):
             return Response({'searchedUserList': users_data}, status=status.HTTP_200_OK)
             
         except AuthenticationException as e:
-            return Response({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'error': e.message}, status=status.HTTP_401_UNAUTHORIZED)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -223,6 +223,6 @@ class FriendPendingView(APIView):
             response_data = {'friendRequestList': friend_request_list}
             return Response(response_data, status=status.HTTP_200_OK)
         except AuthenticationException as e:
-            return Response({'error': e.messages}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'error': e.message}, status=status.HTTP_401_UNAUTHORIZED)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
