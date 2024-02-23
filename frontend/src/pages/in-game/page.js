@@ -12,6 +12,8 @@ export default function InGame($container, info) {
   const scoreInput = { player1: 0, player2: 0 };
   let [getScore, setScore] = useState(scoreInput, this, "renderScoreBoard");
   let [getTime, setTime] = useState(0, this, "renderTime");
+  let fps = (1 / 60) * 1000;
+  let speedCoefficient = 0.8;
 
   const init = () => {
     hideHeader();
@@ -103,7 +105,7 @@ export default function InGame($container, info) {
       x: Math.random() * 2 - 1,
       y: Math.random() * 2 - 1,
     },
-    speed: (1 / 30) * 1000,
+    speed: fps * speedCoefficient,
   };
 
   window.addEventListener("keydown", (e) => {
@@ -148,18 +150,19 @@ export default function InGame($container, info) {
         updateScore(wheterScoreAGoal);
         reset(ball, canvas);
       }
+      drawFunction(bar1, bar2, ball);
     };
 
     /**
      * 공이 벽에 부딪혔는지 확인하는 함수
-     * @param canvas {HTMLElement} 게임이 실행될 캔버스
+     * @param canvas {HTMLCanvasElement} 게임이 실행될 캔버스
      * @param ball {object} 공의 x, y, radius, direction, speed
      */
     const isBallHitWall = (canvas, ball) => {
       let topPoint = ball.y - ball.radius;
       let bottomPoint = ball.y + ball.radius;
 
-      return topPoint <= 0 || bottomPoint >= canvas.offsetHeight;
+      return topPoint <= 0 || bottomPoint >= canvas.height;
     };
 
     /**
@@ -193,10 +196,11 @@ export default function InGame($container, info) {
     };
 
     const updateScore = (wheterScoreAGoal) => {
+      console.log(scoreInput);
       if (wheterScoreAGoal[0]) {
-        setScore.player1(getScore().player1 + 1);
+        setScore(scoreInput.player1 + 1);
       } else if (wheterScoreAGoal[1]) {
-        setScore.player2(getScore().player2 + 1);
+        setScore(scoreInput.player2 + 1);
       }
     };
 
@@ -212,12 +216,9 @@ export default function InGame($container, info) {
         x: Math.random() * 2 - 1,
         y: Math.random() * 2 - 1,
       };
-      ball.speed = (1 / 30) * 1000;
+      ball.speed = fps * speedCoefficient;
     };
     moveBall();
   };
-  window.setInterval(
-    () => runGame(canvas, bar1, bar2, ball, draw),
-    (1 / 30) * 1000,
-  );
+  window.setInterval(() => runGame(canvas, bar1, bar2, ball, draw), fps);
 }
