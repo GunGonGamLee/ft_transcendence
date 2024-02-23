@@ -78,7 +78,7 @@ class GameView(APIView):
         except EmptyPage:
             return JsonResponse({'error': 'Page out of range'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            return JsonResponse({'error': e.__class__.__name__, 'message':str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return JsonResponse({'error': e.__class__.__name__, 'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @staticmethod
     def validate_mode(mode):
@@ -107,7 +107,6 @@ class GameView(APIView):
                 401: 'UNAUTHORIZED',
                 404: 'NOT_FOUND',
                 500: 'SERVER_ERROR'})
-
     def post(self, request):
         try:
             user = AuthUtils.validate_jwt_token_and_get_user(request)
@@ -373,4 +372,4 @@ class GameResultView(APIView):
         except VerificationException as e:
             return JsonResponse({'error': e.message}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            return JsonResponse({'error': e.__class__.__name__, 'message':str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return JsonResponse({'error': e.__class__.__name__, 'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
