@@ -302,7 +302,10 @@ export default function CustomGameList($container) {
       const $roomNameInput = document.getElementById("room-name-input");
       const $passwordInput = document.getElementById("password-input");
 
-      // TODO: title '' 일때 처리
+      if ($roomNameInput.value === "") {
+        alert("방 이름을 입력해주세요.");
+        return;
+      }
       fetch(`${BACKEND}/games/`, {
         method: "POST",
         headers: {
