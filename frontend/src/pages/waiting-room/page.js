@@ -4,15 +4,23 @@ import userBox from "./userBox.js";
 import countdownModal from "./countdownModal.js";
 import useState from "../../utils/useState.js";
 import { click } from "../../utils/clickEvent.js";
+import { navigate } from "../../utils/navigate.js";
 /**
  * @param {HTMLElement} $container
  * @param {object} info
  */
-export default function WaitingRoom($container, info) {
+export default function WaitingRoom($container, info = null) {
   let roomTitle = "방 제목";
   let gameMode = "게임 모드";
   let password = "password";
   let gameModeNum = 4;
+
+  // 새로고침 누르면 game-mode로 이동
+  if (info != null) {
+    navigate("/game-mode");
+  }
+  const ws = info.socket;
+  console.log(info);
 
   console.log(info);
   let props = [
