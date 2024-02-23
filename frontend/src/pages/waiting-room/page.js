@@ -18,9 +18,6 @@ export default function WaitingRoom($container, info = null) {
   const ws = info.socket;
   console.log(info);
   let props = info.data.players;
-  // ws.onmessage((msg) => {
-  //
-  // });
 
   const init = () => {
     render();
@@ -37,7 +34,8 @@ export default function WaitingRoom($container, info = null) {
       },
     );
     ws.onmessage = (msg) => {
-      console.log(msg);
+      let data = JSON.parse(msg.data);
+      setUserState(data.data.players);
     };
   };
 
