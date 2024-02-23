@@ -187,22 +187,10 @@ class RejectFriendView(APIView):
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
 class FriendSearchView(APIView):
-    @swagger_auto_schema(
-        tags=['/api/friends/search/'],
-        request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                'nickname': openapi.Schema(type=openapi.TYPE_STRING, description='찾을 유저의 닉네임')
-            },
-            required=['nickname']),
-        manual_parameters=[
-            openapi.Parameter('Authorization', openapi.IN_HEADER, description='Bearer JWT Token', type=openapi.TYPE_STRING)],
-            response={200: "OK", 400: "닉네임을 받아오지 못했어요.", 404: "검색어로 시작하는 닉네임이 없어요.", 500: "Internal Server Error"}
-        )
-    def post(self, request):
+    def get(self, request):
         try:
             current_user = AuthUtils.validate_jwt_token_and_get_user(request)
-            nickname_start = get_request_body_value(request, 'nickname')
+            nickname_start = request.query_params.get('nickname')
             if not nickname_start:
                 return Response({'error': 'Nickname is required.'}, status=status.HTTP_400_BAD_REQUEST)
             users = User.objects.filter(nickname__startswith=nickname_start).exclude(id=current_user.id)
@@ -218,15 +206,6 @@ class FriendSearchView(APIView):
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class FriendPendingView(APIView):
-    @swagger_auto_schema(
-        tags=['/api/friends/pending/'],
-        request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-        manual_parameters=[
-            openapi.Parameter('Authorization', openapi.IN_HEADER, description='Bearer JWT Token', type=openapi.TYPE_STRING)],
-            response={200: "OK", 401: "인증 오류", 500: "Internal Server Error"}
-        )
-    )
     def get(self, request):
         try:
             current_user = AuthUtils.validate_jwt_token_and_get_user(request)
