@@ -130,24 +130,7 @@ export default function MainHeader($container) {
             });
         });
         // 유저찾기 검색 이벤트
-        document.getElementById('input').addEventListener('input', function(event) {
-            const nickname = event.target.value;
-            console.log('User input:', nickname);
-            fetch(`${BACKEND}/friends/search/?nickname=${encodeURIComponent(nickname)}`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${getCookie("jwt")}`,
-                },
-            }).then((response) => {
-                if (response.status === 200) {
-                    // this.$container.textContent = "";
-                    response.json().then((data) => {
-                        setSearchedUserList(data);
-                    })
-                }
-            })
-        });
+        findUserEvent();
         // 메인 타이틀 클릭 이벤트
         click(document.getElementById("title"), () => {
             navigate("/game-mode");
@@ -186,6 +169,31 @@ export default function MainHeader($container) {
             ${additionalIconHTML}
         </div>
     `;
+    }
+
+    let findUserEvent = () => {
+        // 유저찾기 검색 이벤트
+        document.getElementById('input').addEventListener('keydown', function(event) {
+            const nickname = event.target.value;
+            console.log('User input:', nickname);
+            if (event.key === 'Enter') {
+                fetch(`${BACKEND}/friends/search/?nickname=${encodeURIComponent(nickname)}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${getCookie("jwt")}`,
+                    },
+                }).then((response) => {
+                    if (response.status === 200) {
+                        response.json().then((data) => {
+                            setSearchedUserList(data);
+                        })
+                    } else {
+                        this.$container.textContent = "";
+                    }
+                })
+            }
+        });
     }
 
     let renderFriendsInfoModal = (headerElement) => {
@@ -278,7 +286,6 @@ export default function MainHeader($container) {
     this.renderSearchedUserList = () => {
         const newSearchedUserList = getSearchedUserList();
 
-        console.log(newSearchedUserList);
         const newSearchedUserCards = newSearchedUserList.searchedUserList.map((card, index) =>
             createInfoCard(card, index, {borderColor: '#FF52A0'}, {iconImagePath: '../../assets/images/paper_plane.png'})).join('');
 
@@ -294,6 +301,9 @@ export default function MainHeader($container) {
             ${newSearchedUserCards}
         </div>
         `
+
+        // 유저찾기 검색 이벤트
+        findUserEvent();
     }
 
 
