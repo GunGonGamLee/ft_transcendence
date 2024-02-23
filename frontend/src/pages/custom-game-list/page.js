@@ -60,7 +60,9 @@ export default function CustomGameList($container) {
    */
   this.renderGameRoomList = () => {
     let $listWrapper = $container.querySelector("#list-wrapper");
-    $listWrapper.innerHTML = "";
+    // $listWrapper.innerHTML = "";
+    if ($listWrapper == null) return;
+    $listWrapper.textContent = "";
     let curGameRoomList = getGameRoomList().data;
     if (curGameRoomList == null) {
       $listWrapper.insertAdjacentHTML(
@@ -83,6 +85,18 @@ export default function CustomGameList($container) {
                 </div>`,
         );
         click($listWrapper.querySelector(`.room-id-${data.id}`), () => {
+          if (data.started === true) {
+            alert("게임이 이미 시작되었습니다.");
+            return;
+          }
+          if (
+            (data.player_num === 4 && data.mode === 1) ||
+            (data.player_num === 2 && data.mode === 0)
+          ) {
+            alert("방이 꽉 찼습니다.");
+            return;
+          }
+
           if (data.is_secret === true) {
             document.getElementById("password-modal-wrapper").style.display =
               "block";
@@ -118,7 +132,6 @@ export default function CustomGameList($container) {
         return;
       }
       res.socket = wss;
-      // console.log(res);
       wss.onmessage = null;
       navigate("/waiting-room", res);
     };
@@ -220,7 +233,7 @@ export default function CustomGameList($container) {
     });
 
     click($paginationAfter, () => {
-      if (pagination <= maxPage) {
+      if (pagination < maxPage) {
         pagination += 1;
         updateGameRoomList();
       }
@@ -283,13 +296,9 @@ export default function CustomGameList($container) {
     });
 
     click($makeRoomBtn, () => {
-      console.log("make room");
       const $roomNameInput = document.getElementById("room-name-input");
       const $passwordInput = document.getElementById("password-input");
 
-      console.log($roomNameInput.value);
-      console.log($passwordInput.value);
-      console.log($tournamentModeBtn.style.opacity === "1");
       // TODO: title '' 일때 처리
       fetch(`${BACKEND}/games/`, {
         method: "POST",
@@ -350,7 +359,6 @@ export default function CustomGameList($container) {
       res.json().then((data) => {
         maxPage = data.total_pages;
         setGameRoomList(data);
-        // console.log(data);
       });
     });
   };
@@ -358,5 +366,3 @@ export default function CustomGameList($container) {
   addEventListenersToLayout();
   const intervalId = setInterval(updateGameRoomList, 1000);
 }
-
-//TODO: 패스워드 모달 창 기능 추가, 방 만들기 기능 추가
