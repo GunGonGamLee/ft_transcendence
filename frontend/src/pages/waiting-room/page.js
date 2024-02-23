@@ -3,97 +3,29 @@ import { hover } from "../../utils/hoverEvent.js";
 import userBox from "./userBox.js";
 import countdownModal from "./countdownModal.js";
 import useState from "../../utils/useState.js";
-import { click } from "../../utils/clickEvent.js";
 import { navigate } from "../../utils/navigate.js";
 /**
  * @param {HTMLElement} $container
  * @param {object} info
  */
 export default function WaitingRoom($container, info = null) {
-  let roomTitle = "방 제목";
-  let gameMode = "게임 모드";
-  let password = "password";
-  let gameModeNum = 4;
+  const gameModeNum = info.data.mode;
 
   // 새로고침 누르면 game-mode로 이동
-  if (info != null) {
+  if (info !== null) {
     navigate("/game-mode");
   }
   const ws = info.socket;
   console.log(info);
+  let props = info.data.players;
+  // ws.onmessage((msg) => {
+  //
+  // });
 
-  console.log(info);
-  let props = [
-    {
-      img: "../../../assets/images/avatar/red_bust.png",
-      nickname: "donghyk2",
-      rating: 2400,
-      status: "오우-너",
-      color: "yellow",
-    },
-    {
-      img: "../../../assets/images/avatar/blue_bust.png",
-      nickname: "john",
-      rating: 2200,
-      status: "준비 중",
-      color: "white",
-    },
-    {
-      img: "../../../assets/images/avatar/yellow_bust.png",
-      nickname: "bob",
-      rating: 2300,
-      status: "준비 중",
-      color: "white",
-    },
-    {
-      img: "../../../assets/images/avatar/green_bust.png",
-      nickname: "garry",
-      rating: 2300,
-      status: "준비 중",
-      color: "white",
-    },
-  ];
-
-  let props2 = [
-    {
-      img: "../../../assets/images/avatar/red_bust.png",
-      nickname: "업데이트이름",
-      rating: 240,
-      status: "오우-너",
-      color: "yellow",
-    },
-    {
-      img: "../../../assets/images/avatar/blue_bust.png",
-      nickname: "업데이트이름",
-      rating: 2200,
-      status: "비 중",
-      color: "white",
-    },
-    {
-      img: "../../../assets/images/avatar/yellow_bust.png",
-      nickname: "업데이트이름",
-      rating: 2300,
-      status: "준비 중",
-      color: "white",
-    },
-    {
-      img: "../../../assets/images/avatar/green_bust.png",
-      nickname: "업데이트이름",
-      rating: 2300,
-      status: "준비 중",
-      color: "white",
-    },
-  ];
-
-  // let connectWebSocket = () => {
-  //   this.ws = new WebSocket('wss://' +
-  //     window.location.host +
-  //     '/ws/games/' +
-  //     roomName);
-  // };
   const init = () => {
-    // connectWebSocket();
     render();
+    if (info.password)
+      $container.querySelector(".room-lock").style.display = "block";
     hover(
       $container.querySelector(".room-lock"),
       () => {
@@ -104,9 +36,9 @@ export default function WaitingRoom($container, info = null) {
         $container.querySelector(".room-password-modal").style.display = "none";
       },
     );
-    click($container.querySelector(".start-btn"), () => {
-      setUserState(props2);
-    });
+    ws.onmessage = (msg) => {
+      console.log(msg);
+    };
   };
 
   const render = () => {
@@ -114,12 +46,12 @@ export default function WaitingRoom($container, info = null) {
     $container.innerHTML = `
       ${countdownModal(false)}
       <div class="waiting-room-wrapper" style="background-image: url('../../../assets/images/game_room_bg_trans.png'); background-size: 100% 50%; background-repeat: no-repeat; background-position: center bottom; width: 100vw; height: 88vh; display: flex; flex-direction: column; justify-content: center; align-items: center">
-        <div class="room-name-box" style="align-self: flex-start;display: flex; align-items: center; margin-top: 2vh">
-          <img class="room-lock" alt="lock" src="../../../assets/images/password.png" style="margin-left: 5vw; margin-bottom: 0.4vh; width: 2vw; height: 2.8vh; -webkit-user-drag: none; user-select: none;">
-          <div class="room-name-text" style="margin-left: 1vw; font-size: 3vh;font-family: Galmuri11,serif; color: white">${roomTitle} | ${gameMode}</div>
+        <div class="room-name-box" style="padding-left: 5vw; align-self: flex-start;display: flex; align-items: center; margin-top: 2vh">
+          <img class="room-lock" alt="lock" src="../../../assets/images/password.png" style="display: none; margin-bottom: 0.4vh; width: 2vw; height: 2.8vh; -webkit-user-drag: none; user-select: none;">
+          <div class="room-name-text" style="margin-left: 1vw; font-size: 3vh;font-family: Galmuri11,serif; color: white">${info.data.title} [${info.data.mode === 1 ? "토너먼트" : "1vs1"}]</div>
         </div>
         <div class="room-password-modal" style="position: fixed; top: 22vh; left: 1vw; display: none; margin-left: 5vw; font-size: 1.5vh; color: white; font-family: Galmuri11,serif">
-          <span style="background-color: black; padding: 0.4vh;">${password}</span>
+          <span style="background-color: black; padding: 0.4vh;">${info.password}</span>
         </div>
         <div class="user-box-wrapper" style="width: 100vw; height: 65vh; display : flex; flex-direction: row">
           ${userBox(gameModeNum, props)}
