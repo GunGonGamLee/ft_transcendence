@@ -146,6 +146,7 @@ export default function InGame($container, info) {
       let wheterScoreAGoal = isBallHitGoal(canvas, ball);
       if (wheterScoreAGoal[0] || wheterScoreAGoal[1]) {
         updateScore(wheterScoreAGoal);
+        reset();
       }
     };
 
@@ -185,7 +186,7 @@ export default function InGame($container, info) {
     const isBallHitGoal = (canvas, ball) => {
       if (ball.x <= 0) {
         return [true, false];
-      } else if (ball.x >= canvas.offsetWidth) {
+      } else if (ball.x >= canvas.width) {
         return [false, true];
       }
       return [false, false];
@@ -197,6 +198,21 @@ export default function InGame($container, info) {
       } else if (wheterScoreAGoal[1]) {
         setScore.player2(getScore().player2 + 1);
       }
+    };
+
+    /**
+     * 공의 위치를 초기화하는 함수
+     * @param ball {object} 공의 x, y, radius, direction, speed
+     * @param canvas {HTMLCanvasElement} 게임이 실행될 캔버스
+     */
+    const reset = (ball, canvas) => {
+      ball.x = canvas.width / 2;
+      ball.y = canvas.height / 2;
+      ball.direction = {
+        x: Math.random() * 2 - 1,
+        y: Math.random() * 2 - 1,
+      };
+      ball.speed = 10;
     };
 
     moveBall();
