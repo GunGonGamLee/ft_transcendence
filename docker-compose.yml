@@ -66,24 +66,24 @@ services:
     depends_on:
       - hashicorp_vault
 
-  # nginx:
-  #   build: ./nginx
-  #   container_name: nginx_container
-  #   volumes:
-  #     - "./frontend:/usr/share/nginx/html"
-  #     - static-volume:/usr/share/nginx/html/static
-  #     - "./volumes/certs:/etc/nginx/certs"
-  #     # - "/Users/sejokim/desktop/volumes/nginx/logs:/var/log/nginx"
-  #   logging:
-  #     options:
-  #       max-size: "10m"
-  #       max-file: "3"
-  #   ports:
-  #     - 443:443 # https 사용
-  #   depends_on:
-  #     - django_node_app
-  #   networks:
-  #     - app_network
+  nginx:
+    build: ./nginx
+    container_name: nginx_container
+    volumes:
+      - "./frontend:/usr/share/nginx/html"
+      - static-volume:/usr/share/nginx/html/static
+      - "./volumes/certs:/etc/nginx/certs"
+      # - "/Users/sejokim/desktop/volumes/nginx/logs:/var/log/nginx"
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    ports:
+      - 443:443 # https 사용
+    depends_on:
+      - django_node_app
+    networks:
+      - app_network
 
   # elasticsearch:
   #   build:
