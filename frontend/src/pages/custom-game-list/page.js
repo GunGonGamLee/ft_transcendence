@@ -104,7 +104,6 @@ export default function CustomGameList($container) {
             document
               .getElementById("pwd-input")
               .addEventListener("keydown", (e) => {
-                console.log(e.key);
                 if (e.key === "Enter") {
                   enterRoom(data.id, e.target.value);
                 }
@@ -129,12 +128,12 @@ export default function CustomGameList($container) {
     wss.onmessage = (event) => {
       const res = JSON.parse(event.data);
       if (res.error) {
-        console.log(res.error);
         if (res.error === "[PermissionDenied] can't access")
           alert("비밀번호가 틀렸습니다.");
         return;
       }
       res.socket = wss;
+      if (password != null) res.password = password;
       wss.onmessage = null;
       navigate("/waiting-room", res);
     };
@@ -287,7 +286,6 @@ export default function CustomGameList($container) {
     const $makeRoomBtn = document.getElementById("make-room-btn");
 
     click($1vs1ModeBtn, () => {
-      console.log("1vs1");
       $tournamentModeBtn.style.opacity = "0.5";
       $1vs1ModeBtn.style.opacity = "1";
     });
@@ -295,7 +293,6 @@ export default function CustomGameList($container) {
     click($tournamentModeBtn, () => {
       $1vs1ModeBtn.style.opacity = "0.5";
       $tournamentModeBtn.style.opacity = "1";
-      console.log("tournament");
     });
 
     click($makeRoomBtn, () => {
@@ -324,12 +321,10 @@ export default function CustomGameList($container) {
           if (res.status === 201) {
             return res.json();
           } else {
-            console.log(res);
             throw new Error("방 만들기 실패");
           }
         })
         .then((res) => {
-          console.log(res);
           enterRoom(res.id, $passwordInput.value);
         });
     });
