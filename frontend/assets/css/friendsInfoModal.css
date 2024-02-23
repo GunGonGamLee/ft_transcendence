@@ -38,9 +38,11 @@
     height: 100%;
 }
 
-#user-search {
+#user-search-list {
     overflow: auto;
     overflow-y: scroll;
+    border: 0.3vw solid #FF52A0;
+    height: 100%;
 }
 
 #friend-request-list {
@@ -50,11 +52,6 @@
 
 #user-search-wrapper {
     color: #FF52A0;
-}
-
-#user-search {
-    border: 0.3vw solid #FF52A0;
-    height: 100%;
 }
 
 #friend-request-list-wrapper {
@@ -77,7 +74,7 @@
     color: white;
     padding: 0.8vh 1vw;
     margin: 1.3vh 0 1.3vh 1vh;
-    width: calc(100% - 5vh - 0.6vw - 1vh - 0.4vw);
+    width: calc(100% - 5vh - 0.6vw - 1vh - 3vw);
     font-size: 2.5vh;
     font-family: Galmuri11-Bold, serif;
 }
