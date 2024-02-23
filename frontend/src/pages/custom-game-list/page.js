@@ -100,6 +100,7 @@ export default function CustomGameList($container) {
           if (data.is_secret === true) {
             document.getElementById("password-modal-wrapper").style.display =
               "block";
+            document.getElementById("pwd-input").focus();
             document
               .getElementById("pwd-input")
               .addEventListener("keydown", (e) => {
@@ -128,7 +129,9 @@ export default function CustomGameList($container) {
     wss.onmessage = (event) => {
       const res = JSON.parse(event.data);
       if (res.error) {
-        alert(res.error);
+        console.log(res.error);
+        if (res.error === "[PermissionDenied] can't access")
+          alert("비밀번호가 틀렸습니다.");
         return;
       }
       res.socket = wss;
