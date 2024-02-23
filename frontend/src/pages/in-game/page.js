@@ -103,7 +103,7 @@ export default function InGame($container, info) {
       x: Math.random() * 2 - 1,
       y: Math.random() * 2 - 1,
     },
-    speed: 10,
+    speed: (1 / 30) * 1000,
   };
 
   window.addEventListener("keydown", (e) => {
@@ -146,7 +146,7 @@ export default function InGame($container, info) {
       let wheterScoreAGoal = isBallHitGoal(canvas, ball);
       if (wheterScoreAGoal[0] || wheterScoreAGoal[1]) {
         updateScore(wheterScoreAGoal);
-        reset();
+        reset(ball, canvas);
       }
     };
 
@@ -212,11 +212,12 @@ export default function InGame($container, info) {
         x: Math.random() * 2 - 1,
         y: Math.random() * 2 - 1,
       };
-      ball.speed = 10;
+      ball.speed = (1 / 30) * 1000;
     };
-
     moveBall();
   };
-
-  runGame(canvas, bar1, bar2, ball, draw);
+  window.setInterval(
+    () => runGame(canvas, bar1, bar2, ball, draw),
+    (1 / 30) * 1000,
+  );
 }
