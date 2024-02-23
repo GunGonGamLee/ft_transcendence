@@ -135,9 +135,19 @@ export default function MainHeader($container) {
             console.log('User input:', userInput);
             fetch(`${BACKEND}/api/friends/search?nickname=${encodeURIComponent(userInput)}`, {
                 method: "GET",
-
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${getCookie("jwt")}`,
+                },
+            }).then((response) => {
+                if (response.status.status === 200) {
+                    this.$container.textContent = "";
+                    response.json().then((data) => {
+                        setSearchedUserList(data);
+                    })
+                }
             })
-        })
+        });
         // 메인 타이틀 클릭 이벤트
         click(document.getElementById("title"), () => {
             navigate("/game-mode");
@@ -211,32 +221,31 @@ export default function MainHeader($container) {
             createInfoCard(card, index,{borderColor: '#07F7B0'}, {iconImagePath: '../../assets/images/trash.png'})).join('');
 
         document.getElementById("friends-list-wrapper").innerHTML = `
-      <div class="list-subject">
-          친구 (${newFriendList.friends.length} / 8)
-      </div>
-      <div id="friends-list">
-          ${newFriendCards}
-      </div>
-    `;
+          <div class="list-subject">
+            친구 (${newFriendList.friends.length} / 8)
+        </div>
+        <div id="friends-list">
+            ${newFriendCards}
+        </div>
+            `;
 
         // 친구삭제 클릭 이벤트
         newFriendList.friends.forEach((friend, index) => {
             const iconElement = document.getElementById(`icon-${index}`);
             if (iconElement) {
                 iconElement.addEventListener('click', () => {
-                    // 여기에 클릭 시 실행할 로직을 추가합니다.
                     console.log(`Icon at index ${index} clicked.`);
                     console.log(friend.nickname);
-                    // 요청 본문을 구성
-                    const data = friend.nickname;
-                    // 예: 특정 친구를 삭제하는 함수 호출 등
+                    // nickname 키값 구성
+                    const nickname = friend.nickname;
+
                     fetch(`${BACKEND}/friends/`, {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json',
                             Authorization: `Bearer ${getCookie("jwt")}`,
                         },
-                        body: JSON.stringify({data})
+                        body: JSON.stringify({nickname})
                     }).then((response) => {
                         if (response.status === 200) {
 
@@ -266,10 +275,11 @@ export default function MainHeader($container) {
     `
     }
 
-    this.renderFoundUserList = () => {
-        const newRenderFoundUser = getFoundUserList();
+    this.rendersearchedUserList = () => {
+        const newSearchedUserList = getSearchedUserList();
 
-
+        const newSearchedUserCards = newSearchedUserList.searchedUserList.map((card, index) =>
+            createInfoCard(card, index, {borderColor: ''}))
     }
 
 
@@ -278,6 +288,5 @@ export default function MainHeader($container) {
     let [getUserInfo, setUserInfo] = useState({}, this, "render");
     let [getFriendsList, setFriendsList] = useState({}, this, "renderFriendsList");
     let [getRequestersList, setRequestersList] = useState({}, this, "renderRequestersList");
-    let [getFoundUserList, setFoundUserList] = useState({}, this, "renderFoundUserList");
+    let [getSearchedUserList, setSearchedUserList] = useState({}, this, "rendersearchedUserList");
 }
-
