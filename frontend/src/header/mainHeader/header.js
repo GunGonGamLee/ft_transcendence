@@ -11,35 +11,35 @@ import useState from "../../utils/useState.js";
  * @param {HTMLElement} $container
  */
 export default function MainHeader($container) {
-  this.$container = $container;
+    this.$container = $container;
 
-  const init = () => {
-    fetch(`${BACKEND}/users/me`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${getCookie("jwt")}`,
-      },
-    }).then((response) => {
-      if (response.status === 200) {
-        this.$container.textContent = "";
-        response.json().then((data) => {
-          setUserInfo(data);
+    const init = () => {
+        fetch(`${BACKEND}/users/me`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${getCookie("jwt")}`,
+            },
+        }).then((response) => {
+            if (response.status === 200) {
+                this.$container.textContent = "";
+                response.json().then((data) => {
+                    setUserInfo(data);
+                });
+                // alert("웹소켓 연결!");
+                new WebSocket("wss://localhost/ws/friend_status/");
+            } else {
+                // TODO => 에러 페이지로 이동
+                navigate("/");
+            }
         });
-        // alert("웹소켓 연결!");
-        new WebSocket("wss://localhost/ws/friend_status/");
-      } else {
-        // TODO => 에러 페이지로 이동
-        navigate("/");
-      }
-    });
-  };
+    };
 
-  this.render = () => {
-    const { nickname, avatar } = getUserInfo();
-    this.$container.insertAdjacentHTML(
-      "beforeend",
-      `
+    this.render = () => {
+        const { nickname, avatar } = getUserInfo();
+        this.$container.insertAdjacentHTML(
+            "beforeend",
+            `
         <div class="main header-wrapper">
             <div class="main" id="left-side">
                 <img src="../../../assets/images/go_back.png" alt="뒤로가기" class="main" id="go-back">
@@ -60,103 +60,103 @@ export default function MainHeader($container) {
             </div>
         </div>
         `,
-    );
-    const headerElement = document.getElementById("header");
-    renderFriendsInfoModal(headerElement);
+        );
+        const headerElement = document.getElementById("header");
+        renderFriendsInfoModal(headerElement);
 
-    // 뒤로가기 버튼 클릭 이벤트
-    click(document.getElementById("go-back"), () => {
-      history.back();
-    });
-    // 사용자 정보 클릭 이벤트
-    click(document.getElementById("go-histories"), () => {
-      navigate("/histories");
-    });
-    // 로그아웃 버튼 클릭 이벤트
-    click(document.getElementById("logout"), () => {
-      fetch(BACKEND + "/login/logout/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${getCookie("jwt")}`,
-        },
-      }).then((response) => {
-        if (response.status === 200) {
-          navigate("/");
-          deleteCookie("jwt");
-        }
-      });
-    });
-    // 친구 목록 버튼 클릭 이벤트 (모달 보이기, 친구목록 요청, 친구요청 리스트 요청)
-    click(document.getElementById("friends"),() => {
-      const infoWrapper = document.getElementById("friends-info-wrapper");
+        // 뒤로가기 버튼 클릭 이벤트
+        click(document.getElementById("go-back"), () => {
+            history.back();
+        });
+        // 사용자 정보 클릭 이벤트
+        click(document.getElementById("go-histories"), () => {
+            navigate("/histories");
+        });
+        // 로그아웃 버튼 클릭 이벤트
+        click(document.getElementById("logout"), () => {
+            fetch(BACKEND + "/login/logout/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${getCookie("jwt")}`,
+                },
+            }).then((response) => {
+                if (response.status === 200) {
+                    navigate("/");
+                    deleteCookie("jwt");
+                }
+            });
+        });
+        // 친구 목록 버튼 클릭 이벤트 (모달 보이기, 친구목록 요청, 친구요청 리스트 요청)
+        click(document.getElementById("friends"),() => {
+            const infoWrapper = document.getElementById("friends-info-wrapper");
 
-      if (infoWrapper.style.display === "grid") {
-        infoWrapper.style.display = "none";
-      } else {
-        infoWrapper.style.display = "grid";
-      }
+            if (infoWrapper.style.display === "grid") {
+                infoWrapper.style.display = "none";
+            } else {
+                infoWrapper.style.display = "grid";
+            }
 
-      fetch(`${BACKEND}/friends/`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${getCookie("jwt")}`,
-        },
-      }).then((response) => {
-        if (response.status === 200) {
-          // this.$container.textContent = "";
-          response.json().then((data) => {
-            setFriendsList(data);
-          });
-        } else {
-          navigate("/");
-        }
-      });
-      fetch(`${BACKEND}/friends/pending/`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${getCookie("jwt")}`,
-        },
-      }).then((response) => {
-        if (response.status === 200) {
-          response.json().then((data) => {
-            setRequestersList(data);
-          });
-        } else {
-          navigate("/");
-        }
-      });
-    });
-    // 메인 타이틀 클릭 이벤트
-    click(document.getElementById("title"), () => {
-      navigate("/game-mode");
-    });
+            fetch(`${BACKEND}/friends/`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${getCookie("jwt")}`,
+                },
+            }).then((response) => {
+                if (response.status === 200) {
+                    // this.$container.textContent = "";
+                    response.json().then((data) => {
+                        setFriendsList(data);
+                    });
+                } else {
+                    navigate("/");
+                }
+            });
+            fetch(`${BACKEND}/friends/pending/`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${getCookie("jwt")}`,
+                },
+            }).then((response) => {
+                if (response.status === 200) {
+                    response.json().then((data) => {
+                        setRequestersList(data);
+                    });
+                } else {
+                    navigate("/");
+                }
+            });
+        });
+        // 메인 타이틀 클릭 이벤트
+        click(document.getElementById("title"), () => {
+            navigate("/game-mode");
+        });
 
 
-  };
+    };
 
-  function createInfoCard(friend, index, style = {}, image = {}) {
-    const {nickname, avatar, is_online} = friend;
-    // 아바타 이미지 경로 조정
-    const avatarImagePath = `../../assets/images/avatar/${avatar}`;
-    const borderColor = style.borderColor;
-    const imagePath = image.iconImagePath;
+    function createInfoCard(friend, index, style = {}, image = {}) {
+        const {nickname, avatar, is_online} = friend;
+        // 아바타 이미지 경로 조정
+        const avatarImagePath = `../../assets/images/avatar/${avatar}`;
+        const borderColor = style.borderColor;
+        const imagePath = image.iconImagePath;
 
-    // `is_online`이 false일 경우 카드에 적용할 투명도 스타일
-    const opacityStyle = is_online ? '' : 'opacity: 0.5;';
+        // `is_online`이 false일 경우 카드에 적용할 투명도 스타일
+        const opacityStyle = is_online ? '' : 'opacity: 0.5;';
 
-    // accept.png 아이콘일 경우에만 추가할 HTML 조각을 정의
-    const additionalIconHTML = imagePath === '../../assets/images/accept.png' ?
-        `<div>
+        // accept.png 아이콘일 경우에만 추가할 HTML 조각을 정의
+        const additionalIconHTML = imagePath === '../../assets/images/accept.png' ?
+            `<div>
             <img class="icon" src="../../assets/images/close.png" />
         </div>` : '';
-    // 조건에 따라 클래스 추가
-    const wrapperClass = imagePath === '../../assets/images/accept.png' ? 'friend-card-wrapper with-additional-icon' : 'friend-card-wrapper';
+        // 조건에 따라 클래스 추가
+        const wrapperClass = imagePath === '../../assets/images/accept.png' ? 'friend-card-wrapper with-additional-icon' : 'friend-card-wrapper';
 
 
-    return `
+        return `
         <div class="${wrapperClass}" style="border-color: ${borderColor}; ${opacityStyle}">
             <div>
                 <img class="avatar-image" src="${avatarImagePath}" />
@@ -170,11 +170,11 @@ export default function MainHeader($container) {
             ${additionalIconHTML}
         </div>
     `;
-  }
+    }
 
-  let renderFriendsInfoModal = (headerElement) => {
-    importCss('../../../assets/css/friendsInfoModal.css');
-    headerElement.insertAdjacentHTML("beforeend", `
+    let renderFriendsInfoModal = (headerElement) => {
+        importCss('../../../assets/css/friendsInfoModal.css');
+        headerElement.insertAdjacentHTML("beforeend", `
         <div class="friends-info-modal-wrapper" id="friends-info-wrapper">
             <div class="list-wrapper" id="friends-list-wrapper">
                 
@@ -195,16 +195,16 @@ export default function MainHeader($container) {
             </div>
         </div>
     `)
-  };
+    };
 
-  this.renderFriendsList = () => {
-    // 상태 관리 시스템으로부터 현재 친구 목록 상태를 가져옵니다.
-    const newFriendList = getFriendsList();
-    // 새로운 친구 목록을 기반으로 친구 카드를 생성합니다.
-    const newFriendCards = newFriendList.friends.slice(0, 8).map((card, index) =>
-        createInfoCard(card, index,{borderColor: '#07F7B0'}, {iconImagePath: '../../assets/images/trash.png'})).join('');
+    this.renderFriendsList = () => {
+        // 상태 관리 시스템으로부터 현재 친구 목록 상태를 가져옵니다.
+        const newFriendList = getFriendsList();
+        // 새로운 친구 목록을 기반으로 친구 카드를 생성합니다.
+        const newFriendCards = newFriendList.friends.slice(0, 8).map((card, index) =>
+            createInfoCard(card, index,{borderColor: '#07F7B0'}, {iconImagePath: '../../assets/images/trash.png'})).join('');
 
-    document.getElementById("friends-list-wrapper").innerHTML = `
+        document.getElementById("friends-list-wrapper").innerHTML = `
       <div class="list-subject">
           친구 (${newFriendList.friends.length} / 8)
       </div>
@@ -213,45 +213,45 @@ export default function MainHeader($container) {
       </div>
     `;
 
-    // 친구삭제 클릭 이벤트
-    newFriendList.friends.forEach((friend, index) => {
-      const iconElement = document.getElementById(`icon-${index}`);
-      if (iconElement) {
-        iconElement.addEventListener('click', () => {
-          // 여기에 클릭 시 실행할 로직을 추가합니다.
-          console.log(`Icon at index ${index} clicked.`);
-          console.log(friend.nickname);
-          // 요청 본문을 구성
-          const data = friend.nickname;
-          // 예: 특정 친구를 삭제하는 함수 호출 등
-          fetch(`${BACKEND}/friends/`, {
-            method: 'DELETE',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${getCookie("jwt")}`,
-            },
-            body: JSON.stringify({data})
-          }).then((response) => {
-            if (response.status === 200) {
+        // 친구삭제 클릭 이벤트
+        newFriendList.friends.forEach((friend, index) => {
+            const iconElement = document.getElementById(`icon-${index}`);
+            if (iconElement) {
+                iconElement.addEventListener('click', () => {
+                    // 여기에 클릭 시 실행할 로직을 추가합니다.
+                    console.log(`Icon at index ${index} clicked.`);
+                    console.log(friend.nickname);
+                    // 요청 본문을 구성
+                    const data = friend.nickname;
+                    // 예: 특정 친구를 삭제하는 함수 호출 등
+                    fetch(`${BACKEND}/friends/`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${getCookie("jwt")}`,
+                        },
+                        body: JSON.stringify({data})
+                    }).then((response) => {
+                        if (response.status === 200) {
 
-            } else {
-              // TODO => 에러 페이지로 이동
-              navigate("/");
+                        } else {
+                            // TODO => 에러 페이지로 이동
+                            navigate("/");
+                        }
+                    })
+                });
             }
-          })
         });
-      }
-    });
-  };
+    };
 
-  this.renderRequestersList = () => {
-    const newRequestersList = getRequestersList();
+    this.renderRequestersList = () => {
+        const newRequestersList = getRequestersList();
 
-    console.log(newRequestersList);
-    const newRequestersCards = newRequestersList.friendRequestList.map((card, index)=>
-        createInfoCard(card, index, {borderColor: '#29ABE2'}, {iconImagePath: '../../assets/images/accept.png'})).join('');
+        console.log(newRequestersList);
+        const newRequestersCards = newRequestersList.friendRequestList.map((card, index)=>
+            createInfoCard(card, index, {borderColor: '#29ABE2'}, {iconImagePath: '../../assets/images/accept.png'})).join('');
 
-    document.getElementById("friend-request-list-wrapper").innerHTML = `
+        document.getElementById("friend-request-list-wrapper").innerHTML = `
       <div class="list-subject">
           친구 요청 (${newRequestersList.friendRequestList.length})
       </div>
@@ -259,13 +259,14 @@ export default function MainHeader($container) {
           ${newRequestersCards}
       </div>
     `
-  }
+    }
 
 
-  importCss("../../../assets/fonts/font.css");
-  init();
-  let [getUserInfo, setUserInfo] = useState({}, this, "render");
-  let [getFriendsList, setFriendsList] = useState({}, this, "renderFriendsList");
-  let [getRequestersList, setRequestersList] = useState({}, this, "renderRequestersList");
-  // let [getFoundUserList, setFoundUserList] = useState({}, this, "renderFoundUserList");
+    importCss("../../../assets/fonts/font.css");
+    init();
+    let [getUserInfo, setUserInfo] = useState({}, this, "render");
+    let [getFriendsList, setFriendsList] = useState({}, this, "renderFriendsList");
+    let [getRequestersList, setRequestersList] = useState({}, this, "renderRequestersList");
+    // let [getFoundUserList, setFoundUserList] = useState({}, this, "renderFoundUserList");
 }
+
