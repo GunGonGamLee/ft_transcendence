@@ -66,32 +66,34 @@ services:
     depends_on:
       - hashicorp_vault
 
-  nginx:
-    build: ./nginx
-    container_name: nginx_container
-    volumes:
-      - "./frontend:/usr/share/nginx/html"
-      - static-volume:/usr/share/nginx/html/static
-      - "./volumes/certs:/etc/nginx/certs"
-      # - "/Users/sejokim/desktop/volumes/nginx/logs:/var/log/nginx"
-    logging:
-      options:
-        max-size: "10m"
-        max-file: "3"
-    ports:
-      - 443:443 # https 사용
-    depends_on:
-      - django_node_app
-    networks:
-      - app_network
+  # nginx:
+  #   build: ./nginx
+  #   container_name: nginx_container
+  #   volumes:
+  #     - "./frontend:/usr/share/nginx/html"
+  #     - static-volume:/usr/share/nginx/html/static
+  #     - "./volumes/certs:/etc/nginx/certs"
+  #     # - "/Users/sejokim/desktop/volumes/nginx/logs:/var/log/nginx"
+  #   logging:
+  #     options:
+  #       max-size: "10m"
+  #       max-file: "3"
+  #   ports:
+  #     - 443:443 # https 사용
+  #   depends_on:
+  #     - django_node_app
+  #   networks:
+  #     - app_network
 
   # elasticsearch:
   #   build:
   #     context: ./elk/elasticsearch
   #     dockerfile: Dockerfile
   #   volumes:
-  #     - "/Users/sejokim/desktop/volumes/elasticsearch/data:/usr/share/elasticsearch/data"
-  #     - "/Users/sejokim/desktop/volumes/elasticsearch/certs:/usr/share/elasticsearch/config/certs"
+  #     # - "/Users/sejokim/desktop/volumes/elasticsearch/data:/usr/share/elasticsearch/data"
+  #     # - "/Users/sejokim/desktop/volumes/elasticsearch/certs:/usr/share/elasticsearch/config/certs"
+  #     - "./volumes/elasticsearch/data:/usr/share/elasticsearch/data"
+  #     - "./volumes/elasticsearch/certs:/usr/share/elasticsearch/config/certs"
   #   environment:
   #     discovery.type : single-node
   #     ELASTIC_PW : ${ELASTIC_PW}
@@ -103,7 +105,7 @@ services:
   #   networks:
   #     - app_network
 
-  #   # elasticsearch-setup-passwords interactive --url "https://localhost:9200" -E xpack.security.http.ssl.verification_mode=none
+    # elasticsearch-setup-passwords interactive --url "https://localhost:9200" -E xpack.security.http.ssl.verification_mode=none
 
   # logstash:
   #   build: ./elk/logstash
@@ -113,8 +115,10 @@ services:
   #     ELASTIC_PW: ${ELASTIC_PW}
   #     ES_CERTS_PW: ${ES_CERTS_PW}
   #   volumes:
-  #     - "/Users/sejokim/desktop/volumes/elasticsearch/certs:/usr/share/logstash/config/certs"
-  #     - "/Users/sejokim/desktop/volumes/nginx/logs:/usr/share/logstash/logs"
+  #     # - "/Users/sejokim/desktop/volumes/elasticsearch/certs:/usr/share/logstash/config/certs"
+  #     # - "/Users/sejokim/desktop/volumes/nginx/logs:/usr/share/logstash/logs"
+  #     - "./volumes/elasticsearch/certs:/usr/share/logstash/config/certs"
+  #     - "./volumes/nginx/logs:/usr/share/logstash/logs"
   #   ports:
   #     - 5333:5333
   #   depends_on:
@@ -126,8 +130,10 @@ services:
   #   build: ./elk/kibana
   #   container_name: kibana_container
   #   volumes:
-  #     - "/Users/sejokim/desktop/volumes/kibana/data:/usr/share/kibana/data"
-  #     - "/Users/sejokim/desktop/volumes/elasticsearch/certs:/usr/share/kibana/config/certs"
+  #     # - "/Users/sejokim/desktop/volumes/kibana/data:/usr/share/kibana/data"
+  #     # - "/Users/sejokim/desktop/volumes/elasticsearch/certs:/usr/share/kibana/config/certs"
+  #     - "./volumes/kibana/data:/usr/share/kibana/data"
+  #     - "./volumes/elasticsearch/certs:/usr/share/kibana/config/certs"
   #   environment:
   #     ELASTICSEARCH_URL: https://elasticsearch:9200
   #     ELASTIC_PW: ${ELASTIC_PW}
