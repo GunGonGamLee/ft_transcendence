@@ -10,6 +10,7 @@ from login.views import AuthUtils
 from src.utils import *
 from src.exceptions import AuthenticationException
 import logging
+from django.http import JsonResponse
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +80,7 @@ class FriendsView(APIView):
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
+
     # DELETE 요청 : 친구 삭제
     @swagger_auto_schema(
         tags=['/api/friends'],
@@ -111,7 +112,7 @@ class FriendsView(APIView):
         except User.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return JsonResponse({'error': e.__class__.__name__, 'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class AcceptFriendView(APIView):
