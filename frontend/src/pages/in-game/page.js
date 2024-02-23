@@ -93,7 +93,7 @@ export default function InGame($container, info) {
     y: canvas.height / 2 - 50,
     width: 20,
     height: 100,
-    speed: 10,
+    speed: fps,
   };
   let bar2 = {
     x: canvas.width - 30,
@@ -143,15 +143,20 @@ export default function InGame($container, info) {
    */
   const runGame = (canvas, bar1, bar2, ball, drawFunction) => {
     const moveBall = () => {
-      console.log(ball.speed);
       ball.x += ball.direction.x * ball.speed;
       ball.y += ball.direction.y * ball.speed;
       ball.speed += 0.01;
       if (isBallHitBar(bar1, ball) || isBallHitBar(bar2, ball)) {
         ball.direction.x *= -1;
+        let correction = Math.random() * 2 - 1;
+        ball.direction.x =
+          ball.direction.x + correction > 1 ? 1 : ball.direction.x + correction;
       }
       if (isBallHitWall(canvas, ball)) {
         ball.direction.y *= -1;
+        let correction = Math.random() * 2 - 1;
+        ball.direction.y =
+          ball.direction.y + correction > 1 ? 1 : ball.direction.y + correction;
       }
       let wheterScoreAGoal = isBallHitGoal(canvas, ball);
       if (wheterScoreAGoal[0] || wheterScoreAGoal[1]) {
@@ -183,7 +188,7 @@ export default function InGame($container, info) {
       let maxRangeOfHitPoint =
         Math.sqrt(Math.pow(bar.width / 2, 2) + Math.pow(bar.height / 2, 2)) +
         ball.radius; // 바의 대각선 길이 + 공의 반지름 = 바의 중심으로부터 공의 중심까지의 거리 중 최대값
-      let minRangeOfHitPoint = bar.width / 2 + self.radius; // 바의 가로길이 / 2 + 공의 반지름 = 바의 중심으로부터 공의 중심까지의 거리 중 최소값
+      let minRangeOfHitPoint = bar.width / 2 + ball.radius; // 바의 가로길이 / 2 + 공의 반지름 = 바의 중심으로부터 공의 중심까지의 거리 중 최소값
       let barCenterPos = {
         x: bar.x + bar.width / 2,
         y: bar.y + bar.height / 2,
@@ -191,7 +196,8 @@ export default function InGame($container, info) {
       let a = Math.abs(barCenterPos.x - ball.x);
       let b = Math.abs(barCenterPos.y - ball.y);
       let c = Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
-      return minRangeOfHitPoint <= c && c <= maxRangeOfHitPoint;
+      console.log(c, minRangeOfHitPoint, maxRangeOfHitPoint);
+      return minRangeOfHitPoint < c && c < maxRangeOfHitPoint;
     };
 
     const isBallHitGoal = (canvas, ball) => {
