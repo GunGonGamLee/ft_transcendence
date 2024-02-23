@@ -19,12 +19,17 @@ export default function InGame($container, info) {
     hideHeader();
     this.render();
     this.renderScoreBoard();
-    this.intervalId = setInterval(() => {
+    this.timeIntervalId = setInterval(() => {
       setTime(getTime() + 1);
     }, 1000);
+    this.gameIntervalId = window.setInterval(
+      () => runGame(canvas, bar1, bar2, ball, draw),
+      fps,
+    );
   };
   this.unmount = () => {
-    clearInterval(this.intervalId);
+    clearInterval(this.timeIntervalId);
+    clearInterval(this.gameIntervalId);
     document.querySelector("#header").style.display = "block";
   };
 
@@ -138,12 +143,15 @@ export default function InGame($container, info) {
    */
   const runGame = (canvas, bar1, bar2, ball, drawFunction) => {
     const moveBall = () => {
+      console.log(ball.speed);
       ball.x += ball.direction.x * ball.speed;
       ball.y += ball.direction.y * ball.speed;
+      ball.speed += 0.01;
+      if (isBallHitBar(bar1, ball) || isBallHitBar(bar2, ball)) {
+        ball.direction.x *= -1;
+      }
       if (isBallHitWall(canvas, ball)) {
         ball.direction.y *= -1;
-      } else if (isBallHitBar(bar1, ball) || isBallHitBar(bar2, ball)) {
-        ball.direction.x *= -1;
       }
       let wheterScoreAGoal = isBallHitGoal(canvas, ball);
       if (wheterScoreAGoal[0] || wheterScoreAGoal[1]) {
@@ -196,7 +204,6 @@ export default function InGame($container, info) {
     };
 
     const updateScore = (wheterScoreAGoal) => {
-      console.log(scoreInput);
       if (wheterScoreAGoal[0]) {
         setScore(scoreInput.player1 + 1);
       } else if (wheterScoreAGoal[1]) {
@@ -220,5 +227,4 @@ export default function InGame($container, info) {
     };
     moveBall();
   };
-  window.setInterval(() => runGame(canvas, bar1, bar2, ball, draw), fps);
 }
