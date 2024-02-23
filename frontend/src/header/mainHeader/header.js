@@ -173,26 +173,30 @@ export default function MainHeader($container) {
 
     let findUserEvent = () => {
         // 유저찾기 검색 이벤트
-        document.getElementById('input').addEventListener('keydown', function(event) {
+        document.getElementById('input').addEventListener('input', function(event) {
             const nickname = event.target.value;
-            console.log('User input:', nickname);
-            if (event.key === 'Enter') {
-                fetch(`${BACKEND}/friends/search/?nickname=${encodeURIComponent(nickname)}`, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${getCookie("jwt")}`,
-                    },
-                }).then((response) => {
-                    if (response.status === 200) {
-                        response.json().then((data) => {
-                            setSearchedUserList(data);
-                        })
-                    } else {
-                        this.$container.textContent = "";
-                    }
-                })
+
+            // 유저찾기 input을 비웠을 땐 리스트도 비워줘야함
+            if (nickname === '') {
+                document.getElementById('user-search').innerHTML = '';
             }
+            console.log(nickname);
+            fetch(`${BACKEND}/friends/search/?nickname=${encodeURIComponent(nickname)}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${getCookie("jwt")}`,
+                },
+            }).then((response) => {
+                if (response.status === 200) {
+                    response.json().then((data) => {
+                        console.log(data);
+                        setSearchedUserList(data);
+                    })
+                } else {
+                    setSearchedUserList(null);
+                }
+            })
         });
     }
 
@@ -205,17 +209,17 @@ export default function MainHeader($container) {
             </div>
             <div class="list-wrapper" id="user-search-wrapper">
                 <div class="list-subject">
-                    유저 찾기 (0)
+                    유저 찾기
                 </div>
                 <div id="search-form">
                     <image src="../../assets/images/search.png"></image>
                     <input id="input" />
                 </div>
-                <div id="user-search">
+                <div id="user-search-list">
                 </div>
             </div>
             <div class="list-wrapper" id="friend-request-list-wrapper">
-                
+            
             </div>
         </div>
     `)
@@ -286,24 +290,15 @@ export default function MainHeader($container) {
     this.renderSearchedUserList = () => {
         const newSearchedUserList = getSearchedUserList();
 
+        console.log(newSearchedUserList);
         const newSearchedUserCards = newSearchedUserList.searchedUserList.map((card, index) =>
             createInfoCard(card, index, {borderColor: '#FF52A0'}, {iconImagePath: '../../assets/images/paper_plane.png'})).join('');
 
-        document.getElementById("user-search-wrapper").innerHTML = `
-        <div class="list-subject">
-            유저 찾기 (${newSearchedUserList.searchedUserList.length})
-        </div>
-        <div id="search-form">
-            <image src="../../assets/images/search.png"></image>
-            <input id="input" />
-        </div>
-        <div id="user-search">
-            ${newSearchedUserCards}
-        </div>
+        document.getElementById("user-search-list").innerHTML = `
+            <div id="user-search">
+                ${newSearchedUserCards}
+            </div>
         `
-
-        // 유저찾기 검색 이벤트
-        findUserEvent();
     }
 
 
