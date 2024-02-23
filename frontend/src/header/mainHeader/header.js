@@ -87,8 +87,8 @@ export default function MainHeader($container) {
         }
       });
     });
-    // 친구 목록 버튼 클릭 이벤트
-    document.getElementById("friends").addEventListener("click", () => {
+    // 친구 목록 버튼 클릭 이벤트 (모달 보이기, 친구목록 요청, 친구요청 리스트 요청)
+    click(document.getElementById("friends"),() => {
       const infoWrapper = document.getElementById("friends-info-wrapper");
 
       if (infoWrapper.style.display === "grid") {
@@ -113,17 +113,31 @@ export default function MainHeader($container) {
           navigate("/");
         }
       });
+      fetch(`${BACKEND}/friends/pending/`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getCookie("jwt")}`,
+        },
+      }).then((response) => {
+        if (response.status === 200) {
+          response.json().then((data) => {
+            setRequestersList(data);
+          });
+        } else {
+          navigate("/");
+        }
+      });
     });
     // 메인 타이틀 클릭 이벤트
     click(document.getElementById("title"), () => {
       navigate("/game-mode");
     });
-    // click(document.getElementById("lalala"), () => {
-    //
-    // });
+
+
   };
 
-  function createInfoCard(friend, style = {}, image = {}) {
+  function createInfoCard(friend, index, style = {}, image = {}) {
     const {nickname, avatar, is_online} = friend;
     // 아바타 이미지 경로 조정
     const avatarImagePath = `../../assets/images/avatar/${avatar}`;
@@ -151,7 +165,7 @@ export default function MainHeader($container) {
                 ${nickname}
             </div>
             <div>
-                <img class="icon" src="${imagePath}" />
+                <img class="icon" id='icon-${index}' src="${imagePath}" />
             </div>
             ${additionalIconHTML}
         </div>
@@ -166,7 +180,15 @@ export default function MainHeader($container) {
                 
             </div>
             <div class="list-wrapper" id="user-search-wrapper">
-                
+                <div class="list-subject">
+                    유저 찾기 ()
+                </div>
+                <div id="search-form">
+                    <image src="../../assets/images/search.png"></image>
+                    <input />
+                </div>
+                <div id="user-search">
+                </div>
             </div>
             <div class="list-wrapper" id="friend-request-list-wrapper">
                 
@@ -175,22 +197,13 @@ export default function MainHeader($container) {
     `)
   };
 
-  // 받아 올 데이터
-  // friends": [
-  // {
-  //   "nickname": "sejokim",
-  //     "is_online": true,
-  //     "avatar": "https://example.com/path/to/sejokim_avatar.jpg"
-  // }
   this.renderFriendsList = () => {
     // 상태 관리 시스템으로부터 현재 친구 목록 상태를 가져옵니다.
     const newFriendList = getFriendsList();
-    console.log(newFriendList);
     // 새로운 친구 목록을 기반으로 친구 카드를 생성합니다.
-    const newFriendCards = newFriendList.friends.slice(0, 8).map(card =>
-        createInfoCard(card, {borderColor: '#07F7B0'}, {iconImagePath: '../../assets/images/trash.png'})).join('');
+    const newFriendCards = newFriendList.friends.slice(0, 8).map((card, index) =>
+        createInfoCard(card, index,{borderColor: '#07F7B0'}, {iconImagePath: '../../assets/images/trash.png'})).join('');
 
-    console.log(newFriendCards);
     document.getElementById("friends-list-wrapper").innerHTML = `
       <div class="list-subject">
           친구 (${newFriendList.friends.length} / 8)
@@ -199,14 +212,60 @@ export default function MainHeader($container) {
           ${newFriendCards}
       </div>
     `;
+
+    // 친구삭제 클릭 이벤트
+    newFriendList.friends.forEach((friend, index) => {
+      const iconElement = document.getElementById(`icon-${index}`);
+      if (iconElement) {
+        iconElement.addEventListener('click', () => {
+          // 여기에 클릭 시 실행할 로직을 추가합니다.
+          console.log(`Icon at index ${index} clicked.`);
+          console.log(friend.nickname);
+          // 요청 본문을 구성
+          const data = friend.nickname;
+          // 예: 특정 친구를 삭제하는 함수 호출 등
+          fetch(`${BACKEND}/friends/`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${getCookie("jwt")}`,
+            },
+            body: JSON.stringify({data})
+          }).then((response) => {
+            if (response.status === 200) {
+
+            } else {
+              // TODO => 에러 페이지로 이동
+              navigate("/");
+            }
+          })
+        });
+      }
+    });
   };
 
+  this.renderRequestersList = () => {
+    const newRequestersList = getRequestersList();
 
+    console.log(newRequestersList);
+    const newRequestersCards = newRequestersList.friendRequestList.map((card, index)=>
+        createInfoCard(card, index, {borderColor: '#29ABE2'}, {iconImagePath: '../../assets/images/accept.png'})).join('');
+
+    document.getElementById("friend-request-list-wrapper").innerHTML = `
+      <div class="list-subject">
+          친구 요청 (${newRequestersList.friendRequestList.length})
+      </div>
+      <div id="friend-request-list">
+          ${newRequestersCards}
+      </div>
+    `
+  }
 
 
   importCss("../../../assets/fonts/font.css");
   init();
   let [getUserInfo, setUserInfo] = useState({}, this, "render");
   let [getFriendsList, setFriendsList] = useState({}, this, "renderFriendsList");
+  let [getRequestersList, setRequestersList] = useState({}, this, "renderRequestersList");
   // let [getFoundUserList, setFoundUserList] = useState({}, this, "renderFoundUserList");
 }
