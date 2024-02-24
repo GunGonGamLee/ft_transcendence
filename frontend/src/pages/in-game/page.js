@@ -12,7 +12,7 @@ export default function InGame($container, info) {
   let scoreInput = { player1: 0, player2: 0 };
   let [getScore, setScore] = useState(scoreInput, this, "renderScoreBoard");
   let [getTime, setTime] = useState(0, this, "renderTime");
-  let fps = 10;
+  const BALL_SPEED = 7;
 
   const init = () => {
     hideHeader();
@@ -97,7 +97,7 @@ export default function InGame($container, info) {
   let commonBarInfo = {
     width: canvas.width * 0.02,
     height: canvas.height * 0.3,
-    speed: fps,
+    speed: BALL_SPEED * 1.5,
   };
   let bar1 = {
     x: 0,
@@ -117,7 +117,7 @@ export default function InGame($container, info) {
       x: Math.random() * 2 - 1,
       y: Math.random() * 2 - 1,
     },
-    speed: fps,
+    speed: BALL_SPEED,
   };
 
   window.addEventListener("keydown", (e) => {
@@ -147,13 +147,20 @@ export default function InGame($container, info) {
   const runGame = (canvas, bar1, bar2, ball, drawFunction) => {
     const moveBall = () => {
       if (isBallInsideBar(bar1, ball) || isBallInsideBar(bar2, ball)) {
-        ball.direction.x *= -1;
+        [ball.direction.x, ball.direction.y] = normalizeVector(
+          ball.direction.x * -1 * getRandomCoefficient(0.9, 1.1),
+          ball.direction.y,
+        );
       } else if (isBallHitWall(canvas, ball)) {
-        ball.direction.y *= -1;
+        [ball.direction.x, ball.direction.y] = normalizeVector(
+          ball.direction.x,
+          ball.direction.y * -1 * getRandomCoefficient(0.9, 1.1),
+        );
       }
       ball.x = ball.x + ball.direction.x * ball.speed;
       ball.y = ball.y + ball.direction.y * ball.speed;
       drawFunction(bar1, bar2, ball);
+      ball.speed += 0.001;
       let whetherScoreAGoal = isBallHitGoal(canvas, ball);
       if (whetherScoreAGoal[0] || whetherScoreAGoal[1]) {
         updateScore(whetherScoreAGoal);
@@ -217,12 +224,7 @@ export default function InGame($container, info) {
      * @returns {boolean} 바에 부딪혔으면 true, 아니면 false
      */
     const isBallInsideBar = (bar, ball) => {
-      if (isBallInsideBarX(bar, ball) && isBallInsideBarY(bar, ball)) {
-        ball.x += ball.direction.x * ball.speed;
-        ball.y += ball.direction.y * ball.speed;
-        return true;
-      }
-      return false;
+      return isBallInsideBarX(bar, ball) && isBallInsideBarY(bar, ball);
     };
 
     const isBallHitGoal = (canvas, ball) => {
@@ -260,7 +262,7 @@ export default function InGame($container, info) {
         x: Math.random() * 2 - 1,
         y: Math.random() * 2 - 1,
       };
-      ball.speed = fps;
+      ball.speed = BALL_SPEED;
     };
 
     /**
@@ -268,6 +270,19 @@ export default function InGame($container, info) {
      */
     const getRandomCoefficient = (min, max) => {
       return Math.floor(Math.random() * (max - min + 1)) + min;
+    };
+
+    /**
+     * 벡터를 정규화하는 함수
+     * @param x {number} x축 방향 벡터
+     * @param y {number} y축 방향 벡터
+     * @returns {number[]} 정규화된 벡터
+     */
+    const normalizeVector = (x, y) => {
+      let vectorLength = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+      let normalizedX = x / vectorLength;
+      let normalizedY = y / vectorLength;
+      return [normalizedX, normalizedY];
     };
     moveBall();
   };
