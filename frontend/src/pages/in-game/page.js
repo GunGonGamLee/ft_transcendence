@@ -12,7 +12,7 @@ export default function InGame($container, info) {
   let scoreInput = { player1: 0, player2: 0 };
   let [getScore, setScore] = useState(scoreInput, this, "renderScoreBoard");
   let [getTime, setTime] = useState(0, this, "renderTime");
-  let fps = (1 / 60) * 1000;
+  let fps = 10;
 
   const init = () => {
     hideHeader();
@@ -146,8 +146,7 @@ export default function InGame($container, info) {
    */
   const runGame = (canvas, bar1, bar2, ball, drawFunction) => {
     const moveBall = () => {
-      console.log("moveBall");
-      if (isBallHitBar(bar1, ball) || isBallHitBar(bar2, ball)) {
+      if (isBallInsideBar(bar1, ball) || isBallInsideBar(bar2, ball)) {
         ball.direction.x *= -1;
       } else if (isBallHitWall(canvas, ball)) {
         ball.direction.y *= -1;
@@ -186,37 +185,41 @@ export default function InGame($container, info) {
     };
 
     /**
-     * 공이 바에 부딪혔는지 확인하는 함수
+     * 공이 바의 x축 내부에 있는지 확인하는 함수
+     * @param bar {object} 바의 x, y, width, height, speed
+     * @param ball {object} 공의 x, y, radius, direction, speed
+     * @returns {boolean} 바의 x축 내부에 있으면 true, 아니면 false
+     */
+    const isBallInsideBarX = (bar, ball) => {
+      return (
+        ball.x + ball.radius >= bar.x &&
+        ball.x - ball.radius <= bar.x + bar.width
+      );
+    };
+
+    /**
+     * 공이 바의 y축 내부에 있는지 확인하는 함수
+     * @param bar {object} 바의 x, y, width, height, speed
+     * @param ball {object} 공의 x, y, radius, direction, speed
+     * @returns {boolean} 바의 y축 내부에 있으면 true, 아니면 false
+     */
+    const isBallInsideBarY = (bar, ball) => {
+      return (
+        ball.y + ball.radius >= bar.y &&
+        ball.y - ball.radius <= bar.y + bar.height
+      );
+    };
+
+    /**
+     * 공이 바에 부딪혔는지 확인하는 함수. 공의 충돌은 공이 바의 내부에 있는지를 기준으로 판단한다.
      * @param bar {object} 바의 x, y, width, height, speed
      * @param ball {object} 공의 x, y, radius, direction, speed
      * @returns {boolean} 바에 부딪혔으면 true, 아니면 false
      */
-    const isBallHitBar = (bar, ball) => {
-      let maxRangeOfHitPoint =
-        Math.sqrt(Math.pow(bar.width / 2, 2) + Math.pow(bar.height / 2, 2)) +
-        ball.radius;
-      let minRangeOfHitPoint = bar.width / 2 + ball.radius; // 바의 가로길이 / 2 + 공의 반지름 = 바의 중심으로부터 공의 중심까지의 거리 중 최소값
-      let barCenterPos = {
-        x: bar.x + bar.width / 2,
-        y: bar.y + bar.height / 2,
-      };
-      let a = Math.abs(barCenterPos.x - ball.x);
-      let b = Math.abs(barCenterPos.y - ball.y);
-      let c = Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
-      if (minRangeOfHitPoint <= c && c <= maxRangeOfHitPoint) {
-        console.log(
-          minRangeOfHitPoint + " <= " + c + " <= " + maxRangeOfHitPoint,
-        );
-        return true;
-      } else if (c < minRangeOfHitPoint) {
-        // 공이 바 안에 들어왔을 때 밀어버림
-        let deltaX = ball.x - bar.width / 2;
-        let deltaY = ball.y - bar.height / 2;
-        if (Math.abs(deltaX) > Math.abs(deltaY)) {
-          ball.y += deltaY;
-        } else {
-          ball.x += deltaX;
-        }
+    const isBallInsideBar = (bar, ball) => {
+      if (isBallInsideBarX(bar, ball) && isBallInsideBarY(bar, ball)) {
+        ball.x += ball.direction.x * ball.speed;
+        ball.y += ball.direction.y * ball.speed;
         return true;
       }
       return false;
@@ -232,7 +235,6 @@ export default function InGame($container, info) {
     };
 
     const updateScore = (wheterScoreAGoal) => {
-      console.log(getScore().player1, getScore().player2);
       if (wheterScoreAGoal[0]) {
         setScore({
           player1: getScore().player1 + 1,
