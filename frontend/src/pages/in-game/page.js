@@ -68,14 +68,6 @@ export default function InGame($container, info) {
     // bar1 그리기
     ctx.fillStyle = "#00FF00"; // 녹색
     ctx.fillRect(bar1.x, bar1.y, bar1.width, bar1.height);
-    ctx.fillStyle = "#FF0000"; // 빨간색
-    ctx.arc(
-      bar1.x + bar1.width / 2,
-      bar1.y + bar1.height / 2,
-      3,
-      0,
-      Math.PI * 2,
-    );
 
     // bar2 그리기
     ctx.fillStyle = "#FFFF00"; // 노란색
