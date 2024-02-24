@@ -36,7 +36,7 @@ export default function InGame($container, info) {
     $container.innerHTML = `
 			${scoreBar()}
 			<div class="in-game" style="height: 100vh; width: 100vw; background-image: url('../../../assets/images/ingame_background.png'); background-size: cover">
-			<canvas id="gameCanvas" style="position: absolute; top: 12vh; width: 100%; height: 88%;border-left: 3px dotted white; border-right: 3px dotted white;"></canvas>
+			<canvas id="gameCanvas" style="position: absolute; top: 12vh; left: 6%; width: 88%; height: 88%;border-left: 3px dotted white; border-right: 3px dotted white;"></canvas>
 			`;
   };
   this.renderScoreBoard = () => {
@@ -93,7 +93,6 @@ export default function InGame($container, info) {
   const ctx = canvas.getContext("2d");
   canvas.width = document.body.clientWidth;
   canvas.height = document.body.clientHeight * 0.88; // header의 height가 12vh이므로 88%만큼의 height를 가짐
-  console.log(canvas.clientTop, canvas.clientLeft, canvas.width, canvas.height);
 
   // 초기 위치 설정
   let commonBarInfo = {
@@ -201,9 +200,6 @@ export default function InGame($container, info) {
       let b = Math.abs(barCenterPos.y - ball.y);
       let c = Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
       if (minRangeOfHitPoint <= c && c <= maxRangeOfHitPoint) {
-        console.log(`bar: ${bar1.x}, ${bar1.y} ${bar1.width}, ${bar1.height}`);
-        console.log(`ball: ${ball.x}, ${ball.y} ${ball.radius}`);
-        console.log(a, b, c);
         console.log(
           minRangeOfHitPoint + " <= " + c + " <= " + maxRangeOfHitPoint,
         );
@@ -232,10 +228,17 @@ export default function InGame($container, info) {
     };
 
     const updateScore = (wheterScoreAGoal) => {
+      console.log(getScore().player1, getScore().player2);
       if (wheterScoreAGoal[0]) {
-        setScore(scoreInput.player1 + 1);
+        setScore({
+          player1: getScore().player1 + 1,
+          player2: getScore().player2,
+        });
       } else if (wheterScoreAGoal[1]) {
-        setScore(scoreInput.player2 + 1);
+        setScore({
+          player1: getScore().player1,
+          player2: getScore().player2 + 1,
+        });
       }
     };
 
