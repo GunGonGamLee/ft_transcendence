@@ -21,14 +21,13 @@ export default function InGame($container, info) {
     this.timeIntervalId = setInterval(() => {
       setTime(getTime() + 1);
     }, 1000);
-    this.gameIntervalId = window.setInterval(
-      () => runGame(canvas, bar1, bar2, ball, draw),
-      fps,
+    this.gameIntervalId = window.requestAnimationFrame(() =>
+      runGame(canvas, bar1, bar2, ball, draw),
     );
   };
   this.unmount = () => {
     clearInterval(this.timeIntervalId);
-    clearInterval(this.gameIntervalId);
+    cancelAnimationFrame(this.gameIntervalId);
     document.querySelector("#header").style.display = "block";
   };
 
@@ -147,6 +146,7 @@ export default function InGame($container, info) {
    */
   const runGame = (canvas, bar1, bar2, ball, drawFunction) => {
     const moveBall = () => {
+      console.log("moveBall");
       if (isBallHitBar(bar1, ball) || isBallHitBar(bar2, ball)) {
         ball.direction.x *= -1;
       } else if (isBallHitWall(canvas, ball)) {
@@ -159,6 +159,10 @@ export default function InGame($container, info) {
       if (whetherScoreAGoal[0] || whetherScoreAGoal[1]) {
         updateScore(whetherScoreAGoal);
         reset(ball, canvas);
+      }
+      let moveBallEventId = window.requestAnimationFrame(moveBall);
+      if (getScore().player1 + getScore().player2 >= 5) {
+        cancelAnimationFrame(moveBallEventId);
       }
     };
 
@@ -209,9 +213,9 @@ export default function InGame($container, info) {
         let deltaX = ball.x - bar.width / 2;
         let deltaY = ball.y - bar.height / 2;
         if (Math.abs(deltaX) > Math.abs(deltaY)) {
-          ball.x += deltaX;
-        } else {
           ball.y += deltaY;
+        } else {
+          ball.x += deltaX;
         }
         return true;
       }
