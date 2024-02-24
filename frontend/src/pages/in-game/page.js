@@ -21,13 +21,14 @@ export default function InGame($container, info) {
     this.timeIntervalId = setInterval(() => {
       setTime(getTime() + 1);
     }, 1000);
-    this.gameIntervalId = window.requestAnimationFrame(() =>
+    this.gameAnimationId = window.requestAnimationFrame(() =>
       runGame(canvas, bar1, bar2, ball, draw),
     );
   };
   this.unmount = () => {
     clearInterval(this.timeIntervalId);
-    cancelAnimationFrame(this.gameIntervalId);
+    cancelAnimationFrame(this.gameAnimationId);
+    cancelAnimationFrame(this.barAnimationId);
     document.querySelector("#header").style.display = "block";
   };
 
@@ -97,7 +98,7 @@ export default function InGame($container, info) {
   let commonBarInfo = {
     width: canvas.width * 0.02,
     height: canvas.height * 0.3,
-    speed: BALL_SPEED * 1.5,
+    speed: BALL_SPEED,
   };
   let bar1 = {
     x: 0,
@@ -120,21 +121,44 @@ export default function InGame($container, info) {
     speed: BALL_SPEED,
   };
 
-  window.addEventListener("keydown", (e) => {
+  let keyDown = {};
+  this.barAnimationId = null;
+
+  const moveBar = () => {
     // bar1 이동
-    if (e.key === "w" || e.key === "W" || e.key === "ㅈ") {
+    if (keyDown["w"]) {
       bar1.y = Math.max(bar1.y - bar1.speed, 0);
-    } else if (e.key === "s" || e.key === "S" || e.key === "ㄴ") {
+    } else if (keyDown["s"]) {
       bar1.y = Math.min(bar1.y + bar1.speed, canvas.height - bar1.height);
     }
 
     // bar2 이동
-    if (e.key === "ArrowUp") {
+    if (keyDown["ArrowUp"]) {
       bar2.y = Math.max(bar2.y - bar2.speed, 0);
-    } else if (e.key === "ArrowDown") {
+    } else if (keyDown["ArrowDown"]) {
       bar2.y = Math.min(bar2.y + bar2.speed, canvas.height - bar2.height);
     }
-  });
+    this.barAnimationId = requestAnimationFrame(moveBar);
+  };
+
+  const getKeyDown = (e) => {
+    if (e.key === "w" || e.key === "W" || e.key === "ㅈ") keyDown["w"] = true;
+    else if (e.key === "s" || e.key === "S" || e.key === "ㄴ")
+      keyDown["s"] = true;
+    else if (e.key === "ArrowUp") keyDown["ArrowUp"] = true;
+    else if (e.key === "ArrowDown") keyDown["ArrowDown"] = true;
+  };
+
+  const getKeyUp = (e) => {
+    if (e.key === "w" || e.key === "W" || e.key === "ㅈ") keyDown["w"] = false;
+    else if (e.key === "s" || e.key === "S" || e.key === "ㄴ")
+      keyDown["s"] = false;
+    else if (e.key === "ArrowUp") keyDown["ArrowUp"] = false;
+    else if (e.key === "ArrowDown") keyDown["ArrowDown"] = false;
+  };
+
+  window.addEventListener("keydown", getKeyDown);
+  window.addEventListener("keyup", getKeyUp);
 
   /**
    * 게임 실행 함수
@@ -284,6 +308,7 @@ export default function InGame($container, info) {
       let normalizedY = y / vectorLength;
       return [normalizedX, normalizedY];
     };
+    moveBar();
     moveBall();
   };
 }
