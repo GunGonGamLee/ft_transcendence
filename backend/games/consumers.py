@@ -1,16 +1,18 @@
 import json
 import random
+import logging
 import urllib.parse
-from channels.generic.websocket import AsyncWebsocketConsumer
-from games.models import Game, CasualGameView
-from games.serializers import GameRoomSerializer
+import asyncio
+from django.contrib.auth.models import AnonymousUser
 from django.db.models import Min, Count
 from django.core.exceptions import ValidationError, PermissionDenied
+from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from asgiref.sync import sync_to_async
-import logging
-from django.contrib.auth.models import AnonymousUser
+from games.models import Game, CasualGameView, PingPongGame, Ball, Racket, Player, PingPongMap, Result
+from games.serializers import GameRoomSerializer, PvPMatchSerializer, TournamentMatchSerializer
 from users.models import User
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -260,3 +262,308 @@ class RankGameRoomConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'message': event['message']
         }))
+
+
+class GameConsumer(AsyncWebsocketConsumer):
+    users = []
+    match1_users = []
+    match2_users = []
+    match3_users = []
+
+    ping_pong_map = PingPongMap(0, 0)
+    match1 = PingPongGame(
+        Player(None, 0, Racket(0, 0, 0, 0, 0)),
+        Player(None, 0, Racket(0, 0, 0, 0, 0)),
+        ping_pong_map,
+        Ball(0, 0, 0)
+    )
+    match2 = PingPongGame(
+        Player(None, 0, Racket(0, 0, 0, 0, 0)),
+        Player(None, 0, Racket(0, 0, 0, 0, 0)),
+        ping_pong_map,
+        Ball(0, 0, 0)
+    )
+    match3 = PingPongGame(
+        Player(None, 0, Racket(0, 0, 0, 0, 0)),
+        Player(None, 0, Racket(0, 0, 0, 0, 0)),
+        ping_pong_map,
+        Ball(0, 0, 0)
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(args, kwargs)
+        self.user = None
+        self.game = None
+        self.game_id = None
+        self.room_group_name = None
+        self.my_match = None
+        self.match1_group_name = None
+        self.match2_group_name = None
+        self.match3_group_name = None
+
+    async def connect(self):
+        logger.info("[인게임] connect")
+        if await self.is_invalid_user():
+            await self.reject_invalid_user()
+        else:
+            await self.process_valid_user()
+
+    async def disconnect(self, close_code):
+        logger.info('[인게임] disconnect')
+        if self.user in self.users:
+            self.users.remove(self.user)
+        if self.user in self.match1_users:
+            self.match1_users.remove(self.user)
+        elif self.user in self.match2_users:
+            self.match2_users.remove(self.user)
+        if self.user in self.match1_users:
+            self.match3_users.remove(self.user)
+        # todo 게임중이면 패배 처리
+        # await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+
+    async def is_invalid_user(self):
+        self.user = self.scope['user']
+        return isinstance(self.user, AnonymousUser)
+
+    async def reject_invalid_user(self):
+        await self.accept()
+        await self.send(text_data=json.dumps({"error": "Invalid user"}))
+        logger.info("[인게임] Invalid user")
+        await self.close()
+
+    async def process_valid_user(self):
+        try:
+            await self.accept()
+            game_id = self.scope["url_route"]["kwargs"]["game_id"]
+            self.game_id = int(game_id)
+            await self.save_game_object_by_id()
+            await self.validate_user(self.user.nickname)
+            self.users.append(self.user)
+
+            self.room_group_name = f"ingame_{self.game_id}"
+            self.match1_group_name = f"match1_{self.game_id}"
+            self.match2_group_name = f"match2_{self.game_id}"
+            self.match3_group_name = f"match3_{self.game_id}"
+            await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+
+            if self.game.status == 1:
+                await self.set_game_status()
+            if self.game.mode == 0:     # 1e1
+                self.my_match = 1
+                await self.save_match()
+                await self.channel_layer.group_add(self.match1_group_name, self.channel_name)
+            else:                       # tournament
+                if (len(self.users) + 1) % 2 == 0:
+                    self.my_match = 1
+                    await self.save_match()
+                    await self.channel_layer.group_add(self.match1_group_name, self.channel_name)
+                else:
+                    self.my_match = 2
+                    await self.save_match()
+                    await self.channel_layer.group_add(self.match2_group_name, self.channel_name)
+
+            logger.info(f"users[] = {self.users}")
+            if (self.game.mode == 0 and len(self.users) == 2) or (self.game.mode != 0 and len(self.users) == 4):
+                serializer_data = await self.get_serializer_data()
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        'type': 'game_info',
+                        'data': serializer_data
+                    }
+                )
+        except Exception as e:
+            await self.send(text_data=json.dumps({"error": "[" + e.__class__.__name__ + "] " + str(e)}))
+            await self.close()
+
+    @database_sync_to_async
+    def save_game_object_by_id(self):
+        self.game = Game.objects.get(id=self.game_id)
+        # todo 게임방이 꽉찬 방이 아닐 때.. 같은 이런 예외처리를 해야 하나
+
+    @database_sync_to_async
+    def validate_user(self, user):
+        if self.game.manager.nickname == user:
+            return
+        elif self.game.player1.nickname == user:
+            return
+        elif self.game.mode == 1 and (self.game.player2.nickname == user or self.game.player3.nickname == user):
+            return
+        else:
+            raise Exception("게임 방에 속한 유저가 아닙니다.")
+
+    @database_sync_to_async
+    def save_match(self):
+        if self.my_match == 1:
+            if self.game.match1 is None:
+                match = Result.objects.create(player1=self.user)
+                self.game.match1 = match
+                self.game.save()
+            else:
+                self.game.match1.player2 = self.user
+                self.game.match1.save()
+        else:
+            if self.game.match2 is None:
+                match = Result.objects.create(player1=self.user)
+                self.game.match2 = match
+                self.game.save()
+            else:
+                self.game.match2.player2 = self.user
+                self.game.match2.save()
+
+    @database_sync_to_async
+    def set_game_status(self):
+        self.game.status = 2
+        self.game.save()
+
+    @database_sync_to_async
+    def get_serializer_data(self):
+        serializer = None
+        if self.game.mode == 0:
+            serializer = PvPMatchSerializer(self.game)
+        else:
+            serializer = TournamentMatchSerializer(self.game)
+        return serializer.data
+
+    async def receive(self, text_data):
+        data = json.loads(text_data)
+        message_type = data.get('type')
+        message_data = data.get('data', {})
+        await self.save_game_object_by_id()
+        if message_type == 'start':
+            if self.ping_pong_map.width == 0:
+                await self.set_values(message_data)
+            if self.my_match == 1:
+                self.match1_users.append(self.user)
+            elif self.my_match == 2:
+                self.match2_users.append(self.user)
+
+            # 게임 시작
+            if self.game.mode == 0 and len(self.match1_users) == 2:
+                await self.channel_layer.group_send(
+                    self.match1_group_name,
+                    {
+                        'type': 'gamestart',
+                        'data': '게임 스탓토'
+                    }
+                )
+                await self.gamestart({
+                        'type': 'gamestart',
+                        'data': '게임 스탓토'
+                    })
+                await asyncio.sleep(2)
+                self.match1.started_at = datetime.now()
+                while True:
+                    # todo 겜 로직
+                    # if 겜 끝나면 탈출
+                    await self.channel_layer.group_send(
+                        self.match1_group_name,
+                        {
+                            'type': 'in_game',
+                            'data': '화면 그릴 때 필요한 정보 serializer'
+                        }
+                    )
+                    await self.in_game({
+                            'type': 'in_game',
+                            'data': '화면 그릴 때 필요한 정보 serializer'
+                    })
+                    await asyncio.sleep(1 / 24)
+
+            elif self.game.mode != 0 and len(self.match1_users) == 2 and len(self.match2_users) == 2:
+                await self.channel_layer.group_send(
+                    self.match1_group_name,
+                    {
+                        'type': 'gamestart',
+                        'data': '게임 스탓토 serializer serializer'
+                    }
+                )
+                await self.channel_layer.group_send(
+                    self.match2_group_name,
+                    {
+                        'type': 'gamestart',
+                        'data': '게임 스탓토 serializer serializer'
+                    }
+                )
+                await self.gamestart({
+                        'type': 'gamestart',
+                        'data': '게임 스탓토 serializer'
+                })
+                await asyncio.sleep(2)
+                self.match1.started_at = datetime.now()
+                self.match2.started_at = datetime.now()
+                while True:
+                    # todo 겜 로직
+                    await self.channel_layer.group_send(
+                        self.match1_group_name,
+                        {
+                            'type': 'in_game',
+                            'data': 'match1 info'
+                        }
+                    )
+                    await self.channel_layer.group_send(
+                        self.match2_group_name,
+                        {
+                            'type': 'in_game',
+                            'data': 'match2 info'
+                        }
+                    )
+                    if self.my_match == 1:
+                        await self.in_game({
+                                'type': 'in_game',
+                                'data': 'match1 info'
+                        })
+                    else:
+                        await self.in_game({
+                                'type': 'in_game',
+                                'data': 'match2 info'
+                        })
+                    await asyncio.sleep(1 / 24)
+
+    async def set_values(self, message_data):
+        map_width = message_data['map_width']
+        map_height = message_data['map_height']
+
+        self.ping_pong_map.width = map_width
+        self.ping_pong_map.height = map_height
+
+        await self.set_match(self.match1, message_data, 1)
+        if self.game.mode != 0:
+            await self.set_match(self.match2, message_data, 2)
+            await self.set_match(self.match3, message_data, 3)
+
+    @database_sync_to_async
+    def set_match(self, match, data, match_num):
+        if match_num == 1:
+            match.left_side_player.user = self.game.match1.player1
+            match.right_side_player.user = self.game.match1.player2
+        elif match_num == 2:
+            match.left_side_player.user = self.game.match2.player1
+            match.right_side_player.user = self.game.match2.player2
+
+        match.left_side_player.racket.width = data['racket_width']
+        match.left_side_player.racket.height = data['racket_height']
+        match.left_side_player.racket.x = data['left_racket_x']
+        match.left_side_player.racket.y = data['left_racket_y']
+        match.left_side_player.racket.speed = data['racket_speed']
+
+        match.right_side_player.racket.width = data['racket_width']
+        match.right_side_player.racket.height = data['racket_height']
+        match.right_side_player.racket.x = data['right_racket_x']
+        match.right_side_player.racket.y = data['right_racket_y']
+        match.right_side_player.racket.speed = data['racket_speed']
+
+        match.ball.radius = data['ball_radius']
+        match.ball.x = data['ball_x']
+        match.ball.y = data['ball_y']
+
+    async def game_info(self, event):
+        data = event["data"]
+        await self.send(text_data=json.dumps({"data": data}))
+
+    async def gamestart(self, event):
+        data = event["data"]
+        await self.send(text_data=json.dumps({"data": data}))
+
+    async def in_game(self, event):
+        data = event["data"]
+        await self.send(text_data=json.dumps({"data": data}))
