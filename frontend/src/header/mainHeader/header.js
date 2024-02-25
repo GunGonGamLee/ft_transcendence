@@ -105,7 +105,6 @@ export default function MainHeader($container) {
                 },
             }).then((response) => {
                 if (response.status === 200) {
-                    // this.$container.textContent = "";
                     response.json().then((data) => {
                         setFriendsList(data);
                     });
@@ -131,6 +130,12 @@ export default function MainHeader($container) {
         });
         // 유저찾기 검색 이벤트
         findUserEvent();
+
+        // 친구 추가 요청 전송 이벤트
+        // click(document.getElementById(""), () => {
+        //
+        // });
+
         // 메인 타이틀 클릭 이벤트
         click(document.getElementById("title"), () => {
             navigate("/game-mode");
@@ -150,26 +155,39 @@ export default function MainHeader($container) {
         // accept.png 아이콘일 경우에만 추가할 HTML 조각을 정의
         const additionalIconHTML = imagePath === '../../assets/images/accept.png' ?
             `<div>
-                <img class="icon" src="../../assets/images/close.png" />
-            </div>` : '';
+            <img class="icon" src="../../assets/images/close.png" />
+        </div>` : '';
         // 조건에 따라 클래스 추가
         const wrapperClass = imagePath === '../../assets/images/accept.png' ? 'friend-card-wrapper with-additional-icon' : 'friend-card-wrapper';
 
+        // 이미지 이름에 따른 id 속성 값 설정
+        let iconIdSuffix;
+        if (imagePath === '../../assets/images/accept.png') {
+            iconIdSuffix = 'accept-icon-';
+        } else if (imagePath === '../../assets/images/paper_plane.png') {
+            iconIdSuffix = 'request-icon-';
+        } else if (imagePath === '../../assets/images/trash.png') {
+            iconIdSuffix = 'delete-icon-';
+        } else {
+            iconIdSuffix = 'icon-'; // 기본 값
+        }
+
         return `
-        <div class="${wrapperClass}" style="border-color: ${borderColor}; ${opacityStyle}">
-            <div>
-                <img class="avatar-image" src="${avatarImagePath}" />
-            </div>
-            <div class="user-name">
-                ${nickname}
-            </div>
-            <div>
-                <img class="icon" id='icon-${index}' src="${imagePath}" />
-            </div>
-            ${additionalIconHTML}
+    <div class="${wrapperClass}" style="border-color: ${borderColor}; ${opacityStyle}">
+        <div>
+            <img class="avatar-image" src="${avatarImagePath}" />
         </div>
+        <div class="user-name">
+            ${nickname}
+        </div>
+        <div>
+            <img class="icon" id='${iconIdSuffix}${index}' src="${imagePath}" />
+        </div>
+        ${additionalIconHTML}
+    </div>
     `;
     }
+
 
     let findUserEvent = () => {
         // 유저찾기 검색 이벤트
@@ -243,7 +261,7 @@ export default function MainHeader($container) {
 
         // 친구삭제 클릭 이벤트
         newFriendList.friends.forEach((friend, index) => {
-            const iconElement = document.getElementById(`icon-${index}`);
+            const iconElement = document.getElementById(`delete-icon-${index}`);
             if (iconElement) {
                 iconElement.addEventListener('click', () => {
                     console.log(`Icon at index ${index} clicked.`);
@@ -300,7 +318,6 @@ export default function MainHeader($container) {
             </div>
         `
     }
-
 
     importCss("../../../assets/fonts/font.css");
     init();
