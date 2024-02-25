@@ -147,11 +147,12 @@ export default function MainHeader($container) {
         // `is_online`이 false일 경우 카드에 적용할 투명도 스타일
         const opacityStyle = is_online ? '' : 'opacity: 0.5;';
 
-        // accept.png 아이콘일 경우에만 추가할 HTML 조각을 정의
+        // accept.png 아이콘일 경우에만 추가할 HTML 조각을 정의하고 reject-icon에도 인덱스 적용
         const additionalIconHTML = imagePath === '../../assets/images/accept.png' ?
             `<div>
-            <img class="icon" src="../../assets/images/close.png" />
+            <img class="icon" id='reject-icon-${index}' src="../../assets/images/close.png" />
         </div>` : '';
+
         // 조건에 따라 클래스 추가
         const wrapperClass = imagePath === '../../assets/images/accept.png' ? 'friend-card-wrapper with-additional-icon' : 'friend-card-wrapper';
 
@@ -167,20 +168,22 @@ export default function MainHeader($container) {
             iconIdSuffix = 'icon-'; // 기본 값
         }
 
+
+
         return `
-    <div class="${wrapperClass}" style="border-color: ${borderColor}; ${opacityStyle}">
-        <div>
-            <img class="avatar-image" src="${avatarImagePath}" />
+        <div class="${wrapperClass}" style="border-color: ${borderColor}; ${opacityStyle}">
+            <div>
+                <img class="avatar-image" src="${avatarImagePath}" />
+            </div>
+            <div class="user-name">
+                ${nickname}
+            </div>
+            <div>
+                <img class="icon" id='${iconIdSuffix}${index}' src="${imagePath}" />
+            </div>
+            ${additionalIconHTML}
         </div>
-        <div class="user-name">
-            ${nickname}
-        </div>
-        <div>
-            <img class="icon" id='${iconIdSuffix}${index}' src="${imagePath}" />
-        </div>
-        ${additionalIconHTML}
-    </div>
-    `;
+        `;
     }
 
 
@@ -285,7 +288,7 @@ export default function MainHeader($container) {
         });
     };
 
-    // 요청받은 리스트 렌더링
+    // 친구요청 받은 리스트 렌더링
     this.renderRequestersList = () => {
         const newRequestersList = getRequestersList();
 
@@ -301,7 +304,51 @@ export default function MainHeader($container) {
           </div>
         `
 
+        newRequestersList.friendRequestList.forEach((requester, index) => {
+           const acceptIcon = document.getElementById(`accept-icon-${index}`);
+           const rejectIcon = document.getElementById(`reject-icon-${index}`);
 
+           if (acceptIcon) {
+               acceptIcon.addEventListener('click', () => {
+                   const nickname = requester.nickname;
+
+                   fetch(`${BACKEND}/friends/accept/`, {
+                       method: 'POST',
+                       headers: {
+                           'Content-Type': 'application/json',
+                           Authorization: `Bearer ${getCookie("jwt")}`
+                       },
+                       body: JSON.stringify({nickname})
+                   }).then((response) => {
+                       if (response.status === 200) {
+
+                       } else {
+                           navigate("/");
+                       }
+                   })
+               })
+           }
+            if (rejectIcon) {
+                rejectIcon.addEventListener('click', () => {
+                    const nickname = requester.nickname;
+
+                    fetch(`${BACKEND}/friends/reject/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${getCookie("jwt")}`
+                        },
+                        body: JSON.stringify({nickname})
+                    }).then((response) => {
+                        if (response.status === 200) {
+
+                        } else {
+                            navigate("/");
+                        }
+                    })
+                })
+            }
+        });
     }
 
     // 유저검색 리스트 렌더링
@@ -317,18 +364,18 @@ export default function MainHeader($container) {
             </div>
         `
 
-        newSearchedUserList.searchedUserList.forEach((friend, index) => {
+        newSearchedUserList.searchedUserList.forEach((user, index) => {
             const iconElement = document.getElementById(`request-icon-${index}`);
 
             if (iconElement) {
                 iconElement.addEventListener('click', () => {
-                    const nickname = friend.nickname;
+                    const nickname = user.nickname;
 
                     fetch(`${BACKEND}/friends/`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            Authorization: `Bearer ${getCookie("jwt")}`,
+                            Authorization: `Bearer ${getCookie("jwt")}`
                         },
                         body: JSON.stringify({nickname})
                     }).then((response) => {
@@ -340,7 +387,7 @@ export default function MainHeader($container) {
                     })
                 })
             }
-        }) ;
+        });
     }
 
     importCss("../../../assets/fonts/font.css");
