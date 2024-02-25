@@ -131,11 +131,6 @@ export default function MainHeader($container) {
         // 유저찾기 검색 이벤트
         findUserEvent();
 
-        // 친구 추가 요청 전송 이벤트
-        // click(document.getElementById(""), () => {
-        //
-        // });
-
         // 메인 타이틀 클릭 이벤트
         click(document.getElementById("title"), () => {
             navigate("/game-mode");
@@ -262,6 +257,7 @@ export default function MainHeader($container) {
         // 친구삭제 클릭 이벤트
         newFriendList.friends.forEach((friend, index) => {
             const iconElement = document.getElementById(`delete-icon-${index}`);
+
             if (iconElement) {
                 iconElement.addEventListener('click', () => {
                     console.log(`Icon at index ${index} clicked.`);
@@ -289,6 +285,7 @@ export default function MainHeader($container) {
         });
     };
 
+    // 요청받은 리스트 렌더링
     this.renderRequestersList = () => {
         const newRequestersList = getRequestersList();
 
@@ -296,19 +293,21 @@ export default function MainHeader($container) {
             createInfoCard(card, index, {borderColor: '#29ABE2'}, {iconImagePath: '../../assets/images/accept.png'})).join('');
 
         document.getElementById("friend-request-list-wrapper").innerHTML = `
-      <div class="list-subject">
-          친구 요청 (${newRequestersList.friendRequestList.length})
-      </div>
-      <div id="friend-request-list">
-          ${newRequestersCards}
-      </div>
-    `
+          <div class="list-subject">
+              친구 요청 (${newRequestersList.friendRequestList.length})
+          </div>
+          <div id="friend-request-list">
+              ${newRequestersCards}
+          </div>
+        `
+
+
     }
 
+    // 유저검색 리스트 렌더링
     this.renderSearchedUserList = () => {
         const newSearchedUserList = getSearchedUserList();
 
-        console.log(newSearchedUserList);
         const newSearchedUserCards = newSearchedUserList.searchedUserList.map((card, index) =>
             createInfoCard(card, index, {borderColor: '#FF52A0'}, {iconImagePath: '../../assets/images/paper_plane.png'})).join('');
 
@@ -317,6 +316,31 @@ export default function MainHeader($container) {
                 ${newSearchedUserCards}
             </div>
         `
+
+        newSearchedUserList.searchedUserList.forEach((friend, index) => {
+            const iconElement = document.getElementById(`request-icon-${index}`);
+
+            if (iconElement) {
+                iconElement.addEventListener('click', () => {
+                    const nickname = friend.nickname;
+
+                    fetch(`${BACKEND}/friends/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${getCookie("jwt")}`,
+                        },
+                        body: JSON.stringify({nickname})
+                    }).then((response) => {
+                        if (response.status === 200) {
+
+                        } else {
+                            navigate("/");
+                        }
+                    })
+                })
+            }
+        }) ;
     }
 
     importCss("../../../assets/fonts/font.css");
