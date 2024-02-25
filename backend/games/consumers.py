@@ -15,7 +15,7 @@ from users.models import User
 logger = logging.getLogger(__name__)
 
 
-class GameConsumer(AsyncWebsocketConsumer):
+class GameRoomConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
         self.user = None
@@ -196,7 +196,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({"data": data}))
 
 
-class RankGameConsumer(AsyncWebsocketConsumer):
+class RankGameRoomConsumer(AsyncWebsocketConsumer):
 
     game_queue = []
 
