@@ -117,24 +117,24 @@ export default function CustomGameList($container) {
   };
 
   const enterRoom = (id, password = null) => {
-    let wss;
+    let ws;
 
     if (password != null)
-      wss = new WebSocket(
+      ws = new WebSocket(
         `wss://localhost:443/ws/games/${id}/?password=${password}`,
       );
-    else wss = new WebSocket(`wss://localhost:443/ws/games/${id}/`);
+    else ws = new WebSocket(`wss://localhost:443/ws/games/${id}/`);
 
-    wss.onmessage = (event) => {
+    ws.onmessage = (event) => {
       const res = JSON.parse(event.data);
       if (res.error) {
         if (res.error === "[PermissionDenied] can't access")
           alert("비밀번호가 틀렸습니다.");
         return;
       }
-      res.socket = wss;
+      res.socket = ws;
       if (password != null) res.password = password;
-      wss.onmessage = null;
+      ws.onmessage = null;
       navigate("/waiting-room", res);
     };
   };
