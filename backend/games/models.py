@@ -98,12 +98,12 @@ class Racket:
     y: float
     speed: float
 
-    def __init__(self, width, height, x, y, speed):
-        self.width = width
-        self.height = height
+    def __init__(self, x, y):
+        self.width = 10
+        self.height = 100
         self.x = x
         self.y = y
-        self.speed = speed
+        self.speed = 10
 
     def set_x_y(self, x, y):
         self.x = x
@@ -162,11 +162,11 @@ class Ball:
     speed: float
     direction: tuple
 
-    def __init__(self, radius, x, y):
-        self.radius = radius
+    def __init__(self, ball_info: dict, x, y):
+        self.radius = ball_info['radius']
         self.x = x
         self.y = y
-        self.speed = 10
+        self.speed = ball_info['speed']
         self.direction = (random.uniform(-1, 1), random.uniform(-1, 1))
 
     def set_direction(self, direction: tuple):
@@ -274,25 +274,44 @@ class PingPongGame:
     ping_pong_map: PingPongMap
     ball: Ball
     started_at: datetime
+    default_data = {
+        'racket': {
+            'width': 10,
+            'height': 100,
+            'speed': 10
+        },
+        'ball': {
+            'radius': 10,
+            'speed': 10
+        }
+    }
 
-    def __init__(self,
-                 left_side_player: Player,
-                 right_side_player: Player,
-                 ping_pong_map: PingPongMap,
-                 ball: Ball):
+    def __init__(self, player1_nickname: str, player2_nickname: str, ping_pong_map: PingPongMap):
         """
         Args:
-        - left_side_player: Player
-        - right_side_player: Player
-        - map: Map
-        - ball: Ball
-        - left_side_racket: Racket
-        - right_side_racket: Racket
+        - player1_nickname: str
+        - player2_nickname: str
+        - ping_pong_map: PingPongMap
         """
-        self.left_side_player = left_side_player
-        self.right_side_player = right_side_player
+        self.left_side_player = Player(
+            User.objects.get(nickname=player1_nickname),
+            0,
+            Racket(
+                self.default_data['racket']['width'],
+                ping_pong_map.height / 2 - self.default_data['racket']['height'] / 2
+            )
+        )
+        self.right_side_player = Player(
+            User.objects.get(nickname=player2_nickname),
+            0,
+            Racket(
+                ping_pong_map.width - self.default_data['racket']['width'],
+
+                ping_pong_map.height / 2 - self.default_data['racket']['height'] / 2
+            ),
+        )
         self.ping_pong_map = ping_pong_map
-        self.ball = ball
+        self.ball = Ball(self.default_data['ball'], ping_pong_map.width / 2, ping_pong_map.height / 2)
         self.started_at = datetime.now()
 
     def update_score(self, whether_score_a_goal: list):
