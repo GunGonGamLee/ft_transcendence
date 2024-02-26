@@ -161,8 +161,6 @@ export default function InGame($container, info) {
    * @param drawFunction {function} 캔버스를 그리는 함수
    */
   const runGame = (canvas, bar1, bar2, ball, drawFunction) => {
-    let needToSleep = false;
-
     const moveBall = () => {
       if (isBallInsideBar(bar1, ball) || isBallInsideBar(bar2, ball)) {
         bounce(true, false);
@@ -176,6 +174,7 @@ export default function InGame($container, info) {
       if (whetherScoreAGoal[0] || whetherScoreAGoal[1]) {
         updateScore(whetherScoreAGoal);
         reset(ball, canvas);
+        pause(1000);
       }
       drawFunction(bar1, bar2, ball);
       let moveBallEventId = window.requestAnimationFrame(moveBall);
@@ -316,12 +315,9 @@ export default function InGame($container, info) {
       return [normalizedX, normalizedY];
     };
 
-    /**
-     * 일정 시간을 기다리는 함수
-     * @param ms {number} 기다릴 시간
-     */
-    const sleep = (ms) => {
-      return new Promise((resolve) => setTimeout(resolve, ms));
+    const pause = (ms) => {
+      const end = Date.now() + ms;
+      while (Date.now() < end) {}
     };
 
     moveBar();
