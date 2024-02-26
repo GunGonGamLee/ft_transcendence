@@ -161,27 +161,23 @@ export default function InGame($container, info) {
    * @param drawFunction {function} 캔버스를 그리는 함수
    */
   const runGame = (canvas, bar1, bar2, ball, drawFunction) => {
+    let needToSleep = false;
+
     const moveBall = () => {
       if (isBallInsideBar(bar1, ball) || isBallInsideBar(bar2, ball)) {
-        [ball.direction.x, ball.direction.y] = normalizeVector(
-          ball.direction.x * -1 * getRandomCoefficient(0.9, 1.1),
-          ball.direction.y,
-        );
+        bounce(true, false);
       } else if (isBallHitWall(canvas, ball)) {
-        [ball.direction.x, ball.direction.y] = normalizeVector(
-          ball.direction.x,
-          ball.direction.y * -1 * getRandomCoefficient(0.9, 1.1),
-        );
+        bounce(false, true);
       }
       ball.x = ball.x + ball.direction.x * ball.speed;
       ball.y = ball.y + ball.direction.y * ball.speed;
-      drawFunction(bar1, bar2, ball);
       ball.speed += 0.001;
       let whetherScoreAGoal = isBallHitGoal(canvas, ball);
       if (whetherScoreAGoal[0] || whetherScoreAGoal[1]) {
         updateScore(whetherScoreAGoal);
         reset(ball, canvas);
       }
+      drawFunction(bar1, bar2, ball);
       let moveBallEventId = window.requestAnimationFrame(moveBall);
       if (getScore().player1 + getScore().player2 >= 5) {
         cancelAnimationFrame(moveBallEventId);
@@ -252,13 +248,32 @@ export default function InGame($container, info) {
       return [false, false];
     };
 
-    const updateScore = (wheterScoreAGoal) => {
-      if (wheterScoreAGoal[0]) {
+    /**
+     * 공이 벽에 부딪혔을 때 방향을 바꾸는 함수
+     * @param bounceX {boolean} x축으로 부딪혔는지 여부
+     * @param bounceY {boolean} y축으로 부딪혔는지 여부
+     */
+    const bounce = (bounceX, bounceY) => {
+      if (bounceX) {
+        [ball.direction.x, ball.direction.y] = normalizeVector(
+          ball.direction.x * -1 * getRandomCoefficient(0.9, 1.1),
+          ball.direction.y,
+        );
+      } else if (bounceY) {
+        [ball.direction.x, ball.direction.y] = normalizeVector(
+          ball.direction.x,
+          ball.direction.y * -1 * getRandomCoefficient(0.9, 1.1),
+        );
+      }
+    };
+
+    const updateScore = (whetherScoreAGoal) => {
+      if (whetherScoreAGoal[0]) {
         setScore({
           player1: getScore().player1,
           player2: getScore().player2 + 1,
         });
-      } else if (wheterScoreAGoal[1]) {
+      } else if (whetherScoreAGoal[1]) {
         setScore({
           player1: getScore().player1 + 1,
           player2: getScore().player2,
@@ -305,6 +320,10 @@ export default function InGame($container, info) {
      * 일정 시간을 기다리는 함수
      * @param ms {number} 기다릴 시간
      */
+    const sleep = (ms) => {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    };
+
     moveBar();
     moveBall();
   };
