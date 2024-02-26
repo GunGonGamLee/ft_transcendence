@@ -14,7 +14,7 @@ export default function GameMode($container) {
       $container.querySelector(".queue-modal").style.display = "flex";
       $container.querySelector(".modal-backdrop").style.display = "block";
       console.log("clicked");
-      this.ws = new WebSocket("${WEBSOCKET}/ws/rankgames/");
+      this.ws = new WebSocket("${WEBSOCKET}/rankgames/");
       console.log("ws ok");
       this.ws.onmessage = (event) => {
         console.log(event.data);
