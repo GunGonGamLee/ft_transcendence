@@ -104,7 +104,6 @@ export default function CustomGameList($container) {
             document
               .getElementById("pwd-input")
               .addEventListener("keydown", (e) => {
-                console.log(e.key);
                 if (e.key === "Enter") {
                   enterRoom(data.id, e.target.value);
                 }
@@ -118,24 +117,24 @@ export default function CustomGameList($container) {
   };
 
   const enterRoom = (id, password = null) => {
-    let wss;
+    let ws;
 
     if (password != null)
-      wss = new WebSocket(
+      ws = new WebSocket(
         `wss://localhost:443/ws/games/${id}/?password=${password}`,
       );
-    else wss = new WebSocket(`wss://localhost:443/ws/games/${id}/`);
+    else ws = new WebSocket(`wss://localhost:443/ws/games/${id}/`);
 
-    wss.onmessage = (event) => {
+    ws.onmessage = (event) => {
       const res = JSON.parse(event.data);
       if (res.error) {
-        console.log(res.error);
         if (res.error === "[PermissionDenied] can't access")
           alert("비밀번호가 틀렸습니다.");
         return;
       }
-      res.socket = wss;
-      wss.onmessage = null;
+      res.socket = ws;
+      if (password != null) res.password = password;
+      ws.onmessage = null;
       navigate("/waiting-room", res);
     };
   };
@@ -287,7 +286,6 @@ export default function CustomGameList($container) {
     const $makeRoomBtn = document.getElementById("make-room-btn");
 
     click($1vs1ModeBtn, () => {
-      console.log("1vs1");
       $tournamentModeBtn.style.opacity = "0.5";
       $1vs1ModeBtn.style.opacity = "1";
     });
@@ -295,14 +293,16 @@ export default function CustomGameList($container) {
     click($tournamentModeBtn, () => {
       $1vs1ModeBtn.style.opacity = "0.5";
       $tournamentModeBtn.style.opacity = "1";
-      console.log("tournament");
     });
 
     click($makeRoomBtn, () => {
       const $roomNameInput = document.getElementById("room-name-input");
       const $passwordInput = document.getElementById("password-input");
 
-      // TODO: title '' 일때 처리
+      if ($roomNameInput.value === "") {
+        alert("방 이름을 입력해주세요.");
+        return;
+      }
       fetch(`${BACKEND}/games/`, {
         method: "POST",
         headers: {
@@ -321,12 +321,10 @@ export default function CustomGameList($container) {
           if (res.status === 201) {
             return res.json();
           } else {
-            console.log(res);
             throw new Error("방 만들기 실패");
           }
         })
         .then((res) => {
-          console.log(res);
           enterRoom(res.id, $passwordInput.value);
         });
     });
