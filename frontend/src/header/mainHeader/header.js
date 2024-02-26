@@ -27,7 +27,7 @@ export default function MainHeader($container) {
           setUserInfo(data);
         });
         // alert("웹소켓 연결!");
-        new WebSocket("wss://localhost/ws/friend_status/");
+        new WebSocket("{WEBSOCKET}/friend_status/");
       } else {
         // TODO => 에러 페이지로 이동
         navigate("/");
