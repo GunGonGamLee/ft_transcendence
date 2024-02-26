@@ -167,8 +167,6 @@ export default function MainHeader($container) {
             iconIdSuffix = 'icon-'; // 기본 값
         }
 
-
-
         return `
         <div class="${wrapperClass}" style="border-color: ${borderColor}; ${opacityStyle}">
             <div>
@@ -232,7 +230,7 @@ export default function MainHeader($container) {
                 </div>
             </div>
             <div class="list-wrapper" id="friend-request-list-wrapper">
-            
+                
             </div>
         </div>
     `)
