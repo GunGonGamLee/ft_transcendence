@@ -442,6 +442,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         return serializer.data
 
     async def receive(self, text_data):
+        # todo try catch
         data = json.loads(text_data)
         message_type = data.get('type')
         message_data = data.get('data', {})
@@ -484,8 +485,15 @@ class GameConsumer(AsyncWebsocketConsumer):
                     if self.match1.finished and self.match2.finished:
                         break
                     await self.send_tournament_in_game_message()
-                            'data': 'match2 info'
                     await asyncio.sleep(1 / 24)
+
+        elif message_type == 'keyboard':
+            if message_data == 'up':
+                # todo ?
+                pass
+            elif message_data == 'down':
+                # todo ?
+                pass
 
     async def set_values(self, message_data):
         map_width = message_data['map_width']
