@@ -456,83 +456,35 @@ class GameConsumer(AsyncWebsocketConsumer):
 
             # 게임 시작
             if self.game.mode == 0 and len(self.match1_users) == 2:
-                await self.channel_layer.group_send(
-                    self.match1_group_name,
-                    {
-                        'type': 'gamestart',
-                        'data': '게임 스탓토'
-                    }
-                )
-                await self.gamestart({
-                        'type': 'gamestart',
-                        'data': '게임 스탓토'
-                    })
+                await self.send_pvp_start_message()
                 await asyncio.sleep(2)
                 self.match1.started_at = datetime.now()
                 while True:
                     # todo 겜 로직
-                    # if 겜 끝나면 탈출
-                    await self.channel_layer.group_send(
-                        self.match1_group_name,
-                        {
-                            'type': 'in_game',
-                            'data': '화면 그릴 때 필요한 정보 serializer'
-                        }
-                    )
-                    await self.in_game({
-                            'type': 'in_game',
-                            'data': '화면 그릴 때 필요한 정보 serializer'
-                    })
+                    if self.match1.left_side_player.score + self.match1.right_side_player.score == 5:
+                        self.match1.finished = True
+                        # todo 게임 돌아가고 있는 거 끝내기
+                        break
+                    await self.send_pvp_in_game_message()
                     await asyncio.sleep(1 / 24)
 
             elif self.game.mode != 0 and len(self.match1_users) == 2 and len(self.match2_users) == 2:
-                await self.channel_layer.group_send(
-                    self.match1_group_name,
-                    {
-                        'type': 'gamestart',
-                        'data': '게임 스탓토 serializer serializer'
-                    }
-                )
-                await self.channel_layer.group_send(
-                    self.match2_group_name,
-                    {
-                        'type': 'gamestart',
-                        'data': '게임 스탓토 serializer serializer'
-                    }
-                )
-                await self.gamestart({
-                        'type': 'gamestart',
-                        'data': '게임 스탓토 serializer'
-                })
+                await self.send_tournament_start_message()
                 await asyncio.sleep(2)
                 self.match1.started_at = datetime.now()
                 self.match2.started_at = datetime.now()
                 while True:
                     # todo 겜 로직
-                    await self.channel_layer.group_send(
-                        self.match1_group_name,
-                        {
-                            'type': 'in_game',
-                            'data': 'match1 info'
-                        }
-                    )
-                    await self.channel_layer.group_send(
-                        self.match2_group_name,
-                        {
-                            'type': 'in_game',
+                    if self.match1.left_side_player.score + self.match1.right_side_player.score == 5:
+                        self.match1.finished = True
+                        # todo 게임 돌아가고 있는 거 끝내기
+                    if self.match2.left_side_player.score + self.match2.right_side_player.score == 5:
+                        self.match2.finished = True
+                        # todo 게임 돌아가고 있는 거 끝내기
+                    if self.match1.finished and self.match2.finished:
+                        break
+                    await self.send_tournament_in_game_message()
                             'data': 'match2 info'
-                        }
-                    )
-                    if self.my_match == 1:
-                        await self.in_game({
-                                'type': 'in_game',
-                                'data': 'match1 info'
-                        })
-                    else:
-                        await self.in_game({
-                                'type': 'in_game',
-                                'data': 'match2 info'
-                        })
                     await asyncio.sleep(1 / 24)
 
     async def set_values(self, message_data):
@@ -571,6 +523,86 @@ class GameConsumer(AsyncWebsocketConsumer):
         match.ball.radius = data['ball_radius']
         match.ball.x = data['ball_x']
         match.ball.y = data['ball_y']
+
+    async def send_pvp_start_message(self):
+        data = '게임 시작 데이터'
+        await self.channel_layer.group_send(
+            self.match1_group_name,
+            {
+                'type': 'gamestart',
+                'data': data
+            }
+        )
+        await self.gamestart({
+            'type': 'gamestart',
+            'data': data
+        })
+
+    async def send_pvp_in_game_message(self):
+        data = 'match1 정보'
+        await self.channel_layer.group_send(
+            self.match1_group_name,
+            {
+                'type': 'in_game',
+                'data': data
+            }
+        )
+        await self.in_game({
+            'type': 'in_game',
+            'data': data
+        })
+
+    async def send_tournament_start_message(self):
+        data = '겜 시작 정보'
+        await self.channel_layer.group_send(
+            self.match1_group_name,
+            {
+                'type': 'gamestart',
+                'data': data
+            }
+        )
+        await self.channel_layer.group_send(
+            self.match2_group_name,
+            {
+                'type': 'gamestart',
+                'data': data
+            }
+        )
+        await self.gamestart({
+            'type': 'gamestart',
+            'data': data
+        })
+
+    async def send_tournament_in_game_message(self):
+        match1_data = 'match1 data'
+        match2_data = 'match2 data'
+
+        if not self.match1.finished:
+            if self.my_match == 1:
+                await self.in_game({
+                    'type': 'in_game',
+                    'data': match1_data
+                })
+            await self.channel_layer.group_send(
+                self.match1_group_name,
+                {
+                    'type': 'in_game',
+                    'data': match1_data
+                }
+            )
+        if not self.match2.finished:
+            if self.my_match == 2:
+                await self.in_game({
+                    'type': 'in_game',
+                    'data': match2_data
+                })
+            await self.channel_layer.group_send(
+                self.match2_group_name,
+                {
+                    'type': 'in_game',
+                    'data': match2_data
+                }
+            )
 
     async def game_info(self, event):
         data = event["data"]
