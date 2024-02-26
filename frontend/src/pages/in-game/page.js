@@ -255,13 +255,13 @@ export default function InGame($container, info) {
     const updateScore = (wheterScoreAGoal) => {
       if (wheterScoreAGoal[0]) {
         setScore({
-          player1: getScore().player1 + 1,
-          player2: getScore().player2,
+          player1: getScore().player1,
+          player2: getScore().player2 + 1,
         });
       } else if (wheterScoreAGoal[1]) {
         setScore({
-          player1: getScore().player1,
-          player2: getScore().player2 + 1,
+          player1: getScore().player1 + 1,
+          player2: getScore().player2,
         });
       }
     };
@@ -300,6 +300,11 @@ export default function InGame($container, info) {
       let normalizedY = y / vectorLength;
       return [normalizedX, normalizedY];
     };
+
+    /**
+     * 일정 시간을 기다리는 함수
+     * @param ms {number} 기다릴 시간
+     */
     moveBar();
     moveBall();
   };
