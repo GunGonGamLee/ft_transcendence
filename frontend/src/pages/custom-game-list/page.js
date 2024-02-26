@@ -122,9 +122,9 @@ export default function CustomGameList($container) {
 
     if (password != null)
       wss = new WebSocket(
-        `wss://localhost:443/ws/games/${id}/?password=${password}`,
+        `${WEBSOCKET}/ws/games/${id}/?password=${password}`,
       );
-    else wss = new WebSocket(`wss://localhost:443/ws/games/${id}/`);
+    else wss = new WebSocket(`${WEBSOCKET}:443/ws/games/${id}/`);
 
     wss.onmessage = (event) => {
       const res = JSON.parse(event.data);
