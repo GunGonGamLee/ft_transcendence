@@ -32,6 +32,11 @@ export default function MainHeader($container) {
                 navigate("/");
             }
         });
+        this.ws = new WebSocket(`wss://localhost:443/ws/friends/`);
+        this.ws.onmessage = () => {
+
+        }
+
     };
 
     this.render = () => {
@@ -227,6 +232,7 @@ export default function MainHeader($container) {
                     <input id="input" />
                 </div>
                 <div id="user-search-list">
+                    
                 </div>
             </div>
             <div class="list-wrapper" id="friend-request-list-wrapper">
