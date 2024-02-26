@@ -219,7 +219,7 @@ class Ball:
         """
         return self.is_ball_inside_bar_x(bar) and self.is_ball_inside_bar_y(bar)
 
-    def hit_wall(self, ping_pong_map: PingPongMap):
+    def is_ball_hit_wall(self, ping_pong_map: PingPongMap):
         """
         공이 맵에 부딪혔는지 확인하는 함수
         :param ping_pong_map: 맵
@@ -231,7 +231,11 @@ class Ball:
         bottom_point = self.y + self.radius
 
         # 공이 벽에 부딪혔는지 확인
-        if top_point <= 0 or bottom_point >= ping_pong_map.height:
+        if top_point <= 0:
+            self.y += abs(top_point)
+            return True
+        elif bottom_point >= ping_pong_map.height:
+            self.y -= abs(bottom_point - ping_pong_map.height)
             return True
         return False
 
@@ -349,7 +353,7 @@ class PingPongGame:
         :rtype: None
         """
         self.ball.move()
-        if self.ball.hit_wall(self.ping_pong_map):
+        if self.ball.is_ball_hit_wall(self.ping_pong_map):
             self.ball.bounce((1, -1))
         elif self.ball.is_ball_inside_bar(self.left_side_player.bar) or self.ball.is_ball_inside_bar(self.right_side_player.bar):
             self.ball.bounce((-1, 1))
