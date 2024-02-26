@@ -4,7 +4,6 @@ import { click } from "../../utils/clickEvent.js";
 import { BACKEND, HISTORIES_IMAGE_PATH } from "../../global.js";
 import { getCookie, deleteCookie } from "../../utils/cookie.js";
 import useState from "../../utils/useState.js";
-// import friendsInfoModal from "./friends-info-modal.js";
 
 /**
  * 사용자 전적 페이지에 사용하는 header 컴포넌트
@@ -289,10 +288,12 @@ export default function MainHeader($container) {
     };
 
     // 친구요청 받은 리스트 렌더링
+    // 친구요청 받은 리스트 렌더링 함수
     this.renderRequestersList = () => {
         const newRequestersList = getRequestersList();
 
-        const newRequestersCards = newRequestersList.friendRequestList.map((card, index)=>
+        // 친구 요청 카드 생성 (accept 아이콘만 포함되어 있음, reject 아이콘 처리는 가정하에 추가)
+        const newRequestersCards = newRequestersList.friendRequestList.map((card, index) =>
             createInfoCard(card, index, {borderColor: '#29ABE2'}, {iconImagePath: '../../assets/images/accept.png'})).join('');
 
         document.getElementById("friend-request-list-wrapper").innerHTML = `
@@ -302,54 +303,40 @@ export default function MainHeader($container) {
           <div id="friend-request-list">
               ${newRequestersCards}
           </div>
-        `
+        `;
 
+        // 공통 요청 처리 함수
+        function handleFriendRequest(action, nickname) {
+            fetch(`${BACKEND}/friends/${action}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${getCookie("jwt")}`
+                },
+                body: JSON.stringify({nickname})
+            }).then(response => {
+                if (response.status !== 200) {
+                    navigate("/");
+                }
+                // 성공적으로 처리됐을 때의 로직 (예: 리스트 갱신, 알림 등)
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        // 각 요청자에 대한 이벤트 리스너 설정
         newRequestersList.friendRequestList.forEach((requester, index) => {
-           const acceptIcon = document.getElementById(`accept-icon-${index}`);
-           const rejectIcon = document.getElementById(`reject-icon-${index}`);
+            const acceptIcon = document.getElementById(`accept-icon-${index}`);
+            const rejectIcon = document.getElementById(`reject-icon-${index}`);
 
-           if (acceptIcon) {
-               acceptIcon.addEventListener('click', () => {
-                   const nickname = requester.nickname;
-
-                   fetch(`${BACKEND}/friends/accept/`, {
-                       method: 'POST',
-                       headers: {
-                           'Content-Type': 'application/json',
-                           Authorization: `Bearer ${getCookie("jwt")}`
-                       },
-                       body: JSON.stringify({nickname})
-                   }).then((response) => {
-                       if (response.status === 200) {
-
-                       } else {
-                           navigate("/");
-                       }
-                   })
-               })
-           }
+            if (acceptIcon) {
+                acceptIcon.addEventListener('click', () => handleFriendRequest('accept', requester.nickname));
+            }
             if (rejectIcon) {
-                rejectIcon.addEventListener('click', () => {
-                    const nickname = requester.nickname;
-
-                    fetch(`${BACKEND}/friends/reject/`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            Authorization: `Bearer ${getCookie("jwt")}`
-                        },
-                        body: JSON.stringify({nickname})
-                    }).then((response) => {
-                        if (response.status === 200) {
-
-                        } else {
-                            navigate("/");
-                        }
-                    })
-                })
+                rejectIcon.addEventListener('click', () => handleFriendRequest('reject', requester.nickname));
             }
         });
-    }
+    };
 
     // 유저검색 리스트 렌더링
     this.renderSearchedUserList = () => {
