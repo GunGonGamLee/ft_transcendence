@@ -39,6 +39,9 @@ export default function WaitingRoom($container, info = null) {
     };
   };
 
+  this.unmount = () => {
+    ws.close();
+  };
   const render = () => {
     importCss("../../../assets/css/waiting-room.css");
     $container.innerHTML = `
