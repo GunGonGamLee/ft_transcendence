@@ -196,6 +196,13 @@ export default function MainHeader($container) {
                     친구 (0)
                 </div>
                 <div id="friends-list">
+                    <div style="position: relative; width: 100%; height: 100%;">
+                        <div id="loading-spinner" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">               
+                            <div class="spinner-border text-light" style="width: 10vh; height: 10vh;" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="list-wrapper" id="user-search-wrapper">
@@ -215,6 +222,13 @@ export default function MainHeader($container) {
                     친구 요청 (0)
                 </div>
                 <div id="friend-request-list">
+                    <div style="position: relative; width: 100%; height: 100%;">
+                        <div id="loading-spinner" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">               
+                            <div class="spinner-border text-light" style="width: 10vh; height: 10vh;" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -255,13 +269,24 @@ export default function MainHeader($container) {
                         body: JSON.stringify({nickname})
                     }).then((response) => {
                         if (response.status === 200) {
-
+                            const loadingHtml = `
+                                <div style="position: relative; width: 100%; height: 100%;">
+                                    <div id="loading-spinner" style="position: fixed; top: 5vh; bottom: 5vh;">               
+                                        <div class="spinner-border text-light" style="width: 10vh; height: 10vh;" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            const friendsListDiv = document.getElementById('friends-list');
+                            friendsListDiv.innerHTML += loadingHtml; // 로딩 스피너를 friends-list 내부에 추가
                         } else {
                             // TODO => 에러 페이지로 이동
                             navigate("/");
                         }
                     })
                 });
+
             }
         });
     };
@@ -310,9 +335,31 @@ export default function MainHeader($container) {
 
             if (acceptIcon) {
                 acceptIcon.addEventListener('click', () => handleFriendRequest('accept', requester.nickname));
+                const loadingHtml = `
+                                <div style="position: relative; width: 100%; height: 100%;">
+                                    <div id="loading-spinner" style="position: fixed; top: 5vh; bottom: 5vh;">               
+                                        <div class="spinner-border text-light" style="width: 10vh; height: 10vh;" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                const friendsListDiv = document.getElementById('friends-list');
+                friendsListDiv.innerHTML += loadingHtml; // 로딩 스피너를 friends-list 내부에 추가
             }
             if (rejectIcon) {
                 rejectIcon.addEventListener('click', () => handleFriendRequest('reject', requester.nickname));
+                const loadingHtml = `
+                                <div style="position: relative; width: 100%; height: 100%;">
+                                    <div id="loading-spinner" style="position: fixed; top: 5vh; bottom: 5vh;">               
+                                        <div class="spinner-border text-light" style="width: 10vh; height: 10vh;" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                const friendsListDiv = document.getElementById('friends-list');
+                friendsListDiv.innerHTML += loadingHtml; // 로딩 스피너를 friends-list 내부에 추가
             }
         });
     };
