@@ -1,7 +1,7 @@
 import { importCss } from "../../utils/importCss.js";
 import { navigate } from "../../utils/navigate.js";
 import { click } from "../../utils/clickEvent.js";
-import { BACKEND, HISTORIES_IMAGE_PATH } from "../../global.js";
+import { BACKEND, WEBSOCKET, HISTORIES_IMAGE_PATH } from "../../global.js";
 import { getCookie, deleteCookie } from "../../utils/cookie.js";
 import useState from "../../utils/useState.js";
 import friendsInfoModal from "./friends-info-modal.js";
@@ -27,7 +27,7 @@ export default function MainHeader($container) {
           setUserInfo(data);
         });
         // alert("웹소켓 연결!");
-        new WebSocket("{WEBSOCKET}/ws/friend_status/");
+        new WebSocket(`${WEBSOCKET}/friend_status/`);
       } else {
         // TODO => 에러 페이지로 이동
         navigate("/");

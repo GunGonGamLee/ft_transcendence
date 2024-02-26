@@ -5,7 +5,7 @@ import { hoverToggle } from "../../utils/hoverEvent.js";
 import passwordModal from "./password-modal.js";
 import useState from "../../utils/useState.js";
 import gameRoomList from "./gameRoomlist.js";
-import { BACKEND } from "../../global.js";
+import { BACKEND, WEBSOCKET } from "../../global.js";
 import { navigate } from "../../utils/navigate.js";
 
 export default function CustomGameList($container) {
@@ -121,9 +121,9 @@ export default function CustomGameList($container) {
 
     if (password != null)
       wss = new WebSocket(
-        `${WEBSOCKET}/ws/games/${id}/?password=${password}`,
+        `${WEBSOCKET}/games/${id}/?password=${password}`,
       );
-    else ws = new WebSocket(`${WEBSOCKET}:443/ws/games/${id}/`);
+    else ws = new WebSocket(`${WEBSOCKET}/games/${id}/`);
 
 
     ws.onmessage = (event) => {
