@@ -123,7 +123,7 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         message_type = data.get('type')
         message_data = data.get('data', {})
         if message_type == 'game_start' and message_data == 'true':
-            await self.send_url({'url': f"/ws/games/start/{self.game_id}/"})
+            await self.send_url({'url': f"/games/start/{self.game_id}/"})
 
     async def send_url(self, event):
         data = event["url"]
