@@ -4,6 +4,7 @@ import userBox from "./userBox.js";
 import countdownModal from "./countdownModal.js";
 import useState from "../../utils/useState.js";
 import { navigate } from "../../utils/navigate.js";
+import {click} from "../../utils/clickEvent.js";
 /**
  * @param {HTMLElement} $container
  * @param {object} info
@@ -37,6 +38,12 @@ export default function WaitingRoom($container, info = null) {
       let data = JSON.parse(msg.data);
       setUserState(data.data.players);
     };
+    click($container.querySelector(".start-btn"), () => {
+      ws.send(JSON.stringify({
+          'type' : 'game_start',
+          'data' : 'true'
+      }));
+    });
   };
 
   this.unmount = () => {

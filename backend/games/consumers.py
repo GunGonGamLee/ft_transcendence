@@ -118,6 +118,17 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
             await self.send(text_data=json.dumps({"error": "[" + e.__class__.__name__ + "] " + str(e)}))
             await self.close()
 
+    async def receive(self, text_data):
+        data = json.loads(text_data)
+        message_type = data.get('type')
+        message_data = data.get('data', {})
+        if message_type == 'game_start' and message_data == 'true':
+            await self.send_url({'url': f"/ws/games/start/{self.game_id}/"})
+
+    async def send_url(self, event):
+        data = event["url"]
+        await self.send(text_data=json.dumps({"url": data}))
+
     @database_sync_to_async
     def count_casual_games(self):
         return CasualGameView.objects.aggregate(Count('game_id'))['game_id__count']
