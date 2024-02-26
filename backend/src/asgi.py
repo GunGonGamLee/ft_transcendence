@@ -22,14 +22,3 @@ application = ProtocolTypeRouter(
         )
     }
 )
-
-# application = ProtocolTypeRouter(
-# 	{
-# 		"http": django_asgi_app,
-# 		"websocket": AllowedHostsOriginValidator(
-# 			URLRouter(
-# 				games.routing.websocket_urlpatterns + friends.routing.websocket_urlpatterns
-#             )
-#         )
-#     }
-# )

@@ -274,6 +274,7 @@ class PingPongGame:
     ping_pong_map: PingPongMap
     ball: Ball
     started_at: datetime
+    finished: False
 
     def __init__(self,
                  left_side_player: Player,
