@@ -185,23 +185,39 @@ class Ball:
         self.x += self.speed * self.direction[0]
         self.y += self.speed * self.direction[1]
 
-    def hit_bar(self, bar: Bar):
+    def is_ball_inside_bar_x(self, bar: Bar):
         """
-        공이 바에 부딪혔는지 확인하는 함수
+        공이 바 안에 있는지 확인하는 함수. x 좌표를 기준으로 확인한다.
+        :param bar: 바
+        :type bar: Bar
+        :return: x축 상에서 바 안에 있으면 True, 아니면 False
+        :rtype: bool
+        """
+        left_point = self.x - self.radius
+        right_point = self.x + self.radius
+        return bar.x <= right_point and left_point <= bar.x + bar.width
+
+    def is_ball_inside_bar_y(self, bar: Bar):
+        """
+        공이 바 안에 있는지 확인하는 함수. y 좌표를 기준으로 확인한다.
+        :param bar: 바
+        :type bar: Bar
+        :return: y축 상에서 바 안에 있으면 True, 아니면 False
+        :rtype: bool
+        """
+        top_point = self.y - self.radius
+        bottom_point = self.y + self.radius
+        return bar.y <= bottom_point and top_point <= bar.y + bar.height
+
+    def is_ball_inside_bar(self, bar: Bar):
+        """
+        공이 바에 부딪혔는지 확인하는 함수. 바 안에 공이 들어가면 부딪힌 것으로 간주한다.
         :param bar: 바
         :type bar: Bar
         :return: 부딪혔으면 True, 아니면 False
         :rtype: bool
         """
-        bar_hit_point_max_range = math.sqrt(pow(bar.width / 2, 2) + pow(bar.height / 2, 2)) + self.radius
-        bar_hit_point_min_range = bar.width / 2 + self.radius
-        bar_center_pos = (bar.x + bar.width / 2, bar.y + bar.height / 2)
-        a = math.fabs(bar_center_pos[0] - self.x)
-        b = math.fabs(bar_center_pos[1] - self.y)
-        c = math.sqrt(pow(a, 2) + pow(b, 2))  # 피타고라스 정리를 이용하여 공과 바의 중심 사이의 거리를 구함
-        if bar_hit_point_min_range <= c <= bar_hit_point_max_range:
-            return True
-        return False
+        return self.is_ball_inside_bar_x(bar) and self.is_ball_inside_bar_y(bar)
 
     def hit_wall(self, ping_pong_map: PingPongMap):
         """
@@ -335,7 +351,7 @@ class PingPongGame:
         self.ball.move()
         if self.ball.hit_wall(self.ping_pong_map):
             self.ball.bounce((1, -1))
-        elif self.ball.hit_bar(self.left_side_player.bar) or self.ball.hit_bar(self.right_side_player.bar):
+        elif self.ball.is_ball_inside_bar(self.left_side_player.bar) or self.ball.is_ball_inside_bar(self.right_side_player.bar):
             self.ball.bounce((-1, 1))
         if whether_score_a_goal := self.ball.is_goal_in(self.ping_pong_map):
             self.update_score(whether_score_a_goal)
