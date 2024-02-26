@@ -215,18 +215,22 @@ class RankGameRoomConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
         user = self.scope['user']
+        self.room_group_name = 'game_queue'
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name,
+        )
+        await self.accept()
         if isinstance(user, AnonymousUser):
             await self.close(code=4001)
             return
-        await self.accept()
         self.game_queue.append(user.id)
         logging.info(f'[RANK] User {user.nickname} 연결되었어요')
-        
+
         if len(self.game_queue) >= 4:
             try:
                 await self.create_game()
                 self.game_queue.clear()
-                logging.info('[RANK] 게임이 생성되고 대기열이 모두 초기화되었어요.')
             except Exception as e:
                 logging.error(e)
 
@@ -234,26 +238,25 @@ class RankGameRoomConsumer(AsyncWebsocketConsumer):
         user = self.scope['user']
         if user.id in self.game_queue:
             self.game_queue.remove(user.id)
-            logging.info(f'[RANK] User {user.nickname} 이 연결을 끊었어요.')
-            
+
     async def create_game(self):
+        logging.info(f"[RANK] Creating game with users: {self.game_queue[:4]}")
         users = await sync_to_async(self.get_users)(self.game_queue[:4])
         game = await sync_to_async(self.create_game_instance)(users)
-        for user_id in self.game_queue[:4]:
-            channel = f'user_{user_id}'
-            await self.channel_layer.group_add(channel, self.channel_name)
-            await self.channel_layer.group_send(
-                channel,
-                {
-                    'type': 'game_message',
-                    'message': {"game_id": game.id}
-                }
-            )
+        game_url = f"/games/{game.id}/"
+
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'game_start',
+                'url': game_url,
+            }
+        )
 
     @staticmethod
     def get_users(user_ids):
         return [User.objects.get(id=user_id) for user_id in user_ids]
-            
+
     @staticmethod
     def create_game_instance(users):
         try:
@@ -268,10 +271,12 @@ class RankGameRoomConsumer(AsyncWebsocketConsumer):
             return game
         except Exception as e:
             raise e
-    
-    async def game_message(self, event):
+
+    async def game_start(self, event):
+        url = event['url']
         await self.send(text_data=json.dumps({
-            'message': event['message']
+            'type': 'game_start',
+            'url': url,
         }))
 
 
