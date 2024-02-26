@@ -26,7 +26,7 @@ export default function MainHeader($container) {
                     setUserInfo(data);
                 });
                 // alert("웹소켓 연결!");
-                this.ws = new WebSocket("wss://localhost/ws/friend_status/");
+                this.ws = new WebSocket("{WEBSOCKET}/friend_status/");
                 this.ws.onmessage = (msg) => {
                     let response = JSON.parse(msg.data);
 
