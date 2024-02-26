@@ -26,17 +26,19 @@ export default function MainHeader($container) {
                     setUserInfo(data);
                 });
                 // alert("웹소켓 연결!");
-                new WebSocket("wss://localhost/ws/friend_status/");
+                this.ws = new WebSocket("wss://localhost/ws/friend_status/");
+                this.ws.onmessage = (msg) => {
+                    let response = JSON.parse(msg.data);
+
+                    // 업데이트된 내용을 set 함수에 전달합니다.
+                    setFriendsList(response.data);
+                    setRequestersList(response.data);
+                }
             } else {
                 // TODO => 에러 페이지로 이동
                 navigate("/");
             }
         });
-        this.ws = new WebSocket(`wss://localhost:443/ws/friends/`);
-        this.ws.onmessage = () => {
-
-        }
-
     };
 
     this.render = () => {
@@ -100,37 +102,6 @@ export default function MainHeader($container) {
             } else {
                 infoWrapper.style.display = "grid";
             }
-
-            fetch(`${BACKEND}/friends/`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${getCookie("jwt")}`,
-                },
-            }).then((response) => {
-                if (response.status === 200) {
-                    response.json().then((data) => {
-                        setFriendsList(data);
-                    });
-                } else {
-                    navigate("/");
-                }
-            });
-            fetch(`${BACKEND}/friends/pending/`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${getCookie("jwt")}`,
-                },
-            }).then((response) => {
-                if (response.status === 200) {
-                    response.json().then((data) => {
-                        setRequestersList(data);
-                    });
-                } else {
-                    navigate("/");
-                }
-            });
         });
         // 유저찾기 검색 이벤트
         findUserEvent();
@@ -221,7 +192,11 @@ export default function MainHeader($container) {
         headerElement.insertAdjacentHTML("beforeend", `
         <div class="friends-info-modal-wrapper" id="friends-info-wrapper">
             <div class="list-wrapper" id="friends-list-wrapper">
-                
+                <div class="list-subject">
+                    친구 (0)
+                </div>
+                <div id="friends-list">
+                </div>
             </div>
             <div class="list-wrapper" id="user-search-wrapper">
                 <div class="list-subject">
@@ -236,7 +211,11 @@ export default function MainHeader($container) {
                 </div>
             </div>
             <div class="list-wrapper" id="friend-request-list-wrapper">
-                
+                <div class="list-subject">
+                    친구 요청 (0)
+                </div>
+                <div id="friend-request-list">
+                </div>
             </div>
         </div>
     `)
@@ -252,11 +231,11 @@ export default function MainHeader($container) {
         document.getElementById("friends-list-wrapper").innerHTML = `
           <div class="list-subject">
             친구 (${newFriendList.friends.length} / 8)
-        </div>
-        <div id="friends-list">
-            ${newFriendCards}
-        </div>
-            `;
+            </div>
+            <div id="friends-list">
+                ${newFriendCards}
+            </div>
+                `;
 
         // 친구삭제 클릭 이벤트
         newFriendList.friends.forEach((friend, index) => {
@@ -378,9 +357,9 @@ export default function MainHeader($container) {
     }
 
     importCss("../../../assets/fonts/font.css");
-    init();
     let [getUserInfo, setUserInfo] = useState({}, this, "render");
     let [getFriendsList, setFriendsList] = useState({}, this, "renderFriendsList");
     let [getRequestersList, setRequestersList] = useState({}, this, "renderRequestersList");
     let [getSearchedUserList, setSearchedUserList] = useState({}, this, "renderSearchedUserList");
+    init();
 }
