@@ -15,6 +15,7 @@ export default function Router($container) {
   const route = (info) => {
     // 현재 페이지에서 Unmount 함수가 있다면 호출합니다.
     if (currentPage !== undefined && currentPage.unmount) currentPage.unmount();
+    // ToDO: 헤더 이동 시 unmount? 비스무리한거 실행해야함
 
     const TargetPage = findMatchedRoute()?.page || ErrorPage; // 현재 경로에 따라 렌더링할 컴포넌트를 정의합니다.
     const TargetHeader = findMatchedRoute()?.header || MainHeader; // 헤더 컴포넌트도 정의합니다.

@@ -60,7 +60,9 @@ export default function CustomGameList($container) {
    */
   this.renderGameRoomList = () => {
     let $listWrapper = $container.querySelector("#list-wrapper");
-    $listWrapper.innerHTML = "";
+    // $listWrapper.innerHTML = "";
+    if ($listWrapper == null) return;
+    $listWrapper.textContent = "";
     let curGameRoomList = getGameRoomList().data;
     if (curGameRoomList == null) {
       $listWrapper.insertAdjacentHTML(
@@ -83,17 +85,59 @@ export default function CustomGameList($container) {
                 </div>`,
         );
         click($listWrapper.querySelector(`.room-id-${data.id}`), () => {
+          if (data.started === true) {
+            alert("게임이 이미 시작되었습니다.");
+            return;
+          }
+          if (
+            (data.player_num === 4 && data.mode === 1) ||
+            (data.player_num === 2 && data.mode === 0)
+          ) {
+            alert("방이 꽉 찼습니다.");
+            return;
+          }
+
           if (data.is_secret === true) {
             document.getElementById("password-modal-wrapper").style.display =
               "block";
-            // navigate("/waiting-room", { id: data.id });
-            // TODO: api 이식 대기
+            document.getElementById("pwd-input").focus();
+            document
+              .getElementById("pwd-input")
+              .addEventListener("keydown", (e) => {
+                if (e.key === "Enter") {
+                  enterRoom(data.id, e.target.value);
+                }
+              });
           } else {
-            navigate("/waiting-room", { id: data.id });
+            enterRoom(data.id);
           }
         });
       });
     }
+  };
+
+  const enterRoom = (id, password = null) => {
+    let ws;
+
+    if (password != null)
+      wss = new WebSocket(
+        `${WEBSOCKET}/ws/games/${id}/?password=${password}`,
+      );
+    else ws = new WebSocket(`${WEBSOCKET}:443/ws/games/${id}/`);
+
+
+    ws.onmessage = (event) => {
+      const res = JSON.parse(event.data);
+      if (res.error) {
+        if (res.error === "[PermissionDenied] can't access")
+          alert("비밀번호가 틀렸습니다.");
+        return;
+      }
+      res.socket = ws;
+      if (password != null) res.password = password;
+      ws.onmessage = null;
+      navigate("/waiting-room", res);
+    };
   };
 
   const addEventListenersToLayout = () => {
@@ -192,7 +236,7 @@ export default function CustomGameList($container) {
     });
 
     click($paginationAfter, () => {
-      if (pagination <= maxPage) {
+      if (pagination < maxPage) {
         pagination += 1;
         updateGameRoomList();
       }
@@ -214,6 +258,7 @@ export default function CustomGameList($container) {
       } else {
         return;
       }
+      pagination = 1;
       updateGameRoomList();
     });
 
@@ -227,12 +272,13 @@ export default function CustomGameList($container) {
       } else {
         return;
       }
+      pagination = 1;
       updateGameRoomList();
     });
 
     // 신속히 입장
     click(document.getElementById("quick-join"), () => {
-      navigate("/waiting-room", { id: 0 });
+      enterRoom(0);
     });
 
     // 게임 방 만들기 모달
@@ -241,7 +287,6 @@ export default function CustomGameList($container) {
     const $makeRoomBtn = document.getElementById("make-room-btn");
 
     click($1vs1ModeBtn, () => {
-      console.log("1vs1");
       $tournamentModeBtn.style.opacity = "0.5";
       $1vs1ModeBtn.style.opacity = "1";
     });
@@ -249,30 +294,40 @@ export default function CustomGameList($container) {
     click($tournamentModeBtn, () => {
       $1vs1ModeBtn.style.opacity = "0.5";
       $tournamentModeBtn.style.opacity = "1";
-      console.log("tournament");
     });
 
     click($makeRoomBtn, () => {
-      console.log("make room");
       const $roomNameInput = document.getElementById("room-name-input");
       const $passwordInput = document.getElementById("password-input");
 
-      console.log($roomNameInput.value);
-      console.log($passwordInput.value);
-      console.log($tournamentModeBtn.style.opacity === "1");
+      if ($roomNameInput.value === "") {
+        alert("방 이름을 입력해주세요.");
+        return;
+      }
       fetch(`${BACKEND}/games/`, {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           title: $roomNameInput.value,
           password: $passwordInput.value,
           mode:
             $tournamentModeBtn.style.opacity === "1"
               ? "casual_tournament"
-              : "casual_lvs1",
+              : "casual_1vs1",
         }),
-      }).then((res) => {
-        console.log(res);
-      });
+      })
+        .then((res) => {
+          if (res.status === 201) {
+            return res.json();
+          } else {
+            throw new Error("방 만들기 실패");
+          }
+        })
+        .then((res) => {
+          enterRoom(res.id, $passwordInput.value);
+        });
     });
   };
 
@@ -306,7 +361,6 @@ export default function CustomGameList($container) {
       res.json().then((data) => {
         maxPage = data.total_pages;
         setGameRoomList(data);
-        // console.log(data);
       });
     });
   };
@@ -314,5 +368,3 @@ export default function CustomGameList($container) {
   addEventListenersToLayout();
   const intervalId = setInterval(updateGameRoomList, 1000);
 }
-
-//TODO: 패스워드 모달 창 기능 추가, 방 만들기 기능 추가
