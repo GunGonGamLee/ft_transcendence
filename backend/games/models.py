@@ -264,17 +264,19 @@ class Ball:
         else:
             return [False, False]
 
-    def reset(self, ping_pong_map: PingPongMap):
+    def reset(self, ping_pong_map: PingPongMap, default_data_ball: dict):
         """
         공을 초기화하는 함수
         :param ping_pong_map: 맵
         :type ping_pong_map: PingPongMap
+        :param default_data_ball: 공의 기본 정보
+        :type default_data_ball: dict
         :return: None
         :rtype: None
         """
         self.x = ping_pong_map.width / 2
         self.y = ping_pong_map.height / 2
-        self.speed = 10
+        self.speed = default_data_ball['speed']
         self.direction = (random.uniform(-1, 1), random.uniform(-1, 1))
 
 
@@ -359,5 +361,5 @@ class PingPongGame:
             self.ball.bounce((-1, 1))
         if whether_score_a_goal := self.ball.is_goal_in(self.ping_pong_map):
             self.update_score(whether_score_a_goal)
-            self.ball.reset(self.ping_pong_map)
+            self.ball.reset(self.ping_pong_map, self.default_data['ball'])
         self.ball.speed += 1000 / 30 / 10  # 3fps씩 속도를 증가시킴
