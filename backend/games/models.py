@@ -81,9 +81,9 @@ class CasualGameListView(models.Model):
 # PingPong 게임 정보를 담는 클래스. 데이터베이스에 저장되지 않음.         #
 ##############################################################
 
-class Racket:
+class Bar:
     """
-    라켓 정보를 담는 클래스. xy 좌표는 라켓의 좌상단을 기준으로 한다.
+    바 정보를 담는 클래스. xy 좌표는 바의 좌상단을 기준으로 한다.
 
     Attributes:
     - width: float
@@ -117,16 +117,16 @@ class Player:
     Attributes:
     - user: User
     - score: int
-    - racket: Racket
+    - bar: Bar
     """
     user: User
     score: int
-    racket: Racket
+    bar: Bar
 
-    def __init__(self, user: User, score: int, racket: Racket):
+    def __init__(self, user: User, score: int, bar: Bar):
         self.user = user
         self.score = score
-        self.racket = racket
+        self.bar = bar
 
 
 class PingPongMap:
@@ -185,21 +185,21 @@ class Ball:
         self.x += self.speed * self.direction[0]
         self.y += self.speed * self.direction[1]
 
-    def hit_racket(self, racket: Racket):
+    def hit_bar(self, bar: Bar):
         """
-        공이 라켓에 부딪혔는지 확인하는 함수
-        :param racket: 라켓
-        :type racket: Racket
+        공이 바에 부딪혔는지 확인하는 함수
+        :param bar: 바
+        :type bar: Bar
         :return: 부딪혔으면 True, 아니면 False
         :rtype: bool
         """
-        racket_hit_point_max_range = math.sqrt(pow(racket.width / 2, 2) + pow(racket.height / 2, 2)) + self.radius
-        racket_hit_point_min_range = racket.width / 2 + self.radius
-        racket_center_pos = (racket.x + racket.width / 2, racket.y + racket.height / 2)
-        a = math.fabs(racket_center_pos[0] - self.x)
-        b = math.fabs(racket_center_pos[1] - self.y)
-        c = math.sqrt(pow(a, 2) + pow(b, 2))  # 피타고라스 정리를 이용하여 공과 라켓의 중심 사이의 거리를 구함
-        if racket_hit_point_min_range <= c <= racket_hit_point_max_range:
+        bar_hit_point_max_range = math.sqrt(pow(bar.width / 2, 2) + pow(bar.height / 2, 2)) + self.radius
+        bar_hit_point_min_range = bar.width / 2 + self.radius
+        bar_center_pos = (bar.x + bar.width / 2, bar.y + bar.height / 2)
+        a = math.fabs(bar_center_pos[0] - self.x)
+        b = math.fabs(bar_center_pos[1] - self.y)
+        c = math.sqrt(pow(a, 2) + pow(b, 2))  # 피타고라스 정리를 이용하여 공과 바의 중심 사이의 거리를 구함
+        if bar_hit_point_min_range <= c <= bar_hit_point_max_range:
             return True
         return False
 
@@ -266,7 +266,7 @@ class PingPongGame:
     - player: Player
     - map: Map
     - ball: Ball
-    - racket: Racket
+    - bar: Bar
     - started_at: datetime
     """
     left_side_player: Player
@@ -275,7 +275,7 @@ class PingPongGame:
     ball: Ball
     started_at: datetime
     default_data = {
-        'racket': {
+        'bar': {
             'width': 10,
             'height': 100,
             'speed': 10
@@ -296,18 +296,17 @@ class PingPongGame:
         self.left_side_player = Player(
             User.objects.get(nickname=player1_nickname),
             0,
-            Racket(
-                self.default_data['racket']['width'],
-                ping_pong_map.height / 2 - self.default_data['racket']['height'] / 2
+            Bar(
+                self.default_data['bar']['width'],
+                ping_pong_map.height / 2 - self.default_data['bar']['height'] / 2
             )
         )
         self.right_side_player = Player(
             User.objects.get(nickname=player2_nickname),
             0,
-            Racket(
-                ping_pong_map.width - self.default_data['racket']['width'],
-
-                ping_pong_map.height / 2 - self.default_data['racket']['height'] / 2
+            Bar(
+                ping_pong_map.width - self.default_data['bar']['width'],
+                ping_pong_map.height / 2 - self.default_data['bar']['height'] / 2
             ),
         )
         self.ping_pong_map = ping_pong_map
@@ -336,7 +335,7 @@ class PingPongGame:
         self.ball.move()
         if self.ball.hit_wall(self.ping_pong_map):
             self.ball.bounce((1, -1))
-        elif self.ball.hit_racket(self.left_side_player.racket) or self.ball.hit_racket(self.right_side_player.racket):
+        elif self.ball.hit_bar(self.left_side_player.bar) or self.ball.hit_bar(self.right_side_player.bar):
             self.ball.bounce((-1, 1))
         if whether_score_a_goal := self.ball.is_goal_in(self.ping_pong_map):
             self.update_score(whether_score_a_goal)
