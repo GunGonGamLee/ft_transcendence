@@ -195,7 +195,6 @@ export default function MainHeader($container) {
             if (nickname === '') {
                 document.getElementById('user-search').innerHTML = '';
             }
-            console.log(nickname);
             fetch(`${BACKEND}/friends/search/?nickname=${encodeURIComponent(nickname)}`, {
                 method: "GET",
                 headers: {
@@ -205,7 +204,6 @@ export default function MainHeader($container) {
             }).then((response) => {
                 if (response.status === 200) {
                     response.json().then((data) => {
-                        console.log(data);
                         setSearchedUserList(data);
                     })
                 } else {
@@ -262,8 +260,6 @@ export default function MainHeader($container) {
 
             if (iconElement) {
                 iconElement.addEventListener('click', () => {
-                    console.log(`Icon at index ${index} clicked.`);
-                    console.log(friend.nickname);
                     // nickname 키값 구성
                     const nickname = friend.nickname;
 
