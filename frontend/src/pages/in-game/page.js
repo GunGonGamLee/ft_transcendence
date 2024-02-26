@@ -245,9 +245,9 @@ export default function InGame($container, info) {
 
     const isBallHitGoal = (canvas, ball) => {
       if (ball.x <= 0) {
-        return [true, false];
-      } else if (ball.x >= canvas.width) {
         return [false, true];
+      } else if (ball.x >= canvas.width) {
+        return [true, false];
       }
       return [false, false];
     };
