@@ -1,5 +1,5 @@
 const devBackend = "http://localhost:8000/api";
-const prodBackend = "https://localhost/api";
+const prodBackend = "https://localhost:443/api";
 
 const getAPIUrl = () => {
   if (window.mode === "dev") {
