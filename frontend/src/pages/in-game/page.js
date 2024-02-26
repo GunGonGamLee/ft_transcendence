@@ -292,6 +292,7 @@ export default function InGame($container, info) {
         x: Math.random() * 2 - 1,
         y: Math.random() * 2 - 1,
       };
+      normalizeVector(ball.direction.x, ball.direction.y);
       ball.speed = BALL_SPEED;
     };
 
@@ -320,6 +321,7 @@ export default function InGame($container, info) {
       while (Date.now() < end) {}
     };
 
+    normalizeVector(ball.direction.x, ball.direction.y);
     moveBar();
     moveBall();
   };
