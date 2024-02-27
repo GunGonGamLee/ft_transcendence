@@ -10,13 +10,13 @@ import { click } from "../../utils/clickEvent.js";
  * @param {object} info
  */
 export default function WaitingRoom($container, info = null) {
-  const gameModeNum = info.data.mode;
-
   // 새로고침 누르면 game-mode로 이동
   if (info === null) {
     navigate("/game-mode");
     return;
   }
+
+  const gameModeNum = info.data.mode;
   const ws = info.socket;
   console.log(info);
   let props = info.data.players;
@@ -38,15 +38,32 @@ export default function WaitingRoom($container, info = null) {
     ws.onmessage = (msg) => {
       let data = JSON.parse(msg.data);
       setUserState(data.data.players);
+      // eventlistener로 변경해야 할듯
     };
     click($container.querySelector(".start-btn"), () => {
-      ws.send(
-        JSON.stringify({
-          type: "game_start",
-          data: "true",
-        }),
-      );
+      startCountDown(() => {
+        ws.send(
+          JSON.stringify({
+            type: "game_start",
+            data: "true",
+          }),
+        );
+        // 게임 시작
+      });
     });
+  };
+
+  const startCountDown = (func) => {
+    $container.querySelector(".count-down-modal-wrapper").style.display =
+      "flex";
+    let count = 4;
+    let interval = setInterval(() => {
+      if (count === 0) {
+        clearInterval(interval);
+        func();
+      }
+      $container.querySelector(".countdown").innerText = count--;
+    }, 1000);
   };
 
   this.unmount = () => {
@@ -79,6 +96,7 @@ export default function WaitingRoom($container, info = null) {
        ${userBox(gameModeNum, getUserState())}
       `;
   };
+
   init();
   let [getUserState, setUserState] = useState(props, this, "renderUserBox");
 }
