@@ -1,4 +1,6 @@
 import random
+
+import numpy as np
 from django.test import TestCase
 from games.models import PingPongGame, Ball, Bar, Player, PingPongMap
 from users.models import User
@@ -111,3 +113,12 @@ class PingPongGameTestCase(TestCase):
         )
         self.assertNotEqual(self.ping_pong_game.ball.x, 0)
         self.assertNotEqual(self.ping_pong_game.ball.y, 0)
+
+    def test_normalize_ball_direction(self):
+        self.ping_pong_game.ball.set_direction((1, 1))
+        self.ping_pong_game.ball.normalize_ball_direction()
+        vector_length = np.sqrt(
+            np.power(self.ping_pong_game.ball.direction[0], 2)
+            + np.power(self.ping_pong_game.ball.direction[1], 2)
+        )
+        self.assertEqual(vector_length, 1)
