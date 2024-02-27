@@ -68,7 +68,6 @@ class GameView(APIView):
                 'total_pages': paginator.num_pages,
                 'data': serializer.data
             }
-            logging.info(f"[게임방 목록 API] mode : {mode}, page : {page}, limit : {limit}")
             return Response(serialized_data_with_total_pages, status=status.HTTP_200_OK)
 
         except AuthenticationException as e:
