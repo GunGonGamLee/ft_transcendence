@@ -365,12 +365,14 @@ class PingPongGame:
         :return: None
         :rtype: None
         """
-        self.ball.move()
-        if self.ball.is_ball_hit_wall(self.ping_pong_map):
-            self.ball.bounce((1, -1))
-        elif self.ball.is_ball_inside_bar(self.left_side_player.bar) or self.ball.is_ball_inside_bar(self.right_side_player.bar):
-            self.ball.bounce((-1, 1))
-        if whether_score_a_goal := self.ball.is_goal_in(self.ping_pong_map):
-            self.update_score(whether_score_a_goal)
-            self.ball.reset(self.ping_pong_map, self.default_data['ball'])
-        self.ball.speed += 1000 / 30 / 10  # 3fps씩 속도를 증가시킴
+        while True:
+            self.ball.move()
+            if self.ball.is_ball_hit_wall(self.ping_pong_map):
+                self.ball.bounce((1, -1))
+            elif self.ball.is_ball_inside_bar(self.left_side_player.bar) or self.ball.is_ball_inside_bar(self.right_side_player.bar):
+                self.ball.bounce((-1, 1))
+            if whether_score_a_goal := self.ball.is_goal_in(self.ping_pong_map):
+                self.update_score(whether_score_a_goal)
+                self.ball.reset(self.ping_pong_map, self.default_data['ball'])
+            if self.left_side_player.score + self.right_side_player.score == 5:
+                break
