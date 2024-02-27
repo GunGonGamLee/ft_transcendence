@@ -5,7 +5,7 @@ from datetime import datetime
 import numpy as np
 from django.db import models
 from users.models import User
-from src.choices import MODE_CHOICES, STATUS_CHOICES
+from src.choices import MODE_CHOICES, STATUS_CHOICES, GAME_SETTINGS_DICT
 
 from numpy.linalg import norm
 
@@ -305,17 +305,6 @@ class PingPongGame:
     ping_pong_map: PingPongMap
     ball: Ball
     started_at: datetime
-    default_data = {
-        'bar': {
-            'width': 10,
-            'height': 100,
-            'speed': 10
-        },
-        'ball': {
-            'radius': 10,
-            'speed': 10
-        }
-    }
     finished: False
 
     def __init__(self, ping_pong_map: PingPongMap):
@@ -327,20 +316,20 @@ class PingPongGame:
             None,
             0,
             Bar(
-                self.default_data['bar']['width'],
-                ping_pong_map.height / 2 - self.default_data['bar']['height'] / 2
+                GAME_SETTINGS_DICT['bar']['width'],
+                ping_pong_map.height / 2 - GAME_SETTINGS_DICT['bar']['height'] / 2
             )
         )
         self.right_side_player = Player(
             None,
             0,
             Bar(
-                ping_pong_map.width - self.default_data['bar']['width'],
-                ping_pong_map.height / 2 - self.default_data['bar']['height'] / 2
+                ping_pong_map.width - GAME_SETTINGS_DICT['bar']['width'],
+                ping_pong_map.height / 2 - GAME_SETTINGS_DICT['bar']['height'] / 2
             ),
         )
         self.ping_pong_map = ping_pong_map
-        self.ball = Ball(self.default_data['ball'], ping_pong_map.width / 2, ping_pong_map.height / 2)
+        self.ball = Ball(GAME_SETTINGS_DICT['ball'], ping_pong_map.width / 2, ping_pong_map.height / 2)
         self.started_at = datetime.now()
 
     def update_score(self, whether_score_a_goal: list):
@@ -370,6 +359,6 @@ class PingPongGame:
                 self.ball.bounce((-1, 1))
             if whether_score_a_goal := self.ball.is_goal_in(self.ping_pong_map):
                 self.update_score(whether_score_a_goal)
-                self.ball.reset(self.ping_pong_map, self.default_data['ball'])
+                self.ball.reset(self.ping_pong_map, GAME_SETTINGS_DICT['ball'])
             if self.left_side_player.score + self.right_side_player.score == 5:
                 self.finished = True
