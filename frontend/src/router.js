@@ -22,7 +22,7 @@ export default function Router($container) {
     if (info != null && info.errorCode) {
       // 에러 페이지로 이동할 때는 errorCode를 전달합니다.
       currentPage = new ErrorPage($container, info.errorCode);
-      currentHeader = new MainHeader($header);
+      currentHeader = new registerHeader($header);
     } else if (TargetPage === ErrorPage) {
       currentPage = new ErrorPage($container, 401); // 그냥 아래 부분과 합쳐도 되지만 가독성을 위해 분리했습니다.
       if (currentHeader instanceof MainHeader) return; // 이전 페이지와 같은 페이지로 이동할 때는 렌더링하지 않습니다.

@@ -13,12 +13,16 @@ logger = logging.getLogger(__name__)
 @database_sync_to_async
 def set_user_online(user_id, online=True):
     User.objects.filter(id=user_id).update(is_online=online)
+    
+@database_sync_to_async
+def is_user_online(user_id):
+    return User.objects.filter(id=user_id, is_online=True).exists()
 
 class FriendStatusConsumer(AsyncWebsocketConsumer):    
     async def connect(self):
         self.user = self.scope["user"]
         if self.user.is_authenticated:
-            # 사용자 접속 처리
+            user_online = await is_user_online(self.user.id)
             await self.channel_layer.group_add(
                 f"friend_status_{self.user.id}",
                 self.channel_name
@@ -26,6 +30,11 @@ class FriendStatusConsumer(AsyncWebsocketConsumer):
             await self.accept()
             # 친구들에게 접속 상태 업데이트 전송
             await set_user_online(self.user.id, online=True)
+            if user_online:
+                await self.send(text_data=json.dumps({
+                    'type': 'alreadyLogin',
+                    'message': '이미 로그인 되어 있습니다.'
+                }))
             logger.info(f"Websocket connection established for user {self.user.id}")
             self.send_update_task = asyncio.create_task(self.send_updates_periodically())
 
