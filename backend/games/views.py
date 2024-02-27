@@ -146,7 +146,7 @@ class GameView(APIView):
 
     @staticmethod
     def is_title_already_exist(title):
-        existing_games = Game.objects.filter(title=title)
+        existing_games = Game.objects.filter(title=title, status__in=[0, 1])
         return existing_games.exists()
 
 
