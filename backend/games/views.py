@@ -278,6 +278,8 @@ class GameResultListView(APIView):
             page = PaginationUtils.validate_page(request.GET.get('page', 1))
             limit = PaginationUtils.validate_limit(request.GET.get('limit', 4))
 
+            logging.info(f"[유저 전적 목록 API] user : {nickname}, mode : {mode}, page : {page}, limit : {limit}")
+
             serializer = None
             queryset = GameRecordView.objects.filter(mode=mode, user_id=user.id).values('game_id', 'mode', 'user_id').order_by('-started_at')
             paginator = Paginator(queryset, limit)
