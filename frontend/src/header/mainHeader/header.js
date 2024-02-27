@@ -1,7 +1,7 @@
 import { importCss } from "../../utils/importCss.js";
 import { navigate } from "../../utils/navigate.js";
 import { click } from "../../utils/clickEvent.js";
-import { BACKEND, HISTORIES_IMAGE_PATH } from "../../global.js";
+import { BACKEND, WEBSOCKET, HISTORIES_IMAGE_PATH } from "../../global.js";
 import { getCookie, deleteCookie } from "../../utils/cookie.js";
 import useState from "../../utils/useState.js";
 
@@ -26,7 +26,7 @@ export default function MainHeader($container) {
                     setUserInfo(data);
                 });
                 // alert("웹소켓 연결!");
-                this.ws = new WebSocket("{WEBSOCKET}/friend_status/");
+                this.ws = new WebSocket(`${WEBSOCKET}/friend_status/`);
                 this.ws.onmessage = (msg) => {
                     let response = JSON.parse(msg.data);
 
