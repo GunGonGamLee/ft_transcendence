@@ -48,7 +48,8 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
                     self.game.manager, self.game.player1 = self.game.player1, None
                     self.game.status = 0
                 else:
-                    self.game.delete()
+                    self.game.status = 4
+                    self.game.save()
             elif self.user == self.game.player1:
                 self.game.player1 = None
                 self.game.status = 0
@@ -61,7 +62,8 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
                         setattr(self.game, f"player{i}", None)
                         break
                 else:
-                    self.game.delete()
+                    self.game.status = 4
+                    self.game.save()
             else:
                 for i in range(1, 4):
                     player = getattr(self.game, f"player{i}")
