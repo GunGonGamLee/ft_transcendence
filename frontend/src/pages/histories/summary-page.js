@@ -1,33 +1,26 @@
 import { HISTORIES_IMAGE_PATH, MODE } from "../../global.js";
 
-export default async function Summary() {
+export default function Summary() {
   this.$container = document.getElementById("content");
   this.$pagination = document.getElementById("pagination");
-  this.needToRender = false;
 
   const init = () => {
     this.$container.textContent = "";
     this.$pagination.style.display = "none";
   };
 
-  const useState = async () => {
-    this.newState = await getUsersHistoriesSummary();
+  const useState = () => {
+    this.newState = getUsersHistoriesSummary();
   };
 
   const setState = () => {
-    if (this.state === this.newState) {
-      this.needToRender = false;
-      return;
-    }
     this.state = this.newState;
-    this.needToRender = true;
   };
 
   /**
    * 사용자의 전적 개요를 렌더링합니다.
    */
   const render = () => {
-    if (!this.needToRender) return;
     const {
       nickname,
       avatar,
@@ -53,16 +46,16 @@ export default async function Summary() {
 
   /**
    * 사용자의 전적 개요 데이터를 가져옵니다.
-   * @returns {Promise<{
+   * @returns {
    *    nickname: string,
    *    avatar: string,
    *    rating: number,
    *    win_rate: number,
    *    casual_win_rate: number,
    *    tournament_win_rate: number
-   * }>}
+   * }
    */
-  const getUsersHistoriesSummary = async function () {
+  const getUsersHistoriesSummary = function () {
     // TODO => API 요청으로 await 해서 데이터 받아오기
     return {
       nickname: "yena",
@@ -107,7 +100,7 @@ export default async function Summary() {
   };
 
   init();
-  await useState();
+  useState();
   setState();
   render();
 }
