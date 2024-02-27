@@ -20,6 +20,8 @@ from src.pagination_utils import PaginationUtils
 from django.core.paginator import Paginator, EmptyPage
 import logging
 from src.choices import MODE_CHOICES_REVERSE_DICT
+from django.contrib.auth.hashers import make_password
+
 
 logger = logging.getLogger(__name__)
 
@@ -115,7 +117,7 @@ class GameView(APIView):
             mode = self.check_mode(get_request_body_value(request, 'mode'))
 
             title = title if title else None
-            password = password if password else None
+            password = make_password(password) if password else None
 
             if (mode == 0 or mode == 1) and title is None:
                 raise BadRequest("title is required")
