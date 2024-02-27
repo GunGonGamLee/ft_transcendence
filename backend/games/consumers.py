@@ -128,11 +128,16 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         message_type = data.get('type')
         message_data = data.get('data', {})
         if message_type == 'game_start' and message_data == 'true':
-            await self.send_url({'url': f"/games/start/{self.game_id}/"})
+            await self.channel_layer.group_send(
+                self.game_group_name,
+                {
+                    'type': 'url',
+                    'data': f"/games/start/{self.game_id}/"
+                }
+            )
 
-    async def send_url(self, event):
-        data = event["url"]
-        await self.send(text_data=json.dumps({"url": data}))
+    async def url(self, event):
+        await self.send(text_data=json.dumps(event))
 
     @database_sync_to_async
     def count_casual_games(self):
@@ -216,8 +221,7 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         return False
 
     async def game_info(self, event):
-        data = event["data"]
-        await self.send(text_data=json.dumps({"data": data}))
+        await self.send(text_data=json.dumps(event))
 
 
 class RankGameRoomConsumer(AsyncWebsocketConsumer):
@@ -259,7 +263,7 @@ class RankGameRoomConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_send(
             self.room_group_name,
             {
-                'type': 'game_start',
+                'type': 'url',
                 'url': game_url,
             }
         )
@@ -284,11 +288,7 @@ class RankGameRoomConsumer(AsyncWebsocketConsumer):
             raise e
 
     async def game_start(self, event):
-        url = event['url']
-        await self.send(text_data=json.dumps({
-            'type': 'game_start',
-            'url': url,
-        }))
+        await self.send(text_data=json.dumps(event))
 
 
 class GameConsumer(AsyncWebsocketConsumer):
@@ -538,12 +538,12 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_send(
             self.match1_group_name,
             {
-                'type': 'gamestart',
+                'type': 'game_start',
                 'data': data
             }
         )
-        await self.gamestart({
-            'type': 'gamestart',
+        await self.game_start({
+            'type': 'game_start',
             'data': data
         })
 
@@ -566,19 +566,19 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_send(
             self.match1_group_name,
             {
-                'type': 'gamestart',
+                'type': 'game_start',
                 'data': data
             }
         )
         await self.channel_layer.group_send(
             self.match2_group_name,
             {
-                'type': 'gamestart',
+                'type': 'game_start',
                 'data': data
             }
         )
-        await self.gamestart({
-            'type': 'gamestart',
+        await self.game_start({
+            'type': 'game_start',
             'data': data
         })
 
@@ -614,13 +614,10 @@ class GameConsumer(AsyncWebsocketConsumer):
             )
 
     async def game_info(self, event):
-        data = event["data"]
-        await self.send(text_data=json.dumps({"data": data}))
+        await self.send(text_data=json.dumps(event))
 
-    async def gamestart(self, event):
-        data = event["data"]
-        await self.send(text_data=json.dumps({"data": data}))
+    async def game_start(self, event):
+        await self.send(text_data=json.dumps(event))
 
     async def in_game(self, event):
-        data = event["data"]
-        await self.send(text_data=json.dumps({"data": data}))
+        await self.send(text_data=json.dumps(event))
