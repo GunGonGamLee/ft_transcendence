@@ -92,13 +92,15 @@ export default function Histories($container) {
     const $summary = document.getElementById("summary");
     const $casualMenuWrapper = document.getElementById("casual-menu-wrapper");
     const $casual = document.getElementById("casual");
-    const $toggleItems = Array.from(document.getElementsByTagName("li"));
+    const $toggleItems = Array.from(
+      document.querySelectorAll(".histories .casual-toggle ul.histories li"),
+    );
     const $tournament = document.getElementById("tournament");
 
     // click 이벤트
     click($summary, Summary);
-    click($casual, OneOnOneHistories.bind($content, "1vs1"));
-    click($tournament, TournamentHistories.bind($content, false));
+    click($casual, OneOnOneHistories.bind($content));
+    click($tournament, TournamentHistories.bind($content));
     click($toggleItems[0], OneOnOneHistories.bind($content, "1vs1")); // 1 vs 1 모드 선택 시 실행
     click($toggleItems[1], TournamentHistories.bind($content, true)); // 토너먼트 모드 선택 시 실행
 
