@@ -2,6 +2,7 @@ import math
 import random
 from datetime import datetime
 
+import numpy
 from django.db import models
 from users.models import User
 from src.choices import MODE_CHOICES, STATUS_CHOICES
@@ -172,10 +173,8 @@ class Ball:
         self.direction = (random.uniform(-1, 1), random.uniform(-1, 1))
 
     def normalize_ball_direction(self):
-        self.direction = (
-            norm(self.direction[0], 2),
-            norm(self.direction[1], 2)
-        )
+        direction_list = numpy.array(self.direction)
+        self.direction = tuple(direction_list / norm(direction_list))
 
     def set_direction(self, direction: tuple):
         if direction[0] > 1 or direction[0] < -1 or direction[1] > 1 or direction[1] < -1:
