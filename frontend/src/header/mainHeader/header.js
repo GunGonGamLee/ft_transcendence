@@ -10,37 +10,23 @@ import useState from "../../utils/useState.js";
  * @param {HTMLElement} $container
  */
 export default function MainHeader($container) {
-    this.$container = $container;
+  this.$container = $container;
 
-    const init = () => {
-        fetch(`${BACKEND}/users/me`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${getCookie("jwt")}`,
-            },
-        }).then((response) => {
-            if (response.status === 200) {
-                this.$container.textContent = "";
-                response.json().then((data) => {
-                    setUserInfo(data);
-                });
-                // alert("웹소켓 연결!");
-                this.ws = new WebSocket(`${WEBSOCKET}/friend_status/`);
-                this.ws.onmessage = (msg) => {
-                    let response = JSON.parse(msg.data);
-
-                    // 업데이트된 내용을 set 함수에 전달합니다.
-                    setFriendsList(response.data);
-                    setRequestersList(response.data);
-                }
-            } else {
-                // TODO => 에러 페이지로 이동
-                navigate("/");
-            }
+  const init = () => {
+    fetch(`${BACKEND}/users/me`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${getCookie("jwt")}`,
+      },
+    }).then((response) => {
+      if (response.status === 200) {
+        this.$container.textContent = "";
+        response.json().then((data) => {
+          setUserInfo(data);
         });
         // alert("웹소켓 연결!");
-        this.ws = new WebSocket("{WEBSOCKET}/friend_status/");
+        this.ws = new WebSocket(`${WEBSOCKET}/friend_status/`);
         this.ws.onmessage = (msg) => {
           let response = JSON.parse(msg.data);
 
@@ -56,7 +42,6 @@ export default function MainHeader($container) {
             navigate("error", { errorCode: 4001 });
           }
         };
-        // 연결 중 에러 발생
         this.ws.onerror = function (error) {
           console.error("WebSocket error", error);
         };
@@ -324,21 +309,18 @@ export default function MainHeader($container) {
                                     </div>
                                 </div>
                             `;
-                            const friendsListDiv = document.getElementById('friends-list');
-                            friendsListDiv.innerHTML = loadingHtml; // 로딩 스피너를 friends-list 내부에 갱신
-                        } else {
-                            // TODO => 에러 페이지로 이동
-                            navigate("/");
-                        }
-                    })
-                });
-
+              const friendsListDiv = document.getElementById("friends-list");
+              friendsListDiv.innerHTML = loadingHtml; // 로딩 스피너를 friends-list 내부에 갱신
+            } else {
+              // TODO => 에러 페이지로 이동
+              navigate("/");
             }
-
-
+          });
         });
-        click(document.getElementById("friends-list"), () => {
-            const loadingHtml = `
+      }
+    });
+    click(document.getElementById("friends-list"), () => {
+      const loadingHtml = `
                                 <div style="position: relative; width: 100%; height: 100%;">
                                     <div id="loading-spinner" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">               
                                         <div class="spinner-border text-light" style="width: 10vh; height: 10vh;" role="status">
@@ -346,20 +328,28 @@ export default function MainHeader($container) {
                                     </div>
                                 </div>
                             `;
-            const friendsListDiv = document.getElementById('friends-list');
-            friendsListDiv.innerHTML = loadingHtml; // 로딩 스피너를 friends-list 내부에 갱신
-        });
-    };
+      const friendsListDiv = document.getElementById("friends-list");
+      friendsListDiv.innerHTML = loadingHtml; // 로딩 스피너를 friends-list 내부에 갱신
+    });
+  };
 
-    // 친구요청 받은 리스트 렌더링 함수
-    this.renderRequestersList = () => {
-        const newRequestersList = getRequestersList();
+  // 친구요청 받은 리스트 렌더링 함수
+  this.renderRequestersList = () => {
+    const newRequestersList = getRequestersList();
 
-        // 친구 요청 카드 생성 (accept 아이콘만 포함되어 있음, reject 아이콘 처리는 가정하에 추가)
-        const newRequestersCards = newRequestersList.friendRequestList.map((card, index) =>
-            createInfoCard(card, index, {borderColor: '#29ABE2'}, {iconImagePath: '../../assets/images/accept.png'})).join('');
+    // 친구 요청 카드 생성 (accept 아이콘만 포함되어 있음, reject 아이콘 처리는 가정하에 추가)
+    const newRequestersCards = newRequestersList.friendRequestList
+      .map((card, index) =>
+        createInfoCard(
+          card,
+          index,
+          { borderColor: "#29ABE2" },
+          { iconImagePath: "../../assets/images/accept.png" },
+        ),
+      )
+      .join("");
 
-        document.getElementById("friend-request-list-wrapper").innerHTML = `
+    document.getElementById("friend-request-list-wrapper").innerHTML = `
           <div class="list-subject">
               친구 요청 (${newRequestersList.friendRequestList.length})
           </div>
@@ -368,18 +358,19 @@ export default function MainHeader($container) {
           </div>
         `;
 
-        // 공통 요청 처리 함수
-        function handleFriendRequest(action, nickname) {
-            fetch(`${BACKEND}/friends/${action}/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${getCookie("jwt")}`
-                },
-                body: JSON.stringify({nickname})
-            }).then(response => {
-                if (response.status === 200) {
-                    const loadingHtml = `
+    // 공통 요청 처리 함수
+    function handleFriendRequest(action, nickname) {
+      fetch(`${BACKEND}/friends/${action}/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getCookie("jwt")}`,
+        },
+        body: JSON.stringify({ nickname }),
+      })
+        .then((response) => {
+          if (response.status === 200) {
+            const loadingHtml = `
                                 <div style="position: relative; width: 100%; height: 100%;">
                                     <div id="loading-spinner" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
                                         <div class="spinner-border text-light" style="width: 10vh; height: 10vh;" role="status">
@@ -387,39 +378,54 @@ export default function MainHeader($container) {
                                     </div>
                                 </div>
                             `;
-                    const friendsListDiv = document.getElementById('friend-request-list');
-                    friendsListDiv.innerHTML = loadingHtml; // 로딩 스피너를 friend-request-list 내부에 갱신
-                } else {
-                    navigate("/");
-                }
-                // 성공적으로 처리됐을 때의 로직 (예: 리스트 갱신, 알림 등)
-            }).catch(error => {
-                console.error('Error:', error);
-            });
-        }
+            const friendsListDiv = document.getElementById(
+              "friend-request-list",
+            );
+            friendsListDiv.innerHTML = loadingHtml; // 로딩 스피너를 friend-request-list 내부에 갱신
+          } else {
+            navigate("/");
+          }
+          // 성공적으로 처리됐을 때의 로직 (예: 리스트 갱신, 알림 등)
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }
 
     // 각 요청자에 대한 이벤트 리스너 설정
     newRequestersList.friendRequestList.forEach((requester, index) => {
       const acceptIcon = document.getElementById(`accept-icon-${index}`);
       const rejectIcon = document.getElementById(`reject-icon-${index}`);
 
-            if (acceptIcon) {
-                acceptIcon.addEventListener('click', () => handleFriendRequest('accept', requester.nickname));
-            }
-            if (rejectIcon) {
-                rejectIcon.addEventListener('click', () => handleFriendRequest('reject', requester.nickname));
-            }
-        });
-    };
+      if (acceptIcon) {
+        acceptIcon.addEventListener("click", () =>
+          handleFriendRequest("accept", requester.nickname),
+        );
+      }
+      if (rejectIcon) {
+        rejectIcon.addEventListener("click", () =>
+          handleFriendRequest("reject", requester.nickname),
+        );
+      }
+    });
+  };
 
-    // 유저검색 리스트 렌더링
-    this.renderSearchedUserList = () => {
-        const newSearchedUserList = getSearchedUserList();
+  // 유저검색 리스트 렌더링
+  this.renderSearchedUserList = () => {
+    const newSearchedUserList = getSearchedUserList();
 
-        const newSearchedUserCards = newSearchedUserList.searchedUserList.map((card, index) =>
-            createInfoCard(card, index, {borderColor: '#FF52A0'}, {iconImagePath: '../../assets/images/paper_plane.png'})).join('');
+    const newSearchedUserCards = newSearchedUserList.searchedUserList
+      .map((card, index) =>
+        createInfoCard(
+          card,
+          index,
+          { borderColor: "#FF52A0" },
+          { iconImagePath: "../../assets/images/paper_plane.png" },
+        ),
+      )
+      .join("");
 
-        document.getElementById("user-search-list").innerHTML = `
+    document.getElementById("user-search-list").innerHTML = `
             <div id="user-search">
                 ${newSearchedUserCards}
             </div>
