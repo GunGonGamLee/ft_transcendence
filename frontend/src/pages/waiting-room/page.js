@@ -4,7 +4,7 @@ import userBox from "./userBox.js";
 import countdownModal from "./countdownModal.js";
 import useState from "../../utils/useState.js";
 import { navigate } from "../../utils/navigate.js";
-import {click} from "../../utils/clickEvent.js";
+import { click } from "../../utils/clickEvent.js";
 /**
  * @param {HTMLElement} $container
  * @param {object} info
@@ -13,7 +13,7 @@ export default function WaitingRoom($container, info = null) {
   const gameModeNum = info.data.mode;
 
   // 새로고침 누르면 game-mode로 이동
-  if (info !== null) {
+  if (info === null) {
     navigate("/game-mode");
   }
   const ws = info.socket;
@@ -39,10 +39,12 @@ export default function WaitingRoom($container, info = null) {
       setUserState(data.data.players);
     };
     click($container.querySelector(".start-btn"), () => {
-      ws.send(JSON.stringify({
-          'type' : 'game_start',
-          'data' : 'true'
-      }));
+      ws.send(
+        JSON.stringify({
+          type: "game_start",
+          data: "true",
+        }),
+      );
     });
   };
 
