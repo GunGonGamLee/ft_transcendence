@@ -9,11 +9,12 @@ from django.core.exceptions import ValidationError, PermissionDenied
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from asgiref.sync import sync_to_async
-from games.models import Game, CasualGameView, PingPongGame, Ball, Racket, Player, PingPongMap, Result
+from games.models import Game, CasualGameView, PingPongGame, Ball, Bar, Player, PingPongMap, Result
 from games.serializers import GameRoomSerializer, PvPMatchSerializer, TournamentMatchSerializer
 from users.models import User
 from datetime import datetime
 from django.contrib.auth.hashers import check_password
+from src.choices import GAME_SETTINGS_DICT
 
 logger = logging.getLogger(__name__)
 
@@ -127,11 +128,16 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         message_type = data.get('type')
         message_data = data.get('data', {})
         if message_type == 'game_start' and message_data == 'true':
-            await self.send_url({'url': f"/games/start/{self.game_id}/"})
+            await self.channel_layer.group_send(
+                self.game_group_name,
+                {
+                    'type': 'url',
+                    'data': f"/games/start/{self.game_id}/"
+                }
+            )
 
-    async def send_url(self, event):
-        data = event["url"]
-        await self.send(text_data=json.dumps({"url": data}))
+    async def url(self, event):
+        await self.send(text_data=json.dumps(event))
 
     @database_sync_to_async
     def count_casual_games(self):
@@ -215,8 +221,7 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         return False
 
     async def game_info(self, event):
-        data = event["data"]
-        await self.send(text_data=json.dumps({"data": data}))
+        await self.send(text_data=json.dumps(event))
 
 
 class RankGameRoomConsumer(AsyncWebsocketConsumer):
@@ -258,7 +263,7 @@ class RankGameRoomConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_send(
             self.room_group_name,
             {
-                'type': 'game_start',
+                'type': 'url',
                 'url': game_url,
             }
         )
@@ -283,11 +288,7 @@ class RankGameRoomConsumer(AsyncWebsocketConsumer):
             raise e
 
     async def game_start(self, event):
-        url = event['url']
-        await self.send(text_data=json.dumps({
-            'type': 'game_start',
-            'url': url,
-        }))
+        await self.send(text_data=json.dumps(event))
 
 
 class GameConsumer(AsyncWebsocketConsumer):
@@ -297,24 +298,9 @@ class GameConsumer(AsyncWebsocketConsumer):
     match3_users = []
 
     ping_pong_map = PingPongMap(0, 0)
-    match1 = PingPongGame(
-        Player(None, 0, Racket(0, 0, 0, 0, 0)),
-        Player(None, 0, Racket(0, 0, 0, 0, 0)),
-        ping_pong_map,
-        Ball(0, 0, 0)
-    )
-    match2 = PingPongGame(
-        Player(None, 0, Racket(0, 0, 0, 0, 0)),
-        Player(None, 0, Racket(0, 0, 0, 0, 0)),
-        ping_pong_map,
-        Ball(0, 0, 0)
-    )
-    match3 = PingPongGame(
-        Player(None, 0, Racket(0, 0, 0, 0, 0)),
-        Player(None, 0, Racket(0, 0, 0, 0, 0)),
-        ping_pong_map,
-        Ball(0, 0, 0)
-    )
+    match1 = PingPongGame(ping_pong_map)
+    match2 = PingPongGame(ping_pong_map)
+    match3 = PingPongGame(ping_pong_map)
 
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
@@ -512,13 +498,13 @@ class GameConsumer(AsyncWebsocketConsumer):
         self.ping_pong_map.width = map_width
         self.ping_pong_map.height = map_height
 
-        await self.set_match(self.match1, message_data, 1)
+        await self.set_match(self.match1, 1)
         if self.game.mode != 0:
-            await self.set_match(self.match2, message_data, 2)
-            await self.set_match(self.match3, message_data, 3)
+            await self.set_match(self.match2, 2)
+            await self.set_match(self.match3, 3)
 
     @database_sync_to_async
-    def set_match(self, match, data, match_num):
+    def set_match(self, match, match_num):
         if match_num == 1:
             match.left_side_player.user = self.game.match1.player1
             match.right_side_player.user = self.game.match1.player2
@@ -526,33 +512,23 @@ class GameConsumer(AsyncWebsocketConsumer):
             match.left_side_player.user = self.game.match2.player1
             match.right_side_player.user = self.game.match2.player2
 
-        match.left_side_player.racket.width = data['racket_width']
-        match.left_side_player.racket.height = data['racket_height']
-        match.left_side_player.racket.x = data['left_racket_x']
-        match.left_side_player.racket.y = data['left_racket_y']
-        match.left_side_player.racket.speed = data['racket_speed']
+        match.left_side_player.bar.x = GAME_SETTINGS_DICT['bar']['width']
+        match.left_side_player.bar.y = self.ping_pong_map.height / 2 - GAME_SETTINGS_DICT['bar']['height'] / 2
 
-        match.right_side_player.racket.width = data['racket_width']
-        match.right_side_player.racket.height = data['racket_height']
-        match.right_side_player.racket.x = data['right_racket_x']
-        match.right_side_player.racket.y = data['right_racket_y']
-        match.right_side_player.racket.speed = data['racket_speed']
-
-        match.ball.radius = data['ball_radius']
-        match.ball.x = data['ball_x']
-        match.ball.y = data['ball_y']
+        match.right_side_player.bar.x = self.ping_pong_map.width - GAME_SETTINGS_DICT['bar']['width']
+        match.right_side_player.bar.y = self.ping_pong_map.height / 2 - GAME_SETTINGS_DICT['bar']['height'] / 2
 
     async def send_pvp_start_message(self):
         data = '게임 시작 데이터'
         await self.channel_layer.group_send(
             self.match1_group_name,
             {
-                'type': 'gamestart',
+                'type': 'game_start',
                 'data': data
             }
         )
-        await self.gamestart({
-            'type': 'gamestart',
+        await self.game_start({
+            'type': 'game_start',
             'data': data
         })
 
@@ -575,19 +551,19 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_send(
             self.match1_group_name,
             {
-                'type': 'gamestart',
+                'type': 'game_start',
                 'data': data
             }
         )
         await self.channel_layer.group_send(
             self.match2_group_name,
             {
-                'type': 'gamestart',
+                'type': 'game_start',
                 'data': data
             }
         )
-        await self.gamestart({
-            'type': 'gamestart',
+        await self.game_start({
+            'type': 'game_start',
             'data': data
         })
 
@@ -623,13 +599,10 @@ class GameConsumer(AsyncWebsocketConsumer):
             )
 
     async def game_info(self, event):
-        data = event["data"]
-        await self.send(text_data=json.dumps({"data": data}))
+        await self.send(text_data=json.dumps(event))
 
-    async def gamestart(self, event):
-        data = event["data"]
-        await self.send(text_data=json.dumps({"data": data}))
+    async def game_start(self, event):
+        await self.send(text_data=json.dumps(event))
 
     async def in_game(self, event):
-        data = event["data"]
-        await self.send(text_data=json.dumps({"data": data}))
+        await self.send(text_data=json.dumps(event))

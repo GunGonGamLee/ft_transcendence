@@ -39,3 +39,15 @@ FRIENDS_CHOICES = [
     (1, "수락"),
     (2, "거절"),
 ]
+
+GAME_SETTINGS_DICT = {
+    'bar': {
+        'width': 10,
+        'height': 100,
+        'speed': 10
+    },
+    'ball': {
+        'radius': 10,
+        'speed': 10
+    }
+}
