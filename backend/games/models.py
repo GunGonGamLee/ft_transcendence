@@ -165,11 +165,11 @@ class Ball:
     speed: float
     direction: tuple
 
-    def __init__(self, ball_info: dict, x, y):
-        self.radius = ball_info['radius']
+    def __init__(self, x, y):
+        self.radius = GAME_SETTINGS_DICT['ball']['radius']
         self.x = x
         self.y = y
-        self.speed = ball_info['speed']
+        self.speed = float(GAME_SETTINGS_DICT['ball']['speed'])
         self.direction = (random.uniform(-1, 1), random.uniform(-1, 1))
 
     def normalize_ball_direction(self):
@@ -272,19 +272,17 @@ class Ball:
         else:
             return [False, False]
 
-    def reset(self, ping_pong_map: PingPongMap, default_data_ball: dict):
+    def reset(self, ping_pong_map: PingPongMap):
         """
         공을 초기화하는 함수
         :param ping_pong_map: 맵
         :type ping_pong_map: PingPongMap
-        :param default_data_ball: 공의 기본 정보
-        :type default_data_ball: dict
         :return: None
         :rtype: None
         """
         self.x = ping_pong_map.width / 2
         self.y = ping_pong_map.height / 2
-        self.speed = default_data_ball['speed']
+        self.speed = GAME_SETTINGS_DICT['ball']['speed']
         self.direction = (random.uniform(-1, 1), random.uniform(-1, 1))
         self.normalize_ball_direction()
 
@@ -329,8 +327,7 @@ class PingPongGame:
             ),
         )
         self.ping_pong_map = ping_pong_map
-        self.ball = Ball(GAME_SETTINGS_DICT['ball'], ping_pong_map.width / 2, ping_pong_map.height / 2)
-        self.started_at = datetime.now()
+        self.ball = Ball(ping_pong_map.width / 2, ping_pong_map.height / 2)
 
     def update_score(self, whether_score_a_goal: list):
         """
@@ -359,6 +356,6 @@ class PingPongGame:
                 self.ball.bounce((-1, 1))
             if whether_score_a_goal := self.ball.is_goal_in(self.ping_pong_map):
                 self.update_score(whether_score_a_goal)
-                self.ball.reset(self.ping_pong_map, GAME_SETTINGS_DICT['ball'])
+                self.ball.reset(self.ping_pong_map)
             if self.left_side_player.score + self.right_side_player.score == 5:
                 self.finished = True
