@@ -324,7 +324,7 @@ class PingPongGame:
         - ping_pong_map: PingPongMap
         """
         self.left_side_player = Player(
-            User.objects.get(nickname=player1_nickname),
+            None,
             0,
             Bar(
                 self.default_data['bar']['width'],
