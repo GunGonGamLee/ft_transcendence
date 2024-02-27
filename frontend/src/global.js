@@ -4,14 +4,15 @@ const prodBackend = "https://localhost:443/api";
 const prodWebSocket = "wss://localhost:443/ws";
 
 const getAPIUrl = () => {
-  if (window.mode === "dev") {
-    return devBackend;
-  } else {
-    return prodBackend;
-  }
+  return window.mode === "dev" ? devBackend : prodBackend;
 };
 
+const getWebsocketUrl = () => {
+  return window.mode === "dev" ? devWebSocket : prodWebSocket;
+}
+
 export const BACKEND = getAPIUrl();
+export const WEBSOCKET = getWebsocketUrl();
 export const HISTORIES_IMAGE_PATH = "../../../assets/images";
 
 export const MODE = {
