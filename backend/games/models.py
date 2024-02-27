@@ -2,9 +2,12 @@ import math
 import random
 from datetime import datetime
 
+import numpy as np
 from django.db import models
 from users.models import User
 from src.choices import MODE_CHOICES, STATUS_CHOICES
+
+from numpy.linalg import norm
 
 
 class Game(models.Model):
@@ -81,9 +84,9 @@ class CasualGameListView(models.Model):
 # PingPong 게임 정보를 담는 클래스. 데이터베이스에 저장되지 않음.         #
 ##############################################################
 
-class Racket:
+class Bar:
     """
-    라켓 정보를 담는 클래스. xy 좌표는 라켓의 좌상단을 기준으로 한다.
+    바 정보를 담는 클래스. xy 좌표는 바의 좌상단을 기준으로 한다.
 
     Attributes:
     - width: float
@@ -98,12 +101,12 @@ class Racket:
     y: float
     speed: float
 
-    def __init__(self, width, height, x, y, speed):
-        self.width = width
-        self.height = height
+    def __init__(self, x, y):
+        self.width = 10
+        self.height = 100
         self.x = x
         self.y = y
-        self.speed = speed
+        self.speed = 10
 
     def set_x_y(self, x, y):
         self.x = x
@@ -117,16 +120,16 @@ class Player:
     Attributes:
     - user: User
     - score: int
-    - racket: Racket
+    - bar: Bar
     """
     user: User
     score: int
-    racket: Racket
+    bar: Bar
 
-    def __init__(self, user: User, score: int, racket: Racket):
+    def __init__(self, user: User, score: int, bar: Bar):
         self.user = user
         self.score = score
-        self.racket = racket
+        self.bar = bar
 
 
 class PingPongMap:
@@ -162,17 +165,21 @@ class Ball:
     speed: float
     direction: tuple
 
-    def __init__(self, radius, x, y):
-        self.radius = radius
+    def __init__(self, ball_info: dict, x, y):
+        self.radius = ball_info['radius']
         self.x = x
         self.y = y
-        self.speed = 10
+        self.speed = ball_info['speed']
         self.direction = (random.uniform(-1, 1), random.uniform(-1, 1))
+
+    def normalize_ball_direction(self):
+        direction_list = np.array(self.direction)
+        self.direction = tuple(direction_list / norm(direction_list))
 
     def set_direction(self, direction: tuple):
         if direction[0] > 1 or direction[0] < -1 or direction[1] > 1 or direction[1] < -1:
             raise ValueError('direction must be in range of -1 to 1')
-        self.direction = direction
+        self.normalize_ball_direction()
 
     def set_speed(self, speed):
         self.speed = speed
@@ -185,25 +192,41 @@ class Ball:
         self.x += self.speed * self.direction[0]
         self.y += self.speed * self.direction[1]
 
-    def hit_racket(self, racket: Racket):
+    def is_ball_inside_bar_x(self, bar: Bar):
         """
-        공이 라켓에 부딪혔는지 확인하는 함수
-        :param racket: 라켓
-        :type racket: Racket
+        공이 바 안에 있는지 확인하는 함수. x 좌표를 기준으로 확인한다.
+        :param bar: 바
+        :type bar: Bar
+        :return: x축 상에서 바 안에 있으면 True, 아니면 False
+        :rtype: bool
+        """
+        left_point = self.x - self.radius
+        right_point = self.x + self.radius
+        return bar.x <= right_point and left_point <= bar.x + bar.width
+
+    def is_ball_inside_bar_y(self, bar: Bar):
+        """
+        공이 바 안에 있는지 확인하는 함수. y 좌표를 기준으로 확인한다.
+        :param bar: 바
+        :type bar: Bar
+        :return: y축 상에서 바 안에 있으면 True, 아니면 False
+        :rtype: bool
+        """
+        top_point = self.y - self.radius
+        bottom_point = self.y + self.radius
+        return bar.y <= bottom_point and top_point <= bar.y + bar.height
+
+    def is_ball_inside_bar(self, bar: Bar):
+        """
+        공이 바에 부딪혔는지 확인하는 함수. 바 안에 공이 들어가면 부딪힌 것으로 간주한다.
+        :param bar: 바
+        :type bar: Bar
         :return: 부딪혔으면 True, 아니면 False
         :rtype: bool
         """
-        racket_hit_point_max_range = math.sqrt(pow(racket.width / 2, 2) + pow(racket.height / 2, 2)) + self.radius
-        racket_hit_point_min_range = racket.width / 2 + self.radius
-        racket_center_pos = (racket.x + racket.width / 2, racket.y + racket.height / 2)
-        a = math.fabs(racket_center_pos[0] - self.x)
-        b = math.fabs(racket_center_pos[1] - self.y)
-        c = math.sqrt(pow(a, 2) + pow(b, 2))  # 피타고라스 정리를 이용하여 공과 라켓의 중심 사이의 거리를 구함
-        if racket_hit_point_min_range <= c <= racket_hit_point_max_range:
-            return True
-        return False
+        return self.is_ball_inside_bar_x(bar) and self.is_ball_inside_bar_y(bar)
 
-    def hit_wall(self, ping_pong_map: PingPongMap):
+    def is_ball_hit_wall(self, ping_pong_map: PingPongMap):
         """
         공이 맵에 부딪혔는지 확인하는 함수
         :param ping_pong_map: 맵
@@ -215,7 +238,11 @@ class Ball:
         bottom_point = self.y + self.radius
 
         # 공이 벽에 부딪혔는지 확인
-        if top_point <= 0 or bottom_point >= ping_pong_map.height:
+        if top_point <= 0:
+            self.y += abs(top_point)
+            return True
+        elif bottom_point >= ping_pong_map.height:
+            self.y -= abs(bottom_point - ping_pong_map.height)
             return True
         return False
 
@@ -228,6 +255,7 @@ class Ball:
         self.direction = (self.direction[0] * bounce_direction[0], self.direction[1] * bounce_direction[1])
         correction = random.uniform(0.9, 1.1)
         self.direction = (self.direction[0] * correction, self.direction[1] * correction)
+        self.normalize_ball_direction()
 
     def is_goal_in(self, ping_pong_map: PingPongMap):
         """
@@ -238,24 +266,27 @@ class Ball:
         :rtype: list
         """
         if self.x <= 0:
-            return [True, False]
-        elif self.x >= ping_pong_map.width:
             return [False, True]
+        elif self.x >= ping_pong_map.width:
+            return [True, False]
         else:
             return [False, False]
 
-    def reset(self, ping_pong_map: PingPongMap):
+    def reset(self, ping_pong_map: PingPongMap, default_data_ball: dict):
         """
         공을 초기화하는 함수
         :param ping_pong_map: 맵
         :type ping_pong_map: PingPongMap
+        :param default_data_ball: 공의 기본 정보
+        :type default_data_ball: dict
         :return: None
         :rtype: None
         """
         self.x = ping_pong_map.width / 2
         self.y = ping_pong_map.height / 2
-        self.speed = 10
+        self.speed = default_data_ball['speed']
         self.direction = (random.uniform(-1, 1), random.uniform(-1, 1))
+        self.normalize_ball_direction()
 
 
 class PingPongGame:
@@ -266,7 +297,7 @@ class PingPongGame:
     - player: Player
     - map: Map
     - ball: Ball
-    - racket: Racket
+    - bar: Bar
     - started_at: datetime
     """
     left_side_player: Player
@@ -274,26 +305,42 @@ class PingPongGame:
     ping_pong_map: PingPongMap
     ball: Ball
     started_at: datetime
+    default_data = {
+        'bar': {
+            'width': 10,
+            'height': 100,
+            'speed': 10
+        },
+        'ball': {
+            'radius': 10,
+            'speed': 10
+        }
+    }
     finished: False
 
-    def __init__(self,
-                 left_side_player: Player,
-                 right_side_player: Player,
-                 ping_pong_map: PingPongMap,
-                 ball: Ball):
+    def __init__(self, ping_pong_map: PingPongMap):
         """
         Args:
-        - left_side_player: Player
-        - right_side_player: Player
-        - map: Map
-        - ball: Ball
-        - left_side_racket: Racket
-        - right_side_racket: Racket
+        - ping_pong_map: PingPongMap
         """
-        self.left_side_player = left_side_player
-        self.right_side_player = right_side_player
+        self.left_side_player = Player(
+            None,
+            0,
+            Bar(
+                self.default_data['bar']['width'],
+                ping_pong_map.height / 2 - self.default_data['bar']['height'] / 2
+            )
+        )
+        self.right_side_player = Player(
+            None,
+            0,
+            Bar(
+                ping_pong_map.width - self.default_data['bar']['width'],
+                ping_pong_map.height / 2 - self.default_data['bar']['height'] / 2
+            ),
+        )
         self.ping_pong_map = ping_pong_map
-        self.ball = ball
+        self.ball = Ball(self.default_data['ball'], ping_pong_map.width / 2, ping_pong_map.height / 2)
         self.started_at = datetime.now()
 
     def update_score(self, whether_score_a_goal: list):
@@ -309,18 +356,20 @@ class PingPongGame:
         elif whether_score_a_goal[1]:
             self.right_side_player.score += 1
 
-    def move_ball(self):
+    def play(self):
         """
-        공을 움직이는 함수
+        게임을 진행하는 함수
         :return: None
         :rtype: None
         """
-        self.ball.move()
-        if self.ball.hit_wall(self.ping_pong_map):
-            self.ball.bounce((1, -1))
-        elif self.ball.hit_racket(self.left_side_player.racket) or self.ball.hit_racket(self.right_side_player.racket):
-            self.ball.bounce((-1, 1))
-        if whether_score_a_goal := self.ball.is_goal_in(self.ping_pong_map):
-            self.update_score(whether_score_a_goal)
-            self.ball.reset(self.ping_pong_map)
-        self.ball.speed += 1000 / 30 / 10  # 3fps씩 속도를 증가시킴
+        while not self.finished:
+            self.ball.move()
+            if self.ball.is_ball_hit_wall(self.ping_pong_map):
+                self.ball.bounce((1, -1))
+            elif self.ball.is_ball_inside_bar(self.left_side_player.bar) or self.ball.is_ball_inside_bar(self.right_side_player.bar):
+                self.ball.bounce((-1, 1))
+            if whether_score_a_goal := self.ball.is_goal_in(self.ping_pong_map):
+                self.update_score(whether_score_a_goal)
+                self.ball.reset(self.ping_pong_map, self.default_data['ball'])
+            if self.left_side_player.score + self.right_side_player.score == 5:
+                self.finished = True
