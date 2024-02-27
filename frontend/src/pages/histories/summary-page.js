@@ -1,20 +1,24 @@
 import { HISTORIES_IMAGE_PATH, MODE } from "../../global.js";
+import { useState } from "../../state.js";
 
 export default function Summary() {
   this.$container = document.getElementById("content");
   this.$pagination = document.getElementById("pagination");
+  let [getUsersHistoriesSummary, setUsersHistoriesSummary] = useState(
+    {
+      nickname: "yena",
+      avatar: "chewbacca.png",
+      rating: 2103,
+      win_rate: 43,
+      casual_win_rate: 52,
+      tournament_win_rate: 45,
+    },
+    "render",
+  );
 
   const init = () => {
     this.$container.textContent = "";
     this.$pagination.style.display = "none";
-  };
-
-  const useState = () => {
-    this.newState = getUsersHistoriesSummary();
-  };
-
-  const setState = () => {
-    this.state = this.newState;
   };
 
   /**
@@ -42,29 +46,6 @@ export default function Summary() {
     </div>
     `,
     );
-  };
-
-  /**
-   * 사용자의 전적 개요 데이터를 가져옵니다.
-   * @returns {
-   *    nickname: string,
-   *    avatar: string,
-   *    rating: number,
-   *    win_rate: number,
-   *    casual_win_rate: number,
-   *    tournament_win_rate: number
-   * }
-   */
-  const getUsersHistoriesSummary = function () {
-    // TODO => API 요청으로 await 해서 데이터 받아오기
-    return {
-      nickname: "yena",
-      avatar: "chewbacca.png",
-      rating: 2103,
-      win_rate: 43,
-      casual_win_rate: 52,
-      tournament_win_rate: 45,
-    };
   };
 
   /**
