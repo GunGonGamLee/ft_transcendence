@@ -15,6 +15,7 @@ export default function WaitingRoom($container, info = null) {
   // 새로고침 누르면 game-mode로 이동
   if (info === null) {
     navigate("/game-mode");
+    return;
   }
   const ws = info.socket;
   console.log(info);
