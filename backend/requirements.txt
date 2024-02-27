@@ -24,7 +24,6 @@ h11==0.14.0
 hvac==2.1.0
 hyperlink==21.0.0
 idna==3.6
-incremental==22.10.0
 inflection==0.5.1
 numpy==1.26.4
 oauthlib==3.2.2
