@@ -1,7 +1,6 @@
 import { routes } from "./constants/routeInfo.js";
 import ErrorPage from "./pages/errorPage.js";
 import MainHeader from "./header/mainHeader/header.js";
-import registerHeader from "./header/registerHeader/header.js";
 /**
  * @param {HTMLElement} $container
  */
