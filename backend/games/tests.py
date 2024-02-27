@@ -18,8 +18,6 @@ class PingPongGameTestCase(TestCase):
         )
         ping_pong_map = PingPongMap(1920, 1080)
         self.ping_pong_game = PingPongGame(
-            player1_nickname=self.left_side_player.nickname,
-            player2_nickname=self.right_side_player.nickname,
             ping_pong_map=ping_pong_map,
         )
 
