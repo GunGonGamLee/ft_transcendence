@@ -321,8 +321,6 @@ class PingPongGame:
     def __init__(self, player1_nickname: str, player2_nickname: str, ping_pong_map: PingPongMap):
         """
         Args:
-        - player1_nickname: str
-        - player2_nickname: str
         - ping_pong_map: PingPongMap
         """
         self.left_side_player = Player(
