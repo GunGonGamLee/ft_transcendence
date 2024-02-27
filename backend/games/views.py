@@ -139,10 +139,7 @@ class GameView(APIView):
 
     @staticmethod
     def check_mode(mode):
-        logger.info(f"{mode}")
-        logger.info(f"{MODE_CHOICES_REVERSE_DICT}")
         if mode in MODE_CHOICES_REVERSE_DICT:
-            logger.info(f"{MODE_CHOICES_REVERSE_DICT[mode]}")
             return MODE_CHOICES_REVERSE_DICT[mode]
         else:
             raise ValueError("Invalid mode")
