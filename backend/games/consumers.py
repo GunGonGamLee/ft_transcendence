@@ -14,6 +14,7 @@ from games.serializers import GameRoomSerializer, PvPMatchSerializer, Tournament
 from users.models import User
 from datetime import datetime
 from django.contrib.auth.hashers import check_password
+from src.choices import GAME_SETTINGS_DICT
 
 logger = logging.getLogger(__name__)
 
@@ -512,13 +513,13 @@ class GameConsumer(AsyncWebsocketConsumer):
         self.ping_pong_map.width = map_width
         self.ping_pong_map.height = map_height
 
-        await self.set_match(self.match1, message_data, 1)
+        await self.set_match(self.match1, 1)
         if self.game.mode != 0:
-            await self.set_match(self.match2, message_data, 2)
-            await self.set_match(self.match3, message_data, 3)
+            await self.set_match(self.match2, 2)
+            await self.set_match(self.match3, 3)
 
     @database_sync_to_async
-    def set_match(self, match, data, match_num):
+    def set_match(self, match, match_num):
         if match_num == 1:
             match.left_side_player.user = self.game.match1.player1
             match.right_side_player.user = self.game.match1.player2
@@ -526,21 +527,11 @@ class GameConsumer(AsyncWebsocketConsumer):
             match.left_side_player.user = self.game.match2.player1
             match.right_side_player.user = self.game.match2.player2
 
-        match.left_side_player.racket.width = data['racket_width']
-        match.left_side_player.racket.height = data['racket_height']
-        match.left_side_player.racket.x = data['left_racket_x']
-        match.left_side_player.racket.y = data['left_racket_y']
-        match.left_side_player.racket.speed = data['racket_speed']
+        match.left_side_player.racket.x = GAME_SETTINGS_DICT['bar']['width']
+        match.left_side_player.racket.y = self.ping_pong_map.height / 2 - GAME_SETTINGS_DICT['bar']['height'] / 2
 
-        match.right_side_player.racket.width = data['racket_width']
-        match.right_side_player.racket.height = data['racket_height']
-        match.right_side_player.racket.x = data['right_racket_x']
-        match.right_side_player.racket.y = data['right_racket_y']
-        match.right_side_player.racket.speed = data['racket_speed']
-
-        match.ball.radius = data['ball_radius']
-        match.ball.x = data['ball_x']
-        match.ball.y = data['ball_y']
+        match.right_side_player.racket.x = self.ping_pong_map.width - GAME_SETTINGS_DICT['bar']['width']
+        match.right_side_player.racket.y = self.ping_pong_map.height / 2 - GAME_SETTINGS_DICT['bar']['height'] / 2
 
     async def send_pvp_start_message(self):
         data = '게임 시작 데이터'
