@@ -22,7 +22,6 @@ drf-yasg==1.21.7
 gunicorn==21.2.0
 h11==0.14.0
 hvac==2.1.0
-hyperlink==21.0.0
 idna==3.6
 inflection==0.5.1
 numpy==1.26.4
