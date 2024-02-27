@@ -112,6 +112,10 @@ LOGGING = {
 #             '()': 'pythonjsonlogger.jsonlogger.JsonFormatter',
 #             'format': '%(levelname)s %(asctime)s %(module)s %(message)s'
 #         },
+#         'simple': {
+#             'format': '{levelname} {message}',
+#             'style': '{',
+#         },
 #     },
 #     'handlers': {
 #         'logstash': {
@@ -124,14 +128,28 @@ LOGGING = {
 #             'fqdn': False,
 #             'tags': ['django'],
 #         },
+#         'console': {
+#             'level': 'INFO',
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'simple',
+#         }
 #     },
 #     'loggers': {
 #         'django': {
-#             'handlers': ['logstash'],
-#             'level': 'DEBUG',  # 모든 로그 레벨 포함
+#             'handlers': ['logstash', 'console'],
+#             'level': 'INFO',
 #             'propagate': True,
 #         },
-#         # 필요에 따라 추가 로거 정의
+#         'django.request': {
+#             'handlers': ['logstash', 'console'],
+#             'level': 'WARN',
+#             'propagte': False,
+#         },
+#         'django.security': {
+#             'handlers': ['logstash', 'console'],
+#             'level': 'WARN',
+#             'propagate': False,
+#         }
 #     },
 # }
 
