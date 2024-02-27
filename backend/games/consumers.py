@@ -13,6 +13,7 @@ from games.models import Game, CasualGameView, PingPongGame, Ball, Racket, Playe
 from games.serializers import GameRoomSerializer, PvPMatchSerializer, TournamentMatchSerializer
 from users.models import User
 from datetime import datetime
+from django.contrib.auth.hashers import check_password
 
 logger = logging.getLogger(__name__)
 
@@ -146,11 +147,11 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
     def can_join_game(self):
         query_string = self.scope['query_string'].decode()
         query_params = urllib.parse.parse_qs(query_string)
-        user_input = query_params.get('password', [None])[0]
-        room_password = self.game.password
-        if room_password is None:
+        user_input_password = query_params.get('password', [None])[0]
+        hashed_password = self.game.password
+        if hashed_password is None:
             return
-        if room_password != user_input:
+        if check_password(user_input_password, hashed_password) is False:
             raise PermissionDenied("can't access")
 
     @database_sync_to_async
