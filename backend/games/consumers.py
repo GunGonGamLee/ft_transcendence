@@ -103,7 +103,8 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
                 await self.can_join_game()
                 if await self.get_game_status() != 0 or await self.is_full():
                     raise ValidationError('invalid game id')
-                await self.game_join()
+                if await self.is_manager() is False:
+                    await self.game_join()
             self.game_group_name = f'game_{game_id}'
             serializer_data = await self.get_serializer_data()
             await self.channel_layer.group_add(self.game_group_name, self.channel_name)
@@ -166,6 +167,12 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
     def get_serializer_data(self):
         serializer = GameRoomSerializer(self.game)
         return serializer.data
+
+    @database_sync_to_async
+    def is_manager(self):
+        if self.game.manager.nickname == self.user.nickname:
+            return True
+        return False
 
     async def game_join(self):
         player1 = await sync_to_async(self.game.__getattribute__)('player1_id')
