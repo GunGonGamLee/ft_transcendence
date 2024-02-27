@@ -267,9 +267,9 @@ class Ball:
         :rtype: list
         """
         if self.x <= 0:
-            return [True, False]
-        elif self.x >= ping_pong_map.width:
             return [False, True]
+        elif self.x >= ping_pong_map.width:
+            return [True, False]
         else:
             return [False, False]
 
