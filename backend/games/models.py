@@ -318,7 +318,7 @@ class PingPongGame:
     }
     finished: False
 
-    def __init__(self, player1_nickname: str, player2_nickname: str, ping_pong_map: PingPongMap):
+    def __init__(self, ping_pong_map: PingPongMap):
         """
         Args:
         - ping_pong_map: PingPongMap
