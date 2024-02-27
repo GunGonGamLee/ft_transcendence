@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError, PermissionDenied
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from asgiref.sync import sync_to_async
-from games.models import Game, CasualGameView, PingPongGame, Ball, Racket, Player, PingPongMap, Result
+from games.models import Game, CasualGameView, PingPongGame, Ball, Bar, Player, PingPongMap, Result
 from games.serializers import GameRoomSerializer, PvPMatchSerializer, TournamentMatchSerializer
 from users.models import User
 from datetime import datetime
@@ -298,24 +298,9 @@ class GameConsumer(AsyncWebsocketConsumer):
     match3_users = []
 
     ping_pong_map = PingPongMap(0, 0)
-    match1 = PingPongGame(
-        Player(None, 0, Racket(0, 0, 0, 0, 0)),
-        Player(None, 0, Racket(0, 0, 0, 0, 0)),
-        ping_pong_map,
-        Ball(0, 0, 0)
-    )
-    match2 = PingPongGame(
-        Player(None, 0, Racket(0, 0, 0, 0, 0)),
-        Player(None, 0, Racket(0, 0, 0, 0, 0)),
-        ping_pong_map,
-        Ball(0, 0, 0)
-    )
-    match3 = PingPongGame(
-        Player(None, 0, Racket(0, 0, 0, 0, 0)),
-        Player(None, 0, Racket(0, 0, 0, 0, 0)),
-        ping_pong_map,
-        Ball(0, 0, 0)
-    )
+    match1 = PingPongGame(ping_pong_map)
+    match2 = PingPongGame(ping_pong_map)
+    match3 = PingPongGame(ping_pong_map)
 
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
