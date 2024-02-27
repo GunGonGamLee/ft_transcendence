@@ -6,6 +6,8 @@ from django.db import models
 from users.models import User
 from src.choices import MODE_CHOICES, STATUS_CHOICES
 
+from numpy.linalg import norm
+
 
 class Game(models.Model):
     mode = models.PositiveSmallIntegerField(choices=MODE_CHOICES)
@@ -169,10 +171,16 @@ class Ball:
         self.speed = ball_info['speed']
         self.direction = (random.uniform(-1, 1), random.uniform(-1, 1))
 
+    def normalize_ball_direction(self):
+        self.direction = (
+            norm(self.direction[0], 2),
+            norm(self.direction[1], 2)
+        )
+
     def set_direction(self, direction: tuple):
         if direction[0] > 1 or direction[0] < -1 or direction[1] > 1 or direction[1] < -1:
             raise ValueError('direction must be in range of -1 to 1')
-        self.direction = direction
+        self.normalize_ball_direction()
 
     def set_speed(self, speed):
         self.speed = speed
@@ -248,6 +256,7 @@ class Ball:
         self.direction = (self.direction[0] * bounce_direction[0], self.direction[1] * bounce_direction[1])
         correction = random.uniform(0.9, 1.1)
         self.direction = (self.direction[0] * correction, self.direction[1] * correction)
+        self.normalize_ball_direction()
 
     def is_goal_in(self, ping_pong_map: PingPongMap):
         """
@@ -278,6 +287,7 @@ class Ball:
         self.y = ping_pong_map.height / 2
         self.speed = default_data_ball['speed']
         self.direction = (random.uniform(-1, 1), random.uniform(-1, 1))
+        self.normalize_ball_direction()
 
 
 class PingPongGame:
