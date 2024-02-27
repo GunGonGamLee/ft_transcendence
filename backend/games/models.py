@@ -307,6 +307,7 @@ class PingPongGame:
             'speed': 10
         }
     }
+    finished: False
 
     def __init__(self, player1_nickname: str, player2_nickname: str, ping_pong_map: PingPongMap):
         """

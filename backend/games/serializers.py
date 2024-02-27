@@ -276,4 +276,41 @@ class TournamentResultSerializer(serializers.ModelSerializer):
         data = MatchSerializer(game.match3).data
         data['winner'] = game.match3.winner.nickname
         data['date'] = game.started_at
-        return data
+        return
+
+
+class PvPMatchSerializer(serializers.ModelSerializer):
+
+    match1 = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Game
+        fields = ['match1']
+
+    def get_match1(self, game):
+        players_data = []
+        players_data.append(UserSerializer(game.match1.player1).data)
+        players_data.append(UserSerializer(game.match1.player2).data)
+        return players_data
+
+
+class TournamentMatchSerializer(serializers.ModelSerializer):
+
+    match1 = serializers.SerializerMethodField()
+    match2 = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Game
+        fields = ['match1', 'match2']
+
+    def get_match1(self, game):
+        players_data = []
+        players_data.append(UserSerializer(game.match1.player1).data)
+        players_data.append(UserSerializer(game.match1.player2).data)
+        return players_data
+
+    def get_match2(self, game):
+        players_data = []
+        players_data.append(UserSerializer(game.match2.player1).data)
+        players_data.append(UserSerializer(game.match2.player2).data)
+        return players_data
