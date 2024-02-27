@@ -359,13 +359,13 @@ class PingPongGame:
         elif whether_score_a_goal[1]:
             self.right_side_player.score += 1
 
-    def move_ball(self):
+    def play(self):
         """
-        공을 움직이는 함수
+        게임을 진행하는 함수
         :return: None
         :rtype: None
         """
-        while True:
+        while not self.finished:
             self.ball.move()
             if self.ball.is_ball_hit_wall(self.ping_pong_map):
                 self.ball.bounce((1, -1))
@@ -375,4 +375,4 @@ class PingPongGame:
                 self.update_score(whether_score_a_goal)
                 self.ball.reset(self.ping_pong_map, self.default_data['ball'])
             if self.left_side_player.score + self.right_side_player.score == 5:
-                break
+                self.finished = True
