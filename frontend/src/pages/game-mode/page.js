@@ -19,7 +19,11 @@ export default function GameMode($container) {
       this.ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
         const newWs = new WebSocket(`${WEBSOCKET}${data.url}`);
-        navigate("/tournament", { socket: newWs });
+        this.ws.close();
+        newWs.onmessage = (msg) => {
+          let data = JSON.parse(msg.data);
+          navigate("/tournament", { socket: newWs, data: data });
+        };
       };
     });
     click($container.querySelector(".run-btn"), () => {
