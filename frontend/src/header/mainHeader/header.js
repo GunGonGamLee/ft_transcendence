@@ -29,13 +29,13 @@ export default function MainHeader($container) {
         this.ws = new WebSocket(`${WEBSOCKET}/friend_status/`);
         this.ws.onmessage = (msg) => {
           let response = JSON.parse(msg.data);
-
-          if (response.type === 'alreadyLogin') {
-            console.log(response.message);
-            this.ws.close();
-            navigate("error", { errorCode: 4001 });
-            return;
-          }
+          // TODO: 중복로그인 임시로 풀어둠
+          // if (response.type === 'alreadyLogin') {
+          //   console.log(response.message);
+          //   this.ws.close();
+          //   navigate("error", { errorCode: 4001 });
+          //   return;
+          // }
 
           // 업데이트된 내용을 set 함수에 전달합니다.
           setFriendsList(response.data);
