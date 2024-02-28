@@ -1,6 +1,7 @@
 import { BACKEND, HISTORIES_IMAGE_PATH, MODE } from "../../global.js";
 import { getCookie } from "../../utils/cookie.js";
 import useState from "../../utils/useState.js";
+import { getUserMe } from "../../utils/userUtils.js";
 
 export default function Summary() {
   this.$container = document.getElementById("content");
@@ -9,19 +10,21 @@ export default function Summary() {
   const init = () => {
     this.$container.textContent = "";
     this.$pagination.style.display = "none";
-    let nickname = "예나";
-    fetch(`${BACKEND}/users/${nickname}/`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${getCookie("jwt")}`,
-      },
-    }).then((response) => {
-      if (response.ok) {
-        response.json().then((data) => {
-          setUsersHistoriesSummary(data);
-        });
-      }
+    getUserMe().then((response) => {
+      let { nickname } = response.data;
+      fetch(`${BACKEND}/users/${nickname}/`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getCookie("jwt")}`,
+        },
+      }).then((response) => {
+        if (response.ok) {
+          response.json().then((data) => {
+            setUsersHistoriesSummary(data);
+          });
+        }
+      });
     });
   };
 
