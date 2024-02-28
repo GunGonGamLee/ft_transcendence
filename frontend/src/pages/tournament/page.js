@@ -15,7 +15,7 @@ export default function Tournament($container, info = null) {
     // ws.close();
   };
   const renderSemifinal = () => {
-    importCss("../../../assets/css/tournament.css");
+    importCss("../../../assets/css/semi-final.css");
 
     $container.innerHTML = `
         <div class="background-wrapper">
@@ -83,7 +83,40 @@ export default function Tournament($container, info = null) {
   };
 
   const renderFinal = () => {
+    importCss("../../../assets/css/final.css");
 
+    $container.innerHTML = `
+        <div class="background-wrapper">
+        </div>
+        <div class="tournament-wrapper">
+            <div class="left-tournament-info-wrapper">
+                <div class="card-wrapper">
+                    <div class="user-avatar">
+                        <img src="../../../assets/images/avatar/darth_vader.png">
+                    </div>
+                    <div class="user-name">hyojocho</div>
+                    <div class="user-rating">Rating: 1,000</div>
+                </div>
+            </div>
+            
+            <div class="second-middle-tournament-info-wrapper">
+                <div id="trophy-wrapper">
+                    <img src="../../../assets/images/tournament_logo.png">
+                </div>
+            </div>
+            
+            <div class="right-tournament-info-wrapper">
+                <div class="card-wrapper">
+                    <div class="user-avatar">
+                        <img src="../../../assets/images/avatar/darth_vader.png">
+                    </div>
+                    <div class="user-name">hyojocho</div>
+                    <div class="user-rating">Rating: 1,000</div>
+                </div>
+                
+            </div>
+        </div>
+		`;
   }
 
   init();
