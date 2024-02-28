@@ -21,8 +21,8 @@ export default async function OneOnOneHistories() {
     addPaginationOnClickProperty(
       "prev",
       "next",
-      () => console.log("TODO => 이전 페이지로 이동하기"),
-      () => console.log("TODO => 다음 페이지로 이동하기"),
+      () => getHistoriesFromBackend(this.page--),
+      () => getHistoriesFromBackend(this.page++),
     );
     getHistoriesFromBackend(this.page);
   };
@@ -55,7 +55,7 @@ export default async function OneOnOneHistories() {
    * 2. 게임 모드(1 vs 1 로고 또는 토너먼트 로고)를 렌더링합니다.
    * 3. 플레이어 2의 정보를 렌더링합니다.
    */
-  const render = () => {
+  this.render = () => {
     this.$customList.insertAdjacentHTML(
       "afterbegin",
       `
