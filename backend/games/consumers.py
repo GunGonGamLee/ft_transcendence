@@ -456,12 +456,8 @@ class GameConsumer(AsyncWebsocketConsumer):
                 await self.send_pvp_start_message(self.match1)
                 await asyncio.sleep(2)
                 self.match1.started_at = datetime.now()
-                while True:
-                    # todo 겜 로직
-                    if self.match1.left_side_player.score + self.match1.right_side_player.score == 5:
-                        self.match1.finished = True
-                        # todo 게임 돌아가고 있는 거 끝내기
-                        break
+                while not self.match1.finished:
+                    await self.play(self.match1)
                     await self.send_pvp_in_game_message()
                     await asyncio.sleep(1 / 24)
 
@@ -470,17 +466,10 @@ class GameConsumer(AsyncWebsocketConsumer):
                 await asyncio.sleep(2)
                 self.match1.started_at = datetime.now()
                 self.match2.started_at = datetime.now()
-                while True:
-                    # todo 겜 로직
-                    if self.match1.left_side_player.score + self.match1.right_side_player.score == 5:
-                        self.match1.finished = True
-                        # todo 게임 돌아가고 있는 거 끝내기
-                    if self.match2.left_side_player.score + self.match2.right_side_player.score == 5:
-                        self.match2.finished = True
-                        # todo 게임 돌아가고 있는 거 끝내기
-                    if self.match1.finished and self.match2.finished:
-                        break
-                    await self.send_tournament_in_game_message()
+                while not self.match1.finished and not self.match2.finished:
+                    await self.play(self.match1)
+                    await self.play(self.match2)
+                    await self.send_tournament_in_game_message(self.match1, self.match2)
                     await asyncio.sleep(1 / 24)
 
         elif message_type == 'keyboard':
@@ -490,6 +479,20 @@ class GameConsumer(AsyncWebsocketConsumer):
             elif message_data == 'down':
                 # todo ?
                 pass
+
+    async def play(self, match):
+        # todo 볼 속도 1/24 계산
+        logger.info(f"play 안1 : {match.ball.x}, {match.ball.y}")
+        if self.match1.ball.is_ball_hit_wall(self.match1.ping_pong_map):
+            self.match1.ball.bounce((1, -1))
+        elif self.match1.ball.is_ball_inside_bar(self.match1.left_side_player.bar) or self.match1.ball.is_ball_inside_bar(self.match1.right_side_player.bar):
+            self.match1.ball.bounce((-1, 1))
+        if (whether_score_a_goal := self.match1.ball.is_goal_in(self.match1.ping_pong_map)) != [False, False]:
+            self.match1.update_score(whether_score_a_goal)
+            self.match1.ball.reset(self.match1.ping_pong_map)
+        if self.match1.left_side_player.score + self.match1.right_side_player.score == 5:
+            self.match1.finished = True
+        match.ball.move()
 
     async def set_values(self, message_data):
         map_width = message_data['map_width']
