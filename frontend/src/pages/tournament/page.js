@@ -7,13 +7,14 @@ export default function Tournament($container, info = null) {
   // console.log(info);
 
   const init = () => {
-    render();
+    // renderSemifinal();
+    renderFinal();
   };
 
   this.unmount = () => {
     // ws.close();
   };
-  const render = () => {
+  const renderSemifinal = () => {
     importCss("../../../assets/css/tournament.css");
 
     $container.innerHTML = `
@@ -80,5 +81,10 @@ export default function Tournament($container, info = null) {
         </div>
 		`;
   };
+
+  const renderFinal = () => {
+
+  }
+
   init();
 }
