@@ -55,7 +55,7 @@ export const removePaginationOnClickProperty = (paginationIdOrElement) => {
  * 이전, 다음 페이지로 이동하는 버튼의 활성화 여부를 설정합니다.
  * @param $pagination {HTMLElement} 페이지네이션 버튼
  * @param isActive {boolean} 활성화 여부
- * @param activeFunction {function} 활성화 시 동작하는 함수
+ * @param activeFunction {function | null} 활성화 시 동작하는 함수. isActive가 false일 때는 null
  */
 export const setPaginationActive = ($pagination, isActive, activeFunction) => {
   if (isActive) {
