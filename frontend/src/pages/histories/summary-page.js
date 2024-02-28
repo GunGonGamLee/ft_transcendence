@@ -2,6 +2,7 @@ import { BACKEND, HISTORIES_IMAGE_PATH, MODE } from "../../global.js";
 import { getCookie } from "../../utils/cookie.js";
 import useState from "../../utils/useState.js";
 import { getUserMe } from "../../utils/userUtils.js";
+import { navigate } from "../../utils/navigate.js";
 
 export default function Summary() {
   this.$container = document.getElementById("content");
@@ -23,6 +24,8 @@ export default function Summary() {
           response.json().then((data) => {
             setUsersHistoriesSummary(data);
           });
+        } else {
+          navigate("error", { errorCode: response.status });
         }
       });
     });

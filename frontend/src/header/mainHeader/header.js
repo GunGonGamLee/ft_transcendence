@@ -39,8 +39,7 @@ export default function MainHeader($container) {
           console.error("WebSocket error", error);
         };
       } else {
-        // TODO => 에러 페이지로 이동
-        navigate("/");
+        navigate("error", { errorCode: response.status });
       }
     });
   };

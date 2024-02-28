@@ -5,6 +5,7 @@ import { BACKEND, HISTORIES_IMAGE_PATH } from "../../global.js";
 import useState from "../../utils/useState.js";
 import { getCookie } from "../../utils/cookie.js";
 import { getUserMe } from "../../utils/userUtils.js";
+import { navigate } from "../../utils/navigate.js";
 
 /**
  * 사용자 지정 모드의 전적 리스트를 렌더링합니다.
@@ -18,13 +19,19 @@ export default async function OneOnOneHistories() {
     this.$customList.textContent = "";
     this.$pagination.style.display = "block";
     this.page = 1;
+    getHistoriesFromBackend(this.page);
     addPaginationOnClickProperty(
       "prev",
       "next",
-      () => getHistoriesFromBackend(this.page--),
-      () => getHistoriesFromBackend(this.page++),
+      () => {
+        if (this.page <= 1) return;
+        getHistoriesFromBackend(this.page--);
+      },
+      () => {
+        if (this.page >= this.totalPages) return;
+        getHistoriesFromBackend(this.page++);
+      },
     );
-    getHistoriesFromBackend(this.page);
   };
 
   const getHistoriesFromBackend = (page) => {
@@ -42,8 +49,11 @@ export default async function OneOnOneHistories() {
       ).then((response) => {
         if (response.ok) {
           response.json().then((data) => {
+            this.totalPages = data.totalPages;
             set1vs1Histories(data);
           });
+        } else {
+          navigate("error", { errorCode: response.status });
         }
       });
     });
