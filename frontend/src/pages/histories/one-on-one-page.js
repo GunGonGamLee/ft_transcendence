@@ -21,10 +21,10 @@ export default async function OneOnOneHistories() {
     this.$prev = document.getElementById("prev");
     this.$next = document.getElementById("next");
     this.$prev.dataset.page = "0";
-    this.$next.dataset.page = "2";
+    this.$next.dataset.page = "0";
     this.totalPages = 0;
     setPaginationActive(this.$prev, false, null);
-    setPaginationActive(this.$next, true, getHistoriesFromBackend);
+    setPaginationActive(this.$next, false, null);
     getHistoriesFromBackend();
   };
 
