@@ -15,14 +15,11 @@ export default function GameMode($container) {
     click($container.querySelector(".unit1"), () => {
       $container.querySelector(".queue-modal").style.display = "flex";
       $container.querySelector(".modal-backdrop").style.display = "block";
-      console.log("clicked");
       this.ws = new WebSocket(`${WEBSOCKET}/rankgames/`);
-      console.log("ws ok");
       this.ws.onmessage = (event) => {
-        console.log(event.data);
         const data = JSON.parse(event.data);
-        console.log(data);
-        console.log("Game started. Game ID: ", data.message.game_id);
+        const newWs = new WebSocket(`${WEBSOCKET}${data.url}`);
+        navigate("/tournament", { socket: newWs });
       };
     });
     click($container.querySelector(".run-btn"), () => {
