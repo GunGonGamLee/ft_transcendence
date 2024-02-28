@@ -1,7 +1,10 @@
 import { click } from "../../utils/clickEvent.js";
 import OneOnOneHistoriesDetails from "./one-on-one-histories-details.js";
 import { addPaginationOnClickProperty } from "../../utils/pagination.js";
-import { HISTORIES_IMAGE_PATH } from "../../global.js";
+import { BACKEND, HISTORIES_IMAGE_PATH } from "../../global.js";
+import useState from "../../utils/useState.js";
+import { getCookie } from "../../utils/cookie.js";
+import { getUserMe } from "../../utils/userUtils.js";
 
 /**
  * 사용자 지정 모드의 전적 리스트를 렌더링합니다.
@@ -14,89 +17,36 @@ export default async function OneOnOneHistories() {
   const init = () => {
     this.$customList.textContent = "";
     this.$pagination.style.display = "block";
+    this.page = 1;
     addPaginationOnClickProperty(
       "prev",
       "next",
       () => console.log("TODO => 이전 페이지로 이동하기"),
       () => console.log("TODO => 다음 페이지로 이동하기"),
     );
-    this.mode = mode;
-    this.needToRender = true;
+    getHistoriesFromBackend(this.page);
   };
 
-  const useState = async () => {
-    // TODO => backend로부터 데이터 받아오기
-    this.newState = [
-      {
-        id: 1,
-        player1: {
-          nickname: "hyojocho",
-          avatar: "luke_skywalker.png",
-          rating: 2130,
-          is_winner: true,
+  const getHistoriesFromBackend = (page) => {
+    getUserMe().then((response) => {
+      let { nickname } = response.data;
+      fetch(
+        `${BACKEND}/games/results?user=${nickname}&mode=casual_1vs1&page=${page}&limit=4`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${getCookie("jwt")}`,
+            "Content-type": "application/json",
+          },
         },
-        player2: {
-          nickname: "yena",
-          avatar: "chewbacca.png",
-          rating: 110,
-          is_winner: false,
-        },
-      },
-      {
-        id: 2,
-        player1: {
-          nickname: "hyojocho",
-          avatar: "luke_skywalker.png",
-          rating: 2130,
-          is_winner: true,
-        },
-        player2: {
-          nickname: "yena",
-          avatar: "chewbacca.png",
-          rating: 110,
-          is_winner: false,
-        },
-      },
-      {
-        id: 3,
-        player1: {
-          nickname: "hyojocho",
-          avatar: "luke_skywalker.png",
-          rating: 2130,
-          is_winner: true,
-        },
-        player2: {
-          nickname: "yena",
-          avatar: "chewbacca.png",
-          rating: 110,
-          is_winner: false,
-        },
-      },
-      {
-        id: 4,
-        player1: {
-          nickname: "hyojocho",
-          avatar: "chewbacca.png",
-          rating: 2130,
-          is_winner: true,
-        },
-        player2: {
-          nickname: "donghyk2",
-          avatar: "han_solo.png",
-          rating: 2120,
-          is_winner: false,
-        },
-      },
-    ];
-  };
-
-  const setState = () => {
-    if (this.state === this.newState) {
-      this.needToRender = false;
-      return;
-    }
-    this.state = this.newState;
-    this.needToRender = true;
+      ).then((response) => {
+        if (response.ok) {
+          response.json().then((data) => {
+            set1vs1Histories(data);
+          });
+        }
+      });
+    });
   };
 
   /**
@@ -121,7 +71,9 @@ export default async function OneOnOneHistories() {
    * @param $listWrapper {HTMLElement} 전적 리스트를 렌더링할 <div> 엘리먼트
    */
   const render1vs1 = ($listWrapper) => {
-    for (let data of this.state) {
+    let state = get1vs1Histories();
+    console.log(state);
+    for (let data of state) {
       const { id, player1, player2 } = data;
       $listWrapper.insertAdjacentHTML(
         "beforeend",
@@ -167,7 +119,5 @@ export default async function OneOnOneHistories() {
   };
 
   init();
-  await useState();
-  setState();
-  render();
+  let [get1vs1Histories, set1vs1Histories] = useState({}, this, "render");
 }
