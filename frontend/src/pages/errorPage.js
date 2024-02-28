@@ -23,6 +23,9 @@ export default function ErrorPage($container, errorCode = 0) {
       case 503:
         comment = "일시적인 서버 오류.";
         break;
+      case 4001:
+        comment = "탭 두개 키지 마라";
+        break;
       default:
         comment = "알 수 없는 오류.";
         break;

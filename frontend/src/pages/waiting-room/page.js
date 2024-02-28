@@ -1,22 +1,22 @@
 import { importCss } from "../../utils/importCss.js";
 import { hover } from "../../utils/hoverEvent.js";
 import userBox from "./userBox.js";
-import countdownModal from "./countdownModal.js";
 import useState from "../../utils/useState.js";
 import { navigate } from "../../utils/navigate.js";
 import { click } from "../../utils/clickEvent.js";
+import { WEBSOCKET } from "../../global.js";
 /**
  * @param {HTMLElement} $container
  * @param {object} info
  */
 export default function WaitingRoom($container, info = null) {
-  const gameModeNum = info.data.mode;
-
   // 새로고침 누르면 game-mode로 이동
   if (info === null) {
     navigate("/game-mode");
     return;
   }
+
+  const gameModeNum = info.data.mode;
   const ws = info.socket;
   console.log(info);
   let props = info.data.players;
@@ -37,7 +37,16 @@ export default function WaitingRoom($container, info = null) {
     );
     ws.onmessage = (msg) => {
       let data = JSON.parse(msg.data);
-      setUserState(data.data.players);
+      if (data.type === "game_info") {
+        setUserState(data.data.players);
+      } else {
+        console.log(data);
+        const newWs = new WebSocket(`${WEBSOCKET}${data.data}`);
+        newWs.onmessage = (msg) => {
+          let data = JSON.parse(msg.data);
+          navigate("/tournament", { socket: newWs, data: data });
+        };
+      }
     };
     click($container.querySelector(".start-btn"), () => {
       ws.send(
@@ -55,7 +64,6 @@ export default function WaitingRoom($container, info = null) {
   const render = () => {
     importCss("../../../assets/css/waiting-room.css");
     $container.innerHTML = `
-      ${countdownModal(false)}
       <div class="waiting-room-wrapper" style="background-image: url('../../../assets/images/game_room_bg_trans.png'); background-size: 100% 50%; background-repeat: no-repeat; background-position: center bottom; width: 100vw; height: 88vh; display: flex; flex-direction: column; justify-content: center; align-items: center">
         <div class="room-name-box" style="padding-left: 5vw; align-self: flex-start;display: flex; align-items: center; margin-top: 2vh">
           <img class="room-lock" alt="lock" src="../../../assets/images/password.png" style="display: none; margin-bottom: 0.4vh; width: 2vw; height: 2.8vh; -webkit-user-drag: none; user-select: none;">
@@ -79,6 +87,7 @@ export default function WaitingRoom($container, info = null) {
        ${userBox(gameModeNum, getUserState())}
       `;
   };
+
   init();
   let [getUserState, setUserState] = useState(props, this, "renderUserBox");
 }

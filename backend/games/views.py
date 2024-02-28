@@ -68,7 +68,6 @@ class GameView(APIView):
                 'total_pages': paginator.num_pages,
                 'data': serializer.data
             }
-            logging.info(f"[게임방 목록 API] mode : {mode}, page : {page}, limit : {limit}")
             return Response(serialized_data_with_total_pages, status=status.HTTP_200_OK)
 
         except AuthenticationException as e:
@@ -140,17 +139,14 @@ class GameView(APIView):
 
     @staticmethod
     def check_mode(mode):
-        logger.info(f"{mode}")
-        logger.info(f"{MODE_CHOICES_REVERSE_DICT}")
         if mode in MODE_CHOICES_REVERSE_DICT:
-            logger.info(f"{MODE_CHOICES_REVERSE_DICT[mode]}")
             return MODE_CHOICES_REVERSE_DICT[mode]
         else:
             raise ValueError("Invalid mode")
 
     @staticmethod
     def is_title_already_exist(title):
-        existing_games = Game.objects.filter(title=title)
+        existing_games = Game.objects.filter(title=title, status__in=[0, 1])
         return existing_games.exists()
 
 

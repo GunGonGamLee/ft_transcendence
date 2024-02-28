@@ -1,10 +1,15 @@
 import {importCss} from "../../utils/importCss.js";
 
 export default function Tournament($container, info = null) {
-  // const gameModeNum = info.data.mode;
-
-  // const ws = info.socket;
-  // console.log(info);
+  if (info === null) {
+    return;
+  }
+  console.log(info);
+  const ws = info.socket;
+  ws.onmessage = (msg) => {
+    let data = JSON.parse(msg.data);
+    console.log(data);
+  };
 
   const init = () => {
     // renderSemifinal();
@@ -14,6 +19,7 @@ export default function Tournament($container, info = null) {
   this.unmount = () => {
     // ws.close();
   };
+  
   const renderSemifinal = () => {
     importCss("../../../assets/css/semi-final.css");
 

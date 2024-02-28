@@ -240,12 +240,26 @@ export default function InGame($container, info) {
 
     const isBallHitGoal = (canvas, ball) => {
       if (ball.x <= 0) {
-        return [true, false];
-      } else if (ball.x >= canvas.width) {
         return [false, true];
+      } else if (ball.x >= canvas.width) {
+        return [true, false];
       }
       return [false, false];
     };
+
+    const updateScore = (wheterScoreAGoal) => {
+      if (wheterScoreAGoal[0]) {
+        setScore({
+          player1: getScore().player1 + 1,
+          player2: getScore().player2,
+        });
+      } else if (wheterScoreAGoal[1]) {
+        setScore({
+          player1: getScore().player1,
+          player2: getScore().player2 + 1,
+        });
+      }
+    }
 
     /**
      * 공이 벽에 부딪혔을 때 방향을 바꾸는 함수
@@ -263,20 +277,6 @@ export default function InGame($container, info) {
           ball.direction.x,
           ball.direction.y * -1 * getRandomCoefficient(0.9, 1.1),
         );
-      }
-    };
-
-    const updateScore = (whetherScoreAGoal) => {
-      if (whetherScoreAGoal[0]) {
-        setScore({
-          player1: getScore().player1,
-          player2: getScore().player2 + 1,
-        });
-      } else if (whetherScoreAGoal[1]) {
-        setScore({
-          player1: getScore().player1 + 1,
-          player2: getScore().player2,
-        });
       }
     };
 
