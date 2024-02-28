@@ -512,6 +512,9 @@ class GameConsumer(AsyncWebsocketConsumer):
             match.left_side_player.user = self.game.match2.player1
             match.right_side_player.user = self.game.match2.player2
 
+        match.ball.x = match.ping_pong_map.width / 2
+        match.ball.y = match.ping_pong_map.height / 2
+
         match.left_side_player.bar.x = GAME_SETTINGS_DICT['bar']['width']
         match.left_side_player.bar.y = self.ping_pong_map.height / 2 - GAME_SETTINGS_DICT['bar']['height'] / 2
 
