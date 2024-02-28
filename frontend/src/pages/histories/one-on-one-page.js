@@ -1,6 +1,6 @@
 import { click } from "../../utils/clickEvent.js";
 import OneOnOneHistoriesDetails from "./one-on-one-histories-details.js";
-import { addPaginationOnClickProperty } from "../../utils/pagination.js";
+import { setPaginationActive } from "../../utils/pagination.js";
 import { BACKEND, HISTORIES_IMAGE_PATH } from "../../global.js";
 import useState from "../../utils/useState.js";
 import { getCookie } from "../../utils/cookie.js";
@@ -18,27 +18,22 @@ export default async function OneOnOneHistories() {
   const init = () => {
     this.$customList.textContent = "";
     this.$pagination.style.display = "block";
-    this.page = 1;
-    getHistoriesFromBackend(this.page);
-    addPaginationOnClickProperty(
-      "prev",
-      "next",
-      () => {
-        if (this.page <= 1) return;
-        getHistoriesFromBackend(this.page--);
-      },
-      () => {
-        if (this.page >= this.totalPages) return;
-        getHistoriesFromBackend(this.page++);
-      },
-    );
+    this.$prev = document.getElementById("prev");
+    this.$next = document.getElementById("next");
+    this.$prev.dataset.page = "0";
+    this.$next.dataset.page = "2";
+    this.totalPages = 0;
+    setPaginationActive(this.$prev, false, null);
+    setPaginationActive(this.$next, true, getHistoriesFromBackend);
+    getHistoriesFromBackend();
   };
 
-  const getHistoriesFromBackend = (page) => {
+  const getHistoriesFromBackend = () => {
+    let page = this.$prev.dataset.page + 1;
     getUserMe().then((response) => {
       let { nickname } = response.data;
       fetch(
-        `${BACKEND}/games/results?user=${nickname}&mode=casual_1vs1&page=${page}&limit=4`,
+        `${BACKEND}/games/results?user=${nickname}&mode=casual_1vs1&currentPage=${page}&limit=4`,
         {
           method: "GET",
           headers: {
@@ -49,7 +44,8 @@ export default async function OneOnOneHistories() {
       ).then((response) => {
         if (response.ok) {
           response.json().then((data) => {
-            this.totalPages = data.totalPages;
+            this.totalPages = data.total_pages;
+            setPagination();
             set1vs1Histories(data);
           });
         } else {
@@ -57,6 +53,24 @@ export default async function OneOnOneHistories() {
         }
       });
     });
+  };
+
+  const setPagination = () => {
+    if (this.totalPages === 1) {
+      // 페이지가 1개인 경우
+      setPaginationActive(this.$prev, false, null);
+      setPaginationActive(this.$next, false, null);
+    } else if (this.totalPages > 1) {
+      // 페이지가 2개 이상인 경우
+      if (this.$prev.dataset.page === "0") {
+        setPaginationActive(this.$prev, false, null);
+        setPaginationActive(this.$next, true, getHistoriesFromBackend);
+      }
+      if (this.$next.dataset.page === this.totalPages + 1) {
+        setPaginationActive(this.$prev, true, getHistoriesFromBackend);
+        setPaginationActive(this.$next, false, null);
+      }
+    }
   };
 
   /**
