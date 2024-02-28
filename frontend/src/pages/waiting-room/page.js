@@ -42,7 +42,10 @@ export default function WaitingRoom($container, info = null) {
       } else {
         console.log(data);
         const newWs = new WebSocket(`${WEBSOCKET}${data.data}`);
-        navigate("/tournament", { socket: newWs });
+        newWs.onmessage = (msg) => {
+          let data = JSON.parse(msg.data);
+          navigate("/tournament", { socket: newWs, data: data });
+        };
       }
     };
     click($container.querySelector(".start-btn"), () => {
