@@ -453,7 +453,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
             # 게임 시작
             if self.game.mode == 0 and len(self.match1_users) == 2:
-                await self.send_pvp_start_message()
+                await self.send_pvp_start_message(self.match1)
                 await asyncio.sleep(2)
                 self.match1.started_at = datetime.now()
                 while True:
@@ -521,8 +521,31 @@ class GameConsumer(AsyncWebsocketConsumer):
         match.right_side_player.bar.x = self.ping_pong_map.width - GAME_SETTINGS_DICT['bar']['width']
         match.right_side_player.bar.y = self.ping_pong_map.height / 2 - GAME_SETTINGS_DICT['bar']['height'] / 2
 
-    async def send_pvp_start_message(self):
-        data = '게임 시작 데이터'
+    async def send_pvp_start_message(self, match):
+        data = {
+            'map': {
+                'width': match.ping_pong_map.width,
+                'height': match.ping_pong_map.height
+            },
+            'bar': {
+                'width': match.left_side_player.bar.width,
+                'height': match.left_side_player.bar.height
+            },
+            'ball': {
+                'x': match.ball.x,
+                'y': match.ball.y
+            },
+            'left_side_player': {
+                'x': match.left_side_player.bar.x,
+                'y': match.left_side_player.bar.y,
+                'score': match.left_side_player.score
+            },
+            'right_side_player': {
+                'x': match.right_side_player.bar.x,
+                'y': match.right_side_player.bar.y,
+                'score': match.left_side_player.score
+            }
+        }
         await self.channel_layer.group_send(
             self.match1_group_name,
             {
@@ -536,7 +559,23 @@ class GameConsumer(AsyncWebsocketConsumer):
         })
 
     async def send_pvp_in_game_message(self):
-        data = 'match1 정보'
+        data = {
+            'ball': {
+                'x': self.match1.ball.x,
+                'y': self.match1.ball.y,
+                'direction': self.match1.ball.direction
+            },
+            'left_side_player': {
+                'x': self.match1.left_side_player.bar.x,
+                'y': self.match1.left_side_player.bar.y,
+                'score': self.match1.left_side_player.score
+            },
+            'right_side_player': {
+                'x': self.match1.right_side_player.bar.x,
+                'y': self.match1.right_side_player.bar.y,
+                'score': self.match1.left_side_player.score
+            }
+        }
         await self.channel_layer.group_send(
             self.match1_group_name,
             {
@@ -550,7 +589,30 @@ class GameConsumer(AsyncWebsocketConsumer):
         })
 
     async def send_tournament_start_message(self):
-        data = '겜 시작 정보'
+        data = {
+            'map': {
+                'width': self.match1.ping_pong_map.width,
+                'height': self.match1.ping_pong_map.height
+            },
+            'bar': {
+                'width': self.match1.left_side_player.bar.width,
+                'height': self.match1.left_side_player.bar.height
+            },
+            'ball': {
+                'x': self.match1.ball.x,
+                'y': self.match1.ball.y
+            },
+            'left_side_player': {
+                'x': self.match1.left_side_player.bar.x,
+                'y': self.match1.left_side_player.bar.y,
+                'score': self.match1.left_side_player.score
+            },
+            'right_side_player': {
+                'x': self.match1.right_side_player.bar.x,
+                'y': self.match1.right_side_player.bar.y,
+                'score': self.match1.left_side_player.score
+            }
+        }
         await self.channel_layer.group_send(
             self.match1_group_name,
             {
@@ -600,6 +662,27 @@ class GameConsumer(AsyncWebsocketConsumer):
                     'data': match2_data
                 }
             )
+
+    def create_match_data(self, match):
+        ball_data = {
+            'x': match.ball.x,
+            'y': match.ball.y
+        }
+        player1_data = {
+            'x': match.left_side_player.bar.x,
+            'y': match.left_side_player.bar.y,
+            'score': match.left_side_player.score
+        }
+        player2_data = {
+            'x': match.right_side_player.bar.x,
+            'y': match.right_side_player.bar.y,
+            'score': match.right_side_player.score
+        }
+        return {
+            'ball': ball_data,
+            'player1': player1_data,
+            'player2': player2_data
+        }
 
     async def game_info(self, event):
         await self.send(text_data=json.dumps(event))
