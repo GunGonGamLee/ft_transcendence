@@ -482,7 +482,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def play(self, match):
         # todo 볼 속도 1/24 계산
-        logger.info(f"play 안1 : {match.ball.x}, {match.ball.y}")
         if self.match1.ball.is_ball_hit_wall(self.match1.ping_pong_map):
             self.match1.ball.bounce((1, -1))
         elif self.match1.ball.is_ball_inside_bar(self.match1.left_side_player.bar) or self.match1.ball.is_ball_inside_bar(self.match1.right_side_player.bar):
