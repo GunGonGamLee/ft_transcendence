@@ -635,11 +635,11 @@ class GameConsumer(AsyncWebsocketConsumer):
             'data': data
         })
 
-    async def send_tournament_in_game_message(self):
-        match1_data = 'match1 data'
-        match2_data = 'match2 data'
+    async def send_tournament_in_game_message(self, match1, match2):
+        match1_data = self.create_match_data(match1)
+        match2_data = self.create_match_data(match2)
 
-        if not self.match1.finished:
+        if not match1.finished:
             if self.my_match == 1:
                 await self.in_game({
                     'type': 'in_game',
@@ -652,7 +652,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                     'data': match1_data
                 }
             )
-        if not self.match2.finished:
+        if not match2.finished:
             if self.my_match == 2:
                 await self.in_game({
                     'type': 'in_game',
