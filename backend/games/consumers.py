@@ -39,7 +39,13 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
             logger.info("[게임방 퇴장] Invalid user")
             return
         else:
-            await self.delete_user()
+            if await self.get_game_status() <= 1:
+                await self.delete_user()
+
+    @database_sync_to_async
+    def get_game_status(self):
+        game = Game.objects.get(game_id=self.game_id)
+        return game.status
 
     @database_sync_to_async
     def delete_user(self):
