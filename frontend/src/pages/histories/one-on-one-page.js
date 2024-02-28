@@ -81,8 +81,11 @@ export default async function OneOnOneHistories() {
    * @param $listWrapper {HTMLElement} 전적 리스트를 렌더링할 <div> 엘리먼트
    */
   const render1vs1 = ($listWrapper) => {
-    let state = get1vs1Histories();
-    console.log(state);
+    let { data } = get1vs1Histories();
+    if (data.length === 0) {
+      this.$customList.innerHTML = `<p class="histories empty-list">비었다.</p>`;
+      return;
+    }
     for (let data of state) {
       const { id, player1, player2 } = data;
       $listWrapper.insertAdjacentHTML(
