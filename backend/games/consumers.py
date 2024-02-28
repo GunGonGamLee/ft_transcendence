@@ -350,7 +350,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.game_id = int(game_id)
             await self.save_game_object_by_id()
             await self.validate_user(self.user.nickname)
-            self.users.append(self.user)
 
             self.room_group_name = f"ingame_{self.game_id}"
             self.match1_group_name = f"match1_{self.game_id}"
@@ -374,6 +373,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                     await self.save_match()
                     await self.channel_layer.group_add(self.match2_group_name, self.channel_name)
 
+            self.users.append(self.user)
             logger.info(f"users[] = {self.users}")
             if (self.game.mode == 0 and len(self.users) == 2) or (self.game.mode != 0 and len(self.users) == 4):
                 serializer_data = await self.get_serializer_data()
