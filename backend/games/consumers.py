@@ -287,7 +287,7 @@ class RankGameRoomConsumer(AsyncWebsocketConsumer):
         except Exception as e:
             raise e
 
-    async def game_start(self, event):
+    async def url(self, event):
         await self.send(text_data=json.dumps(event))
 
 
