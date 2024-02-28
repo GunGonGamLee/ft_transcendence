@@ -410,6 +410,21 @@ class GameConsumer(AsyncWebsocketConsumer):
         else:
             raise Exception("게임 방에 속한 유저가 아닙니다.")
 
+    async def get_match(self):
+        if self.game.mode == 0:  # 1e1
+            self.my_match = 1
+            await self.save_match()
+            self.channel_layer.group_add(self.match1_group_name, self.channel_name)
+        else:  # tournament
+            if (len(self.users) + 1) % 2 == 0:
+                self.my_match = 1
+                await self.save_match()
+                self.channel_layer.group_add(self.match1_group_name, self.channel_name)
+            else:
+                self.my_match = 2
+                await self.save_match()
+                self.channel_layer.group_add(self.match2_group_name, self.channel_name)
+
     @database_sync_to_async
     def save_match(self):
         if self.my_match == 1:
