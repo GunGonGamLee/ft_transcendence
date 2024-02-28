@@ -1,8 +1,9 @@
 export default function Tournament($container, info = null) {
-  // const gameModeNum = info.data.mode;
+  if (info === null) {
+    return;
+  }
 
-  // const ws = info.socket;
-  // console.log(info);
+  const ws = info.socket;
 
   const init = () => {
     render();
