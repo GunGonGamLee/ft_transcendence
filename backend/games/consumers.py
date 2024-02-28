@@ -443,6 +443,17 @@ class GameConsumer(AsyncWebsocketConsumer):
             serializer = TournamentMatchSerializer(self.game)
         return serializer.data
 
+    async def send_match_table(self):
+        if (self.game.mode == 0 and len(self.users) == 2) or (self.game.mode != 0 and len(self.users) == 4):
+            serializer_data = await self.get_serializer_data()
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'game_info',
+                    'data': serializer_data
+                }
+            )
+
     async def receive(self, text_data):
         # todo try catch
         data = json.loads(text_data)
