@@ -2,73 +2,14 @@ import { addPaginationOnClickProperty } from "../../utils/pagination.js";
 import { HISTORIES_IMAGE_PATH } from "../../global.js";
 
 export default async function TournamentHistoriesDetails(id) {
-  this.needToRender = true;
-
   const init = () => {
     this.textContent = "";
-    addPaginationOnClickProperty(
-      "prev",
-      "next",
-      renderTournamentTree,
-      renderTournamentResult,
-    );
+    addPaginationOnClickProperty("prev", renderTournamentTree);
+    addPaginationOnClickProperty("next", renderTournamentResult);
   };
 
-  const useState = async () => {
-    // TODO => 백엔드에서 토너먼트 모드에 대한 데이터를 받아오기
-    this.newState = {
-      match1: {
-        player1: {
-          avatar: "luke_skywalker.png",
-          nickname: "hyojocho",
-          rating: 1234,
-        },
-        player2: {
-          avatar: "chewbacca.png",
-          nickname: "yena",
-          rating: 110,
-        },
-      },
-      match2: {
-        player1: {
-          avatar: "han_solo.png",
-          nickname: "sejokim",
-          rating: 5,
-        },
-        player2: {
-          avatar: "darth_vader.png",
-          nickname: "Polarbear",
-          rating: 1234,
-        },
-      },
-      match3: {
-        player1: {
-          avatar: "chewbacca.png",
-          nickname: "yena",
-          rating: 110,
-        },
-        player2: {
-          avatar: "han_solo.png",
-          nickname: "sejokim",
-          rating: 1234,
-        },
-        winner: "yena",
-        date: "2023.02.01 13:30:23",
-      },
-    };
-  };
-
-  const setState = () => {
-    if (this.newState !== this.state) {
-      this.state = this.newState;
-      this.needToRender = true;
-    } else this.needToRender = false;
-  };
-
-  const render = () => {
-    if (this.needToRender) {
-      renderTournamentTree();
-    }
+  this.render = () => {
+    renderTournamentTree();
   };
 
   /**
@@ -318,7 +259,4 @@ export default async function TournamentHistoriesDetails(id) {
   };
 
   init();
-  await useState();
-  setState();
-  render();
 }
