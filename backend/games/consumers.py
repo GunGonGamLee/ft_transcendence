@@ -3,6 +3,7 @@ import random
 import logging
 import urllib.parse
 import asyncio
+import time
 from django.contrib.auth.models import AnonymousUser
 from django.db.models import Min, Count
 from django.core.exceptions import ValidationError, PermissionDenied
@@ -39,7 +40,13 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
             logger.info("[게임방 퇴장] Invalid user")
             return
         else:
-            await self.delete_user()
+            if await self.get_game_status() <= 1:
+                await self.delete_user()
+
+    @database_sync_to_async
+    def get_game_status(self):
+        game = Game.objects.get(game_id=self.game_id)
+        return game.status
 
     @database_sync_to_async
     def delete_user(self):
@@ -145,7 +152,14 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def create_room(self):
-        self.game = Game.objects.create(title="보보봉", password=None, mode=random.choice([0, 1]), status=0, manager=self.user)
+        mode = random.choice([0, 1])
+        match1 = Result.objects.create()
+        if mode == 0:
+            self.game = Game.objects.create(title="보보봉", password=None, mode=mode, status=0, manager=self.user, match1=match1)
+        else:
+            match2 = Result.objects.create()
+            match3 = Result.objects.create()
+            self.game = Game.objects.create(title="보보봉", password=None, mode=mode, status=0, manager=self.user, match1=match1, match2=match2, match3=match3)
         logger.info(f"[게임방 입장] 게임방 생성 : {self.game.id}")
 
     @database_sync_to_async
@@ -275,6 +289,9 @@ class RankGameRoomConsumer(AsyncWebsocketConsumer):
     @staticmethod
     def create_game_instance(users):
         try:
+            match1 = Result.objects.create()
+            match2 = Result.objects.create()
+            match3 = Result.objects.create()
             game = Game.objects.create(
                 mode=2,
                 status=2,
@@ -282,6 +299,9 @@ class RankGameRoomConsumer(AsyncWebsocketConsumer):
                 player1=users[1],
                 player2=users[2],
                 player3=users[3],
+                match1=match1,
+                match2=match2,
+                match3=match3
             )
             return game
         except Exception as e:
@@ -292,26 +312,25 @@ class RankGameRoomConsumer(AsyncWebsocketConsumer):
 
 
 class GameConsumer(AsyncWebsocketConsumer):
-    users = []
-    match1_users = []
-    match2_users = []
-    match3_users = []
-
-    ping_pong_map = PingPongMap(0, 0)
-    match1 = PingPongGame(ping_pong_map)
-    match2 = PingPongGame(ping_pong_map)
-    match3 = PingPongGame(ping_pong_map)
+    class UserList:
+        pass
 
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
         self.user = None
+        self.manager = False
         self.game = None
         self.game_id = None
-        self.room_group_name = None
+        self.game_group_name = None
         self.my_match = None
         self.match1_group_name = None
         self.match2_group_name = None
         self.match3_group_name = None
+
+        self.ping_pong_map = PingPongMap(0, 0)
+        self.match1 = PingPongGame(self.ping_pong_map)
+        self.match2 = PingPongGame(self.ping_pong_map)
+        self.match3 = PingPongGame(self.ping_pong_map)
 
     async def connect(self):
         logger.info("[인게임] connect")
@@ -322,14 +341,14 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         logger.info('[인게임] disconnect')
-        if self.user in self.users:
-            self.users.remove(self.user)
-        if self.user in self.match1_users:
-            self.match1_users.remove(self.user)
-        elif self.user in self.match2_users:
-            self.match2_users.remove(self.user)
-        if self.user in self.match1_users:
-            self.match3_users.remove(self.user)
+        # if self.user in self.users:
+        #     self.users.remove(self.user)
+        # if self.user in self.match1_users:
+        #     self.match1_users.remove(self.user)
+        # elif self.user in self.match2_users:
+        #     self.match2_users.remove(self.user)
+        # if self.user in self.match1_users:
+        #     self.match3_users.remove(self.user)
         # todo 게임중이면 패배 처리
         # await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
@@ -349,44 +368,47 @@ class GameConsumer(AsyncWebsocketConsumer):
             game_id = self.scope["url_route"]["kwargs"]["game_id"]
             self.game_id = int(game_id)
             await self.save_game_object_by_id()
+            if self.game.status == 1:
+                await self.set_game_status()
             await self.validate_user(self.user.nickname)
-            self.users.append(self.user)
+            logger.info(f"[인게임] {self.user.nickname} - {self.game_id}번 방 연결 - {self.manager}")
 
-            self.room_group_name = f"ingame_{self.game_id}"
+            game_group_name = f"ingame_{self.game_id}"
+            self.game_group_name = game_group_name
             self.match1_group_name = f"match1_{self.game_id}"
             self.match2_group_name = f"match2_{self.game_id}"
             self.match3_group_name = f"match3_{self.game_id}"
-            await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+            await self.channel_layer.group_add(self.game_group_name, self.channel_name)
 
-            if self.game.status == 1:
-                await self.set_game_status()
-            if self.game.mode == 0:     # 1e1
-                self.my_match = 1
-                await self.save_match()
-                await self.channel_layer.group_add(self.match1_group_name, self.channel_name)
-            else:                       # tournament
-                if (len(self.users) + 1) % 2 == 0:
-                    self.my_match = 1
-                    await self.save_match()
-                    await self.channel_layer.group_add(self.match1_group_name, self.channel_name)
-                else:
-                    self.my_match = 2
-                    await self.save_match()
-                    await self.channel_layer.group_add(self.match2_group_name, self.channel_name)
+            await self.get_match()
+            await self.append_user(game_group_name)
+            await self.log(game_group_name)
 
-            logger.info(f"users[] = {self.users}")
-            if (self.game.mode == 0 and len(self.users) == 2) or (self.game.mode != 0 and len(self.users) == 4):
-                serializer_data = await self.get_serializer_data()
-                await self.channel_layer.group_send(
-                    self.room_group_name,
-                    {
-                        'type': 'game_info',
-                        'data': serializer_data
-                    }
-                )
+            if self.manager:
+                await self.when_manager()
+
         except Exception as e:
             await self.send(text_data=json.dumps({"error": "[" + e.__class__.__name__ + "] " + str(e)}))
             await self.close()
+
+    async def log(self, game_group_name):
+        logger.info(f"users[] = {getattr(self.UserList, game_group_name)}, "
+                    f"me = {self.user.nickname} - manager: {self.manager}")
+
+    async def append_user(self, game_group_name):
+        if hasattr(self.UserList, game_group_name) is False:
+            setattr(self.UserList, game_group_name, [])
+        getattr(self.UserList, game_group_name).append(self.user)
+
+    async def when_manager(self):
+        start_time = time.time()
+        while True:
+            if time.time() - start_time >= 30:
+                raise TimeoutError()
+            num = self.channel_layer.groups[f"{self.game_group_name}"].__len__()
+            if (self.game.mode == 0 and num == 2) or (self.game.mode != 0 and num == 4):
+                break
+        await self.send_match_table()
 
     @database_sync_to_async
     def save_game_object_by_id(self):
@@ -396,6 +418,7 @@ class GameConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def validate_user(self, user):
         if self.game.manager.nickname == user:
+            self.manager = True
             return
         elif self.game.player1.nickname == user:
             return
@@ -404,24 +427,45 @@ class GameConsumer(AsyncWebsocketConsumer):
         else:
             raise Exception("게임 방에 속한 유저가 아닙니다.")
 
+    async def get_match(self):
+        if self.game.mode == 0:  # 1e1
+            self.my_match = 1
+            if self.channel_layer.groups[self.game_group_name].__len__() == 1:
+                await self.save_match(1)
+            else:
+                await self.save_match(2)
+            self.channel_layer.group_add(self.match1_group_name, self.channel_name)
+        else:  # tournament
+            join_num = self.channel_layer.groups[self.game_group_name].__len__()
+            if join_num % 2 == 1:
+                self.my_match = 1
+                if join_num == 1:
+                    await self.save_match(1)
+                else:
+                    await self.save_match(2)
+                self.channel_layer.group_add(self.match1_group_name, self.channel_name)
+            else:
+                self.my_match = 2
+                if join_num == 2:
+                    await self.save_match(1)
+                else:
+                    await self.save_match(2)
+                self.channel_layer.group_add(self.match2_group_name, self.channel_name)
+
     @database_sync_to_async
-    def save_match(self):
+    def save_match(self, player):
         if self.my_match == 1:
-            if self.game.match1 is None:
-                match = Result.objects.create(player1=self.user)
-                self.game.match1 = match
-                self.game.save()
+            if player == 1:
+                self.game.match1.player1 = self.user
             else:
                 self.game.match1.player2 = self.user
-                self.game.match1.save()
+            self.game.match1.save()
         else:
-            if self.game.match2 is None:
-                match = Result.objects.create(player1=self.user)
-                self.game.match2 = match
-                self.game.save()
+            if player == 1:
+                self.game.match2.player1 = self.user
             else:
                 self.game.match2.player2 = self.user
-                self.game.match2.save()
+            self.game.match2.save()
 
     @database_sync_to_async
     def set_game_status(self):
@@ -436,6 +480,22 @@ class GameConsumer(AsyncWebsocketConsumer):
         else:
             serializer = TournamentMatchSerializer(self.game)
         return serializer.data
+
+    async def send_match_table(self):
+        serializer_data = await self.get_serializer_data()
+        await self.channel_layer.group_send(
+            self.game_group_name,
+            {
+                'type': 'game_info',
+                'data': serializer_data
+            }
+        )
+        if self.game.mode == 0:
+            logger.info("[인게임] PVP")
+        elif self.game.mode == 1:
+            logger.info("[인게임] TOURNAMENT")
+        elif self.game.mode == 2:
+            logger.info("[인게임] RANK")
 
     async def receive(self, text_data):
         # todo try catch
@@ -453,15 +513,11 @@ class GameConsumer(AsyncWebsocketConsumer):
 
             # 게임 시작
             if self.game.mode == 0 and len(self.match1_users) == 2:
-                await self.send_pvp_start_message()
+                await self.send_pvp_start_message(self.match1)
                 await asyncio.sleep(2)
                 self.match1.started_at = datetime.now()
-                while True:
-                    # todo 겜 로직
-                    if self.match1.left_side_player.score + self.match1.right_side_player.score == 5:
-                        self.match1.finished = True
-                        # todo 게임 돌아가고 있는 거 끝내기
-                        break
+                while not self.match1.finished:
+                    await self.play(self.match1)
                     await self.send_pvp_in_game_message()
                     await asyncio.sleep(1 / 24)
 
@@ -470,17 +526,10 @@ class GameConsumer(AsyncWebsocketConsumer):
                 await asyncio.sleep(2)
                 self.match1.started_at = datetime.now()
                 self.match2.started_at = datetime.now()
-                while True:
-                    # todo 겜 로직
-                    if self.match1.left_side_player.score + self.match1.right_side_player.score == 5:
-                        self.match1.finished = True
-                        # todo 게임 돌아가고 있는 거 끝내기
-                    if self.match2.left_side_player.score + self.match2.right_side_player.score == 5:
-                        self.match2.finished = True
-                        # todo 게임 돌아가고 있는 거 끝내기
-                    if self.match1.finished and self.match2.finished:
-                        break
-                    await self.send_tournament_in_game_message()
+                while not self.match1.finished and not self.match2.finished:
+                    await self.play(self.match1)
+                    await self.play(self.match2)
+                    await self.send_tournament_in_game_message(self.match1, self.match2)
                     await asyncio.sleep(1 / 24)
 
         elif message_type == 'keyboard':
@@ -490,6 +539,19 @@ class GameConsumer(AsyncWebsocketConsumer):
             elif message_data == 'down':
                 # todo ?
                 pass
+
+    async def play(self, match):
+        # todo 볼 속도 1/24 계산
+        if self.match1.ball.is_ball_hit_wall(self.match1.ping_pong_map):
+            self.match1.ball.bounce((1, -1))
+        elif self.match1.ball.is_ball_inside_bar(self.match1.left_side_player.bar) or self.match1.ball.is_ball_inside_bar(self.match1.right_side_player.bar):
+            self.match1.ball.bounce((-1, 1))
+        if (whether_score_a_goal := self.match1.ball.is_goal_in(self.match1.ping_pong_map)) != [False, False]:
+            self.match1.update_score(whether_score_a_goal)
+            self.match1.ball.reset(self.match1.ping_pong_map)
+        if self.match1.left_side_player.score + self.match1.right_side_player.score == 5:
+            self.match1.finished = True
+        match.ball.move()
 
     async def set_values(self, message_data):
         map_width = message_data['map_width']
@@ -512,14 +574,40 @@ class GameConsumer(AsyncWebsocketConsumer):
             match.left_side_player.user = self.game.match2.player1
             match.right_side_player.user = self.game.match2.player2
 
+        match.ball.x = match.ping_pong_map.width / 2
+        match.ball.y = match.ping_pong_map.height / 2
+
         match.left_side_player.bar.x = GAME_SETTINGS_DICT['bar']['width']
         match.left_side_player.bar.y = self.ping_pong_map.height / 2 - GAME_SETTINGS_DICT['bar']['height'] / 2
 
         match.right_side_player.bar.x = self.ping_pong_map.width - GAME_SETTINGS_DICT['bar']['width']
         match.right_side_player.bar.y = self.ping_pong_map.height / 2 - GAME_SETTINGS_DICT['bar']['height'] / 2
 
-    async def send_pvp_start_message(self):
-        data = '게임 시작 데이터'
+    async def send_pvp_start_message(self, match):
+        data = {
+            'map': {
+                'width': match.ping_pong_map.width,
+                'height': match.ping_pong_map.height
+            },
+            'bar': {
+                'width': match.left_side_player.bar.width,
+                'height': match.left_side_player.bar.height
+            },
+            'ball': {
+                'x': match.ball.x,
+                'y': match.ball.y
+            },
+            'left_side_player': {
+                'x': match.left_side_player.bar.x,
+                'y': match.left_side_player.bar.y,
+                'score': match.left_side_player.score
+            },
+            'right_side_player': {
+                'x': match.right_side_player.bar.x,
+                'y': match.right_side_player.bar.y,
+                'score': match.left_side_player.score
+            }
+        }
         await self.channel_layer.group_send(
             self.match1_group_name,
             {
@@ -533,7 +621,23 @@ class GameConsumer(AsyncWebsocketConsumer):
         })
 
     async def send_pvp_in_game_message(self):
-        data = 'match1 정보'
+        data = {
+            'ball': {
+                'x': self.match1.ball.x,
+                'y': self.match1.ball.y,
+                'direction': self.match1.ball.direction
+            },
+            'left_side_player': {
+                'x': self.match1.left_side_player.bar.x,
+                'y': self.match1.left_side_player.bar.y,
+                'score': self.match1.left_side_player.score
+            },
+            'right_side_player': {
+                'x': self.match1.right_side_player.bar.x,
+                'y': self.match1.right_side_player.bar.y,
+                'score': self.match1.left_side_player.score
+            }
+        }
         await self.channel_layer.group_send(
             self.match1_group_name,
             {
@@ -547,7 +651,30 @@ class GameConsumer(AsyncWebsocketConsumer):
         })
 
     async def send_tournament_start_message(self):
-        data = '겜 시작 정보'
+        data = {
+            'map': {
+                'width': self.match1.ping_pong_map.width,
+                'height': self.match1.ping_pong_map.height
+            },
+            'bar': {
+                'width': self.match1.left_side_player.bar.width,
+                'height': self.match1.left_side_player.bar.height
+            },
+            'ball': {
+                'x': self.match1.ball.x,
+                'y': self.match1.ball.y
+            },
+            'left_side_player': {
+                'x': self.match1.left_side_player.bar.x,
+                'y': self.match1.left_side_player.bar.y,
+                'score': self.match1.left_side_player.score
+            },
+            'right_side_player': {
+                'x': self.match1.right_side_player.bar.x,
+                'y': self.match1.right_side_player.bar.y,
+                'score': self.match1.left_side_player.score
+            }
+        }
         await self.channel_layer.group_send(
             self.match1_group_name,
             {
@@ -567,11 +694,11 @@ class GameConsumer(AsyncWebsocketConsumer):
             'data': data
         })
 
-    async def send_tournament_in_game_message(self):
-        match1_data = 'match1 data'
-        match2_data = 'match2 data'
+    async def send_tournament_in_game_message(self, match1, match2):
+        match1_data = self.create_match_data(match1)
+        match2_data = self.create_match_data(match2)
 
-        if not self.match1.finished:
+        if not match1.finished:
             if self.my_match == 1:
                 await self.in_game({
                     'type': 'in_game',
@@ -584,7 +711,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                     'data': match1_data
                 }
             )
-        if not self.match2.finished:
+        if not match2.finished:
             if self.my_match == 2:
                 await self.in_game({
                     'type': 'in_game',
@@ -598,6 +725,27 @@ class GameConsumer(AsyncWebsocketConsumer):
                 }
             )
 
+    def create_match_data(self, match):
+        ball_data = {
+            'x': match.ball.x,
+            'y': match.ball.y
+        }
+        player1_data = {
+            'x': match.left_side_player.bar.x,
+            'y': match.left_side_player.bar.y,
+            'score': match.left_side_player.score
+        }
+        player2_data = {
+            'x': match.right_side_player.bar.x,
+            'y': match.right_side_player.bar.y,
+            'score': match.right_side_player.score
+        }
+        return {
+            'ball': ball_data,
+            'player1': player1_data,
+            'player2': player2_data
+        }
+
     async def game_info(self, event):
         await self.send(text_data=json.dumps(event))
 
@@ -606,3 +754,38 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def in_game(self, event):
         await self.send(text_data=json.dumps(event))
+
+
+"""
+방장이 디비 처리를 다 할 거야
+
+방장 가 들어옴
+나 들어옴
+다 들어옴
+라 들어옴
+
+겜방 group_add
+겜방 그룹 len == 1이면 match1 - player1 
+    디비에 본인 정보 저장
+겜방 그룹 len == 3이면 match1 - player2 
+    디비에 본인 정보 저장
+겜방 그룹 len == 2이면 match2 - player1 
+    디비에 본인 정보 저장
+겜방 그룹 len == 4이면 match2 - player2     
+    디비에 본인 정보 저장
+방장이 아니면
+    매칭된 곳 group_add
+
+방장이면
+    현재 시간 저장
+    while true 하고
+        겜방 그룹 인원이 모드에 해당하는 수 만큼 차면 break
+        특정 시간 지나면 raise
+    
+    로그 - "[인게임] RANK, PVP, TOURNAMENT 게임 시작"
+    group_send()
+
+
+
+
+"""

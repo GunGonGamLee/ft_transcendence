@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
 from django.http import JsonResponse
-from games.models import Game, CasualGameView, GameRecordView, CasualGameListView
+from games.models import Game, CasualGameView, GameRecordView, CasualGameListView, Result
 from login.views import AuthUtils
 from src.utils import get_request_body_value
 from src.exceptions import BadRequest
@@ -134,7 +134,13 @@ class GameView(APIView):
 
     @staticmethod
     def create_room(title, password, mode, user):
-        game = Game.objects.create(title=title, password=password, mode=mode, status=0, manager=user)
+        match1 = Result.objects.create()
+        if mode == 0:
+            game = Game.objects.create(title=title, password=password, mode=mode, status=0, manager=user, match1=match1)
+        else:
+            match2 = Result.objects.create()
+            match3 = Result.objects.create()
+            game = Game.objects.create(title=title, password=password, mode=mode, status=0, manager=user, match1=match1, match2=match2, match3=match3)
         return game.id
 
     @staticmethod
@@ -369,5 +375,17 @@ class GameResultView(APIView):
             return JsonResponse({'error': 'Invalid game_id'}, status=status.HTTP_400_BAD_REQUEST)
         except VerificationException as e:
             return JsonResponse({'error': e.message}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return JsonResponse({'error': e.__class__.__name__, 'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class LocalGameView(APIView):
+    def post(self, request):
+        try:
+            AuthUtils.validate_jwt_token_and_get_user(request)
+            logging.info("[인게임] LOCAL")
+            return Response({'message': 'LocalGame'}, status=status.HTTP_200_OK)
+        except AuthenticationException as e:
+            return JsonResponse({'error': e.message}, status=status.HTTP_401_UNAUTHORIZED)
         except Exception as e:
             return JsonResponse({'error': e.__class__.__name__, 'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
