@@ -102,9 +102,9 @@ export function Histories($container) {
 
     // click 이벤트
     click($summary, Summary);
-    click($casual, OneOnOneHistories.bind($content));
+    click($casual, OneOnOneHistories.bind($content, "casual_1vs1"));
     click($tournament, TournamentHistories.bind($content, "rank"));
-    click($toggleItems[0], OneOnOneHistories.bind($content, "1vs1")); // 1 vs 1 모드 선택 시 실행
+    click($toggleItems[0], OneOnOneHistories.bind($content, "casual_1vs1")); // 1 vs 1 모드 선택 시 실행
     click(
       $toggleItems[1],
       TournamentHistories.bind($content, "casual_tournament"),
