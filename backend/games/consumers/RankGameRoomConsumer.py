@@ -43,7 +43,7 @@ class RankGameRoomConsumer(AsyncWebsocketConsumer):
         logging.info(f"[RANK] Creating game with users: {self.game_queue[:4]}")
         users = await sync_to_async(self.get_users)(self.game_queue[:4])
         game = await sync_to_async(self.create_game_instance)(users)
-        game_url = f"/games/{game.id}/"
+        game_url = f"/games/start/{game.id}/"
 
         await self.channel_layer.group_send(
             self.room_group_name,
