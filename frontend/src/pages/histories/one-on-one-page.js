@@ -1,5 +1,4 @@
 import { click } from "../../utils/clickEvent.js";
-import OneOnOneHistoriesDetails from "./one-on-one-histories-details.js";
 import {
   initializePagination,
   setPaginationActive,
@@ -14,7 +13,7 @@ import { navigate } from "../../utils/navigate.js";
  * 사용자 지정 모드의 전적 리스트를 렌더링합니다.
  * @constructor 전적 리스트의 게임 모드
  */
-export default async function OneOnOneHistories() {
+export default async function OneOnOneHistories(mode) {
   this.$customList = document.getElementById("content");
   this.$pagination = document.getElementById("pagination");
 
@@ -28,11 +27,11 @@ export default async function OneOnOneHistories() {
   };
 
   const getOneOnOneList = () => {
-    let page = this.$prev.dataset.page + 1;
+    let page = this.$prev.data.page + 1;
     getUserMe().then((response) => {
       let { nickname } = response.data;
       fetch(
-        `${BACKEND}/games/results?user=${nickname}&mode=casual_1vs1&currentPage=${page}&limit=4`,
+        `${BACKEND}/games/results?user=${nickname}&mode=${mode}&currentPage=${page}&limit=4`,
         {
           method: "GET",
           headers: {
@@ -61,11 +60,11 @@ export default async function OneOnOneHistories() {
       setPaginationActive(this.$next, false, null);
     } else if (this.totalPages > 1) {
       // 페이지가 2개 이상인 경우
-      if (this.$prev.dataset.page === "0") {
+      if (this.$prev.data.page === "0") {
         setPaginationActive(this.$prev, false, null);
         setPaginationActive(this.$next, true, getOneOnOneList);
       }
-      if (this.$next.dataset.page === this.totalPages + 1) {
+      if (this.$next.data.page === this.totalPages + 1) {
         setPaginationActive(this.$prev, true, getOneOnOneList);
         setPaginationActive(this.$next, false, null);
       }
@@ -113,7 +112,7 @@ export default async function OneOnOneHistories() {
       );
       let $listItemDiv = $listWrapper.lastElementChild;
       click($listItemDiv, () => {
-        OneOnOneHistoriesDetails.bind(this, id)();
+        navigate(`histories/details?mode=${mode}&gameId=${id}`, { game });
       });
       $listWrapper.appendChild($listItemDiv);
     }

@@ -1,4 +1,3 @@
-import TournamentHistoriesDetails from "./tournament-histories-details.js";
 import { click } from "../../utils/clickEvent.js";
 import {
   initializePagination,
@@ -8,10 +7,10 @@ import { BACKEND, HISTORIES_IMAGE_PATH } from "../../global.js";
 import { getUserMe } from "../../utils/userUtils.js";
 import useState from "../../utils/useState.js";
 import { getCookie } from "../../utils/cookie.js";
+import { navigate } from "../../utils/navigate.js";
 
 export default async function TournamentHistories(mode) {
   this.$pagination = document.getElementById("pagination");
-  this.needToRender = true;
   const init = () => {
     this.textContent = "";
     this.$prev = document.getElementById("prev");
@@ -166,7 +165,11 @@ export default async function TournamentHistories(mode) {
         ${renderOpponents(opponents)}
       `,
       );
-      click($listItem, TournamentHistoriesDetails.bind(this, data.id));
+      click($listItem, () => {
+        navigate(`histories/details?mode=${mode}&gameId=${data.id}`, {
+          gameId: data.id,
+        });
+      });
       $listWrapper.appendChild($listItem);
     }
   };
