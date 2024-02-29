@@ -177,10 +177,12 @@ class GameConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def get_serializer_data(self):
         serializer = None
+        game = Game.objects.get(id=self.game_id)
+        self.game = game
         if self.game.mode == 0:
-            serializer = PvPMatchSerializer(self.game)
+            serializer = PvPMatchSerializer(game)
         else:
-            serializer = TournamentMatchSerializer(self.game)
+            serializer = TournamentMatchSerializer(game)
         return serializer.data
 
     async def send_match_table(self):

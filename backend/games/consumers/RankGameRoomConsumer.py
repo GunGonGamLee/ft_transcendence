@@ -65,7 +65,7 @@ class RankGameRoomConsumer(AsyncWebsocketConsumer):
             match3 = Result.objects.create()
             game = Game.objects.create(
                 mode=2,
-                status=2,
+                status=1,
                 manager=users[0],
                 player1=users[1],
                 player2=users[2],
