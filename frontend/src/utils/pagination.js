@@ -76,9 +76,9 @@ export const setPaginationActive = ($pagination, isActive, activeFunction) => {
  * @param $next {HTMLElement} 다음 페이지로 이동하는 버튼
  */
 export const initializePagination = ($pagination, $prev, $next) => {
-  this.$pagination.style.display = "block";
-  this.$prev.dataset.page = "0";
-  this.$next.dataset.page = "0";
-  setPaginationActive(this.$prev, false, null);
-  setPaginationActive(this.$next, false, null);
+  $pagination.style.display = "block";
+  $prev.dataset.page = "0";
+  $next.dataset.page = "0";
+  setPaginationActive($prev, false, null);
+  setPaginationActive($next, false, null);
 };
