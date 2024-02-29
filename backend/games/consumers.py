@@ -480,7 +480,12 @@ class GameConsumer(AsyncWebsocketConsumer):
                     'type': 'game_info',
                     'data': serializer_data
                 }
-            )
+        if self.game.mode == 0:
+            logger.info("[인게임] PVP")
+        elif self.game.mode == 1:
+            logger.info("[인게임] TOURNAMENT")
+        elif self.game.mode == 2:
+            logger.info("[인게임] RANK")
 
     async def receive(self, text_data):
         # todo try catch
