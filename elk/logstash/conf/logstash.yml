@@ -3,7 +3,7 @@ pipeline.workers : 2  # 한 번에 실행할 스레드 수
 pipeline.batch.size: 125  # 한 번에 처리할 이벤트 수
 pipeline.batch.delay: 50 # 미처리된 이벤트 처리 전 대기 시간 50밀리초
 
-log.level: error
+log.level: warn
 
 pipeline.ecs_compatibility: v1
 
