@@ -7,32 +7,6 @@ export default async function OneOnOneHistoriesDetails(gameId, mode) {
     $pagination.style.display = "none";
   };
 
-  const useState = async () => {
-    // TODO => backend로부터 데이터 받아오기
-    this.state = {
-      id: gameId,
-      mode,
-      player1: {
-        nickname: "hyojocho",
-        avatar: "luke_skywalker.png",
-        rating: 2130,
-        score: 4,
-        is_winner: true,
-      },
-      player2: {
-        nickname: "yena",
-        avatar: "chewbacca.png",
-        rating: 110,
-        score: 1,
-        is_winner: false,
-      },
-      date: "2024.01.26 13:53",
-      playtime: "00:05:23",
-    };
-  };
-
-  const setState = () => {};
-
   const renderPlayer = (player) => {
     return `
       <div class="histories one-on-one" id="player">
@@ -78,12 +52,9 @@ export default async function OneOnOneHistoriesDetails(gameId, mode) {
     );
   };
 
-  const render = () => {
+  this.render = () => {
     renderOneOnOneDetails();
   };
 
   init();
-  await useState();
-  setState();
-  render();
 }
