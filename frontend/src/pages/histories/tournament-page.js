@@ -10,9 +10,10 @@ import { getCookie } from "../../utils/cookie.js";
 import { navigate } from "../../utils/navigate.js";
 
 export default async function TournamentHistories(mode) {
+  this.$tournamentList = document.getElementById("content");
   this.$pagination = document.getElementById("pagination");
   const init = () => {
-    this.textContent = "";
+    this.$tournamentList.textContent = "";
     this.$prev = document.getElementById("prev");
     this.$next = document.getElementById("next");
     this.totalPages = 0;
@@ -147,7 +148,7 @@ export default async function TournamentHistories(mode) {
     let $listWrapper = document.getElementById("list-wrapper");
     let { data } = getTournamentHistories();
     if (data.length === 0) {
-      this.innerHTML = `<p class="histories empty-list">비었다.</p>`;
+      this.$tournamentList.innerHTML = `<p class="histories empty-list">비었다.</p>`;
       return;
     }
     for (let item of data) {
@@ -175,7 +176,7 @@ export default async function TournamentHistories(mode) {
   };
 
   this.render = () => {
-    this.insertAdjacentHTML(
+    this.$tournamentList.insertAdjacentHTML(
       "afterbegin",
       `
       <div class="histories" id="list-wrapper"></div>

@@ -13,7 +13,7 @@ import { navigate } from "../../utils/navigate.js";
  * 사용자 지정 모드의 전적 리스트를 렌더링합니다.
  * @constructor 전적 리스트의 게임 모드
  */
-export default async function OneOnOneHistories(mode) {
+export default async function OneOnOneHistories() {
   this.$customList = document.getElementById("content");
   this.$pagination = document.getElementById("pagination");
 

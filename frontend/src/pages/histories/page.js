@@ -1,9 +1,6 @@
 import { hoverToggle } from "../../utils/hoverEvent.js";
 import { click } from "../../utils/clickEvent.js";
 import { importCss } from "../../utils/importCss.js";
-import Summary from "./summary-page.js";
-import OneOnOneHistories from "./one-on-one-page.js";
-import TournamentHistories from "./tournament-page.js";
 import { HISTORIES_IMAGE_PATH, MODE } from "../../global.js";
 import OneOnOneHistoriesDetails from "./one-on-one-histories-details.js";
 import TournamentHistoriesDetails from "./tournament-histories-details.js";
@@ -18,7 +15,6 @@ export function Histories($container) {
 
   const render = () => {
     renderLayout();
-    renderList();
   };
 
   const renderNav = () => {
@@ -82,11 +78,6 @@ export function Histories($container) {
     );
   };
 
-  const renderList = () => {
-    let $content = document.getElementById("content");
-    Summary.bind($content)();
-  };
-
   /**
    * 레이아웃 엘리먼트에 이벤트 리스너를 추가합니다.
    */
@@ -101,14 +92,21 @@ export function Histories($container) {
     const $tournament = document.getElementById("tournament");
 
     // click 이벤트
-    click($summary, Summary);
-    click($casual, OneOnOneHistories.bind($content, "casual_1vs1"));
-    click($tournament, TournamentHistories.bind($content, "rank"));
-    click($toggleItems[0], OneOnOneHistories.bind($content, "casual_1vs1")); // 1 vs 1 모드 선택 시 실행
-    click(
-      $toggleItems[1],
-      TournamentHistories.bind($content, "casual_tournament"),
-    ); // 토너먼트 모드 선택 시 실행
+    click($summary, () => {
+      navigate("/histories/summary");
+    });
+    click($casual, () => {
+      navigate("/histories/casual", { mode: "casual_1vs1" });
+    });
+    click($tournament, () => {
+      navigate("/histories/tournament", { mode: "casual_tournament" });
+    });
+    click($toggleItems[0], () => {
+      navigate("/histories/casual", { mode: "casual_1vs1" });
+    });
+    click($toggleItems[1], () => {
+      navigate("/histories/tournament", { mode: "rank" });
+    }); // 토너먼트 모드 선택 시 실행
 
     // toggle 이벤트
     let $toggle = document.getElementById("toggle");
@@ -117,6 +115,7 @@ export function Histories($container) {
   init();
   render();
   addEventListenersToLayout();
+  navigate("/histories/summary");
 }
 
 /**

@@ -9,6 +9,9 @@ import CustomGameList from "../pages/custom-game-list/page.js";
 import Auth from "../pages/auth/page.js";
 import InGame from "../pages/in-game/page.js";
 import Tournament from "../pages/tournament/page.js";
+import Summary from "../pages/histories/summary-page.js";
+import OneOnOneHistories from "../pages/histories/one-on-one-page.js";
+import TournamentHistories from "../pages/histories/tournament-page.js";
 
 /**
  * 원하는 경로에 따라 렌더링할 컴포넌트를 정의합니다.
@@ -20,6 +23,17 @@ export const routes = [
   { path: /^\/game-mode$/, page: GameMode, header: MainHeader },
 
   { path: /^\/histories$/, page: Histories, header: MainHeader },
+  { path: /^\/histories\/summary$/, page: Summary, header: MainHeader },
+  {
+    path: /^\/histories\/casual$/,
+    page: OneOnOneHistories("casual_1vs1"),
+    header: MainHeader,
+  },
+  {
+    path: /^\/histories\/rank$/,
+    page: TournamentHistories("rank"),
+    header: MainHeader,
+  },
   {
     path: /^\/histories\/details(?:\?.*)?$/,
     page: HistoriesDetails,

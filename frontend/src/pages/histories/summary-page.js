@@ -97,14 +97,7 @@ export default function Summary() {
 
   init();
   const [getUsersHistoriesSummary, setUsersHistoriesSummary] = useState(
-    {
-      nickname: "",
-      avatar: "",
-      rating: 0,
-      custom_1v1_win_rate: 0,
-      custom_tournament_win_rate: 0,
-      rank_win_rate: 0,
-    },
+    {},
     this.$container,
     "render",
   );
