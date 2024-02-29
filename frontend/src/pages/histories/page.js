@@ -5,8 +5,11 @@ import Summary from "./summary-page.js";
 import OneOnOneHistories from "./one-on-one-page.js";
 import TournamentHistories from "./tournament-page.js";
 import { HISTORIES_IMAGE_PATH, MODE } from "../../global.js";
+import OneOnOneHistoriesDetails from "./one-on-one-histories-details.js";
+import TournamentHistoriesDetails from "./tournament-histories-details.js";
+import { navigate } from "../../utils/navigate.js";
 
-export default function Histories($container) {
+export function Histories($container) {
   this.$container = $container;
 
   const init = () => {
@@ -114,4 +117,31 @@ export default function Histories($container) {
   init();
   render();
   addEventListenersToLayout();
+}
+
+/**
+ * 전적 리스트의 세부 정보를 렌더링합니다. 게임 모드에 따라 다른 컴포넌트를 렌더링합니다.
+ * @param $container {HTMLElement} - 전적 리스트 페이지가 렌더링될 엘리먼트
+ * @constructor - 전적 리스트 페이지가 렌더링될 엘리먼트
+ */
+export function HistoriesDetails($container) {
+  this.$container = $container;
+  const queryString = location.search.split("?")[1]; // ? 제거
+  const searchParams = new URLSearchParams(queryString);
+  const mode = searchParams.get("mode");
+  const id = searchParams.get("gameId");
+  Histories.bind(this, $container)();
+  const $content = document.getElementById("content");
+
+  switch (mode) {
+    case "casual_1vs1":
+      OneOnOneHistoriesDetails.bind($content, id)();
+      break;
+    case "casual_tournament":
+    case "rank":
+      TournamentHistoriesDetails.bind($content, id)();
+      break;
+    default:
+      navigate("error", { errorCode: 404 });
+  }
 }
