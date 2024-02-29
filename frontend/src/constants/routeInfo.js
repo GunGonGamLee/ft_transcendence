@@ -1,6 +1,6 @@
 import GameMode from "../pages/game-mode/page.js";
 import Register from "../pages/register/page.js";
-import Histories from "../pages/histories/page.js";
+import { Histories, HistoriesDetails } from "../pages/histories/page.js";
 import RegisterHeader from "../header/registerHeader/header.js";
 import MainHeader from "../header/mainHeader/header.js";
 import WaitingRoom from "../pages/waiting-room/page.js";
@@ -18,7 +18,14 @@ export const routes = [
   { path: /^\/auth(?:\?.*)?$/, page: Auth, header: RegisterHeader },
   { path: /^\/register$/, page: Register, header: RegisterHeader },
   { path: /^\/game-mode$/, page: GameMode, header: MainHeader },
+
   { path: /^\/histories$/, page: Histories, header: MainHeader },
+  {
+    path: /^\/histories\/details(?:\?.*)?$/,
+    page: HistoriesDetails,
+    header: MainHeader,
+  },
+
   { path: /^\/waiting-room$/, page: WaitingRoom, header: MainHeader },
   { path: /^\/custom-game-list$/, page: CustomGameList, header: MainHeader },
   { path: /^\/in-game$/, page: InGame, header: MainHeader },
