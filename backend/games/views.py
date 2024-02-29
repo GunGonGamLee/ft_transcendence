@@ -377,3 +377,15 @@ class GameResultView(APIView):
             return JsonResponse({'error': e.message}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return JsonResponse({'error': e.__class__.__name__, 'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class LocalGameView(APIView):
+    def post(self, request):
+        try:
+            AuthUtils.validate_jwt_token_and_get_user(request)
+            logging.info("[인게임] LOCAL")
+            return Response({'message': 'LocalGame'}, status=status.HTTP_200_OK)
+        except AuthenticationException as e:
+            return JsonResponse({'error': e.message}, status=status.HTTP_401_UNAUTHORIZED)
+        except Exception as e:
+            return JsonResponse({'error': e.__class__.__name__, 'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
