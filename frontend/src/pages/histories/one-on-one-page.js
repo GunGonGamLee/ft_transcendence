@@ -99,8 +99,8 @@ export default async function OneOnOneHistories() {
       this.$customList.innerHTML = `<p class="histories empty-list">비었다.</p>`;
       return;
     }
-    for (let data of state) {
-      const { id, player1, player2 } = data;
+    for (let item of data) {
+      const { id, player1, player2 } = item;
       $listWrapper.insertAdjacentHTML(
         "beforeend",
         `
