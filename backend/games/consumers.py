@@ -151,7 +151,14 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def create_room(self):
-        self.game = Game.objects.create(title="보보봉", password=None, mode=random.choice([0, 1]), status=0, manager=self.user)
+        mode = random.choice([0, 1])
+        match1 = Result.objects.create()
+        if mode == 0:
+            self.game = Game.objects.create(title="보보봉", password=None, mode=mode, status=0, manager=self.user, match1=match1)
+        else:
+            match2 = Result.objects.create()
+            match3 = Result.objects.create()
+            self.game = Game.objects.create(title="보보봉", password=None, mode=mode, status=0, manager=self.user, match1=match1, match2=match2, match3=match3)
         logger.info(f"[게임방 입장] 게임방 생성 : {self.game.id}")
 
     @database_sync_to_async
@@ -281,6 +288,9 @@ class RankGameRoomConsumer(AsyncWebsocketConsumer):
     @staticmethod
     def create_game_instance(users):
         try:
+            match1 = Result.objects.create()
+            match2 = Result.objects.create()
+            match3 = Result.objects.create()
             game = Game.objects.create(
                 mode=2,
                 status=2,
@@ -288,6 +298,9 @@ class RankGameRoomConsumer(AsyncWebsocketConsumer):
                 player1=users[1],
                 player2=users[2],
                 player3=users[3],
+                match1=match1,
+                match2=match2,
+                match3=match3
             )
             return game
         except Exception as e:
