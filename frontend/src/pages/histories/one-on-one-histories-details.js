@@ -2,26 +2,33 @@ import { BACKEND, HISTORIES_IMAGE_PATH } from "../../global.js";
 import { navigate } from "../../utils/navigate.js";
 import { getCookie } from "../../utils/cookie.js";
 import useState from "../../utils/useState.js";
+import { getUserMe } from "../../utils/userUtils.js";
 
 export default async function OneOnOneHistoriesDetails(gameId) {
   const init = () => {
     this.textContent = "";
     let $pagination = document.getElementById("pagination");
     $pagination.style.display = "none";
-    fetch(`${BACKEND}/games/results/${gameId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${getCookie("jwt")}`,
-      },
-    }).then((response) => {
-      if (response.ok) {
-        response.json().then((data) => {
-          setOneOnOneHistoriesDetails(data);
-        });
-      } else {
+    getUserMe().then((response) => {
+      if (response.status !== 200) {
         navigate("error", { errorCode: response.status });
       }
+      let { nickname } = response.data;
+      fetch(`${BACKEND}/games/results/${gameId}?user=${nickname}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getCookie("jwt")}`,
+        },
+      }).then((response) => {
+        if (response.ok) {
+          response.json().then((data) => {
+            setOneOnOneHistoriesDetails(data);
+          });
+        } else {
+          navigate("error", { errorCode: response.status });
+        }
+      });
     });
   };
 
@@ -52,8 +59,8 @@ export default async function OneOnOneHistoriesDetails(gameId) {
   };
 
   const renderOneOnOneDetails = () => {
-    const { data } = getOneOnOneHistoriesDetails();
-    const { player1, player2, start_time, playtime } = data;
+    const { player1, player2, start_time, playtime } =
+      getOneOnOneHistoriesDetails();
     this.insertAdjacentHTML(
       "afterbegin",
       `
