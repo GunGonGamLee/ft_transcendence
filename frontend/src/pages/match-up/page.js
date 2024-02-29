@@ -1,13 +1,13 @@
 import {importCss} from "../../utils/importCss.js";
 
-export default function Tournament($container, info = null) {
+export default function Matchup($container, info = null) {
   if (info === null) {
     return;
   }
   console.log(info);
   console.log(info.data.data.match1);
   console.log("매치 인원")
-  console.log(info.data.data.match1.length());
+  // console.log(info.data.data.match1.length());
   const ws = info.socket;
   ws.onmessage = (msg) => {
     let data = JSON.parse(msg.data);
@@ -21,7 +21,7 @@ export default function Tournament($container, info = null) {
   const init = () => {
     renderSemifinal();
     // renderFinal();
-  };1
+  };
 
   this.unmount = () => {
     // ws.close();
