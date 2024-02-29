@@ -27,7 +27,7 @@ export default async function OneOnOneHistories(mode) {
   };
 
   const getOneOnOneList = () => {
-    let page = this.$prev.data.page + 1;
+    let page = this.$prev.dataset.page + 1;
     getUserMe().then((response) => {
       let { nickname } = response.data;
       fetch(
@@ -60,11 +60,11 @@ export default async function OneOnOneHistories(mode) {
       setPaginationActive(this.$next, false, null);
     } else if (this.totalPages > 1) {
       // 페이지가 2개 이상인 경우
-      if (this.$prev.data.page === "0") {
+      if (this.$prev.dataset.page === "0") {
         setPaginationActive(this.$prev, false, null);
         setPaginationActive(this.$next, true, getOneOnOneList);
       }
-      if (this.$next.data.page === this.totalPages + 1) {
+      if (this.$next.dataset.page === this.totalPages + 1) {
         setPaginationActive(this.$prev, true, getOneOnOneList);
         setPaginationActive(this.$next, false, null);
       }
