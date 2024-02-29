@@ -68,3 +68,17 @@ export const setPaginationActive = ($pagination, isActive, activeFunction) => {
     removePaginationOnClickProperty($pagination);
   }
 };
+
+/**
+ * 페이지네이션을 초기화합니다.
+ * @param $pagination {HTMLElement} 페이지네이션 버튼을 감싸는 <div> 엘리먼트
+ * @param $prev {HTMLElement} 이전 페이지로 이동하는 버튼
+ * @param $next {HTMLElement} 다음 페이지로 이동하는 버튼
+ */
+export const initializePagination = ($pagination, $prev, $next) => {
+  this.$pagination.style.display = "block";
+  this.$prev.dataset.page = "0";
+  this.$next.dataset.page = "0";
+  setPaginationActive(this.$prev, false, null);
+  setPaginationActive(this.$next, false, null);
+};

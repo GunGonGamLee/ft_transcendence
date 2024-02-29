@@ -1,6 +1,9 @@
 import { click } from "../../utils/clickEvent.js";
 import OneOnOneHistoriesDetails from "./one-on-one-histories-details.js";
-import { setPaginationActive } from "../../utils/pagination.js";
+import {
+  initializePagination,
+  setPaginationActive,
+} from "../../utils/pagination.js";
 import { BACKEND, HISTORIES_IMAGE_PATH } from "../../global.js";
 import useState from "../../utils/useState.js";
 import { getCookie } from "../../utils/cookie.js";
@@ -17,14 +20,10 @@ export default async function OneOnOneHistories() {
 
   const init = () => {
     this.$customList.textContent = "";
-    this.$pagination.style.display = "block";
     this.$prev = document.getElementById("prev");
     this.$next = document.getElementById("next");
-    this.$prev.dataset.page = "0";
-    this.$next.dataset.page = "0";
     this.totalPages = 0;
-    setPaginationActive(this.$prev, false, null);
-    setPaginationActive(this.$next, false, null);
+    initializePagination(this.$pagination, this.$prev, this.$next);
     getOneOnOneList();
   };
 
