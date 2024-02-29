@@ -1,13 +1,15 @@
 import TournamentHistoriesDetails from "./tournament-histories-details.js";
 import { click } from "../../utils/clickEvent.js";
 import {
-  addPaginationOnClickProperty,
   initializePagination,
   setPaginationActive,
 } from "../../utils/pagination.js";
-import { HISTORIES_IMAGE_PATH } from "../../global.js";
+import { BACKEND, HISTORIES_IMAGE_PATH } from "../../global.js";
+import { getUserMe } from "../../utils/userUtils.js";
+import useState from "../../utils/useState.js";
+import { getCookie } from "../../utils/cookie.js";
 
-export default async function TournamentHistories(isCustomMode) {
+export default async function TournamentHistories(mode) {
   this.$pagination = document.getElementById("pagination");
   this.needToRender = true;
   const init = () => {
@@ -17,6 +19,51 @@ export default async function TournamentHistories(isCustomMode) {
     this.totalPages = 0;
     initializePagination(this.$pagination, this.$prev, this.$next);
     getTournamentList();
+  };
+
+  const getTournamentList = () => {
+    let page = this.$prev.dataset.page + 1;
+    getUserMe().then((response) => {
+      let { nickname } = response.data;
+      fetch(
+        `${BACKEND}/games/results?user=${nickname}&mode=${mode}&currentPage=${page}&limit=4`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${getCookie("jwt")}`,
+            "Content-type": "application/json",
+          },
+        },
+      ).then((response) => {
+        if (response.ok) {
+          response.json().then((data) => {
+            this.totalPages = data.total_pages;
+            setPagination();
+            setTournamentHistories(data);
+          });
+        } else {
+          navigate("error", { errorCode: response.status });
+        }
+      });
+    });
+  };
+
+  const setPagination = () => {
+    if (this.totalPages === 1) {
+      // 페이지가 1개인 경우
+      setPaginationActive(this.$prev, false, null);
+      setPaginationActive(this.$next, false, null);
+    } else if (this.totalPages > 1) {
+      // 페이지가 2개 이상인 경우
+      if (this.$prev.dataset.page === "0") {
+        setPaginationActive(this.$prev, false, null);
+        setPaginationActive(this.$next, true, getTournamentList);
+      }
+      if (this.$next.dataset.page === this.totalPages + 1) {
+        setPaginationActive(this.$prev, true, getTournamentList);
+        setPaginationActive(this.$next, false, null);
+      }
+    }
   };
 
   /**
@@ -99,18 +146,24 @@ export default async function TournamentHistories(isCustomMode) {
    */
   const renderList = () => {
     let $listWrapper = document.getElementById("list-wrapper");
-    for (let data of this.state) {
+    let { data } = getTournamentHistories();
+    if (data.length === 0) {
+      this.innerHTML = `<p class="histories empty-list">비었다.</p>`;
+      return;
+    }
+    for (let item of data) {
       let $listItem = document.createElement("div");
+      const { id, player, opponents } = item;
       $listItem.classList.add("histories");
       $listItem.classList.add("tournament");
       $listItem.classList.add("list-item");
-      $listItem.dataset.itemId = data.id;
+      $listItem.dataset.itemId = id;
       $listItem.insertAdjacentHTML(
         "afterbegin",
         `
-        ${renderRanking(data.player.ranking)}
-        ${renderPlayer(data.player)}
-        ${renderOpponents(data.opponents)}
+        ${renderRanking(player["ranking"])}
+        ${renderPlayer(player)}
+        ${renderOpponents(opponents)}
       `,
       );
       click($listItem, TournamentHistoriesDetails.bind(this, data.id));
@@ -118,7 +171,7 @@ export default async function TournamentHistories(isCustomMode) {
     }
   };
 
-  const render = () => {
+  this.render = () => {
     this.insertAdjacentHTML(
       "afterbegin",
       `
@@ -129,4 +182,9 @@ export default async function TournamentHistories(isCustomMode) {
   };
 
   init();
+  let [getTournamentHistories, setTournamentHistories] = useState(
+    {},
+    this,
+    "render",
+  );
 }
