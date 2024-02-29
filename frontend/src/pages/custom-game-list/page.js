@@ -244,7 +244,7 @@ export default function CustomGameList($container) {
     // 방 걸러보기
     const $1vs1FilterBtn = document.getElementById("1vs1-filter-btn");
     const $tournamentFilterBtn = document.getElementById(
-      "match-up-filter-btn",
+      "tournament-filter-btn",
     );
 
     click($1vs1FilterBtn, () => {
@@ -282,7 +282,7 @@ export default function CustomGameList($container) {
 
     // 게임 방 만들기 모달
     const $1vs1ModeBtn = document.getElementById("1vs1-toggle-btn");
-    const $tournamentModeBtn = document.getElementById("match-up-toggle-btn");
+    const $tournamentModeBtn = document.getElementById("tournament-toggle-btn");
     const $makeRoomBtn = document.getElementById("make-room-btn");
 
     click($1vs1ModeBtn, () => {

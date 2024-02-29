@@ -78,7 +78,7 @@ export default async function TournamentHistoriesDetails(id) {
    */
   const renderMatch = ($treeWrapper, matchData) => {
     let $match = document.createElement("div");
-    $match.className = "histories match-up match";
+    $match.className = "histories tournament match";
     $match.insertAdjacentHTML(
       "afterbegin",
       `
@@ -164,7 +164,7 @@ export default async function TournamentHistoriesDetails(id) {
    */
   const renderFinal = ($treeWrapper, finalData) => {
     let $final = document.createElement("div");
-    $final.className = "histories match-up";
+    $final.className = "histories tournament";
     $final.id = "final";
     $final.insertAdjacentHTML(
       "afterbegin",
@@ -183,7 +183,7 @@ export default async function TournamentHistoriesDetails(id) {
     init();
     let $treeWrapper = document.createElement("div");
     $treeWrapper.id = "tree-wrapper";
-    $treeWrapper.className = "histories match-up";
+    $treeWrapper.className = "histories tournament";
     renderMatch($treeWrapper, this.state.match1);
     renderFinal($treeWrapper, this.state.match3);
     renderMatch($treeWrapper, this.state.match2);
@@ -309,7 +309,7 @@ export default async function TournamentHistoriesDetails(id) {
     init();
     let $resultWrapper = document.createElement("div");
     $resultWrapper.id = "result-wrapper";
-    $resultWrapper.className = "histories match-up";
+    $resultWrapper.className = "histories tournament";
     const result = getResult();
     renderResult(result, $resultWrapper);
     this.appendChild($resultWrapper);

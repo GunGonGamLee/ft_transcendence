@@ -93,7 +93,7 @@ export default function Histories($container) {
     const $casualMenuWrapper = document.getElementById("casual-menu-wrapper");
     const $casual = document.getElementById("casual");
     const $toggleItems = Array.from(document.getElementsByTagName("li"));
-    const $tournament = document.getElementById("match-up");
+    const $tournament = document.getElementById("tournament");
 
     // click 이벤트
     click($summary, Summary);
