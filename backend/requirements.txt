@@ -18,6 +18,7 @@ drf-yasg==1.21.7
 hvac==2.1.0
 idna==3.6
 inflection==0.5.1
+numpy==1.26.4
 oauthlib==3.2.2
 packaging==23.2
 pillow==10.2.0

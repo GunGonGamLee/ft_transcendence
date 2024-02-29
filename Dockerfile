@@ -1,6 +1,7 @@
 FROM python:3.12.1-slim
 
 RUN mkdir -p backend && \
+	mkdir -p /var/log/djangolog && \
 	apt-get update && \
 	apt-get install bash && \
 	apt-get install -y python3-pip
