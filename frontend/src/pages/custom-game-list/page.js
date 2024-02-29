@@ -68,11 +68,13 @@ export default function CustomGameList($container) {
       $listWrapper.insertAdjacentHTML(
         "afterbegin",
         `
-              <div style="position: absolute; top: 40vh; left: 40vw;">               
+              <div style="height: 60vh; width: 90vw; margin-top: 20vh;">      
+              <div style="height: 23vh; display: flex; flex-direction: column; justify-content: center; align-items: center">
                <div class="spinner-border text-light" style="width: 10vh; height: 10vh" role="status">
                   <span class="visually-hidden">Loading...</span>
                </div>
-               <span>Fetching data....</span>
+               <span style="font-family: Galmuri11, serif; margin-top: 2vh; font-size: x-large">Loading....</span>
+                </div>         
               </div> 
             `,
       );
