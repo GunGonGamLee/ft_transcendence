@@ -113,7 +113,7 @@ export default async function OneOnOneHistories() {
       );
       let $listItemDiv = $listWrapper.lastElementChild;
       click($listItemDiv, () => {
-        OneOnOneHistoriesDetails.bind(this, id, "1vs1")();
+        OneOnOneHistoriesDetails.bind(this, id)();
       });
       $listWrapper.appendChild($listItemDiv);
     }

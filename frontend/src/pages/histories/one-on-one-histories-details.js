@@ -1,6 +1,6 @@
 import { HISTORIES_IMAGE_PATH } from "../../global.js";
 
-export default async function OneOnOneHistoriesDetails(gameId, mode) {
+export default async function OneOnOneHistoriesDetails(gameId) {
   const init = () => {
     this.textContent = "";
     let $pagination = document.getElementById("pagination");
