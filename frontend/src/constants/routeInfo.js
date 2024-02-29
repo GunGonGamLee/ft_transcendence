@@ -8,7 +8,7 @@ import Login from "../pages/login/page.js";
 import CustomGameList from "../pages/custom-game-list/page.js";
 import Auth from "../pages/auth/page.js";
 import InGame from "../pages/in-game/page.js";
-import Tournament from "../pages/tournament/page.js";
+import Tournament from "../pages/match-up/page.js";
 
 /**
  * 원하는 경로에 따라 렌더링할 컴포넌트를 정의합니다.

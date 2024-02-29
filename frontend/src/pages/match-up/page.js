@@ -5,16 +5,23 @@ export default function Tournament($container, info = null) {
     return;
   }
   console.log(info);
+  console.log(info.data.data.match1);
+  console.log("매치 인원")
+  console.log(info.data.data.match1.length());
   const ws = info.socket;
   ws.onmessage = (msg) => {
     let data = JSON.parse(msg.data);
     console.log(data);
+    console.log("here1");
+    console.log(data.data.match);
+    console.log("here2");
+    console.log(data.data.match1);
   };
 
   const init = () => {
-    // renderSemifinal();
-    renderFinal();
-  };
+    renderSemifinal();
+    // renderFinal();
+  };1
 
   this.unmount = () => {
     // ws.close();
