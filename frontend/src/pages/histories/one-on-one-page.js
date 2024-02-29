@@ -112,7 +112,7 @@ export default async function OneOnOneHistories(mode) {
       );
       let $listItemDiv = $listWrapper.lastElementChild;
       click($listItemDiv, () => {
-        navigate(`histories/details?mode=${mode}&gameId=${id}`, { game });
+        navigate(`histories/details?mode=${mode}&gameId=${id}`, { gameId: id });
       });
       $listWrapper.appendChild($listItemDiv);
     }
