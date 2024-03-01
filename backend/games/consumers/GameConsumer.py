@@ -237,7 +237,6 @@ class GameConsumer(AsyncWebsocketConsumer):
                         if num == 2:
                             break
                         await asyncio.sleep(0.3)
-
                     await self.send_start_message(self.match1, self.match1_group_name)
                     await asyncio.sleep(2)
                     self.match1.started_at = datetime.now()
@@ -271,7 +270,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                         await self.play(self.match2)
                         await self.send_in_game_message(self.match2, self.match2_group_name)
                         await asyncio.sleep(1 / 24)
-                    await self.save_match_data_in_database(self.match2, datetime.now())
+                    await self.save_match_data_in_database(self.match2)
                     await self.save_match3_matching_in_database(self.game.match2.winner)
                     await self.send_end_message(self.game.match2, self.match2_group_name, False)
                     return
@@ -316,11 +315,10 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.match3 = PingPongGame(self.ping_pong_map, self.game.match3.player1, self.game.match3.player2)
 
     @database_sync_to_async
-    def save_match_data_in_database(self, result: PingPongGame, finished_at):
-        logger.info(f"finished_at : {type(finished_at)}")
-        logger.info(f"result.started_at : {type(result.started_at)}")
-        logger.info(f"(finished_at - result.started_at).total_seconds() : {type((finished_at - result.started_at).total_seconds())}")
-
+    def save_match_data_in_database(self, result: PingPongGame):
+        finished_at = datetime.now()
+        time_diff = finished_at - result.started_at
+        playtime = datetime.min + time_diff
         match = None
         if self.my_match == 1:
             match = self.game.match1
@@ -331,7 +329,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         match.player1_score = result.left_side_player.score
         match.player2_score = result.right_side_player.score
         match.started_at = result.started_at
-        match.playtime = (finished_at - result.started_at).total_seconds()
+        match.playtime = playtime
         if result.left_side_player.score > result.right_side_player.score:
             match.winner = match.player1
         else:
