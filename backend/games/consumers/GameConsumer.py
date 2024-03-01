@@ -490,38 +490,3 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def in_game(self, event):
         await self.send(text_data=json.dumps(event))
-
-
-"""
-방장이 디비 처리를 다 할 거야
-
-방장 가 들어옴
-나 들어옴
-다 들어옴
-라 들어옴
-
-겜방 group_add
-겜방 그룹 len == 1이면 match1 - player1 
-    디비에 본인 정보 저장
-겜방 그룹 len == 3이면 match1 - player2 
-    디비에 본인 정보 저장
-겜방 그룹 len == 2이면 match2 - player1 
-    디비에 본인 정보 저장
-겜방 그룹 len == 4이면 match2 - player2     
-    디비에 본인 정보 저장
-방장이 아니면
-    매칭된 곳 group_add
-
-방장이면
-    현재 시간 저장
-    while true 하고
-        겜방 그룹 인원이 모드에 해당하는 수 만큼 차면 break
-        특정 시간 지나면 raise
-
-    로그 - "[인게임] RANK, PVP, TOURNAMENT 게임 시작"
-    group_send()
-
-
-
-
-"""
