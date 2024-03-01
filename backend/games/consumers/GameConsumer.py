@@ -21,18 +21,21 @@ class GameConsumer(AsyncWebsocketConsumer):
         super().__init__(args, kwargs)
         self.user = None
         self.manager = False
+        self.my_match = None
+        self.player1 = False
+
         self.game = None
         self.game_id = None
+
         self.game_group_name = None
-        self.my_match = None
         self.match1_group_name = None
         self.match2_group_name = None
         self.match3_group_name = None
 
-        self.ping_pong_map = PingPongMap(0, 0)
-        self.match1 = PingPongGame(self.ping_pong_map)
-        self.match2 = PingPongGame(self.ping_pong_map)
-        self.match3 = PingPongGame(self.ping_pong_map)
+        self.ping_pong_map = None
+        self.match1 = None
+        self.match2 = None
+        self.match3 = None
 
     async def connect(self):
         logger.info("[인게임] connect")
