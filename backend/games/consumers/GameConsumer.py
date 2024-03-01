@@ -286,16 +286,19 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def play(self, match):
         # todo 볼 속도 1/24 계산
-        if self.match1.ball.is_ball_hit_wall(self.match1.ping_pong_map):
-            self.match1.ball.bounce((1, -1))
-        elif self.match1.ball.is_ball_inside_bar(self.match1.left_side_player.bar) or self.match1.ball.is_ball_inside_bar(
-                self.match1.right_side_player.bar):
-            self.match1.ball.bounce((-1, 1))
-        if (whether_score_a_goal := self.match1.ball.is_goal_in(self.match1.ping_pong_map)) != [False, False]:
-            self.match1.update_score(whether_score_a_goal)
-            self.match1.ball.reset(self.match1.ping_pong_map)
-        if self.match1.left_side_player.score + self.match1.right_side_player.score == 5:
-            self.match1.finished = True
+        if match.ball.is_ball_hit_wall(match.ping_pong_map):
+            logger.info(f"[인게임] match{self.my_match} - 공 벽에 부딪힘")
+            match.ball.bounce((1, -1))
+        elif match.ball.is_ball_inside_bar(match.left_side_player.bar) or match.ball.is_ball_inside_bar(
+                match.right_side_player.bar):
+            logger.info(f"[인게임] match{self.my_match} - 바에 부딪힘")
+            match.ball.bounce((-1, 1))
+        if (whether_score_a_goal := match.ball.is_goal_in(match.ping_pong_map)) != [False, False]:
+            logger.info(f"[인게임] match{self.my_match} - {whether_score_a_goal} 득점")
+            match.update_score(whether_score_a_goal)
+            match.ball.reset(match.ping_pong_map)
+        if match.left_side_player.score + match.right_side_player.score == 5:
+            match.finished = True
         match.ball.move()
 
     @database_sync_to_async
