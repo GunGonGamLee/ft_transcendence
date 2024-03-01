@@ -117,6 +117,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             num = self.channel_layer.groups[f"{self.game_group_name}"].__len__()
             if (self.game.mode == 0 and num == 2) or (self.game.mode != 0 and num == 4):
                 break
+            await asyncio.sleep(0.3)
         await self.send_match_table()
 
     @database_sync_to_async
@@ -235,6 +236,8 @@ class GameConsumer(AsyncWebsocketConsumer):
                         num = self.channel_layer.groups[self.match1_group_name].__len__()
                         if num == 2:
                             break
+                        await asyncio.sleep(0.3)
+
                     await self.send_start_message(self.match1, self.match1_group_name)
                     await asyncio.sleep(2)
                     self.match1.started_at = datetime.now()
@@ -259,6 +262,8 @@ class GameConsumer(AsyncWebsocketConsumer):
                         num = self.channel_layer.groups[self.match2_group_name].__len__()
                         if num == 2:
                             break
+                        await asyncio.sleep(0.3)
+
                     await self.send_start_message(self.match2, self.match2_group_name)
                     await asyncio.sleep(2)
                     self.match2.started_at = datetime.now()
