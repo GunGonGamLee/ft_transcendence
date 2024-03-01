@@ -8,6 +8,7 @@ from channels.db import database_sync_to_async
 from games.models import Game, CasualGameView, PingPongGame, Ball, Bar, Player, PingPongMap, Result
 from games.serializers import GameRoomSerializer, PvPMatchSerializer, TournamentMatchSerializer
 from datetime import datetime
+from users.models import User
 from src.choices import GAME_SETTINGS_DICT
 
 logger = logging.getLogger(__name__)
@@ -103,6 +104,9 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def append_user(self, game_group_name):
         if hasattr(self.UserList, game_group_name) is False:
             setattr(self.UserList, game_group_name, [])
+            setattr(self.UserList, self.match1_group_name, [])
+            setattr(self.UserList, self.match2_group_name, [])
+            setattr(self.UserList, self.match3_group_name, [])
         getattr(self.UserList, game_group_name).append(self.user)
 
     async def when_manager(self):
@@ -213,8 +217,8 @@ class GameConsumer(AsyncWebsocketConsumer):
         message_data = data.get('data', {})
         await self.save_game_object_by_id()
         if message_type == 'start':
-            if self.ping_pong_map.width == 0:
-                await self.set_values(message_data)
+
+            # append .. 할 필요가 없을 거 같은디
             if self.my_match == 1:
                 getattr(self.UserList, self.match1_group_name).append(self.user)
             elif self.my_match == 2:
@@ -380,7 +384,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             }
         }
         await self.channel_layer.group_send(
-            self.match1_group_name,
+            group_name,
             {
                 'type': 'game_start',
                 'data': data
@@ -391,26 +395,26 @@ class GameConsumer(AsyncWebsocketConsumer):
             'data': data
         })
 
-    async def send_pvp_in_game_message(self):
+    async def send_in_game_message(self, match, group_name):
         data = {
             'ball': {
-                'x': self.match1.ball.x,
-                'y': self.match1.ball.y,
-                'direction': self.match1.ball.direction
+                'x': match.ball.x,
+                'y': match.ball.y,
+                'direction': match.ball.direction
             },
             'left_side_player': {
-                'x': self.match1.left_side_player.bar.x,
-                'y': self.match1.left_side_player.bar.y,
-                'score': self.match1.left_side_player.score
+                'x': match.left_side_player.bar.x,
+                'y': match.left_side_player.bar.y,
+                'score': match.left_side_player.score
             },
             'right_side_player': {
-                'x': self.match1.right_side_player.bar.x,
-                'y': self.match1.right_side_player.bar.y,
-                'score': self.match1.left_side_player.score
+                'x': match.right_side_player.bar.x,
+                'y': match.right_side_player.bar.y,
+                'score': match.left_side_player.score
             }
         }
         await self.channel_layer.group_send(
-            self.match1_group_name,
+            group_name,
             {
                 'type': 'in_game',
                 'data': data
@@ -420,102 +424,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             'type': 'in_game',
             'data': data
         })
-
-    async def send_tournament_start_message(self):
-        data = {
-            'map': {
-                'width': self.match1.ping_pong_map.width,
-                'height': self.match1.ping_pong_map.height
-            },
-            'bar': {
-                'width': self.match1.left_side_player.bar.width,
-                'height': self.match1.left_side_player.bar.height
-            },
-            'ball': {
-                'x': self.match1.ball.x,
-                'y': self.match1.ball.y
-            },
-            'left_side_player': {
-                'x': self.match1.left_side_player.bar.x,
-                'y': self.match1.left_side_player.bar.y,
-                'score': self.match1.left_side_player.score
-            },
-            'right_side_player': {
-                'x': self.match1.right_side_player.bar.x,
-                'y': self.match1.right_side_player.bar.y,
-                'score': self.match1.left_side_player.score
-            }
-        }
-        await self.channel_layer.group_send(
-            self.match1_group_name,
-            {
-                'type': 'game_start',
-                'data': data
-            }
-        )
-        await self.channel_layer.group_send(
-            self.match2_group_name,
-            {
-                'type': 'game_start',
-                'data': data
-            }
-        )
-        await self.game_start({
-            'type': 'game_start',
-            'data': data
-        })
-
-    async def send_tournament_in_game_message(self, match1, match2):
-        match1_data = self.create_match_data(match1)
-        match2_data = self.create_match_data(match2)
-
-        if not match1.finished:
-            if self.my_match == 1:
-                await self.in_game({
-                    'type': 'in_game',
-                    'data': match1_data
-                })
-            await self.channel_layer.group_send(
-                self.match1_group_name,
-                {
-                    'type': 'in_game',
-                    'data': match1_data
-                }
-            )
-        if not match2.finished:
-            if self.my_match == 2:
-                await self.in_game({
-                    'type': 'in_game',
-                    'data': match2_data
-                })
-            await self.channel_layer.group_send(
-                self.match2_group_name,
-                {
-                    'type': 'in_game',
-                    'data': match2_data
-                }
-            )
-
-    def create_match_data(self, match):
-        ball_data = {
-            'x': match.ball.x,
-            'y': match.ball.y
-        }
-        player1_data = {
-            'x': match.left_side_player.bar.x,
-            'y': match.left_side_player.bar.y,
-            'score': match.left_side_player.score
-        }
-        player2_data = {
-            'x': match.right_side_player.bar.x,
-            'y': match.right_side_player.bar.y,
-            'score': match.right_side_player.score
-        }
-        return {
-            'ball': ball_data,
-            'player1': player1_data,
-            'player2': player2_data
-        }
 
     async def game_info(self, event):
         await self.send(text_data=json.dumps(event))
