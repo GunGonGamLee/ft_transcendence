@@ -132,7 +132,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             return
         elif self.game.player1.nickname == user:
             return
-        elif self.game.mode == 1 and (self.game.player2.nickname == user or self.game.player3.nickname == user):
+        elif (self.game.mode == 1 or self.game.mode == 2) and (self.game.player2.nickname == user or self.game.player3.nickname == user):
             return
         else:
             raise Exception("게임 방에 속한 유저가 아닙니다.")
