@@ -216,30 +216,56 @@ class GameConsumer(AsyncWebsocketConsumer):
             if self.ping_pong_map.width == 0:
                 await self.set_values(message_data)
             if self.my_match == 1:
-                self.match1_users.append(self.user)
+                getattr(self.UserList, self.match1_group_name).append(self.user)
             elif self.my_match == 2:
-                self.match2_users.append(self.user)
+                getattr(self.UserList, self.match2_group_name).append(self.user)
 
-            # 게임 시작
-            if self.game.mode == 0 and len(self.match1_users) == 2:
-                await self.send_pvp_start_message(self.match1)
-                await asyncio.sleep(2)
-                self.match1.started_at = datetime.now()
-                while not self.match1.finished:
-                    await self.play(self.match1)
-                    await self.send_pvp_in_game_message()
-                    await asyncio.sleep(1 / 24)
-
-            elif self.game.mode != 0 and len(self.match1_users) == 2 and len(self.match2_users) == 2:
-                await self.send_tournament_start_message()
-                await asyncio.sleep(2)
-                self.match1.started_at = datetime.now()
-                self.match2.started_at = datetime.now()
-                while not self.match1.finished and not self.match2.finished:
-                    await self.play(self.match1)
-                    await self.play(self.match2)
-                    await self.send_tournament_in_game_message(self.match1, self.match2)
-                    await asyncio.sleep(1 / 24)
+            if self.player1:
+                if self.my_match == 1:
+                    await self.init_game(message_data, self.my_match)
+                    start_time = time.time()
+                    while True:
+                        if time.time() - start_time >= 30:
+                            raise TimeoutError()
+                        logger.info(f"{self.channel_layer.groups}")
+                        num = self.channel_layer.groups[self.match1_group_name].__len__()
+                        if num == 2:
+                            break
+                    await self.send_start_message(self.match1, self.match1_group_name)
+                    await asyncio.sleep(2)
+                    self.match1.started_at = datetime.now()
+                    while not self.match1.finished:
+                        await self.play(self.match1)
+                        await self.send_in_game_message(self.match1, self.match1_group_name)
+                        await asyncio.sleep(1 / 24)
+                    await self.save_match_data_in_database(self.match1)
+                    if self.game.mode == 0:
+                        await self.send_end_message(self.game.match1, self.match1_group_name, True)
+                        return
+                    else:
+                        await self.save_match3_matching_in_database(self.game.match1.winner)
+                        await self.send_end_message(self.game.match1, self.match1_group_name, False)
+                        return
+                elif self.my_match == 2:
+                    await self.init_game(message_data, self.my_match)
+                    start_time = time.time()
+                    while True:
+                        if time.time() - start_time >= 30:
+                            raise TimeoutError()
+                        num = self.channel_layer.groups[self.match2_group_name].__len__()
+                        if num == 2:
+                            break
+                    await self.send_start_message(self.match2, self.match2_group_name)
+                    await asyncio.sleep(2)
+                    self.match2.started_at = datetime.now()
+                    while not self.match2.finished:
+                        await self.play(self.match2)
+                        await self.send_in_game_message(self.match2, self.match2_group_name)
+                        await asyncio.sleep(1 / 24)
+                    await self.save_match_data_in_database(self.match2, datetime.now())
+                    await self.save_match3_matching_in_database(self.game.match2.winner)
+                    await self.send_end_message(self.game.match2, self.match2_group_name, False)
+                    return
 
         elif message_type == 'keyboard':
             if message_data == 'up':
