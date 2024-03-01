@@ -359,7 +359,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 'data': data
             }
         )
-        await self.game_start({
+        await self.game_end({
             'type': type_,
             'data': data
         })
@@ -438,4 +438,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps(event))
 
     async def in_game(self, event):
+        await self.send(text_data=json.dumps(event))
+
+    async def game_end(self, event):
         await self.send(text_data=json.dumps(event))
