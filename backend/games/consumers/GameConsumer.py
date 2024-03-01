@@ -139,7 +139,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 await self.save_match(1)
             else:
                 await self.save_match(2)
-            self.channel_layer.group_add(self.match1_group_name, self.channel_name)
+            await self.channel_layer.group_add(self.match1_group_name, self.channel_name)
         else:  # tournament
             join_num = self.channel_layer.groups[self.game_group_name].__len__()
             if join_num % 2 == 1:
@@ -148,26 +148,28 @@ class GameConsumer(AsyncWebsocketConsumer):
                     await self.save_match(1)
                 else:
                     await self.save_match(2)
-                self.channel_layer.group_add(self.match1_group_name, self.channel_name)
+                await self.channel_layer.group_add(self.match1_group_name, self.channel_name)
             else:
                 self.my_match = 2
                 if join_num == 2:
                     await self.save_match(1)
                 else:
                     await self.save_match(2)
-                self.channel_layer.group_add(self.match2_group_name, self.channel_name)
+                await self.channel_layer.group_add(self.match2_group_name, self.channel_name)
 
     @database_sync_to_async
     def save_match(self, player):
         if self.my_match == 1:
             if player == 1:
                 self.game.match1.player1 = self.user
+                self.player1 = True
             else:
                 self.game.match1.player2 = self.user
             self.game.match1.save()
         else:
             if player == 1:
                 self.game.match2.player1 = self.user
+                self.player1 = True
             else:
                 self.game.match2.player2 = self.user
             self.game.match2.save()
