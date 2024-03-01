@@ -289,37 +289,72 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.match1.finished = True
         match.ball.move()
 
-    async def set_values(self, message_data):
+    @database_sync_to_async
+    def init_game(self, message_data, match):
         map_width = message_data['map_width']
         map_height = message_data['map_height']
 
-        self.ping_pong_map.width = map_width
-        self.ping_pong_map.height = map_height
+        self.ping_pong_map = PingPongMap(map_width, map_height)
 
-        await self.set_match(self.match1, 1)
-        if self.game.mode != 0:
-            await self.set_match(self.match2, 2)
-            await self.set_match(self.match3, 3)
+        if match == 1:
+            self.match1 = PingPongGame(self.ping_pong_map, self.game.match1.player1, self.game.match1.player2)
+        elif match == 2:
+            self.match2 = PingPongGame(self.ping_pong_map, self.game.match2.player1, self.game.match2.player2)
+        elif match == 3:
+            self.match3 = PingPongGame(self.ping_pong_map, self.game.match3.player1, self.game.match3.player2)
 
     @database_sync_to_async
-    def set_match(self, match, match_num):
-        if match_num == 1:
-            match.left_side_player.user = self.game.match1.player1
-            match.right_side_player.user = self.game.match1.player2
-        elif match_num == 2:
-            match.left_side_player.user = self.game.match2.player1
-            match.right_side_player.user = self.game.match2.player2
+    def save_match_data_in_database(self, result: PingPongGame, finished_at):
+        logger.info(f"finished_at : {type(finished_at)}")
+        logger.info(f"result.started_at : {type(result.started_at)}")
+        logger.info(f"(finished_at - result.started_at).total_seconds() : {type((finished_at - result.started_at).total_seconds())}")
 
-        match.ball.x = match.ping_pong_map.width / 2
-        match.ball.y = match.ping_pong_map.height / 2
+        match = None
+        if self.my_match == 1:
+            match = self.game.match1
+        elif self.my_match == 2:
+            match = self.game.match2
+        elif self.my_match == 3:
+            match = self.game.match3
+        match.player1_score = result.left_side_player.score
+        match.player2_score = result.right_side_player.score
+        match.started_at = result.started_at
+        match.playtime = (finished_at - result.started_at).total_seconds()
+        if result.left_side_player.score > result.right_side_player.score:
+            match.winner = match.player1
+        else:
+            match.winner = match.player2
+        match.save()
 
-        match.left_side_player.bar.x = GAME_SETTINGS_DICT['bar']['width']
-        match.left_side_player.bar.y = self.ping_pong_map.height / 2 - GAME_SETTINGS_DICT['bar']['height'] / 2
+    @database_sync_to_async
+    def save_match3_matching_in_database(self, winner: User):
+        match = self.game.match3
+        if self.my_match == 1:
+            match.player1 = winner
+        else:
+            match.player2 = winner
+        match.save()
 
-        match.right_side_player.bar.x = self.ping_pong_map.width - GAME_SETTINGS_DICT['bar']['width']
-        match.right_side_player.bar.y = self.ping_pong_map.height / 2 - GAME_SETTINGS_DICT['bar']['height'] / 2
+    async def send_end_message(self, match: Result, group_name, final: bool):
+        type_ = 'game_end'
+        data = {
+            'game_id': self.game_id,
+            'winner': match.winner.nickname,
+            'final': final
+        }
+        await self.channel_layer.group_send(
+            group_name,
+            {
+                'type': type_,
+                'data': data
+            }
+        )
+        await self.game_start({
+            'type': type_,
+            'data': data
+        })
 
-    async def send_pvp_start_message(self, match):
+    async def send_start_message(self, match, group_name):
         data = {
             'map': {
                 'width': match.ping_pong_map.width,
