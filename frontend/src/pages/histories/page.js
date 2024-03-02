@@ -95,16 +95,18 @@ export function Histories($container) {
       navigate("/histories/summary");
     });
     click($casual, () => {
-      navigate("/histories/casual", { mode: "casual_1vs1" });
+      navigate("/histories/casual/one-on-one", { mode: "casual_1vs1" });
     });
     click($tournament, () => {
-      navigate("/histories/tournament", { mode: "casual_tournament" });
+      navigate("/histories/rank/tournament", { mode: "rank" });
     });
     click($toggleItems[0], () => {
-      navigate("/histories/casual", { mode: "casual_1vs1" });
+      navigate("/histories/casual/one-on-one", { mode: "casual_1vs1" });
     });
     click($toggleItems[1], () => {
-      navigate("/histories/tournament", { mode: "rank" });
+      navigate("/histories/casual/tournament", {
+        mode: "casual_tournament",
+      });
     }); // 토너먼트 모드 선택 시 실행
 
     // toggle 이벤트

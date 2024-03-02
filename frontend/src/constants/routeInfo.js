@@ -28,13 +28,18 @@ export const routes = [
     header: MainHeader,
   },
   {
-    path: /^\/histories\/casual$/,
+    path: /^\/histories\/casual\/one-on-one$/,
     page: OneOnOneHistories.bind(null, "casual_1vs1"),
     header: MainHeader,
   },
   {
-    path: /^\/histories\/tournament$/,
-    page: TournamentHistories.bind(null, "rank"),
+    path: /^\/histories\/casual\/tournament$/,
+    page: TournamentHistories,
+    header: MainHeader,
+  },
+  {
+    path: /^\/histories\/rank\/tournament?$/,
+    page: TournamentHistories,
     header: MainHeader,
   },
   {
