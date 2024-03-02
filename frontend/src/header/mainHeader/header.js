@@ -79,7 +79,7 @@ export default function MainHeader($container) {
     });
     // 사용자 정보 클릭 이벤트
     click(document.getElementById("go-histories"), () => {
-      navigate("/histories");
+      navigate("/histories/summary");
     });
     // 로그아웃 버튼 클릭 이벤트
     click(document.getElementById("logout"), () => {
