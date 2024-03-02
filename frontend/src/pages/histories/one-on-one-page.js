@@ -8,12 +8,14 @@ import useState from "../../utils/useState.js";
 import { getCookie } from "../../utils/cookie.js";
 import { getUserMe } from "../../utils/userUtils.js";
 import { navigate } from "../../utils/navigate.js";
+import { Histories } from "./page.js";
 
 /**
  * 사용자 지정 모드의 전적 리스트를 렌더링합니다.
  * @constructor 전적 리스트의 게임 모드
  */
 export default function OneOnOneHistories(mode) {
+  new Histories(document.getElementById("app"));
   this.$customList = document.getElementById("content");
   this.$pagination = document.getElementById("pagination");
 
@@ -112,7 +114,9 @@ export default function OneOnOneHistories(mode) {
       );
       let $listItemDiv = $listWrapper.lastElementChild;
       click($listItemDiv, () => {
-        navigate(`histories/details?mode=${mode}&gameId=${id}`, { gameId: id });
+        navigate(`/histories/details?mode=${mode}&gameId=${id}`, {
+          gameId: id,
+        });
       });
       $listWrapper.appendChild($listItemDiv);
     }
@@ -144,6 +148,5 @@ export default function OneOnOneHistories(mode) {
   };
 
   init();
-  console.log("1vs1", this);
   let [get1vs1Histories, set1vs1Histories] = useState({}, this, "render");
 }

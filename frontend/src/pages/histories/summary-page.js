@@ -3,8 +3,10 @@ import { getCookie } from "../../utils/cookie.js";
 import useState from "../../utils/useState.js";
 import { getUserMe } from "../../utils/userUtils.js";
 import { navigate } from "../../utils/navigate.js";
+import { Histories } from "./page.js";
 
 export default function Summary() {
+  new Histories(document.getElementById("app"));
   this.$container = document.getElementById("content");
   this.$pagination = document.getElementById("pagination");
 
