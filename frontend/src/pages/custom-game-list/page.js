@@ -134,6 +134,10 @@ export default function CustomGameList($container) {
           $passwordInput.focus();
           $passwordInput.placeholder = "잘못된 비밀번호입니다";
           $passwordInput.classList.add("shake-animation");
+          // 애니메이션 보여준 후 제거
+          $passwordInput.addEventListener("animationend", () => {
+            $passwordInput.classList.remove("shake-animation");
+          });
         }
         return;
       }
@@ -309,6 +313,10 @@ export default function CustomGameList($container) {
         $roomNameInput.focus();
         $roomNameInput.placeholder = "이름을 입력해라";
         $roomNameInput.classList.add("shake-animation");
+        // 애니메이션 보여준 후 제거
+        $roomNameInput.addEventListener("animationend", () => {
+          $roomNameInput.classList.remove("shake-animation");
+        });
         return;
       }
       fetch(`${BACKEND}/games/`, {
@@ -329,7 +337,6 @@ export default function CustomGameList($container) {
           if (res.status === 201) {
             return res.json();
           } else if (res.status === 400) {
-            // alert("이미 있는 방 이름입니다");
             $roomNameInput.value = "";
             $roomNameInput.focus();
             $roomNameInput.placeholder = "이미 있는 방 이름임";
