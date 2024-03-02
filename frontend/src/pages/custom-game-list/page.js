@@ -128,8 +128,13 @@ export default function CustomGameList($container) {
     ws.onmessage = (event) => {
       const res = JSON.parse(event.data);
       if (res.error) {
-        if (res.error === "[PermissionDenied] can't access")
-          alert("비밀번호가 틀렸습니다.");
+        if (res.error === "[PermissionDenied] can't access") {
+          const $passwordInput = document.getElementById("pwd-input");
+          $passwordInput.value = "";
+          $passwordInput.focus();
+          $passwordInput.placeholder = "잘못된 비밀번호입니다";
+          $passwordInput.classList.add("shake-animation");
+        }
         return;
       }
       res.socket = ws;
@@ -300,7 +305,10 @@ export default function CustomGameList($container) {
       const $passwordInput = document.getElementById("password-input");
 
       if ($roomNameInput.value === "") {
-        alert("방 이름을 입력해주세요.");
+        $roomNameInput.value = "";
+        $roomNameInput.focus();
+        $roomNameInput.placeholder = "이름을 입력해라";
+        $roomNameInput.classList.add("shake-animation");
         return;
       }
       fetch(`${BACKEND}/games/`, {
