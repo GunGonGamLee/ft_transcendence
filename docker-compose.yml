@@ -32,6 +32,7 @@ services:
     volumes:
       - static-volume:/backend/static
       - "${CERTS_PATH}:/backend/certs"
+      - "${DJANGO_LOGS}:/var/log/djangolog"
     env_file:
       - .env
     environment:
@@ -101,7 +102,7 @@ services:
   #   networks:
   #     - app_network
 
-    # elasticsearch-setup-passwords interactive --url "https://localhost:9200" -E xpack.security.http.ssl.verification_mode=none
+  #   # elasticsearch-setup-passwords interactive --url "https://localhost:9200" -E xpack.security.http.ssl.verification_mode=none
 
   # logstash:
   #   build: ./elk/logstash
@@ -112,7 +113,8 @@ services:
   #     ES_CERTS_PW: ${ES_CERTS_PW}
   #   volumes:
   #     - "${ELASTIC_CERTS}:/usr/share/logstash/config/certs"
-  #     - "${NGINX_LOGS}:/usr/share/logstash/logs"
+  #     - "${NGINX_LOGS}:/usr/share/logstash/log/nginx_logs"
+  #     - "${DJANGO_LOGS}:/usr/share/logstash/log/django_logs"
   #   ports:
   #     - 5333:5333
   #   depends_on:

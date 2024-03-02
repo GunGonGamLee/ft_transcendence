@@ -5,6 +5,7 @@ import environ
 import os
 import hvac
 import time
+from pythonjsonlogger import jsonlogger
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ENV_PATH = os.path.join(BASE_DIR, '..', '.env')
@@ -86,54 +87,68 @@ else:
     BASE_URL = read_response['data']['data']['BASE_URL']
     SECRET_KEY = LOG_KEY
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'loggers': {
-        '': {  # 'root' logger
-            'handlers': ['console'],
-            'level': 'INFO',
-        },
-    },
-}
-
-# logging settings
-
 # LOGGING = {
 #     'version': 1,
 #     'disable_existing_loggers': False,
-#     'formatters': {
-#         'json_formatter': {
-#             '()': 'pythonjsonlogger.jsonlogger.JsonFormatter',
-#             'format': '%(levelname)s %(asctime)s %(module)s %(message)s'
-#         },
-#     },
 #     'handlers': {
-#         'logstash': {
-#             'level': 'WARN',  # WARNING 단계 이상의 로그만 출력
-#             'class': 'logstash.TCPLogstashHandler',
-#             'host': 'logstash_container',  # Logstash 서비스의 컨테이너 이름
-#             'port': 5333,  # Logstash 컨테이너가 로그를 수신하는 포트
-#             'version': 1,
-#             'message_type': 'logstash',
-#             'fqdn': False,
-#             'tags': ['django'],
+#         'console': {
+#             'class': 'logging.StreamHandler',
 #         },
 #     },
 #     'loggers': {
-#         'django': {
-#             'handlers': ['logstash'],
-#             'level': 'DEBUG',  # 모든 로그 레벨 포함
-#             'propagate': True,
+#         '': {  # 'root' logger
+#             'handlers': ['console'],
+#             'level': 'INFO',
 #         },
-#         # 필요에 따라 추가 로거 정의
 #     },
 # }
+
+# logging settings
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'simple': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': '/var/log/djangolog/django.log',
+        },
+    },
+    'loggers': {
+        '': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['console', 'file'],
+            'level': 'WARN',
+            'propagate': False,
+        },
+        'django.security': {
+            'handlers': ['console', 'file'],
+            'level': 'WARN',
+            'propagate': False,
+        }
+    }
+}
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
@@ -167,6 +182,12 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
 ]
+
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': 'localhost:9200'
+    },
+}
 
 AUTH_USER_MODEL = 'users.User'
 

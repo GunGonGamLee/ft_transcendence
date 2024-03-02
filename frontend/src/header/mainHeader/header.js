@@ -22,21 +22,17 @@ export default function MainHeader($container) {
         this.ws = new WebSocket(`${WEBSOCKET}/friend_status/`);
         this.ws.onmessage = (msg) => {
           let response = JSON.parse(msg.data);
+          // TODO: 중복로그인 임시로 풀어둠
+          // if (response.type === 'alreadyLogin') {
+          //   console.log(response.message);
+          //   this.ws.close();
+          //   navigate("error", { errorCode: 4001 });
+          //   return;
+          // }
 
           // 업데이트된 내용을 set 함수에 전달합니다.
           setFriendsList(response.data);
           setRequestersList(response.data);
-        };
-        this.ws.onclose = function (event) {
-          console.log("Connection closed", event);
-          // 여기에서 서버에서 정의한 에러 코드를 확인합니다.
-          if (event.code === 4001) {
-            // 에러 코드 4001이면, 사용자를 에러 페이지로 리다이렉션합니다.
-            navigate("error", { errorCode: 4001 });
-          }
-        };
-        this.ws.onerror = function (error) {
-          console.error("WebSocket error", error);
         };
       } else {
         navigate("error", { errorCode: response.status });

@@ -9,7 +9,7 @@ const getAPIUrl = () => {
 
 const getWebsocketUrl = () => {
   return window.mode === "dev" ? devWebSocket : prodWebSocket;
-};
+}
 
 export const BACKEND = getAPIUrl();
 export const WEBSOCKET = getWebsocketUrl();
