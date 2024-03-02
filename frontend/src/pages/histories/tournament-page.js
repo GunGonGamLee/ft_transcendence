@@ -9,7 +9,7 @@ import useState from "../../utils/useState.js";
 import { getCookie } from "../../utils/cookie.js";
 import { navigate } from "../../utils/navigate.js";
 
-export default async function TournamentHistories(mode) {
+export default function TournamentHistories(mode) {
   this.$tournamentList = document.getElementById("content");
   this.$pagination = document.getElementById("pagination");
   const init = () => {
@@ -22,7 +22,7 @@ export default async function TournamentHistories(mode) {
   };
 
   const getTournamentList = () => {
-    let page = this.$prev.dataset.page + 1;
+    let page = Number(this.$prev.dataset.page) + 1;
     getUserMe().then((response) => {
       let { nickname } = response.data;
       fetch(

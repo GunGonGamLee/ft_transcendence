@@ -13,7 +13,7 @@ import { navigate } from "../../utils/navigate.js";
  * 사용자 지정 모드의 전적 리스트를 렌더링합니다.
  * @constructor 전적 리스트의 게임 모드
  */
-export default async function OneOnOneHistories() {
+export default function OneOnOneHistories(mode) {
   this.$customList = document.getElementById("content");
   this.$pagination = document.getElementById("pagination");
 
@@ -27,11 +27,11 @@ export default async function OneOnOneHistories() {
   };
 
   const getOneOnOneList = () => {
-    let page = this.$prev.dataset.page + 1;
+    let page = Number(this.$prev.dataset.page) + 1;
     getUserMe().then((response) => {
       let { nickname } = response.data;
       fetch(
-        `${BACKEND}/games/results?user=${nickname}&mode=${mode}&currentPage=${page}&limit=4`,
+        `${BACKEND}/games/results?user=${nickname}&mode=${mode}&page=${page}&limit=4`,
         {
           method: "GET",
           headers: {
@@ -144,5 +144,6 @@ export default async function OneOnOneHistories() {
   };
 
   init();
+  console.log("1vs1", this);
   let [get1vs1Histories, set1vs1Histories] = useState({}, this, "render");
 }
