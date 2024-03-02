@@ -321,9 +321,11 @@ export default function CustomGameList($container) {
           if (res.status === 201) {
             return res.json();
           } else if (res.status === 400) {
-            alert("이미 있는 방 이름입니다");
+            // alert("이미 있는 방 이름입니다");
             $roomNameInput.value = "";
             $roomNameInput.focus();
+            $roomNameInput.placeholder = "이미 있는 방 이름임";
+            $roomNameInput.classList.add("shake-animation");
           } else if (res.status === 401) {
             alert("인증 실패");
             navigate("/");
