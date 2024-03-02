@@ -7,7 +7,7 @@ import useState from "../../utils/useState.js";
 import { navigate } from "../../utils/navigate.js";
 import { getCookie } from "../../utils/cookie.js";
 
-export default function TournamentHistoriesDetails({ gameId }) {
+export default function TournamentHistoriesDetails(gameId) {
   const init = () => {
     this.textContent = "";
     this.$pagination = document.getElementById("pagination");

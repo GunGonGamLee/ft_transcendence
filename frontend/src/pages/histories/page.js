@@ -119,24 +119,27 @@ export function Histories($container) {
 /**
  * 전적 리스트의 세부 정보를 렌더링합니다. 게임 모드에 따라 다른 컴포넌트를 렌더링합니다.
  * @param $container {HTMLElement} - 전적 리스트 페이지가 렌더링될 엘리먼트
+ * @param info {{gameId: number}} - 게임 아이디가 포함된 객체
  * @constructor - 전적 리스트 페이지가 렌더링될 엘리먼트
  */
-export function HistoriesDetails($container) {
+export function HistoriesDetails($container, info) {
   this.$container = $container;
   const queryString = location.search.split("?")[1]; // ? 제거
   const searchParams = new URLSearchParams(queryString);
   const mode = searchParams.get("mode");
-  const id = searchParams.get("gameId");
+  if (info === undefined) {
+    info = { gameId: Number(searchParams.get("gameId")) };
+  }
   Histories.bind(this, $container)();
   const $content = document.getElementById("content");
 
   switch (mode) {
     case "casual_1vs1":
-      OneOnOneHistoriesDetails.bind($content, id)();
+      OneOnOneHistoriesDetails.bind($content, info.gameId)();
       break;
     case "casual_tournament":
     case "rank":
-      TournamentHistoriesDetails.bind($content, id)();
+      TournamentHistoriesDetails.bind($content, info.gameId)();
       break;
     default:
       navigate("error", { errorCode: 404 });
