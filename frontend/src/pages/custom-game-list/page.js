@@ -320,8 +320,19 @@ export default function CustomGameList($container) {
         .then((res) => {
           if (res.status === 201) {
             return res.json();
-          } else {
-            throw new Error("방 만들기 실패");
+          } else if (res.status === 400) {
+            alert("이미 있는 방 이름입니다");
+            $roomNameInput.value = "";
+            $roomNameInput.focus();
+          } else if (res.status === 401) {
+            alert("인증 실패");
+            navigate("/");
+          } else if (res.status === 404) {
+            alert("존재하지 않는 유저");
+            navigate("/");
+          } else if (res.status === 500) {
+            alert("서버 오류");
+            navigate("/error", { errorCode: 500 });
           }
         })
         .then((res) => {
