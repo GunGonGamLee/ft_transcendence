@@ -132,7 +132,6 @@ export default function CustomGameList($container) {
           const $passwordInput = document.getElementById("pwd-input");
           $passwordInput.value = "";
           $passwordInput.focus();
-          $passwordInput.placeholder = "잘못된 비밀번호입니다";
           $passwordInput.classList.add("shake-animation");
           // 애니메이션 보여준 후 제거
           $passwordInput.addEventListener("animationend", () => {
@@ -311,7 +310,6 @@ export default function CustomGameList($container) {
       if ($roomNameInput.value === "") {
         $roomNameInput.value = "";
         $roomNameInput.focus();
-        $roomNameInput.placeholder = "이름을 입력해라";
         $roomNameInput.classList.add("shake-animation");
         // 애니메이션 보여준 후 제거
         $roomNameInput.addEventListener("animationend", () => {
@@ -339,8 +337,11 @@ export default function CustomGameList($container) {
           } else if (res.status === 400) {
             $roomNameInput.value = "";
             $roomNameInput.focus();
-            $roomNameInput.placeholder = "이미 있는 방 이름임";
             $roomNameInput.classList.add("shake-animation");
+            // 애니메이션 보여준 후 제거
+            $roomNameInput.addEventListener("animationend", () => {
+              $roomNameInput.classList.remove("shake-animation");
+            });
           } else if (res.status === 401) {
             alert("인증 실패");
             navigate("/");
