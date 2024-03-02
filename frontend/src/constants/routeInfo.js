@@ -1,7 +1,7 @@
 import GameMode from "../pages/game-mode/page.js";
 import Register from "../pages/register/page.js";
-import { Histories, HistoriesDetails } from "../pages/histories/page.js";
-import RegisterHeader from "../header/registerHeader/header.js";
+import { HistoriesDetails } from "../pages/histories/page.js";
+import emptyHeader from "../header/emptyHeader/header.js";
 import MainHeader from "../header/mainHeader/header.js";
 import WaitingRoom from "../pages/waiting-room/page.js";
 import Login from "../pages/login/page.js";
@@ -17,9 +17,9 @@ import TournamentHistories from "../pages/histories/tournament-page.js";
  * 원하는 경로에 따라 렌더링할 컴포넌트를 정의합니다.
  */
 export const routes = [
-  { path: /^\/$/, page: Login, header: RegisterHeader },
-  { path: /^\/auth(?:\?.*)?$/, page: Auth, header: RegisterHeader },
-  { path: /^\/register$/, page: Register, header: RegisterHeader },
+  { path: /^\/$/, page: Login, header: emptyHeader },
+  { path: /^\/auth(?:\?.*)?$/, page: Auth, header: emptyHeader },
+  { path: /^\/register$/, page: Register, header: emptyHeader },
   { path: /^\/game-mode$/, page: GameMode, header: MainHeader },
 
   {
