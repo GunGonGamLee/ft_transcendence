@@ -130,8 +130,8 @@ export default function TournamentHistories(mode) {
       `,
       );
       click($listItem, () => {
-        navigate(`/histories/details?mode=${mode}&gameId=${data.id}`, {
-          gameId: data.id,
+        navigate(`/histories/details?mode=${mode}&gameId=${id}`, {
+          gameId: id,
         });
       });
       $listWrapper.appendChild($listItem);

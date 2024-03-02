@@ -1,14 +1,19 @@
-import { addPaginationOnClickProperty } from "../../utils/pagination.js";
+import {
+  initializePagination,
+  setPaginationActive,
+} from "../../utils/pagination.js";
 import { BACKEND, HISTORIES_IMAGE_PATH } from "../../global.js";
 import useState from "../../utils/useState.js";
 import { navigate } from "../../utils/navigate.js";
 import { getCookie } from "../../utils/cookie.js";
 
-export default async function TournamentHistoriesDetails(gameId) {
+export default function TournamentHistoriesDetails({ gameId }) {
   const init = () => {
     this.textContent = "";
-    addPaginationOnClickProperty("prev", renderTournamentTree);
-    addPaginationOnClickProperty("next", renderTournamentResult);
+    this.$pagination = document.getElementById("pagination");
+    this.$prev = document.getElementById("prev");
+    this.$next = document.getElementById("next");
+    initializePagination(this.$pagination, this.$prev, this.$next);
     fetch(`${BACKEND}/games/results/${gameId}`, {
       method: "GET",
       headers: {
@@ -71,9 +76,9 @@ export default async function TournamentHistoriesDetails(gameId) {
    */
   const renderFinalWinner = (finalData) => {
     let winnerVisibilityOfPlayer1 =
-      finalData.winner === finalData.player1.nickname ? "visible" : "hidden";
+      finalData["winner"] === finalData.player1.nickname ? "visible" : "hidden";
     let winnerVisibilityOfPlayer2 =
-      finalData.winner === finalData.player2.nickname ? "visible" : "hidden";
+      finalData["winner"] === finalData.player2.nickname ? "visible" : "hidden";
     return `
     <div class="histories tournament final winner">
         <img src="${HISTORIES_IMAGE_PATH}/winner.png" alt="winner" style="visibility: ${winnerVisibilityOfPlayer1}">
@@ -139,12 +144,13 @@ export default async function TournamentHistoriesDetails(gameId) {
    * 토너먼트 대진표를 렌더링합니다.
    */
   const renderTournamentTree = () => {
+    setPaginationActive(this.$prev, false, null);
+    setPaginationActive(this.$next, true, renderTournamentResult);
     this.textContent = "";
     let $treeWrapper = document.createElement("div");
     $treeWrapper.id = "tree-wrapper";
     $treeWrapper.className = "histories tournament";
-    const { data } = getTournamentHistoriesDetails();
-    const { match1, match2, match3 } = data;
+    const { match1, match2, match3 } = getTournamentHistoriesDetails();
     renderMatch($treeWrapper, match1);
     renderFinal($treeWrapper, match3);
     renderMatch($treeWrapper, match2);
@@ -158,8 +164,7 @@ export default async function TournamentHistoriesDetails(gameId) {
    * @returns {{firstPlayer, secondPlayer, others: {}}} 토너먼트 결과
    */
   const getResult = () => {
-    const { data } = getTournamentHistoriesDetails();
-    const { match1, match2, match3 } = data;
+    const { match1, match2, match3 } = getTournamentHistoriesDetails();
     let firstPlayer,
       secondPlayer,
       others = {};
@@ -268,6 +273,8 @@ export default async function TournamentHistoriesDetails(gameId) {
    * 토너먼트 결과를 렌더링합니다.
    */
   const renderTournamentResult = () => {
+    setPaginationActive(this.$prev, true, renderTournamentTree);
+    setPaginationActive(this.$next, false, null);
     this.textContent = "";
     let $resultWrapper = document.createElement("div");
     $resultWrapper.id = "result-wrapper";
