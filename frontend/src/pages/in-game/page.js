@@ -26,11 +26,8 @@ export default function InGame($container, info) {
     );
     document.addEventListener("keydown", keyEventHandler);
 
-    var toastEl = document.querySelector(".toast");
-    var toast = new bootstrap.Toast(toastEl, {
-      autohide: false, // 이 예제에서는 Toast가 자동으로 숨겨지지 않도록 설정
-    });
-
+    const $toast = document.querySelector(".toast");
+    const toast = new bootstrap.Toast($toast);
     toast.show(); // Toast를 보여줍니다.
   };
   this.unmount = () => {
@@ -67,6 +64,7 @@ export default function InGame($container, info) {
 
   const keyEventHandler = (e) => {
     switch (e.key) {
+      // background image 변경
       case "1":
         $container.querySelector(".in-game").style.backgroundImage =
           "url('../../../assets/images/ingame_background.png')";
@@ -83,6 +81,7 @@ export default function InGame($container, info) {
         $container.querySelector(".in-game").style.backgroundImage =
           "url('../../../assets/images/ingame_background4.png')";
         break;
+      // 여기에 send 로직도 추가해야함
       default:
         break;
     }
