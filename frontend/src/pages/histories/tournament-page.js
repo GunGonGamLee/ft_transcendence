@@ -8,8 +8,10 @@ import { getUserMe } from "../../utils/userUtils.js";
 import useState from "../../utils/useState.js";
 import { getCookie } from "../../utils/cookie.js";
 import { navigate } from "../../utils/navigate.js";
+import { Histories } from "./page.js";
 
 export default function TournamentHistories(mode) {
+  new Histories(document.getElementById("app"));
   this.$tournamentList = document.getElementById("content");
   this.$pagination = document.getElementById("pagination");
   const init = () => {
@@ -67,42 +69,13 @@ export default function TournamentHistories(mode) {
   };
 
   /**
-   * 랭킹을 렌더링합니다.
-   * @param ranking {number} 랭킹.
-   * @returns {string} 랭킹을 렌더링하는 HTML.
-   */
-  const renderRanking = (ranking) => {
-    let html = `
-    <div class="histories tournament ranking">
-      <div class="histories tournament player-ranking first">
-    `;
-    if (ranking === 1) {
-      html += `
-        <img class="histories" src="${HISTORIES_IMAGE_PATH}/winner.png" alt="first">
-      `;
-    }
-    html += `
-      </div>
-      <div class="histories ranking-text">
-        ${ranking}등
-      </div>
-    </div>
-    `;
-    return html;
-  };
-
-  /**
    * 플레이어를 렌더링합니다.
    * @param nickname {string} 플레이어의 닉네임.
    * @param avatar {string} 플레이어의 아바타.
-   * @param ranking {number} 플레이어의 랭킹.
    * @returns {string} 플레이어를 렌더링하는 HTML.
    */
-  const renderPlayer = ({ nickname, avatar, ranking }) => {
+  const renderPlayer = ({ nickname, avatar }) => {
     let fontColor = "";
-    if (ranking === 1) {
-      fontColor = `style="color: #FF52A0"`;
-    }
     return `
     <div class="histories tournament player">
       <img class="histories tournament player-avatar" src="${HISTORIES_IMAGE_PATH}/avatar/${avatar}" alt="avatar">
@@ -115,25 +88,16 @@ export default function TournamentHistories(mode) {
 
   /**
    * 토너먼트 모드에서 상대방들을 렌더링합니다.
-   * @param opponents {Array<{nickname: string, avatar: string, ranking: number}>} 상대방들의 정보.
+   * @param opponents {Array<{nickname: string, avatar: string}>} 상대방들의 정보.
    * @returns {string} 상대방들을 렌더링하는 HTML.
    */
   const renderOpponents = (opponents) => {
     let html = `<div class= "histories tournament opponents">`;
     for (let opponent of opponents) {
-      let imageDisplay = `style="display: none"`;
-      let fontColor = `style="color: white"`;
-      if (opponent.ranking === 1) {
-        imageDisplay = `style="display: block"`;
-        fontColor = `style="color: #FF52A0"`;
-      }
       html += `
       <img class="histories tournament opponents-avatar" src = "${HISTORIES_IMAGE_PATH}/avatar/${opponent.avatar}" alt="avatar">
-      <div class="histories tournament opponents-nickname" ${fontColor}>
+      <div class="histories tournament opponents-nickname">
         ${opponent.nickname}
-        <div class="histories tournament opponents-ranking first">
-          <img class="histories" src="${HISTORIES_IMAGE_PATH}/winner.png" alt="first" ${imageDisplay}>
-        </div>
       </div>
       `;
     }
@@ -161,13 +125,12 @@ export default function TournamentHistories(mode) {
       $listItem.insertAdjacentHTML(
         "afterbegin",
         `
-        ${renderRanking(player["ranking"])}
         ${renderPlayer(player)}
         ${renderOpponents(opponents)}
       `,
       );
       click($listItem, () => {
-        navigate(`histories/details?mode=${mode}&gameId=${data.id}`, {
+        navigate(`/histories/details?mode=${mode}&gameId=${data.id}`, {
           gameId: data.id,
         });
       });
