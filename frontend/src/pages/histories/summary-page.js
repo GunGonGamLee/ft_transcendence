@@ -98,7 +98,7 @@ export default function Summary() {
   init();
   const [getUsersHistoriesSummary, setUsersHistoriesSummary] = useState(
     {},
-    this.$container,
+    this,
     "render",
   );
 }
