@@ -4,7 +4,7 @@ import { getCookie } from "../../utils/cookie.js";
 import useState from "../../utils/useState.js";
 import { getUserMe } from "../../utils/userUtils.js";
 
-export default async function OneOnOneHistoriesDetails(gameId) {
+export default function OneOnOneHistoriesDetails(gameId) {
   const init = () => {
     this.textContent = "";
     let $pagination = document.getElementById("pagination");
