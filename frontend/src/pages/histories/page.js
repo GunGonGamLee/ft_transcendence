@@ -82,7 +82,6 @@ export function Histories($container) {
    * 레이아웃 엘리먼트에 이벤트 리스너를 추가합니다.
    */
   const addEventListenersToLayout = () => {
-    const $content = document.getElementById("content");
     const $summary = document.getElementById("summary");
     const $casualMenuWrapper = document.getElementById("casual-menu-wrapper");
     const $casual = document.getElementById("casual");
@@ -115,7 +114,6 @@ export function Histories($container) {
   init();
   render();
   addEventListenersToLayout();
-  navigate("/histories/summary");
 }
 
 /**

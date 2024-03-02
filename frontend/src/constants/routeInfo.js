@@ -22,16 +22,19 @@ export const routes = [
   { path: /^\/register$/, page: Register, header: RegisterHeader },
   { path: /^\/game-mode$/, page: GameMode, header: MainHeader },
 
-  { path: /^\/histories$/, page: Histories, header: MainHeader },
-  { path: /^\/histories\/summary$/, page: Summary, header: MainHeader },
   {
-    path: /^\/histories\/casual$/,
-    page: OneOnOneHistories("casual_1vs1"),
+    path: /^\/histories\/summary$/,
+    page: Summary.bind(),
     header: MainHeader,
   },
   {
-    path: /^\/histories\/rank$/,
-    page: TournamentHistories("rank"),
+    path: /^\/histories\/casual$/,
+    page: OneOnOneHistories.bind(null, "casual_1vs1"),
+    header: MainHeader,
+  },
+  {
+    path: /^\/histories\/tournament$/,
+    page: TournamentHistories.bind(null, "rank"),
     header: MainHeader,
   },
   {
