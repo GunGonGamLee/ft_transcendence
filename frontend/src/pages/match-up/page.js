@@ -1,4 +1,4 @@
-import {importCss} from "../../utils/importCss.js";
+import { importCss } from "../../utils/importCss.js";
 import useState from "../../utils/useState.js";
 import { navigate } from "../../utils/navigate.js";
 
@@ -17,7 +17,7 @@ export default function Matchup($container, info = null) {
       renderFinal();
       matchData.concat(info.data.data.match3);
     } else {
-      console.error('No match data available');
+      console.error("No match data available");
     }
     setCards(data.data.data.match3);
   };
@@ -33,7 +33,7 @@ export default function Matchup($container, info = null) {
       renderFinal();
       matchData = matchData.concat(info.data.data.match1);
     } else {
-      console.error('No match data available');
+      console.error("No match data available");
     }
 
     if (matchData.length > 0) {
@@ -59,7 +59,7 @@ export default function Matchup($container, info = null) {
 
     cardsArray.forEach((cardData, index) => {
       if (index < cardWrappers.length) {
-        const {nickname, avatar, rating} = cardData;
+        const { nickname, avatar, rating } = cardData;
         cardWrappers[index].innerHTML = `
         <div class="user-avatar">
             <img src="../../../assets/images/avatar/${avatar}">
@@ -145,9 +145,13 @@ export default function Matchup($container, info = null) {
             </div>
         </div>
 		`;
-  }
+  };
 
   let [getCards, setCards] = useState({}, this, "renderCards");
 
   init();
+  // TODO: 여기서 5초 후에 online-game으로 이동하지만, match3의 경우엔 onmessage를 기다려야함
+  setTimeout(() => {
+    navigate("/online-game", { socket: ws, data: info.data });
+  }, 5000);
 }
