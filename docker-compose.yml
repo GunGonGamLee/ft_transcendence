@@ -84,60 +84,60 @@ services:
     networks:
       - app_network
 
-  elasticsearch:
-    build:
-      context: ./elk/elasticsearch
-      dockerfile: Dockerfile
-    volumes:
-      - "${ELASTIC_DATA}:/usr/share/elasticsearch/data"
-      - "${ELASTIC_CERTS}:/usr/share/elasticsearch/config/certs"
-    environment:
-      discovery.type : single-node
-      ELASTIC_PW : ${ELASTIC_PW}
-      ES_JAVA_OPTS: "-Xms2g -Xmx2g"
-      ES_CERTS_PW: ${ES_CERTS_PW}
-    ports:
-      - 9200:9200
-      - 9300:9300
-    networks:
-      - app_network
+  # elasticsearch:
+  #   build:
+  #     context: ./elk/elasticsearch
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - "${ELASTIC_DATA}:/usr/share/elasticsearch/data"
+  #     - "${ELASTIC_CERTS}:/usr/share/elasticsearch/config/certs"
+  #   environment:
+  #     discovery.type : single-node
+  #     ELASTIC_PW : ${ELASTIC_PW}
+  #     ES_JAVA_OPTS: "-Xms2g -Xmx2g"
+  #     ES_CERTS_PW: ${ES_CERTS_PW}
+  #   ports:
+  #     - 9200:9200
+  #     - 9300:9300
+  #   networks:
+  #     - app_network
 
     # elasticsearch-setup-passwords interactive --url "https://localhost:9200" -E xpack.security.http.ssl.verification_mode=none
 
-  logstash:
-    build: ./elk/logstash
-    container_name: logstash_container
-    environment:
-      LS_JAVA_OPTS: "-Xms2g -Xmx2g"
-      ELASTIC_PW: ${ELASTIC_PW}
-      ES_CERTS_PW: ${ES_CERTS_PW}
-    volumes:
-      - "${ELASTIC_CERTS}:/usr/share/logstash/config/certs"
-      - "${NGINX_LOGS}:/usr/share/logstash/log/nginx_logs"
-      - "${DJANGO_LOGS}:/usr/share/logstash/log/django_logs"
-    ports:
-      - 5333:5333
-    depends_on:
-      - elasticsearch
-    networks:
-      - app_network
+  # logstash:
+  #   build: ./elk/logstash
+  #   container_name: logstash_container
+  #   environment:
+  #     LS_JAVA_OPTS: "-Xms2g -Xmx2g"
+  #     ELASTIC_PW: ${ELASTIC_PW}
+  #     ES_CERTS_PW: ${ES_CERTS_PW}
+  #   volumes:
+  #     - "${ELASTIC_CERTS}:/usr/share/logstash/config/certs"
+  #     - "${NGINX_LOGS}:/usr/share/logstash/log/nginx_logs"
+  #     - "${DJANGO_LOGS}:/usr/share/logstash/log/django_logs"
+  #   ports:
+  #     - 5333:5333
+  #   depends_on:
+  #     - elasticsearch
+  #   networks:
+  #     - app_network
 
-  kibana:
-    build: ./elk/kibana
-    container_name: kibana_container
-    volumes:
-      - "${KIBANA_DATA}:/usr/share/kibana/data"
-      - "${ELASTIC_CERTS}:/usr/share/kibana/config/certs"
-    environment:
-      ELASTICSEARCH_URL: https://elasticsearch:9200
-      ELASTIC_PW: ${ELASTIC_PW}
-      ES_CERTS_PW: ${ES_CERTS_PW}
-    ports:
-      - 5601:5601
-    depends_on:
-      - elasticsearch
-    networks:
-      - app_network
+  # kibana:
+  #   build: ./elk/kibana
+  #   container_name: kibana_container
+  #   volumes:
+  #     - "${KIBANA_DATA}:/usr/share/kibana/data"
+  #     - "${ELASTIC_CERTS}:/usr/share/kibana/config/certs"
+  #   environment:
+  #     ELASTICSEARCH_URL: https://elasticsearch:9200
+  #     ELASTIC_PW: ${ELASTIC_PW}
+  #     ES_CERTS_PW: ${ES_CERTS_PW}
+  #   ports:
+  #     - 5601:5601
+  #   depends_on:
+  #     - elasticsearch
+  #   networks:
+  #     - app_network
 
 volumes:
   static-volume:
