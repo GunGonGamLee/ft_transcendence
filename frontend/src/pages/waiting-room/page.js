@@ -54,6 +54,9 @@ export default function WaitingRoom($container, info = null) {
     };
 
     click($container.querySelector(".start-btn"), () => {
+      // TODO: 인원 다 차야 시작 가능
+
+      // 방장만 게임 시작 가능
       const player = info.data.players.find(
         (player) => player.nickname === userNickname,
       );
