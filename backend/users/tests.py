@@ -74,7 +74,14 @@ class AvatarUpdateTest(TestCase):
         pass
 
     def test_avatar_update(self):
-        pass
+        response = self.client.patch(
+            f"{reverse('userAvatar', kwargs={'nickname': self.user.nickname})}?avatar={AVATAR_CHOICES_DICT[0]}",
+            format='application/json',
+            headers={'Authorization': f'Bearer {self.token}'},
+        )
+        user = User.objects.get(nickname=self.user.nickname)
+        self.assertEqual(user.avatar, AVATAR_CHOICES_DICT[0])
+        self.assertEqual(200, response.status_code)
 
     def test_avatar_update_bad_request(self):
         response = self.client.patch(
