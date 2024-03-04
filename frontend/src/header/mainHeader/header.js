@@ -4,6 +4,7 @@ import { click } from "../../utils/clickEvent.js";
 import { BACKEND, WEBSOCKET, HISTORIES_IMAGE_PATH } from "../../global.js";
 import { getCookie, deleteCookie } from "../../utils/cookie.js";
 import useState from "../../utils/useState.js";
+import { getUserMe } from "../../utils/userUtils.js";
 
 /**
  * 사용자 전적 페이지에 사용하는 header 컴포넌트
@@ -13,18 +14,10 @@ export default function MainHeader($container) {
   this.$container = $container;
 
   const init = () => {
-    fetch(`${BACKEND}/users/me`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${getCookie("jwt")}`,
-      },
-    }).then((response) => {
+    getUserMe().then((response) => {
       if (response.status === 200) {
         this.$container.textContent = "";
-        response.json().then((data) => {
-          setUserInfo(data);
-        });
+        setUserInfo(response.data);
         // alert("웹소켓 연결!");
         this.ws = new WebSocket(`${WEBSOCKET}/friend_status/`);
         this.ws.onmessage = (msg) => {
@@ -42,8 +35,7 @@ export default function MainHeader($container) {
           setRequestersList(response.data);
         };
       } else {
-        // TODO => 에러 페이지로 이동
-        navigate("/");
+        navigate("error", { errorCode: response.status });
       }
     });
   };
@@ -83,7 +75,7 @@ export default function MainHeader($container) {
     });
     // 사용자 정보 클릭 이벤트
     click(document.getElementById("go-histories"), () => {
-      navigate("/histories");
+      navigate("/histories/summary");
     });
     // 로그아웃 버튼 클릭 이벤트
     click(document.getElementById("logout"), () => {
