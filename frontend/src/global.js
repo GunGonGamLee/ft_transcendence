@@ -1,5 +1,5 @@
 const devBackend = "http://localhost:8000/api";
-const devWebSocket = "ws://localhost:8000/ws"
+const devWebSocket = "ws://localhost:8000/ws";
 const prodBackend = "https://localhost:443/api";
 const prodWebSocket = "wss://localhost:443/ws";
 
@@ -9,11 +9,18 @@ const getAPIUrl = () => {
 
 const getWebsocketUrl = () => {
   return window.mode === "dev" ? devWebSocket : prodWebSocket;
-}
+};
 
 export const BACKEND = getAPIUrl();
 export const WEBSOCKET = getWebsocketUrl();
 export const HISTORIES_IMAGE_PATH = "../../../assets/images";
+export const AVATAR_FILE_NAME = [
+  "chewbacca.png",
+  "darth_vader.png",
+  "han_solo.png",
+  "luke_skywalker.png",
+  "yoda.png",
+];
 
 export const MODE = {
   casual: "캐주얼 모드",
