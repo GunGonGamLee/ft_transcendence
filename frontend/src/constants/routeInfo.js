@@ -52,4 +52,5 @@ export const routes = [
   { path: /^\/custom-game-list$/, page: CustomGameList, header: MainHeader },
   { path: /^\/in-game$/, page: InGame, header: MainHeader },
   { path: /^\/tournament$/, page: Tournament, header: MainHeader },
+  { path: /^\/online-game$/, page: InGame, header: MainHeader },
 ];
