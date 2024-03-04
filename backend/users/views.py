@@ -205,6 +205,8 @@ class UserAvatarView(APIView):
             user = AuthUtils.validate_jwt_token_and_get_user(request)
             if user.nickname != nickname:
                 return JsonResponse(status=status.HTTP_401_UNAUTHORIZED, data={'error': 'Unauthorized'})
+            user.avatar = avatar
+            user.save(update_fields=['avatar'])
             return JsonResponse(status=status.HTTP_200_OK, data={'message': 'success'})
         except Exception as e:
             return JsonResponse(status=status.HTTP_500_INTERNAL_SERVER_ERROR, data={'error': str(e)})
