@@ -40,6 +40,10 @@ export function Histories($container) {
                <img class="histories" src="${HISTORIES_IMAGE_PATH}/tournament_logo.png" alt="tournament">
                ${MODE.tournament}
            </div>
+           <div class="histories" id="avatar">
+                <img class="histories" src="${HISTORIES_IMAGE_PATH}/avatar_change.png" alt="avatar">
+                아바타 변경
+           </div>
         </nav>
         `;
   };
