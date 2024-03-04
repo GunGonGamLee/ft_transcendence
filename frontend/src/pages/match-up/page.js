@@ -1,5 +1,6 @@
 import {importCss} from "../../utils/importCss.js";
 import useState from "../../utils/useState.js";
+import { navigate } from "../../utils/navigate.js";
 
 export default function Matchup($container, info = null) {
   if (info === null) {
@@ -10,14 +11,48 @@ export default function Matchup($container, info = null) {
   ws.onmessage = (msg) => {
     let data = JSON.parse(msg.data);
     console.log(data);
+    // 파이널 대기 때 받아올 데이터 set
+    setCards(data.data.data.match3);
   };
 
   const init = () => {
-    if (info.data.data.match1.length === 2)
-      renderFinal();
-    else if (info.data.data.match1.length === 4)
-      renderSemifinal();
+    // match1, match2, match3 중 어느 것이 있는지 확인
+    let matchData;
+    let matchType;
+
+    console.log(info);
+
+    if (info.data.data.match1) {
+      matchData = info.data.data.match1;
+      matchType = 'match1';
+    } else if (info.data.data.match2) {
+      matchData = info.data.data.match2;
+      matchType = 'match2';
+    } else {
+      // 매치 정보가 없는 경우 처리
+      console.error('No match data available');
+      return;
+    }
+
+    // 매치 데이터의 길이에 따라 적절한 렌더링 함수 호출
+    switch (matchData.length) {
+      case 2:
+        renderFinal(matchType);
+        break;
+      case 4:
+        renderSemifinal(matchType);
+        break;
+      default:
+        console.error('Unexpected match data length:', matchData.length);
+        break;
+    }
+
     setCards(info.data.data.match1);
+
+    // 5초 후에 in-game 경로로 자동 이동
+    setTimeout(() => {
+      navigate("/in-game");
+    }, 5000); // 5000밀리초는 5초를 의미합니다.
   };
 
   this.unmount = () => {
