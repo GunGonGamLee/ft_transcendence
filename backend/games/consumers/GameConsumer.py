@@ -205,11 +205,11 @@ class GameConsumer(AsyncWebsocketConsumer):
             }
         )
         if self.game.mode == 0:
-            logger.info("[인게임] PVP")
+            logger.info("[시작] PVP")
         elif self.game.mode == 1:
-            logger.info("[인게임] TOURNAMENT")
+            logger.info("[시작] TOURNAMENT")
         elif self.game.mode == 2:
-            logger.info("[인게임] RANK")
+            logger.info("[시작] RANK")
 
     async def receive(self, text_data):
         # todo try catch

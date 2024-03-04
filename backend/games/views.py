@@ -383,7 +383,7 @@ class LocalGameView(APIView):
     def post(self, request):
         try:
             AuthUtils.validate_jwt_token_and_get_user(request)
-            logging.info("[인게임] LOCAL")
+            logging.info("[시작] LOCAL")
             return Response({'message': 'LocalGame'}, status=status.HTTP_200_OK)
         except AuthenticationException as e:
             return JsonResponse({'error': e.message}, status=status.HTTP_401_UNAUTHORIZED)
