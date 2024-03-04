@@ -36,7 +36,20 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
             return
         else:
             if await self.get_game_status() <= 1:
+                await self.save_game_object_by_id()
                 await self.delete_user()
+                await self.channel_layer.group_discard(
+                    self.game_group_name,
+                    self.channel_name
+                )
+                serializer_data = await self.get_serializer_data()
+                await self.channel_layer.group_send(
+                    self.game_group_name,
+                    {
+                        'type': 'game_info',
+                        'data': serializer_data
+                    }
+                )
 
     @database_sync_to_async
     def get_game_status(self):
@@ -47,26 +60,19 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
     def delete_user(self):
         if self.game.mode == 0:  # PvP
             if self.user == self.game.manager:
-                if self.game.player1:
-                    self.game.manager, self.game.player1 = self.game.player1, None
+                if self.game.player1 is not None:
+                    self.game.manager = self.game.player1
+                    self.game.player1 = None
                     self.game.status = 0
                 else:
                     self.game.status = 4
-                    self.game.save()
             elif self.user == self.game.player1:
                 self.game.player1 = None
                 self.game.status = 0
         else:  # Tournament
             if self.user == self.game.manager:
-                for i in range(1, 4):
-                    player = getattr(self.game, f"player{i}")
-                    if player:
-                        self.game.manager = player
-                        setattr(self.game, f"player{i}", None)
-                        break
-                else:
+                if self.is_user_in_room() is False:
                     self.game.status = 4
-                    self.game.save()
             else:
                 for i in range(1, 4):
                     player = getattr(self.game, f"player{i}")
@@ -77,6 +83,17 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
                         break
         logger.info(f"[게임방 퇴장] {self.user.nickname} - {self.game_id}번 방 퇴장")
         self.game.save()
+        self.save_game_object_by_id()
+
+    def is_user_in_room(self):
+        for i in range(1, 4):
+            player = getattr(self.game, f"player{i}")
+            if player:
+                self.game.manager = player
+                self.game.save()
+                setattr(self.game, f"player{i}", None)
+                return True
+        return False
 
     async def is_invalid_user(self):
         self.user = self.scope['user']
