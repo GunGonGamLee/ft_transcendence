@@ -42,7 +42,21 @@ export default function WaitingRoom($container, info = null) {
     );
     ws.onmessage = (msg) => {
       let data = JSON.parse(msg.data);
+      console.log(data);
       if (data.type === "game_info") {
+        const player = info.data.players.find(
+          (player) => player.nickname === userNickname,
+        );
+        if (
+          (data.data.mode === 1 && data.data.players.length === 4) ||
+          (data.data.mode === 0 &&
+            data.data.players.length === 2 &&
+            player.is_manager)
+        ) {
+          $container.querySelector(".start-btn").style.display = "inline-block";
+        } else {
+          $container.querySelector(".start-btn").style.display = "none";
+        }
         players = data.data.players;
         setUserState(players);
       } else {
@@ -56,19 +70,6 @@ export default function WaitingRoom($container, info = null) {
     };
 
     click($container.querySelector(".start-btn"), () => {
-      // 방장만 게임 시작 가능
-      const player = info.data.players.find(
-        (player) => player.nickname === userNickname,
-      );
-      if (player && !player.is_manager) {
-        alert("방장만 게임을 시작할 수 있습니다.");
-        return;
-      }
-      // 인원 다 차야 시작 가능
-      if (players.length !== 4) {
-        alert("인원이 다 차야 게임을 시작할 수 있습니다.");
-        return;
-      }
       ws.send(
         JSON.stringify({
           type: "game_start",
@@ -96,7 +97,7 @@ export default function WaitingRoom($container, info = null) {
           ${userBox(gameModeNum, players)}
         </div>
         <div class="start-btn-wrapper" style="width: 100vw; height: 10vh; display: flex; justify-content: center; align-items: center">
-          <button class="start-btn" style="background: linear-gradient(to bottom, #D80000, #FF0000); font-family: Galmuri11-Bold, serif; color: white; border: 4px solid darkred; padding: 10px 40px; text-align: center; text-decoration: none; display: inline-block; font-size: 32px; margin: 4px 2px; cursor: pointer; border-radius: 5vh;">START</button>
+          <button class="start-btn" style="background: linear-gradient(to bottom, #D80000, #FF0000); font-family: Galmuri11-Bold, serif; color: white; border: 4px solid darkred; padding: 10px 40px; text-align: center; text-decoration: none; display: none; font-size: 32px; margin: 4px 2px; cursor: pointer; border-radius: 5vh;">START</button>
         </div>
       </div>
     `;
