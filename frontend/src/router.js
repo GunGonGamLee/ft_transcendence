@@ -9,6 +9,7 @@ export default function Router($container) {
   let $header = document.querySelector("#header");
   let currentPage = undefined;
   let currentHeader = undefined;
+  let prevInfo = undefined;
 
   const findMatchedRoute = () =>
     routes.find((route) => route.path.test(location.pathname));
@@ -27,7 +28,8 @@ export default function Router($container) {
       currentPage = new ErrorPage($container, 401); // 그냥 아래 부분과 합쳐도 되지만 가독성을 위해 분리했습니다.
       currentHeader = new emptyHeader($header);
     } else {
-      if (currentPage instanceof TargetPage) return; // 이전 페이지와 같은 페이지로 이동할 때는 렌더링하지 않습니다.
+      if (currentPage instanceof TargetPage && prevInfo === info) return; // 이전 페이지와 같은 페이지로 이동할 때는 렌더링하지 않습니다.
+      prevInfo = info;
       currentPage = new TargetPage($container, info);
       if (currentHeader instanceof TargetHeader) return; // 이전 페이지와 같은 페이지로 이동할 때는 렌더링하지 않습니다.
       currentHeader = new TargetHeader($header);

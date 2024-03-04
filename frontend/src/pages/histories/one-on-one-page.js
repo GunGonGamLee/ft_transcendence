@@ -1,102 +1,76 @@
 import { click } from "../../utils/clickEvent.js";
-import OneOnOneHistoriesDetails from "./one-on-one-histories-details.js";
-import { addPaginationOnClickProperty } from "../../utils/pagination.js";
-import { HISTORIES_IMAGE_PATH } from "../../global.js";
+import {
+  initializePagination,
+  setPaginationActive,
+} from "../../utils/pagination.js";
+import { BACKEND, HISTORIES_IMAGE_PATH } from "../../global.js";
+import useState from "../../utils/useState.js";
+import { getCookie } from "../../utils/cookie.js";
+import { getUserMe } from "../../utils/userUtils.js";
+import { navigate } from "../../utils/navigate.js";
+import { Histories } from "./page.js";
 
 /**
  * 사용자 지정 모드의 전적 리스트를 렌더링합니다.
  * @constructor 전적 리스트의 게임 모드
  */
-export default async function OneOnOneHistories() {
+export default function OneOnOneHistories(mode) {
+  new Histories(document.getElementById("app"));
   this.$customList = document.getElementById("content");
   this.$pagination = document.getElementById("pagination");
 
   const init = () => {
     this.$customList.textContent = "";
-    this.$pagination.style.display = "block";
-    addPaginationOnClickProperty(
-      "prev",
-      "next",
-      () => console.log("TODO => 이전 페이지로 이동하기"),
-      () => console.log("TODO => 다음 페이지로 이동하기"),
-    );
-    this.mode = mode;
-    this.needToRender = true;
+    this.$prev = document.getElementById("prev");
+    this.$next = document.getElementById("next");
+    this.totalPages = 0;
+    initializePagination(this.$pagination, this.$prev, this.$next);
+    getOneOnOneList();
   };
 
-  const useState = async () => {
-    // TODO => backend로부터 데이터 받아오기
-    this.newState = [
-      {
-        id: 1,
-        player1: {
-          nickname: "hyojocho",
-          avatar: "luke_skywalker.png",
-          rating: 2130,
-          is_winner: true,
+  const getOneOnOneList = () => {
+    let page = Number(this.$prev.dataset.page) + 1;
+    getUserMe().then((response) => {
+      let { nickname } = response.data;
+      fetch(
+        `${BACKEND}/games/results?user=${nickname}&mode=${mode}&page=${page}&limit=4`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${getCookie("jwt")}`,
+            "Content-type": "application/json",
+          },
         },
-        player2: {
-          nickname: "yena",
-          avatar: "chewbacca.png",
-          rating: 110,
-          is_winner: false,
-        },
-      },
-      {
-        id: 2,
-        player1: {
-          nickname: "hyojocho",
-          avatar: "luke_skywalker.png",
-          rating: 2130,
-          is_winner: true,
-        },
-        player2: {
-          nickname: "yena",
-          avatar: "chewbacca.png",
-          rating: 110,
-          is_winner: false,
-        },
-      },
-      {
-        id: 3,
-        player1: {
-          nickname: "hyojocho",
-          avatar: "luke_skywalker.png",
-          rating: 2130,
-          is_winner: true,
-        },
-        player2: {
-          nickname: "yena",
-          avatar: "chewbacca.png",
-          rating: 110,
-          is_winner: false,
-        },
-      },
-      {
-        id: 4,
-        player1: {
-          nickname: "hyojocho",
-          avatar: "chewbacca.png",
-          rating: 2130,
-          is_winner: true,
-        },
-        player2: {
-          nickname: "donghyk2",
-          avatar: "han_solo.png",
-          rating: 2120,
-          is_winner: false,
-        },
-      },
-    ];
+      ).then((response) => {
+        if (response.ok) {
+          response.json().then((data) => {
+            this.totalPages = data.total_pages;
+            setPagination();
+            set1vs1Histories(data);
+          });
+        } else {
+          navigate("error", { errorCode: response.status });
+        }
+      });
+    });
   };
 
-  const setState = () => {
-    if (this.state === this.newState) {
-      this.needToRender = false;
-      return;
+  const setPagination = () => {
+    if (this.totalPages === 1) {
+      // 페이지가 1개인 경우
+      setPaginationActive(this.$prev, false, null);
+      setPaginationActive(this.$next, false, null);
+    } else if (this.totalPages > 1) {
+      // 페이지가 2개 이상인 경우
+      if (this.$prev.dataset.page === "0") {
+        setPaginationActive(this.$prev, false, null);
+        setPaginationActive(this.$next, true, getOneOnOneList);
+      }
+      if (this.$next.dataset.page === this.totalPages + 1) {
+        setPaginationActive(this.$prev, true, getOneOnOneList);
+        setPaginationActive(this.$next, false, null);
+      }
     }
-    this.state = this.newState;
-    this.needToRender = true;
   };
 
   /**
@@ -105,7 +79,7 @@ export default async function OneOnOneHistories() {
    * 2. 게임 모드(1 vs 1 로고 또는 토너먼트 로고)를 렌더링합니다.
    * 3. 플레이어 2의 정보를 렌더링합니다.
    */
-  const render = () => {
+  this.render = () => {
     this.$customList.insertAdjacentHTML(
       "afterbegin",
       `
@@ -121,8 +95,13 @@ export default async function OneOnOneHistories() {
    * @param $listWrapper {HTMLElement} 전적 리스트를 렌더링할 <div> 엘리먼트
    */
   const render1vs1 = ($listWrapper) => {
-    for (let data of this.state) {
-      const { id, player1, player2 } = data;
+    let { data } = get1vs1Histories();
+    if (data.length === 0) {
+      this.$customList.innerHTML = `<p class="histories empty-list">비었다.</p>`;
+      return;
+    }
+    for (let item of data) {
+      const { id, player1, player2 } = item;
       $listWrapper.insertAdjacentHTML(
         "beforeend",
         `
@@ -135,7 +114,9 @@ export default async function OneOnOneHistories() {
       );
       let $listItemDiv = $listWrapper.lastElementChild;
       click($listItemDiv, () => {
-        OneOnOneHistoriesDetails.bind(this, id, "1vs1")();
+        navigate(`/histories/details?mode=${mode}&gameId=${id}`, {
+          gameId: id,
+        });
       });
       $listWrapper.appendChild($listItemDiv);
     }
@@ -167,7 +148,5 @@ export default async function OneOnOneHistories() {
   };
 
   init();
-  await useState();
-  setState();
-  render();
+  let [get1vs1Histories, set1vs1Histories] = useState({}, this, "render");
 }
