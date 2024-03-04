@@ -12,6 +12,7 @@ import Tournament from "../pages/tournament/page.js";
 import Summary from "../pages/histories/summary-page.js";
 import OneOnOneHistories from "../pages/histories/one-on-one-page.js";
 import TournamentHistories from "../pages/histories/tournament-page.js";
+import Avatar from "../pages/avatar/page.js";
 
 /**
  * 원하는 경로에 따라 렌더링할 컴포넌트를 정의합니다.
@@ -45,6 +46,11 @@ export const routes = [
   {
     path: /^\/histories\/details(?:\?.*)?$/,
     page: HistoriesDetails,
+    header: MainHeader,
+  },
+  {
+    path: /^\/avatar$/,
+    page: Avatar,
     header: MainHeader,
   },
 
