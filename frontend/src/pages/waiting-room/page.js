@@ -5,6 +5,7 @@ import useState from "../../utils/useState.js";
 import { navigate } from "../../utils/navigate.js";
 import { click } from "../../utils/clickEvent.js";
 import { WEBSOCKET } from "../../global.js";
+import { getUserMe } from "../../utils/userUtils.js";
 /**
  * @param {HTMLElement} $container
  * @param {object} info
@@ -15,10 +16,13 @@ export default function WaitingRoom($container, info = null) {
     navigate("/game-mode");
     return;
   }
+  let userNickname = null;
+  getUserMe().then((user) => {
+    userNickname = user.data.nickname;
+  });
 
   const gameModeNum = info.data.mode;
   const ws = info.socket;
-  console.log(info);
   let props = info.data.players;
 
   const init = () => {
@@ -48,7 +52,12 @@ export default function WaitingRoom($container, info = null) {
         };
       }
     };
+
     click($container.querySelector(".start-btn"), () => {
+      const player = info.data.players.find(
+        (player) => player.nickname === userNickname,
+      );
+      if (player && !player.is_manager) return;
       ws.send(
         JSON.stringify({
           type: "game_start",

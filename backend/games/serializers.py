@@ -276,7 +276,7 @@ class TournamentResultSerializer(serializers.ModelSerializer):
         data = MatchSerializer(game.match3).data
         data['winner'] = game.match3.winner.nickname
         data['date'] = game.started_at
-        return
+        return data
 
 
 class PvPMatchSerializer(serializers.ModelSerializer):

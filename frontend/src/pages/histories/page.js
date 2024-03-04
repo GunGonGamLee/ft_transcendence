@@ -1,12 +1,12 @@
 import { hoverToggle } from "../../utils/hoverEvent.js";
 import { click } from "../../utils/clickEvent.js";
 import { importCss } from "../../utils/importCss.js";
-import Summary from "./summary-page.js";
-import OneOnOneHistories from "./one-on-one-page.js";
-import TournamentHistories from "./tournament-page.js";
 import { HISTORIES_IMAGE_PATH, MODE } from "../../global.js";
+import OneOnOneHistoriesDetails from "./one-on-one-histories-details.js";
+import TournamentHistoriesDetails from "./tournament-histories-details.js";
+import { navigate } from "../../utils/navigate.js";
 
-export default function Histories($container) {
+export function Histories($container) {
   this.$container = $container;
 
   const init = () => {
@@ -15,7 +15,6 @@ export default function Histories($container) {
 
   const render = () => {
     renderLayout();
-    renderList();
   };
 
   const renderNav = () => {
@@ -79,28 +78,36 @@ export default function Histories($container) {
     );
   };
 
-  const renderList = () => {
-    let $content = document.getElementById("content");
-    Summary.bind($content)();
-  };
-
   /**
    * 레이아웃 엘리먼트에 이벤트 리스너를 추가합니다.
    */
   const addEventListenersToLayout = () => {
-    const $content = document.getElementById("content");
     const $summary = document.getElementById("summary");
     const $casualMenuWrapper = document.getElementById("casual-menu-wrapper");
     const $casual = document.getElementById("casual");
-    const $toggleItems = Array.from(document.getElementsByTagName("li"));
+    const $toggleItems = Array.from(
+      document.querySelectorAll(".histories .casual-toggle ul.histories li"),
+    );
     const $tournament = document.getElementById("tournament");
 
     // click 이벤트
-    click($summary, Summary);
-    click($casual, OneOnOneHistories.bind($content, "1vs1"));
-    click($tournament, TournamentHistories.bind($content, false));
-    click($toggleItems[0], OneOnOneHistories.bind($content, "1vs1")); // 1 vs 1 모드 선택 시 실행
-    click($toggleItems[1], TournamentHistories.bind($content, true)); // 토너먼트 모드 선택 시 실행
+    click($summary, () => {
+      navigate("/histories/summary");
+    });
+    click($casual, () => {
+      navigate("/histories/casual/one-on-one", { mode: "casual_1vs1" });
+    });
+    click($tournament, () => {
+      navigate("/histories/rank/tournament", { mode: "rank" });
+    });
+    click($toggleItems[0], () => {
+      navigate("/histories/casual/one-on-one", { mode: "casual_1vs1" });
+    });
+    click($toggleItems[1], () => {
+      navigate("/histories/casual/tournament", {
+        mode: "casual_tournament",
+      });
+    }); // 토너먼트 모드 선택 시 실행
 
     // toggle 이벤트
     let $toggle = document.getElementById("toggle");
@@ -109,4 +116,34 @@ export default function Histories($container) {
   init();
   render();
   addEventListenersToLayout();
+}
+
+/**
+ * 전적 리스트의 세부 정보를 렌더링합니다. 게임 모드에 따라 다른 컴포넌트를 렌더링합니다.
+ * @param $container {HTMLElement} - 전적 리스트 페이지가 렌더링될 엘리먼트
+ * @param info {{gameId: number}} - 게임 아이디가 포함된 객체
+ * @constructor - 전적 리스트 페이지가 렌더링될 엘리먼트
+ */
+export function HistoriesDetails($container, info) {
+  this.$container = $container;
+  const queryString = location.search.split("?")[1]; // ? 제거
+  const searchParams = new URLSearchParams(queryString);
+  const mode = searchParams.get("mode");
+  if (info === undefined) {
+    info = { gameId: Number(searchParams.get("gameId")) };
+  }
+  Histories.bind(this, $container)();
+  const $content = document.getElementById("content");
+
+  switch (mode) {
+    case "casual_1vs1":
+      OneOnOneHistoriesDetails.bind($content, info.gameId)();
+      break;
+    case "casual_tournament":
+    case "rank":
+      TournamentHistoriesDetails.bind($content, info.gameId)();
+      break;
+    default:
+      navigate("error", { errorCode: 404 });
+  }
 }

@@ -13,6 +13,10 @@
 }
 
 /************ Histories Content ************/
+.histories.empty-list {
+    font-size: 4.5vh;
+    font-family: Galmuri11-Bold, serif;
+}
 
 .histories#content {
     display: flex;
@@ -248,7 +252,7 @@ footer.histories {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    width: 20%;
+    width: fit-content;
     height: 100%;
     margin-right: 2vw;
     cursor: unset;

@@ -1,41 +1,50 @@
-import { HISTORIES_IMAGE_PATH, MODE } from "../../global.js";
+import { BACKEND, HISTORIES_IMAGE_PATH, MODE } from "../../global.js";
+import { getCookie } from "../../utils/cookie.js";
+import useState from "../../utils/useState.js";
+import { getUserMe } from "../../utils/userUtils.js";
+import { navigate } from "../../utils/navigate.js";
+import { Histories } from "./page.js";
 
-export default async function Summary() {
+export default function Summary() {
+  new Histories(document.getElementById("app"));
   this.$container = document.getElementById("content");
   this.$pagination = document.getElementById("pagination");
-  this.needToRender = false;
 
   const init = () => {
     this.$container.textContent = "";
     this.$pagination.style.display = "none";
-  };
-
-  const useState = async () => {
-    this.newState = await getUsersHistoriesSummary();
-  };
-
-  const setState = () => {
-    if (this.state === this.newState) {
-      this.needToRender = false;
-      return;
-    }
-    this.state = this.newState;
-    this.needToRender = true;
+    getUserMe().then((response) => {
+      let { nickname } = response.data;
+      fetch(`${BACKEND}/users/${nickname}/`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getCookie("jwt")}`,
+        },
+      }).then((response) => {
+        if (response.ok) {
+          response.json().then((data) => {
+            setUsersHistoriesSummary(data);
+          });
+        } else {
+          navigate("error", { errorCode: response.status });
+        }
+      });
+    });
   };
 
   /**
    * 사용자의 전적 개요를 렌더링합니다.
    */
-  const render = () => {
-    if (!this.needToRender) return;
+  this.render = () => {
     const {
       nickname,
       avatar,
       rating,
-      win_rate,
-      casual_win_rate,
-      tournament_win_rate,
-    } = this.state;
+      custom_1v1_win_rate,
+      custom_tournament_win_rate,
+      rank_win_rate,
+    } = getUsersHistoriesSummary();
     this.$container.insertAdjacentHTML(
       "afterbegin",
       `
@@ -44,34 +53,11 @@ export default async function Summary() {
             ${renderUserInfo({ nickname, avatar })}
         </div>
         <div class="histories summary" id="data">
-            ${renderHistoriesSummary({ rating, win_rate, casual_win_rate, tournament_win_rate })}
+            ${renderHistoriesSummary({ rating, custom_1v1_win_rate, custom_tournament_win_rate, rank_win_rate })}
         </div>
     </div>
     `,
     );
-  };
-
-  /**
-   * 사용자의 전적 개요 데이터를 가져옵니다.
-   * @returns {Promise<{
-   *    nickname: string,
-   *    avatar: string,
-   *    rating: number,
-   *    win_rate: number,
-   *    casual_win_rate: number,
-   *    tournament_win_rate: number
-   * }>}
-   */
-  const getUsersHistoriesSummary = async function () {
-    // TODO => API 요청으로 await 해서 데이터 받아오기
-    return {
-      nickname: "yena",
-      avatar: "chewbacca.png",
-      rating: 2103,
-      win_rate: 43,
-      casual_win_rate: 52,
-      tournament_win_rate: 45,
-    };
   };
 
   /**
@@ -87,7 +73,12 @@ export default async function Summary() {
 
   /**
    * 사용자의 전적 개요 데이터를 렌더링합니다.
-   * @param {{rating: number, casual_win_rate: number, tournament_win_rate: number}} props 사용자의 전적 개요 데이터
+   * @param {{
+   * rating: number,
+   * custom_1v1_win_rate: number,
+   * custom_tournament_win_rate: number,
+   * rank_win_rate: number
+   * }} props 사용자의 전적 개요 데이터
    */
   const renderHistoriesSummary = (props) => {
     return `
@@ -97,17 +88,19 @@ export default async function Summary() {
       </div>
       <div class="histories summary" id="casual-win-rate">
         <span>${MODE.casual} 승률: </span>
-        <span>${props.casual_win_rate}%</span>
+        <span>${props.custom_1v1_win_rate}%</span>
       </div>
       <div class="histories summary" id="tournament-win-rate">
         <span>${MODE.tournament} 승률: </span>
-        <span>${props.tournament_win_rate}%</span>
+        <span>${props.rank_win_rate}%</span>
       </div>
     `;
   };
 
   init();
-  await useState();
-  setState();
-  render();
+  const [getUsersHistoriesSummary, setUsersHistoriesSummary] = useState(
+    {},
+    this,
+    "render",
+  );
 }

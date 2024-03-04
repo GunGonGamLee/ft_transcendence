@@ -1,37 +1,36 @@
-import { HISTORIES_IMAGE_PATH } from "../../global.js";
+import { BACKEND, HISTORIES_IMAGE_PATH } from "../../global.js";
+import { navigate } from "../../utils/navigate.js";
+import { getCookie } from "../../utils/cookie.js";
+import useState from "../../utils/useState.js";
+import { getUserMe } from "../../utils/userUtils.js";
 
-export default async function OneOnOneHistoriesDetails(gameId, mode) {
+export default function OneOnOneHistoriesDetails(gameId) {
   const init = () => {
     this.textContent = "";
     let $pagination = document.getElementById("pagination");
     $pagination.style.display = "none";
+    getUserMe().then((response) => {
+      if (response.status !== 200) {
+        navigate("error", { errorCode: response.status });
+      }
+      let { nickname } = response.data;
+      fetch(`${BACKEND}/games/results/${gameId}?user=${nickname}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getCookie("jwt")}`,
+        },
+      }).then((response) => {
+        if (response.ok) {
+          response.json().then((data) => {
+            setOneOnOneHistoriesDetails(data);
+          });
+        } else {
+          navigate("error", { errorCode: response.status });
+        }
+      });
+    });
   };
-
-  const useState = async () => {
-    // TODO => backend로부터 데이터 받아오기
-    this.state = {
-      id: gameId,
-      mode,
-      player1: {
-        nickname: "hyojocho",
-        avatar: "luke_skywalker.png",
-        rating: 2130,
-        score: 4,
-        is_winner: true,
-      },
-      player2: {
-        nickname: "yena",
-        avatar: "chewbacca.png",
-        rating: 110,
-        score: 1,
-        is_winner: false,
-      },
-      date: "2024.01.26 13:53",
-      playtime: "00:05:23",
-    };
-  };
-
-  const setState = () => {};
 
   const renderPlayer = (player) => {
     return `
@@ -48,42 +47,45 @@ export default async function OneOnOneHistoriesDetails(gameId, mode) {
     `;
   };
 
-  const renderGameInfo = () => {
-    const { id, date, playtime } = this.state;
+  const renderGameInfo = (start_time, playtime) => {
     return `
       <div class="histories one-on-one info-title" id="game-id">게임 번호</div>
-      <div class="histories one-on-one info-data">${id}</div>
+      <div class="histories one-on-one info-data">${gameId}</div>
       <div class="histories one-on-one info-title" id="game-date">게임 날짜</div>
-      <div class="histories one-on-one info-data">${date}</div>
+      <div class="histories one-on-one info-data">${start_time}</div>
       <div class="histories one-on-one info-title" id="game-playtime">게임 시간</div>
       <div class="histories one-on-one info-data">${playtime}</div>
     `;
   };
 
   const renderOneOnOneDetails = () => {
+    const { player1, player2, start_time, playtime } =
+      getOneOnOneHistoriesDetails();
     this.insertAdjacentHTML(
       "afterbegin",
       `
       <div class="histories one-on-one" id="details-wrapper">
         <div class="histories one-on-one" id="players">
-            ${renderPlayer(this.state.player1)}
+            ${renderPlayer(player1)}
             <p class="histories" id="score-separator">:</p>
-            ${renderPlayer(this.state.player2)}
+            ${renderPlayer(player2)}
         </div>
         <div class="histories one-on-one" id="game-info">
-            ${renderGameInfo()}
+            ${renderGameInfo(start_time, playtime)}
         </div>
       </div>
     `,
     );
   };
 
-  const render = () => {
+  this.render = () => {
     renderOneOnOneDetails();
   };
 
   init();
-  await useState();
-  setState();
-  render();
+  let [getOneOnOneHistoriesDetails, setOneOnOneHistoriesDetails] = useState(
+    {},
+    this,
+    "render",
+  );
 }
