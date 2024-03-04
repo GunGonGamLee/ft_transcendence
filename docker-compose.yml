@@ -102,7 +102,7 @@ services:
   #   networks:
   #     - app_network
 
-  #   # elasticsearch-setup-passwords interactive --url "https://localhost:9200" -E xpack.security.http.ssl.verification_mode=none
+    # elasticsearch-setup-passwords interactive --url "https://localhost:9200" -E xpack.security.http.ssl.verification_mode=none
 
   # logstash:
   #   build: ./elk/logstash

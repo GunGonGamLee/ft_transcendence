@@ -305,13 +305,13 @@ class PingPongGame:
     started_at: datetime
     finished: False
 
-    def __init__(self, ping_pong_map: PingPongMap):
+    def __init__(self, ping_pong_map: PingPongMap, player1: User, player2: User):
         """
         Args:
         - ping_pong_map: PingPongMap
         """
         self.left_side_player = Player(
-            None,
+            player1,
             0,
             Bar(
                 GAME_SETTINGS_DICT['bar']['width'],
@@ -319,7 +319,7 @@ class PingPongGame:
             )
         )
         self.right_side_player = Player(
-            None,
+            player2,
             0,
             Bar(
                 ping_pong_map.width - GAME_SETTINGS_DICT['bar']['width'],

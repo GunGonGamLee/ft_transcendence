@@ -8,11 +8,10 @@ import Login from "../pages/login/page.js";
 import CustomGameList from "../pages/custom-game-list/page.js";
 import Auth from "../pages/auth/page.js";
 import InGame from "../pages/in-game/page.js";
-import Tournament from "../pages/tournament/page.js";
+import Matchup from "../pages/match-up/page.js";
 import Summary from "../pages/histories/summary-page.js";
 import OneOnOneHistories from "../pages/histories/one-on-one-page.js";
 import TournamentHistories from "../pages/histories/tournament-page.js";
-
 /**
  * 원하는 경로에 따라 렌더링할 컴포넌트를 정의합니다.
  */
@@ -51,6 +50,6 @@ export const routes = [
   { path: /^\/waiting-room$/, page: WaitingRoom, header: MainHeader },
   { path: /^\/custom-game-list$/, page: CustomGameList, header: MainHeader },
   { path: /^\/in-game$/, page: InGame, header: MainHeader },
-  { path: /^\/tournament$/, page: Tournament, header: MainHeader },
   { path: /^\/online-game$/, page: InGame, header: MainHeader },
+  { path: /^\/match-up$/, page: Matchup, header: MainHeader },
 ];

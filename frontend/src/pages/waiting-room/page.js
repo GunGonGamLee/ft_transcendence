@@ -64,7 +64,7 @@ export default function WaitingRoom($container, info = null) {
         const newWs = new WebSocket(`${WEBSOCKET}${data.data}`);
         newWs.onmessage = (msg) => {
           let data = JSON.parse(msg.data);
-          navigate("/tournament", { socket: newWs, data: data });
+          navigate("/match-up", { socket: newWs, data: data });
         };
       }
     };
