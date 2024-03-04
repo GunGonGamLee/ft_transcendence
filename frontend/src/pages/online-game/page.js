@@ -39,7 +39,7 @@ export default function OnlineGame($container, info) {
     document.removeEventListener("keydown", keyEventHandler);
     window.removeEventListener("beforeunload", disconnectWebSocket);
   };
-  // TODO: avatar 하드코딩된거 나중에 수정하기
+  // TODO: avatar 하드코딩된거 나중에 수정하기 중복 코드 gameutils.js로 따로 빼기
   this.render = () => {
     $container.innerHTML = `
 			${scoreBar()}
