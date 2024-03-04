@@ -26,12 +26,18 @@ export default function OnlineGame($container, info) {
     const $toast = document.querySelector(".toast");
     const toast = new bootstrap.Toast($toast);
     toast.show(); // Toast를 보여줍니다.
+    window.addEventListener("beforeunload", disconnectWebSocket);
+  };
+
+  const disconnectWebSocket = () => {
+    ws.close();
   };
 
   this.unmount = () => {
     clearInterval(this.timeIntervalId);
     document.querySelector("#header").style.display = "block";
     document.removeEventListener("keydown", keyEventHandler);
+    window.removeEventListener("beforeunload", disconnectWebSocket);
   };
   // TODO: avatar 하드코딩된거 나중에 수정하기
   this.render = () => {
