@@ -76,6 +76,14 @@ class AvatarUpdateTest(TestCase):
     def test_avatar_update(self):
         pass
 
+    def test_avatar_update_bad_request(self):
+        response = self.client.patch(
+            f"{reverse('userAvatar', kwargs={'nickname': self.user.nickname})}",
+            format='application/json',
+            headers={'Authorization': f'Bearer {self.token}'},
+        )
+        self.assertEqual(400, response.status_code)
+
     def test_avatar_update_unauthorized(self):
         nickname = '예나'
         response = self.client.patch(
