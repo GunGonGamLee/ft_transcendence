@@ -83,10 +83,12 @@ export default function OnlineGame($container, info) {
         $container.querySelector(".in-game").style.backgroundImage =
           "url('../../../assets/images/ingame_background4.png')";
         break;
-      case "arrowUp":
+      case "ArrowUp":
+        console.log("up");
         ws.send(JSON.stringify({ type: "keyboard", data: "up" }));
         break;
-      case "arrowDown":
+      case "ArrowDown":
+        console.log("down");
         ws.send(JSON.stringify({ type: "keyboard", data: "down" }));
         break;
       default:
