@@ -1,6 +1,6 @@
 import { Histories } from "../histories/page.js";
-import useState from "../../utils/useState.js";
 import { AVATAR_FILE_NAME, HISTORIES_IMAGE_PATH } from "../../global.js";
+import { importCss } from "../../utils/importCss.js";
 
 export default function Avatar() {
   new Histories(document.getElementById("app"));
@@ -9,6 +9,7 @@ export default function Avatar() {
 
   const init = () => {
     this.$pagination.style.display = "none";
+    importCss("../../../assets/css/avatar.css");
   };
 
   const renderAvatarExamples = () => {
