@@ -22,7 +22,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         super().__init__(args, kwargs)
         self.user = None
         self.manager = False
-        self.my_match = None
+        self.my_match = 0
         self.player1 = False
 
         self.game = None
@@ -246,11 +246,11 @@ class GameConsumer(AsyncWebsocketConsumer):
                         await asyncio.sleep(1 / 24)
                     await self.save_match_data_in_database(self.match1)
                     if self.game.mode == 0:
-                        await self.send_end_message(self.game.match1, self.match1_group_name, True)
+                        await self.send_end_message(self.game.match1, True)
                         return
                     else:
                         await self.save_match3_matching_in_database(self.game.match1.winner)
-                        await self.send_end_message(self.game.match1, self.match1_group_name, False)
+                        await self.send_end_message(self.game.match1, False)
                         return
                 elif self.my_match == 2:
                     await self.init_game(message_data, self.my_match)
@@ -272,7 +272,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                         await asyncio.sleep(1 / 24)
                     await self.save_match_data_in_database(self.match2)
                     await self.save_match3_matching_in_database(self.game.match2.winner)
-                    await self.send_end_message(self.game.match2, self.match2_group_name, False)
+                    await self.send_end_message(self.game.match2, False)
                     return
 
         elif message_type == 'keyboard':
@@ -345,7 +345,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             match.player2 = winner
         match.save()
 
-    async def send_end_message(self, match: Result, group_name, final: bool):
+    async def send_end_message(self, match: Result, final: bool):
         type_ = 'game_end'
         data = {
             'game_id': self.game_id,
@@ -353,7 +353,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             'final': final
         }
         await self.channel_layer.group_send(
-            group_name,
+            self.game_group_name,
             {
                 'type': type_,
                 'data': data
@@ -366,7 +366,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def send_start_message(self, match, group_name):
         data = {
-            'match': f"match{self.my_match}",
             'map': {
                 'width': match.ping_pong_map.width,
                 'height': match.ping_pong_map.height
