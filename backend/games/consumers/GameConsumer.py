@@ -273,6 +273,27 @@ class GameConsumer(AsyncWebsocketConsumer):
                     await self.save_match3_matching_in_database(self.game.match2.winner)
                     await self.send_end_message(self.game.match2, False)
                     return
+        elif message_type == 'match3_start':
+            if self.my_match == 3:
+                getattr(self.UserList, self.match3_group_name).append(self.user)
+            if self.player1:
+                await self.init_game(message_data, self.my_match)
+                start_time = time.time()
+                while True:
+                    if time.time() - start_time >= 30:
+                        raise TimeoutError()
+                    num = self.channel_layer.groups[self.match1_group_name].__len__()
+                    if num == 2:
+                        break
+                    await asyncio.sleep(0.3)
+                await self.send_start_message(self.match3, self.match3_group_name)
+                await asyncio.sleep(2)
+                self.match3.started_at = datetime.now()
+                while not self.match3.finished:
+                    await self.play(self.match3)
+                    await self.send_in_game_message(self.match3, self.match3_group_name)
+                    await asyncio.sleep(1 / 24)
+                await self.send_end_message(self.game.match3, True)
 
         elif message_type == 'keyboard':
             if message_data == 'up':
@@ -340,8 +361,11 @@ class GameConsumer(AsyncWebsocketConsumer):
         match = self.game.match3
         if self.my_match == 1:
             match.player1 = winner
+            self.player1 = True
         else:
             match.player2 = winner
+            self.player1 = False
+        self.my_match = 3
         match.save()
 
     async def send_end_message(self, match: Result, final: bool):
