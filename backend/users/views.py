@@ -173,3 +173,29 @@ class UserAvatarView(APIView):
             return JsonResponse(status=status.HTTP_201_CREATED, data={'avatar': user.avatar.url})
         except Exception as e:
             return JsonResponse(status=status.HTTP_500_INTERNAL_SERVER_ERROR, data={'error': str(e)})
+
+    @swagger_auto_schema(
+        tags=['/api/users'],
+        operation_description="사용자 프로필 이미지 변경 API",
+        responses={200: 'Successful Response',
+                   401: 'Bad Unauthorized',
+                   500: 'SERVER_ERROR'},
+        manual_parameters=[
+            openapi.Parameter(
+                'nickname',
+                openapi.IN_PATH,
+                type=openapi.TYPE_STRING,
+                description='유저 닉네임',
+                required=True),
+            openapi.Parameter(
+                'avatar',
+                openapi.IN_QUERY,
+                type=openapi.TYPE_STRING,
+                description='기본 프로필 이미지 5개 중 하나',
+                required=True,
+                enum=list(AVATAR_CHOICES_DICT.values()),
+            )
+        ]
+    )
+    def patch(self, request, nickname):
+        return JsonResponse(status=status.HTTP_501_NOT_IMPLEMENTED, data={'error': 'Not Implemented'})
