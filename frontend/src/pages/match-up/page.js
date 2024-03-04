@@ -1,32 +1,50 @@
 import {importCss} from "../../utils/importCss.js";
+import useState from "../../utils/useState.js";
 
 export default function Matchup($container, info = null) {
   if (info === null) {
     return;
   }
-  console.log(info);
-  console.log(info.data.data.match1);
-  console.log("매치 인원")
-  // console.log(info.data.data.match1.length());
+  // 이전 페이지로 부터 받아온 정보 처리
   const ws = info.socket;
   ws.onmessage = (msg) => {
     let data = JSON.parse(msg.data);
     console.log(data);
-    console.log("here1");
-    console.log(data.data.match);
-    console.log("here2");
-    console.log(data.data.match1);
   };
 
   const init = () => {
-    renderSemifinal();
-    // renderFinal();
+    if (info.data.data.match1.length === 2)
+      renderFinal();
+    else if (info.data.data.match1.length === 4)
+      renderSemifinal();
+    setCards(info.data.data.match1);
   };
 
   this.unmount = () => {
     // ws.close();
   };
-  
+
+  this.renderCards = () => {
+    const cardsData = getCards();
+
+    const cardsArray = Object.values(cardsData);
+
+    const cardWrappers = document.querySelectorAll(".card-wrapper");
+
+    cardsArray.forEach((cardData, index) => {
+      if (index < cardWrappers.length) {
+        const {nickname, avatar, rating} = cardData;
+        cardWrappers[index].innerHTML = `
+        <div class="user-avatar">
+            <img src="../../../assets/images/avatar/${avatar}">
+        </div>
+        <div class="user-name">${nickname}</div>
+        <div class="user-rating">Rating: ${rating}</div>
+      `;
+      }
+    });
+  };
+
   const renderSemifinal = () => {
     importCss("../../../assets/css/semi-final.css");
 
@@ -36,18 +54,10 @@ export default function Matchup($container, info = null) {
         <div class="tournament-wrapper">
             <div class="left-tournament-info-wrapper">
                 <div class="card-wrapper">
-                    <div class="user-avatar">
-                        <img src="../../../assets/images/avatar/darth_vader.png">
-                    </div>
-                    <div class="user-name">hyojocho</div>
-                    <div class="user-rating">Rating: 1,000</div>
+                    
                 </div>
                 <div class="card-wrapper">
-                    <div class="user-avatar">
-                        <img src="../../../assets/images/avatar/darth_vader.png">
-                    </div>
-                    <div class="user-name">hyojocho</div>
-                    <div class="user-rating">Rating: 1,000</div>
+                    
                 </div>
             </div>
             <div class="first-middle-tournament-info-wrapper">
@@ -77,18 +87,10 @@ export default function Matchup($container, info = null) {
             </div>
             <div class="right-tournament-info-wrapper">
                 <div class="card-wrapper">
-                    <div class="user-avatar">
-                        <img src="../../../assets/images/avatar/darth_vader.png">
-                    </div>
-                    <div class="user-name">hyojocho</div>
-                    <div class="user-rating">Rating: 1,000</div>
+                    
                 </div>
                 <div class="card-wrapper">
-                    <div class="user-avatar">
-                        <img src="../../../assets/images/avatar/darth_vader.png">
-                    </div>
-                    <div class="user-name">hyojocho</div>
-                    <div class="user-rating">Rating: 1,000</div>
+                    
                 </div>
             </div>
         </div>
@@ -104,33 +106,22 @@ export default function Matchup($container, info = null) {
         <div class="tournament-wrapper">
             <div class="left-tournament-info-wrapper">
                 <div class="card-wrapper">
-                    <div class="user-avatar">
-                        <img src="../../../assets/images/avatar/darth_vader.png">
-                    </div>
-                    <div class="user-name">hyojocho</div>
-                    <div class="user-rating">Rating: 1,000</div>
                 </div>
             </div>
-            
             <div class="second-middle-tournament-info-wrapper">
                 <div id="trophy-wrapper">
                     <img src="../../../assets/images/tournament_logo.png">
                 </div>
             </div>
-            
             <div class="right-tournament-info-wrapper">
                 <div class="card-wrapper">
-                    <div class="user-avatar">
-                        <img src="../../../assets/images/avatar/darth_vader.png">
-                    </div>
-                    <div class="user-name">hyojocho</div>
-                    <div class="user-rating">Rating: 1,000</div>
                 </div>
-                
             </div>
         </div>
 		`;
   }
+
+  let [getCards, setCards] = useState({}, this, "renderCards");
 
   init();
 }
