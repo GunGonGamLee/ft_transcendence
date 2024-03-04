@@ -232,7 +232,6 @@ class GameConsumer(AsyncWebsocketConsumer):
                     while True:
                         if time.time() - start_time >= 30:
                             raise TimeoutError()
-                        logger.info(f"{self.channel_layer.groups}")
                         num = self.channel_layer.groups[self.match1_group_name].__len__()
                         if num == 2:
                             break
