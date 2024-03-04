@@ -1,6 +1,6 @@
 import useState from "../../utils/useState.js";
 import scoreBar from "./scoreBar.js";
-
+import toast from "./toast.js";
 /**
  *
  * @param {HTMLElement} $container
@@ -24,18 +24,25 @@ export default function InGame($container, info) {
     this.gameAnimationId = window.requestAnimationFrame(() =>
       runGame(canvas, bar1, bar2, ball, draw),
     );
+    document.addEventListener("keydown", keyEventHandler);
+
+    const $toast = document.querySelector(".toast");
+    const toast = new bootstrap.Toast($toast);
+    toast.show(); // Toast를 보여줍니다.
   };
   this.unmount = () => {
     clearInterval(this.timeIntervalId);
     cancelAnimationFrame(this.gameAnimationId);
     cancelAnimationFrame(this.barAnimationId);
     document.querySelector("#header").style.display = "block";
+    document.removeEventListener("keydown", keyEventHandler);
   };
 
   this.render = () => {
     $container.innerHTML = `
 			${scoreBar()}
-			<div class="in-game" style="height: 100vh; width: 100vw; background-image: url('../../../assets/images/ingame_background.png'); background-size: cover">
+      ${toast()}
+			<div class="in-game" style="height: 100vh; width: 100vw; background-image: url('../../../assets/images/ingame_background.png'); background-size: cover"></div>
 			<canvas id="gameCanvas" style="position: absolute; top: 12vh; left: 6%; width: 88%; height: 88%;border-left: 3px dotted white; border-right: 3px dotted white;"></canvas>
 			`;
   };
@@ -53,6 +60,31 @@ export default function InGame($container, info) {
 
   const hideHeader = () => {
     document.querySelector("#header").style.display = "none";
+  };
+
+  const keyEventHandler = (e) => {
+    switch (e.key) {
+      // background image 변경
+      case "1":
+        $container.querySelector(".in-game").style.backgroundImage =
+          "url('../../../assets/images/ingame_background.png')";
+        break;
+      case "2":
+        $container.querySelector(".in-game").style.backgroundImage =
+          "url('../../../assets/images/ingame_background2.png')";
+        break;
+      case "3":
+        $container.querySelector(".in-game").style.backgroundImage =
+          "url('../../../assets/images/ingame_background3.png')";
+        break;
+      case "4":
+        $container.querySelector(".in-game").style.backgroundImage =
+          "url('../../../assets/images/ingame_background4.png')";
+        break;
+      // 여기에 send 로직도 추가해야함
+      default:
+        break;
+    }
   };
 
   /**
@@ -259,7 +291,7 @@ export default function InGame($container, info) {
           player2: getScore().player2 + 1,
         });
       }
-    }
+    };
 
     /**
      * 공이 벽에 부딪혔을 때 방향을 바꾸는 함수

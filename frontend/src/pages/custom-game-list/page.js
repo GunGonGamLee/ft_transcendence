@@ -128,8 +128,16 @@ export default function CustomGameList($container) {
     ws.onmessage = (event) => {
       const res = JSON.parse(event.data);
       if (res.error) {
-        if (res.error === "[PermissionDenied] can't access")
-          alert("비밀번호가 틀렸습니다.");
+        if (res.error === "[PermissionDenied] can't access") {
+          const $passwordInput = document.getElementById("pwd-input");
+          $passwordInput.value = "";
+          $passwordInput.focus();
+          $passwordInput.classList.add("shake-animation");
+          // 애니메이션 보여준 후 제거
+          $passwordInput.addEventListener("animationend", () => {
+            $passwordInput.classList.remove("shake-animation");
+          });
+        }
         return;
       }
       res.socket = ws;
@@ -300,7 +308,13 @@ export default function CustomGameList($container) {
       const $passwordInput = document.getElementById("password-input");
 
       if ($roomNameInput.value === "") {
-        alert("방 이름을 입력해주세요.");
+        $roomNameInput.value = "";
+        $roomNameInput.focus();
+        $roomNameInput.classList.add("shake-animation");
+        // 애니메이션 보여준 후 제거
+        $roomNameInput.addEventListener("animationend", () => {
+          $roomNameInput.classList.remove("shake-animation");
+        });
         return;
       }
       fetch(`${BACKEND}/games/`, {
@@ -320,8 +334,23 @@ export default function CustomGameList($container) {
         .then((res) => {
           if (res.status === 201) {
             return res.json();
-          } else {
-            throw new Error("방 만들기 실패");
+          } else if (res.status === 400) {
+            $roomNameInput.value = "";
+            $roomNameInput.focus();
+            $roomNameInput.classList.add("shake-animation");
+            // 애니메이션 보여준 후 제거
+            $roomNameInput.addEventListener("animationend", () => {
+              $roomNameInput.classList.remove("shake-animation");
+            });
+          } else if (res.status === 401) {
+            alert("인증 실패");
+            navigate("/");
+          } else if (res.status === 404) {
+            alert("존재하지 않는 유저");
+            navigate("/");
+          } else if (res.status === 500) {
+            alert("서버 오류");
+            navigate("/error", { errorCode: 500 });
           }
         })
         .then((res) => {
