@@ -366,6 +366,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def send_start_message(self, match, group_name):
         data = {
+            'match': f"match{self.my_match}",
             'map': {
                 'width': match.ping_pong_map.width,
                 'height': match.ping_pong_map.height
@@ -406,7 +407,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             'ball': {
                 'x': match.ball.x,
                 'y': match.ball.y,
-                'direction': match.ball.direction
             },
             'left_side_player': {
                 'x': match.left_side_player.bar.x,
