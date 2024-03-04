@@ -8,6 +8,8 @@ from django.urls import reverse
 from users.models import User
 from users.views import UserAvatarView
 
+from src.choices import AVATAR_CHOICES_DICT
+
 
 class AvatarUpdateTest(TestCase):
     user, image_path, image = None, None, None
@@ -66,10 +68,19 @@ class AvatarUpdateTest(TestCase):
         view = UserAvatarView()
         view.setup(request)
         response = view.post(request, '예나')
-        self.assertEqual(401, response)
+        self.assertEqual(401, response.status_code)
 
     def test_avatar_upload_server_error(self):
         pass
 
     def test_avatar_update(self):
         pass
+
+    def test_avatar_update_unauthorized(self):
+        nickname = '예나'
+        response = self.client.patch(
+            f"{reverse('userAvatar', kwargs={'nickname': nickname})}?avatar={AVATAR_CHOICES_DICT[0]}",
+            format='application/json',
+            headers={'Authorization': f'Bearer {self.token}'},
+        )
+        self.assertEqual(401, response.status_code)
