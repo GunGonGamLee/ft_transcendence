@@ -8,8 +8,8 @@ import { importCss } from "../../utils/importCss.js";
 import { getUserMe } from "../../utils/userUtils.js";
 import { getCookie } from "../../utils/cookie.js";
 
-export default function Avatar() {
-  new Histories(document.getElementById("app"));
+export default function Avatar($container) {
+  new Histories($container);
   this.$content = document.getElementById("content");
   this.$pagination = document.getElementById("pagination");
 
