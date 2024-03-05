@@ -35,6 +35,11 @@ img.avatar.examples:hover {
 .avatar.upload-wrapper {
     font-family: Galmuri11, serif;
     font-size: 1.2vw;
+    display: grid;
+    align-items: center;
+    justify-items: start;
+    grid-template-columns: 1fr 5fr;
+    grid-column-gap: 0.5rem;
 }
 
 label.avatar.upload > span,
@@ -56,6 +61,8 @@ label.avatar.upload > span:hover {
 input#avatar-name {
     cursor: default;
     border: none;
+    color: white;
+    width: 100%;
 }
 
 input#avatar-name::placeholder {
