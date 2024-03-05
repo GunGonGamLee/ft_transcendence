@@ -35,6 +35,11 @@ img.avatar.examples:hover {
 .avatar.upload-wrapper {
     font-family: Galmuri11, serif;
     font-size: 1.2vw;
+    display: grid;
+    align-items: center;
+    justify-items: start;
+    grid-template-columns: 1fr 5fr;
+    grid-column-gap: 0.5rem;
 }
 
 label.avatar.upload > span,
@@ -56,6 +61,9 @@ label.avatar.upload > span:hover {
 input#avatar-name {
     cursor: default;
     border: none;
+    color: white;
+    width: 100%;
+    text-overflow: ellipsis;
 }
 
 input#avatar-name::placeholder {
@@ -68,4 +76,22 @@ input#avatar-name:focus {
 
 input#avatar-upload[type="file"] {
     display: none;
+}
+
+.avatar#upload-message {
+    margin-top: 1rem;
+    font-family: Galmuri11, serif;
+    font-size: 1.2vw;
+}
+
+.avatar#upload-message.uploading {
+    color: white;
+}
+
+.avatar#upload-message.success {
+    color: #07F7B0;
+}
+
+.avatar#upload-message.error {
+    color: #FF52A0;
 }

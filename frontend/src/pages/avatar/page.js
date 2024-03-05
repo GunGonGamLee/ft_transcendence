@@ -1,9 +1,15 @@
 import { Histories } from "../histories/page.js";
-import { AVATAR_FILE_NAME, HISTORIES_IMAGE_PATH } from "../../global.js";
+import {
+  AVATAR_FILE_NAME,
+  BACKEND,
+  HISTORIES_IMAGE_PATH,
+} from "../../global.js";
 import { importCss } from "../../utils/importCss.js";
+import { getUserMe } from "../../utils/userUtils.js";
+import { getCookie } from "../../utils/cookie.js";
 
-export default function Avatar() {
-  new Histories(document.getElementById("app"));
+export default function Avatar($container) {
+  new Histories($container);
   this.$content = document.getElementById("content");
   this.$pagination = document.getElementById("pagination");
 
@@ -20,6 +26,36 @@ export default function Avatar() {
       `;
     }
     return html;
+  };
+
+  const uploadAvatar = (files) => {
+    const $avatarName = document.getElementById("avatar-name");
+    $avatarName.value = files[0].name;
+    let formData = new FormData();
+    formData.append("avatar", files[0]);
+    getUserMe().then((response) => {
+      const { nickname } = response.data;
+      const $uploadMessage = document.getElementById("upload-message");
+      $uploadMessage.textContent = "업로드 중...";
+      $uploadMessage.className = "avatar uploading";
+      fetch(`${BACKEND}/users/${nickname}/avatar/`, {
+        method: "POST",
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${getCookie("jwt")}`,
+        },
+      }).then((response) => {
+        if (response.ok) {
+          const $userAvatar = document.getElementById("user-avatar");
+          $userAvatar.src = `${HISTORIES_IMAGE_PATH}/avatar/${files[0].name}`;
+          $uploadMessage.className = "avatar success";
+          $uploadMessage.textContent = "업로드에 성공했다.";
+        } else {
+          $uploadMessage.className = "avatar error";
+          $uploadMessage.textContent = "업로드에 실패했다.";
+        }
+      });
+    });
   };
 
   const render = () => {
@@ -43,10 +79,18 @@ export default function Avatar() {
             <span>파일찾기</span>
           </label>
           <input type="text" id="avatar-name" placeholder="파일을 선택해라." readonly>
-          <input type="file" id="avatar-upload" accept="image/*">
+          <input type="file" id="avatar-upload" accept="image/*"">
+        </div>
+        <div class="avatar" id="upload-message">
+          <span></span>
         </div>
       </div>
     `,
+    );
+
+    const $avatarUpload = document.getElementById("avatar-upload");
+    $avatarUpload.addEventListener("change", (e) =>
+      uploadAvatar(e.target.files),
     );
   };
 
