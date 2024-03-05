@@ -22,6 +22,11 @@ export default function Avatar() {
     return html;
   };
 
+  const uploadAvatar = (files) => {
+    const $avatarName = document.getElementById("avatar-name");
+    $avatarName.value = files[0].name;
+  };
+
   const render = () => {
     this.$content.insertAdjacentHTML(
       "beforeend",
@@ -43,10 +48,15 @@ export default function Avatar() {
             <span>파일찾기</span>
           </label>
           <input type="text" id="avatar-name" placeholder="파일을 선택해라." readonly>
-          <input type="file" id="avatar-upload" accept="image/*">
+          <input type="file" id="avatar-upload" accept="image/*"">
         </div>
       </div>
     `,
+    );
+
+    const $avatarUpload = document.getElementById("avatar-upload");
+    $avatarUpload.addEventListener("change", (e) =>
+      uploadAvatar(e.target.files),
     );
   };
 
