@@ -7,8 +7,11 @@ import toast from "./toast.js";
  * @param {Object} info
  * @constructor
  */
-export default function InGame($container, info) {
-  console.log(info.mode);
+export default function InGame($container, info = null) {
+  console.log(info);
+  // TODO: 여기서 경기가 끝날때마다 curMatch를 증가시켜야 합니다.
+  // TODO: curMatch가 1 2 일때 player5 6에 우승자 닉네임을 추가시켜야 합니다.
+  // TODO: curMatch가 3일때는 종료해야 합니다.
   let scoreInput = { player1: 0, player2: 0 };
   let [getScore, setScore] = useState(scoreInput, this, "renderScoreBoard");
   let [getTime, setTime] = useState(0, this, "renderTime");
