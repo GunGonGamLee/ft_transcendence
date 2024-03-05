@@ -11,8 +11,8 @@ export default function LocalMatchup($container, info = null) {
       player2: "",
       player3: "",
       player4: "",
-      player5: null,
-      player6: null,
+      finalPlayer1: null,
+      finalPlayer2: null,
     },
   };
 
