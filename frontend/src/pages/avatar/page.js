@@ -33,26 +33,29 @@ export default function Avatar() {
     $avatarName.value = files[0].name;
     let formData = new FormData();
     formData.append("avatar", files[0]);
-    getUserMe()
-      .then((response) => {
-        const { nickname } = response.data;
-        fetch(`${BACKEND}/users/${nickname}/avatar/`, {
-          method: "POST",
-          body: formData,
-          headers: {
-            Authorization: `Bearer ${getCookie("jwt")}`,
-          },
-        }).then((response) => {
-          if (response.ok) {
-            alert("성공적으로 업로드되었습니다.");
-          } else {
-            alert(response.status + "업로드에 실패했습니다.");
-          }
-        });
-      })
-      .catch((error) => {
-        alert("업로드에 실패했습니다." + error.message);
+    getUserMe().then((response) => {
+      const { nickname } = response.data;
+      const $uploadMessage = document.getElementById("upload-message");
+      $uploadMessage.textContent = "업로드 중...";
+      $uploadMessage.className = "avatar uploading";
+      fetch(`${BACKEND}/users/${nickname}/avatar/`, {
+        method: "POST",
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${getCookie("jwt")}`,
+        },
+      }).then((response) => {
+        if (response.ok) {
+          const $userAvatar = document.getElementById("user-avatar");
+          $userAvatar.src = `${HISTORIES_IMAGE_PATH}/avatar/${files[0].name}`;
+          $uploadMessage.className = "avatar success";
+          $uploadMessage.textContent = "업로드에 성공했다.";
+        } else {
+          $uploadMessage.className = "avatar error";
+          $uploadMessage.textContent = "업로드에 실패했다.";
+        }
       });
+    });
   };
 
   const render = () => {
@@ -77,6 +80,9 @@ export default function Avatar() {
           </label>
           <input type="text" id="avatar-name" placeholder="파일을 선택해라." readonly>
           <input type="file" id="avatar-upload" accept="image/*"">
+        </div>
+        <div class="avatar" id="upload-message">
+          <span></span>
         </div>
       </div>
     `,

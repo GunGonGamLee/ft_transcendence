@@ -77,3 +77,21 @@ input#avatar-name:focus {
 input#avatar-upload[type="file"] {
     display: none;
 }
+
+.avatar#upload-message {
+    margin-top: 1rem;
+    font-family: Galmuri11, serif;
+    font-size: 1.2vw;
+}
+
+.avatar#upload-message.uploading {
+    color: white;
+}
+
+.avatar#upload-message.success {
+    color: #07F7B0;
+}
+
+.avatar#upload-message.error {
+    color: #FF52A0;
+}
