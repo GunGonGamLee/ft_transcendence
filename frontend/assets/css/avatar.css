@@ -54,6 +54,7 @@ label.avatar.upload > span:hover {
 }
 
 input#avatar-name {
+    cursor: default;
     border: none;
 }
 
