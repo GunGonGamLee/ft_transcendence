@@ -40,6 +40,10 @@ export function Histories($container) {
                <img class="histories" src="${HISTORIES_IMAGE_PATH}/tournament_logo.png" alt="tournament">
                ${MODE.tournament}
            </div>
+           <div class="histories" id="avatar">
+                <img class="histories" src="${HISTORIES_IMAGE_PATH}/avatar_change.png" alt="avatar">
+                아바타 변경
+           </div>
         </nav>
         `;
   };
@@ -89,6 +93,7 @@ export function Histories($container) {
       document.querySelectorAll(".histories .casual-toggle ul.histories li"),
     );
     const $tournament = document.getElementById("tournament");
+    const $avatar = document.getElementById("avatar");
 
     // click 이벤트
     click($summary, () => {
@@ -99,6 +104,9 @@ export function Histories($container) {
     });
     click($tournament, () => {
       navigate("/histories/rank/tournament", { mode: "rank" });
+    });
+    click($avatar, () => {
+      navigate("/avatar");
     });
     click($toggleItems[0], () => {
       navigate("/histories/casual/one-on-one", { mode: "casual_1vs1" });
