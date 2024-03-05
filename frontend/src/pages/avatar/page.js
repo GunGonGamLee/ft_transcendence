@@ -39,7 +39,11 @@ export default function Avatar() {
             사진 올리기
         </div>
         <div class="avatar upload-wrapper">
-            <input type="file" id="avatar-upload" accept="image/*">
+          <label for="avatar-upload" class="avatar upload">
+            <span>파일찾기</span>
+          </label>
+          <input type="text" id="avatar-name" placeholder="파일을 선택해라." readonly>
+          <input type="file" id="avatar-upload" accept="image/*">
         </div>
       </div>
     `,
