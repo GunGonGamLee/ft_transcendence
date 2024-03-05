@@ -1,25 +1,76 @@
-import {importCss} from "../../utils/importCss.js";
+import { importCss } from "../../utils/importCss.js";
+import useState from "../../utils/useState.js";
+import { navigate } from "../../utils/navigate.js";
 
-export default function Tournament($container, info = null) {
+export default function Matchup($container, info = null) {
   if (info === null) {
     return;
   }
-  console.log(info);
+  // 이전 페이지로 부터 받아온 정보 처리
   const ws = info.socket;
   ws.onmessage = (msg) => {
     let data = JSON.parse(msg.data);
-    console.log(data);
+    let matchData = [];
+
+    // 파이널 대기 때 받아올 데이터 set
+    if (info.data.data.match3) {
+      renderFinal();
+      matchData.concat(info.data.data.match3);
+    } else {
+      console.error("No match data available");
+    }
+    setCards(data.data.data.match3);
   };
 
   const init = () => {
-    // renderSemifinal();
-    renderFinal();
+    let matchData = [];
+
+    if (info.data.data.match1 && info.data.data.match2) {
+      renderSemifinal();
+      matchData = matchData.concat(info.data.data.match1);
+      matchData = matchData.concat(info.data.data.match2);
+    } else if (info.data.data.match1) {
+      renderFinal();
+      matchData = matchData.concat(info.data.data.match1);
+    } else {
+      console.error("No match data available");
+    }
+
+    if (matchData.length > 0) {
+      setCards(matchData);
+    }
+
+    // // 5초 후에 in-game 경로로 자동 이동
+    // setTimeout(() => {
+    //   navigate("/in-game");
+    // }, 5000); // 5000밀리초는 5초를 의미합니다.
   };
 
   this.unmount = () => {
     // ws.close();
   };
-  
+
+  this.renderCards = () => {
+    const cardsData = getCards();
+
+    const cardsArray = Object.values(cardsData);
+
+    const cardWrappers = document.querySelectorAll(".card-wrapper");
+
+    cardsArray.forEach((cardData, index) => {
+      if (index < cardWrappers.length) {
+        const { nickname, avatar, rating } = cardData;
+        cardWrappers[index].innerHTML = `
+        <div class="user-avatar">
+            <img src="../../../assets/images/avatar/${avatar}">
+        </div>
+        <div class="user-name">${nickname}</div>
+        <div class="user-rating">Rating: ${rating}</div>
+      `;
+      }
+    });
+  };
+
   const renderSemifinal = () => {
     importCss("../../../assets/css/semi-final.css");
 
@@ -29,18 +80,10 @@ export default function Tournament($container, info = null) {
         <div class="tournament-wrapper">
             <div class="left-tournament-info-wrapper">
                 <div class="card-wrapper">
-                    <div class="user-avatar">
-                        <img src="../../../assets/images/avatar/darth_vader.png">
-                    </div>
-                    <div class="user-name">hyojocho</div>
-                    <div class="user-rating">Rating: 1,000</div>
+                    
                 </div>
                 <div class="card-wrapper">
-                    <div class="user-avatar">
-                        <img src="../../../assets/images/avatar/darth_vader.png">
-                    </div>
-                    <div class="user-name">hyojocho</div>
-                    <div class="user-rating">Rating: 1,000</div>
+                    
                 </div>
             </div>
             <div class="first-middle-tournament-info-wrapper">
@@ -70,18 +113,10 @@ export default function Tournament($container, info = null) {
             </div>
             <div class="right-tournament-info-wrapper">
                 <div class="card-wrapper">
-                    <div class="user-avatar">
-                        <img src="../../../assets/images/avatar/darth_vader.png">
-                    </div>
-                    <div class="user-name">hyojocho</div>
-                    <div class="user-rating">Rating: 1,000</div>
+                    
                 </div>
                 <div class="card-wrapper">
-                    <div class="user-avatar">
-                        <img src="../../../assets/images/avatar/darth_vader.png">
-                    </div>
-                    <div class="user-name">hyojocho</div>
-                    <div class="user-rating">Rating: 1,000</div>
+                    
                 </div>
             </div>
         </div>
@@ -97,33 +132,26 @@ export default function Tournament($container, info = null) {
         <div class="tournament-wrapper">
             <div class="left-tournament-info-wrapper">
                 <div class="card-wrapper">
-                    <div class="user-avatar">
-                        <img src="../../../assets/images/avatar/darth_vader.png">
-                    </div>
-                    <div class="user-name">hyojocho</div>
-                    <div class="user-rating">Rating: 1,000</div>
                 </div>
             </div>
-            
             <div class="second-middle-tournament-info-wrapper">
                 <div id="trophy-wrapper">
                     <img src="../../../assets/images/tournament_logo.png">
                 </div>
             </div>
-            
             <div class="right-tournament-info-wrapper">
                 <div class="card-wrapper">
-                    <div class="user-avatar">
-                        <img src="../../../assets/images/avatar/darth_vader.png">
-                    </div>
-                    <div class="user-name">hyojocho</div>
-                    <div class="user-rating">Rating: 1,000</div>
                 </div>
-                
             </div>
         </div>
 		`;
-  }
+  };
+
+  let [getCards, setCards] = useState({}, this, "renderCards");
 
   init();
+  // TODO: 여기서 5초 후에 online-game으로 이동하지만, match3의 경우엔 onmessage를 기다려야함
+  setTimeout(() => {
+    navigate("/online-game", { socket: ws, data: info.data });
+  }, 5000);
 }

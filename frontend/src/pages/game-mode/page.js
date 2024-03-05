@@ -22,7 +22,7 @@ export default function GameMode($container) {
         this.ws.close();
         newWs.onmessage = (msg) => {
           let data = JSON.parse(msg.data);
-          navigate("/tournament", { socket: newWs, data: data });
+          navigate("/match-up", { socket: newWs, data: data });
         };
       };
     });

@@ -46,7 +46,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             await self.process_valid_user()
 
     async def disconnect(self, close_code):
-        logger.info('[인게임] disconnect')
+        logger.info(f'[인게임] disconnect - {self.user.nickname}')
         # if self.user in self.users:
         #     self.users.remove(self.user)
         # if self.user in self.match1_users:
@@ -296,15 +296,47 @@ class GameConsumer(AsyncWebsocketConsumer):
                 await self.send_end_message(self.game.match3, True)
 
         elif message_type == 'keyboard':
-            if message_data == 'up':
-                # todo ?
-                pass
-            elif message_data == 'down':
-                # todo ?
-                pass
+            if self.player1 is False:
+                if message_data == 'up':
+                    if self.my_match == 1:
+                        await self.send_data(self.match1_group_name, 'up')
+                    elif self.my_match == 2:
+                        await self.send_data(self.match2_group_name, 'up')
+                    elif self.my_match == 3:
+                        await self.send_data(self.match3_group_name, 'up')
+
+                elif message_data == 'down':
+                    if self.my_match == 1:
+                        await self.send_data(self.match1_group_name, 'down')
+                    elif self.my_match == 2:
+                        await self.send_data(self.match2_group_name, 'down')
+                    elif self.my_match == 3:
+                        await self.send_data(self.match3_group_name, 'down')
+            else:
+                if message_data == 'up':
+                    if self.my_match == 1:
+                        self.match1.left_side_player.bar.y += 1
+                    elif self.my_match == 2:
+                        self.match2.left_side_player.bar.y += 1
+                    elif self.my_match == 3:
+                        self.match3.left_side_player.bar.y += 1
+                elif message_data == 'down':
+                    if self.my_match == 1:
+                        self.match1.left_side_player.bar.y -= 1
+                    elif self.my_match == 2:
+                        self.match2.left_side_player.bar.y -= 1
+                    elif self.my_match == 3:
+                        self.match3.left_side_player.bar.y -= 1
+
+    async def send_data(self, group_name, type):
+        await self.channel_layer.group_send(
+            group_name,
+            {
+                'type': type,
+            }
+        )
 
     async def play(self, match):
-        # todo 볼 속도 1/24 계산
         if match.ball.is_ball_hit_wall(match.ping_pong_map):
             logger.info(f"[인게임] match{self.my_match} - 공 벽에 부딪힘")
             match.ball.bounce((1, -1))
@@ -464,3 +496,22 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def game_end(self, event):
         await self.send(text_data=json.dumps(event))
+
+    async def up(self, event):
+        logger.info(f"match{self.my_match} , player2 - up")
+        if self.my_match == 1:
+            self.match1.right_side_player.bar.y += 1
+        elif self.my_match == 2:
+            self.match2.right_side_player.bar.y += 1
+        elif self.my_match == 3:
+            self.match3.right_side_player.bar.y += 1
+
+    async def down(self, event):
+        logger.info(f"match{self.my_match} , player2 - down")
+        if self.my_match == 1:
+            self.match1.right_side_player.bar.y -= 1
+        elif self.my_match == 2:
+            self.match2.right_side_player.bar.y -= 1
+        elif self.my_match == 3:
+            self.match3.right_side_player.bar.y -= 1
+
