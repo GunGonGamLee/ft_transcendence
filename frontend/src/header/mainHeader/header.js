@@ -5,7 +5,6 @@ import { BACKEND, WEBSOCKET, HISTORIES_IMAGE_PATH } from "../../global.js";
 import { getCookie, deleteCookie } from "../../utils/cookie.js";
 import useState from "../../utils/useState.js";
 import { getUserMe } from "../../utils/userUtils.js";
-// import { warningModal } from "./warning_modal.js"
 
 /**
  * 사용자 전적 페이지에 사용하는 header 컴포넌트
