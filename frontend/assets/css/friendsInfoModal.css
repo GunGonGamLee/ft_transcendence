@@ -6,6 +6,7 @@
     width: 100%;
     padding: 10vh 5vw;
     background-color: #000000c4;
+    z-index: 1;
 }
 
 .friends-info-modal-wrapper {
