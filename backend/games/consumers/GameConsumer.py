@@ -509,8 +509,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps(event))
 
     async def up(self, event):
-        logger.info(f"match{self.my_match} , player2 - up")
-        if self.my_match == 1:
+        logger.info(f"match{self.my_match} , p1? : {self.player1} - up")
         if event['sender_nickname'] != self.user.nickname:
             if self.my_match == 1:
                 self.match1.right_side_player.bar.y += 1
