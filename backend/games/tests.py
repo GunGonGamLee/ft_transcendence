@@ -19,6 +19,8 @@ class PingPongGameTestCase(TestCase):
         ping_pong_map = PingPongMap(1920, 1080)
         self.ping_pong_game = PingPongGame(
             ping_pong_map=ping_pong_map,
+            player1=self.left_side_player,
+            player2=self.right_side_player,
         )
 
     def tearDown(self):
@@ -107,7 +109,6 @@ class PingPongGameTestCase(TestCase):
         self.ping_pong_game.ball.set_x_y(0, 0)
         self.ping_pong_game.ball.reset(
             self.ping_pong_game.ping_pong_map,
-            self.ping_pong_game.default_data['ball']
         )
         self.assertNotEqual(self.ping_pong_game.ball.x, 0)
         self.assertNotEqual(self.ping_pong_game.ball.y, 0)
