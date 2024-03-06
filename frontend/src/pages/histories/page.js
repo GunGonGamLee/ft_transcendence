@@ -94,6 +94,7 @@ export function Histories($container) {
     );
     const $tournament = document.getElementById("tournament");
     const $avatar = document.getElementById("avatar");
+    const $search = document.getElementById("search");
 
     // click 이벤트
     click($summary, () => {
@@ -120,7 +121,15 @@ export function Histories($container) {
     // toggle 이벤트
     let $toggle = document.getElementById("toggle");
     hoverToggle($casualMenuWrapper, $toggle, "flex");
+
+    // 유저 검색 이벤트
+    $search.addEventListener("keyup", (e) => {
+      if (e.key === "Enter") {
+        navigate("/histories/search", { nickname: $search.value });
+      }
+    });
   };
+
   init();
   render();
   addEventListenersToLayout();
