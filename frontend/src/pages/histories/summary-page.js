@@ -13,7 +13,8 @@ export default function Summary($app, info) {
   const init = () => {
     this.$container.textContent = "";
     this.$pagination.style.display = "none";
-    if (info === undefined) {
+
+    if (info === null || info === undefined || info.nickname === "") {
       getUserMe().then((response) => {
         let { nickname } = response.data;
         getHistoriesSummary(nickname);
