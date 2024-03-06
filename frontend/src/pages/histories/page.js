@@ -5,6 +5,7 @@ import { HISTORIES_IMAGE_PATH, MODE } from "../../global.js";
 import OneOnOneHistoriesDetails from "./one-on-one-histories-details.js";
 import TournamentHistoriesDetails from "./tournament-histories-details.js";
 import { navigate } from "../../utils/navigate.js";
+import Summary from "./summary-page.js";
 
 export function Histories($container) {
   this.$container = $container;
@@ -94,6 +95,7 @@ export function Histories($container) {
     );
     const $tournament = document.getElementById("tournament");
     const $avatar = document.getElementById("avatar");
+    const $search = document.getElementById("search");
 
     // click 이벤트
     click($summary, () => {
@@ -120,7 +122,17 @@ export function Histories($container) {
     // toggle 이벤트
     let $toggle = document.getElementById("toggle");
     hoverToggle($casualMenuWrapper, $toggle, "flex");
+
+    // 유저 검색 이벤트
+    $search.addEventListener("keyup", (e) => {
+      if (e.key === "Enter") {
+        new Summary(document.getElementById("app"), {
+          nickname: $search.value,
+        });
+      }
+    });
   };
+
   init();
   render();
   addEventListenersToLayout();

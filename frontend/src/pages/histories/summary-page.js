@@ -5,32 +5,57 @@ import { getUserMe } from "../../utils/userUtils.js";
 import { navigate } from "../../utils/navigate.js";
 import { Histories } from "./page.js";
 
-export default function Summary() {
-  new Histories(document.getElementById("app"));
+export default function Summary($app, info) {
+  new Histories($app);
   this.$container = document.getElementById("content");
   this.$pagination = document.getElementById("pagination");
 
   const init = () => {
     this.$container.textContent = "";
     this.$pagination.style.display = "none";
-    getUserMe().then((response) => {
-      let { nickname } = response.data;
-      fetch(`${BACKEND}/users/${nickname}/`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${getCookie("jwt")}`,
-        },
-      }).then((response) => {
-        if (response.ok) {
-          response.json().then((data) => {
-            setUsersHistoriesSummary(data);
-          });
-        } else {
-          navigate("error", { errorCode: response.status });
-        }
+
+    if (info === null || info === undefined || info.nickname === "") {
+      getUserMe().then((response) => {
+        let { nickname } = response.data;
+        getHistoriesSummary(nickname);
       });
+    } else {
+      getHistoriesSummary(info.nickname);
+    }
+  };
+
+  /**
+   * 사용자의 전적 개요를 가져온다.
+   * @param nickname { string } 사용자의 닉네임
+   */
+  const getHistoriesSummary = (nickname) => {
+    fetch(`${BACKEND}/users/${nickname}/`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${getCookie("jwt")}`,
+      },
+    }).then((response) => {
+      if (response.ok) {
+        response.json().then((data) => {
+          setUsersHistoriesSummary(data);
+        });
+      } else if (response.status === 404) {
+        renderUserNotFound(nickname);
+      } else {
+        navigate("error", { errorCode: response.status });
+      }
     });
+  };
+
+  const renderUserNotFound = (nickname) => {
+    this.$container.insertAdjacentHTML(
+      "beforeend",
+      `
+      <div class="histories summary user-not-found">
+        <span>${nickname}은(는) 존재하지 않는다.</span>
+      </div>`,
+    );
   };
 
   /**
