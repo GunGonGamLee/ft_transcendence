@@ -343,6 +343,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             group_name,
             {
                 'type': type,
+                'sender_nickname': self.user.nickname
             }
         )
 
@@ -510,17 +511,21 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def up(self, event):
         logger.info(f"match{self.my_match} , player2 - up")
         if self.my_match == 1:
-            self.match1.right_side_player.bar.y += 1
-        elif self.my_match == 2:
-            self.match2.right_side_player.bar.y += 1
-        elif self.my_match == 3:
-            self.match3.right_side_player.bar.y += 1
+        if event['sender_nickname'] != self.user.nickname:
+            if self.my_match == 1:
+                self.match1.right_side_player.bar.y += 1
+            elif self.my_match == 2:
+                self.match2.right_side_player.bar.y += 1
+            elif self.my_match == 3:
+                self.match3.right_side_player.bar.y += 1
 
     async def down(self, event):
         logger.info(f"match{self.my_match} , player2 - down")
-        if self.my_match == 1:
-            self.match1.right_side_player.bar.y -= 1
-        elif self.my_match == 2:
-            self.match2.right_side_player.bar.y -= 1
-        elif self.my_match == 3:
-            self.match3.right_side_player.bar.y -= 1
+        if event['sender_nickname'] != self.user.nickname:
+            if self.my_match == 1:
+                self.match1.right_side_player.bar.y -= 1
+            elif self.my_match == 2:
+                self.match2.right_side_player.bar.y -= 1
+            elif self.my_match == 3:
+                self.match3.right_side_player.bar.y -= 1
+
