@@ -17,7 +17,6 @@ export default function Router($container) {
   const route = (info) => {
     // 현재 페이지에서 Unmount 함수가 있다면 호출합니다.
     if (currentPage !== undefined && currentPage.unmount) currentPage.unmount();
-
     const TargetPage = findMatchedRoute()?.page || ErrorPage; // 현재 경로에 따라 렌더링할 컴포넌트를 정의합니다.
     const TargetHeader = findMatchedRoute()?.header || MainHeader; // 헤더 컴포넌트도 정의합니다.
     if (info != null && info.errorCode) {
@@ -40,8 +39,10 @@ export default function Router($container) {
     // 페이지 이동 시 발생하는 이벤트를 정의합니다.
     window.addEventListener("historychange", ({ detail }) => {
       const { to, info } = detail;
+      console.log(info === prevInfo, info, prevInfo);
       // 같은 페이지로 이동할 때는 history를 쌓지 않습니다.
-      if (to === location.pathname) history.replaceState(null, "", to);
+      if (to === location.pathname && info === prevInfo)
+        history.replaceState(null, "", to);
       else {
         history.pushState(null, "", to);
         route(info); // 여기서 route함수를 참조하므로 이 객체의 생명주기는 window 객체와 같습니다.
