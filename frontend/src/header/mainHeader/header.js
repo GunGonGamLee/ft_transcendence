@@ -5,6 +5,7 @@ import { BACKEND, WEBSOCKET, HISTORIES_IMAGE_PATH } from "../../global.js";
 import { getCookie, deleteCookie } from "../../utils/cookie.js";
 import useState from "../../utils/useState.js";
 import { getUserMe } from "../../utils/userUtils.js";
+// import { warningModal } from "./warning_modal.js"
 
 /**
  * 사용자 전적 페이지에 사용하는 header 컴포넌트
@@ -68,6 +69,8 @@ export default function MainHeader($container) {
     );
     const headerElement = document.getElementById("header");
     renderFriendsInfoModal(headerElement);
+    renderWarningModal(headerElement);
+
 
     // 뒤로가기 버튼 클릭 이벤트
     click(document.getElementById("go-back"), () => {
@@ -108,6 +111,11 @@ export default function MainHeader($container) {
     // 메인 타이틀 클릭 이벤트
     click(document.getElementById("title"), () => {
       navigate("/game-mode");
+    });
+
+    click(document.getElementById("warning-modal-close"), () => {
+      const warningModal = document.getElementById("warning-modal-wrapper");
+      warningModal.style.display = "none";
     });
   };
 
@@ -193,6 +201,20 @@ export default function MainHeader($container) {
           }
         });
       });
+  };
+
+  let renderWarningModal = (headerElement) => {
+    let display = "none";
+
+    headerElement.insertAdjacentHTML(
+        "beforeend",
+        `
+      <div id="warning-modal-wrapper" style="display: ${display}; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 860px; height: 230px; background: rgba(10, 10, 10, 0.95); border-radius: 25px; border: 5px #FBFF3E solid;">
+        <div style="position: absolute; left: 120px; top: 80px; text-align: center; color: white; font-size: 40px; font-family: Galmuri11, serif; font-weight: 400; word-wrap: break-word;">이미 보냈다.</div>
+        <img id="warning-modal-close" alt="setting" style="position: absolute; width: 70px; height: 70px; left: 770px; top: 26px;" src="../../../assets/images/close.png" />
+      </div>
+    `,
+    );
   };
 
   let renderFriendsInfoModal = (headerElement) => {
@@ -435,6 +457,9 @@ export default function MainHeader($container) {
             body: JSON.stringify({ nickname }),
           }).then((response) => {
             if (response.status === 200) {
+            } else if (response.status === 409) {
+              const warningModal = document.getElementById("warning-modal-wrapper");
+              warningModal.style.display = "flex";
             } else {
               navigate("/");
             }
@@ -462,4 +487,5 @@ export default function MainHeader($container) {
     "renderSearchedUserList",
   );
   init();
+
 }
