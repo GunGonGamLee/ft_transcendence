@@ -5,6 +5,7 @@ import { HISTORIES_IMAGE_PATH, MODE } from "../../global.js";
 import OneOnOneHistoriesDetails from "./one-on-one-histories-details.js";
 import TournamentHistoriesDetails from "./tournament-histories-details.js";
 import { navigate } from "../../utils/navigate.js";
+import Summary from "./summary-page.js";
 
 export function Histories($container) {
   this.$container = $container;
@@ -125,7 +126,9 @@ export function Histories($container) {
     // 유저 검색 이벤트
     $search.addEventListener("keyup", (e) => {
       if (e.key === "Enter") {
-        navigate("/histories/search", { nickname: $search.value });
+        new Summary(document.getElementById("app"), {
+          nickname: $search.value,
+        });
       }
     });
   };
