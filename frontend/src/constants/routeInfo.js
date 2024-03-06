@@ -27,7 +27,7 @@ export const routes = [
 
   {
     path: /^\/histories\/summary$/,
-    page: Summary.bind(),
+    page: Summary,
     header: MainHeader,
   },
   {
