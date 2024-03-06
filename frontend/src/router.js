@@ -39,7 +39,6 @@ export default function Router($container) {
     // 페이지 이동 시 발생하는 이벤트를 정의합니다.
     window.addEventListener("historychange", ({ detail }) => {
       const { to, info } = detail;
-      console.log(info === prevInfo, info, prevInfo);
       // 같은 페이지로 이동할 때는 history를 쌓지 않습니다.
       if (to === location.pathname && info === prevInfo)
         history.replaceState(null, "", to);
