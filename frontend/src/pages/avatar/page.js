@@ -7,6 +7,7 @@ import {
 import { importCss } from "../../utils/importCss.js";
 import { getUserMe } from "../../utils/userUtils.js";
 import { getCookie } from "../../utils/cookie.js";
+import { navigate } from "../../utils/navigate.js";
 
 export default function Avatar($container) {
   new Histories($container);
@@ -58,6 +59,26 @@ export default function Avatar($container) {
     });
   };
 
+  const updateAvatar = (avatarName) => {
+    getUserMe().then((response) => {
+      const { nickname } = response.data;
+      fetch(`${BACKEND}/users/${nickname}/avatar/?avatar=${avatarName}`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${getCookie("jwt")}`,
+          "Content-type": "application/json",
+        },
+      }).then((response) => {
+        if (response.ok) {
+          const $userAvatar = document.getElementById("user-avatar");
+          $userAvatar.src = `${HISTORIES_IMAGE_PATH}/avatar/${avatarName}`;
+        } else {
+          navigate("error", { errorCode: response.status });
+        }
+      });
+    });
+  };
+
   const render = () => {
     this.$content.insertAdjacentHTML(
       "beforeend",
@@ -92,6 +113,14 @@ export default function Avatar($container) {
     $avatarUpload.addEventListener("change", (e) =>
       uploadAvatar(e.target.files),
     );
+
+    const $avatarExamples = document.getElementsByClassName("avatar examples");
+    for (let $avatar of $avatarExamples) {
+      $avatar.addEventListener("click", (e) => {
+        const avatarName = e.target.getAttribute("src").split("/").pop();
+        updateAvatar(avatarName);
+      });
+    }
   };
 
   init();
