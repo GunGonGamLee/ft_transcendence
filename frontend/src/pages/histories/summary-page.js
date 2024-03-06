@@ -5,8 +5,8 @@ import { getUserMe } from "../../utils/userUtils.js";
 import { navigate } from "../../utils/navigate.js";
 import { Histories } from "./page.js";
 
-export default function Summary(info) {
-  new Histories(document.getElementById("app"));
+export default function Summary($app, info) {
+  new Histories($app);
   this.$container = document.getElementById("content");
   this.$pagination = document.getElementById("pagination");
 
