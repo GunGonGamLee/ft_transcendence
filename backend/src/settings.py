@@ -84,7 +84,7 @@ else:
     STATE = read_response['data']['data']['STATE']
     EMAIL_HOST_USER = read_response['data']['data']['EMAIL_HOST_USER']
     EMAIL_HOST_PASSWORD = read_response['data']['data']['EMAIL_HOST_PASSWORD']
-    BASE_URL = read_response['data']['data']['BASE_URL']
+    BASE_URL = config('BASE_URL')
     SECRET_KEY = LOG_KEY
 
 # LOGGING = {
