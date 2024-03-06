@@ -19,10 +19,14 @@ export default function Summary(info) {
         getHistoriesSummary(nickname);
       });
     } else {
-      getHistoriesSummary({ nickname });
+      getHistoriesSummary(info.nickname);
     }
   };
 
+  /**
+   * 사용자의 전적 개요를 가져온다.
+   * @param nickname { string } 사용자의 닉네임
+   */
   const getHistoriesSummary = (nickname) => {
     fetch(`${BACKEND}/users/${nickname}/`, {
       method: "GET",
