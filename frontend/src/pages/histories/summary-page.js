@@ -14,30 +14,30 @@ export default function Summary(info) {
     this.$container.textContent = "";
     this.$pagination.style.display = "none";
     if (info === undefined) {
-      getMyHistoriesSummary();
+      getUserMe().then((response) => {
+        let { nickname } = response.data;
+        getHistoriesSummary(nickname);
+      });
     } else {
       getHistoriesSummary({ nickname });
     }
   };
 
-  const getMyHistoriesSummary = () => {
-    getUserMe().then((response) => {
-      let { nickname } = response.data;
-      fetch(`${BACKEND}/users/${nickname}/`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${getCookie("jwt")}`,
-        },
-      }).then((response) => {
-        if (response.ok) {
-          response.json().then((data) => {
-            setUsersHistoriesSummary(data);
-          });
-        } else {
-          navigate("error", { errorCode: response.status });
-        }
-      });
+  const getHistoriesSummary = (nickname) => {
+    fetch(`${BACKEND}/users/${nickname}/`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${getCookie("jwt")}`,
+      },
+    }).then((response) => {
+      if (response.ok) {
+        response.json().then((data) => {
+          setUsersHistoriesSummary(data);
+        });
+      } else {
+        navigate("error", { errorCode: response.status });
+      }
     });
   };
 
