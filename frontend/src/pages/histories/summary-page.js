@@ -5,7 +5,7 @@ import { getUserMe } from "../../utils/userUtils.js";
 import { navigate } from "../../utils/navigate.js";
 import { Histories } from "./page.js";
 
-export default function Summary() {
+export default function Summary(info) {
   new Histories(document.getElementById("app"));
   this.$container = document.getElementById("content");
   this.$pagination = document.getElementById("pagination");
@@ -13,6 +13,14 @@ export default function Summary() {
   const init = () => {
     this.$container.textContent = "";
     this.$pagination.style.display = "none";
+    if (info === undefined) {
+      getMyHistoriesSummary();
+    } else {
+      getHistoriesSummary({ nickname });
+    }
+  };
+
+  const getMyHistoriesSummary = () => {
     getUserMe().then((response) => {
       let { nickname } = response.data;
       fetch(`${BACKEND}/users/${nickname}/`, {
