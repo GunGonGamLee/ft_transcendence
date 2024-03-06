@@ -120,30 +120,34 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
         },
-        'file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': '/var/log/djangolog/django.log',
-        },
+        # 'file': {
+            # 'level': 'INFO',
+            # 'class': 'logging.FileHandler',
+            # 'filename': '/var/log/djangolog/django.log',
+        # },
     },
     'loggers': {
         '': {
-            'handlers': ['console', 'file'],
+            # 'handlers': ['console', 'file'],
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': True,
         },
         'django': {
-            'handlers': ['console', 'file'],
+            # 'handlers': ['console', 'file'],
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': True,
         },
         'django.request': {
-            'handlers': ['console', 'file'],
+            # 'handlers': ['console', 'file'],
+            'handlers': ['console'],
             'level': 'WARN',
             'propagate': False,
         },
         'django.security': {
-            'handlers': ['console', 'file'],
+            # 'handlers': ['console', 'file'],
+            'handlers': ['console'],
             'level': 'WARN',
             'propagate': False,
         }
