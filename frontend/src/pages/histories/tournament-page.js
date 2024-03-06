@@ -10,10 +10,12 @@ import { getCookie } from "../../utils/cookie.js";
 import { navigate } from "../../utils/navigate.js";
 import { Histories } from "./page.js";
 
-export default function TournamentHistories($container, { mode }) {
-  new Histories(document.getElementById("app"));
+export default function TournamentHistories($container, info) {
+  new Histories($container);
   this.$tournamentList = document.getElementById("content");
   this.$pagination = document.getElementById("pagination");
+  const mode = info.mode;
+
   const init = () => {
     this.$tournamentList.textContent = "";
     this.$prev = document.getElementById("prev");

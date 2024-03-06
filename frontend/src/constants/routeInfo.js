@@ -32,17 +32,23 @@ export const routes = [
   },
   {
     path: /^\/histories\/casual\/one-on-one$/,
-    page: OneOnOneHistories.bind(null, "casual_1vs1"),
+    page: OneOnOneHistories.bind(this, document.getElementById("app"), {
+      mode: "casual_1vs1",
+    }),
     header: MainHeader,
   },
   {
     path: /^\/histories\/casual\/tournament$/,
-    page: TournamentHistories,
+    page: TournamentHistories.bind(this, document.getElementById("app"), {
+      mode: "casual_tournament",
+    }),
     header: MainHeader,
   },
   {
-    path: /^\/histories\/rank\/tournament?$/,
-    page: TournamentHistories,
+    path: /^\/histories\/rank\/tournament$/,
+    page: TournamentHistories.bind(this, document.getElementById("app"), {
+      mode: "rank",
+    }),
     header: MainHeader,
   },
   {
