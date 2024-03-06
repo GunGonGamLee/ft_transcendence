@@ -1,6 +1,8 @@
 import useState from "../../utils/useState.js";
 import scoreBar from "./scoreBar.js";
 import toast from "./toast.js";
+import { navigate } from "../../utils/navigate.js";
+import deepCopy from "../../utils/deepCopy.js";
 /**
  *
  * @param {HTMLElement} $container
@@ -8,10 +10,6 @@ import toast from "./toast.js";
  * @constructor
  */
 export default function InGame($container, info = null) {
-  console.log(info);
-  // TODO: 여기서 경기가 끝날때마다 curMatch를 증가시켜야 합니다.
-  // TODO: curMatch가 1 2 일때 player5 6에 우승자 닉네임을 추가시켜야 합니다.
-  // TODO: curMatch가 3일때는 종료해야 합니다.
   let scoreInput = { player1: 0, player2: 0 };
   let [getScore, setScore] = useState(scoreInput, this, "renderScoreBoard");
   let [getTime, setTime] = useState(0, this, "renderTime");
@@ -213,8 +211,29 @@ export default function InGame($container, info = null) {
       }
       drawFunction(bar1, bar2, ball);
       let moveBallEventId = window.requestAnimationFrame(moveBall);
-      if (getScore().player1 + getScore().player2 >= 5) {
+      if (getScore().player1 + getScore().player2 >= 1) {
+        // TODO: 게임 종료 스코어 나중에 고치기
         cancelAnimationFrame(moveBallEventId);
+        // 게임 종료
+        if (info.finalPlayer1 === null) {
+          info.finalPlayer1 =
+            getScore().player1 > getScore().player2
+              ? info.player1
+              : info.player2;
+        } else if (info.finalPlayer2 === null) {
+          info.finalPlayer2 =
+            getScore().player1 > getScore().player2
+              ? info.player3
+              : info.player4;
+        } else {
+          alert(
+            `승자는 ${getScore().player1 > getScore().player2 ? info.finalPlayer1 : info.finalPlayer2} 입니다`,
+          );
+          navigate("/game-mode");
+          return;
+        }
+        const newInfo = deepCopy(info);
+        navigate("/in-game", newInfo);
       }
     };
 

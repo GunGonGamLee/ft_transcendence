@@ -2,18 +2,16 @@ import playerNameInput from "./playerNameInput.js";
 import { click } from "../../utils/clickEvent.js";
 import { navigate } from "../../utils/navigate.js";
 import { importCss } from "../../utils/importCss.js";
+import { BACKEND } from "../../global.js";
+import { getCookie } from "../../utils/cookie.js";
 export default function LocalMatchup($container, info = null) {
-  // TODO: router 에서 info를 참조로 비교하므로 구조분해할당 후 넘겨야할듯
   info = {
-    curMatch: 1,
-    match: {
-      player1: "",
-      player2: "",
-      player3: "",
-      player4: "",
-      finalPlayer1: null,
-      finalPlayer2: null,
-    },
+    player1: "",
+    player2: "",
+    player3: "",
+    player4: "",
+    finalPlayer1: null,
+    finalPlayer2: null,
   };
 
   const init = () => {
@@ -22,12 +20,12 @@ export default function LocalMatchup($container, info = null) {
       $container
         .querySelector(`.player-name-input-${i}`)
         .addEventListener("input", (e) => {
-          info.match[`player${i}`] = e.target.value;
+          info[`player${i}`] = e.target.value;
         });
     }
     click($container.querySelector(".start-btn"), () => {
       for (let i = 1; i <= 4; i++) {
-        if (info.match[`player${i}`] === "") {
+        if (info[`player${i}`] === "") {
           // alert(`${i}P 이름을 입력해주세요`);
           const $input = $container.querySelector(`.player-name-input-${i}`);
           $input.focus();
@@ -39,6 +37,13 @@ export default function LocalMatchup($container, info = null) {
           return;
         }
       }
+      fetch(`${BACKEND}/games/local/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getCookie("jwt")}`,
+        },
+      });
       navigate("/in-game", info);
     });
   };
@@ -46,7 +51,7 @@ export default function LocalMatchup($container, info = null) {
   const render = () => {
     importCss("../../../assets/css/localMatchUp.css");
     $container.innerHTML = `
-      <div style="height: 100%; width: 100%; flex-direction: column; display: flex; justify-content: center; align-items: center; background-image: url('../../../assets/images/ingame_background4.png'); background-size: cover">
+      <div id="ididid" style="height: 100%; width: 100%; flex-direction: column; display: flex; justify-content: center; align-items: center; background-image: url('../../../assets/images/ingame_background4.png'); background-size: cover">
         ${playerNameInput(1)}
         ${playerNameInput(2)}  
         ${playerNameInput(3)}  
