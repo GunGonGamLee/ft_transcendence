@@ -10,6 +10,8 @@ from games.serializers import GameRoomSerializer, PvPMatchSerializer, Tournament
 from datetime import datetime
 from users.models import User
 from src.choices import GAME_SETTINGS_DICT
+import threading
+
 
 logger = logging.getLogger(__name__)
 
@@ -218,61 +220,8 @@ class GameConsumer(AsyncWebsocketConsumer):
         message_data = data.get('data', {})
         await self.save_game_object_by_id()
         if message_type == 'start':
+            asyncio.create_task(self.process_game_start(message_data))
 
-            # append .. 할 필요가 없을 거 같은디
-            if self.my_match == 1:
-                getattr(self.UserList, self.match1_group_name).append(self.user)
-            elif self.my_match == 2:
-                getattr(self.UserList, self.match2_group_name).append(self.user)
-
-            if self.player1:
-                if self.my_match == 1:
-                    await self.init_game(message_data, self.my_match)
-                    start_time = time.time()
-                    while True:
-                        if time.time() - start_time >= 30:
-                            raise TimeoutError()
-                        num = self.channel_layer.groups[self.match1_group_name].__len__()
-                        if num == 2:
-                            break
-                        await asyncio.sleep(0.3)
-                    await self.send_start_message(self.match1, self.match1_group_name)
-                    await asyncio.sleep(2)
-                    self.match1.started_at = datetime.now()
-                    while not self.match1.finished:
-                        await self.play(self.match1)
-                        await self.send_in_game_message(self.match1, self.match1_group_name)
-                        await asyncio.sleep(1 / 24)
-                    await self.save_match_data_in_database(self.match1)
-                    if self.game.mode == 0:
-                        await self.send_end_message(self.game.match1, True)
-                        return
-                    else:
-                        await self.save_match3_matching_in_database(self.game.match1.winner)
-                        await self.send_end_message(self.game.match1, False)
-                        return
-                elif self.my_match == 2:
-                    await self.init_game(message_data, self.my_match)
-                    start_time = time.time()
-                    while True:
-                        if time.time() - start_time >= 30:
-                            raise TimeoutError()
-                        num = self.channel_layer.groups[self.match2_group_name].__len__()
-                        if num == 2:
-                            break
-                        await asyncio.sleep(0.3)
-
-                    await self.send_start_message(self.match2, self.match2_group_name)
-                    await asyncio.sleep(2)
-                    self.match2.started_at = datetime.now()
-                    while not self.match2.finished:
-                        await self.play(self.match2)
-                        await self.send_in_game_message(self.match2, self.match2_group_name)
-                        await asyncio.sleep(1 / 24)
-                    await self.save_match_data_in_database(self.match2)
-                    await self.save_match3_matching_in_database(self.game.match2.winner)
-                    await self.send_end_message(self.game.match2, False)
-                    return
         elif message_type == 'match3_start':
             if self.my_match == 3:
                 getattr(self.UserList, self.match3_group_name).append(self.user)
@@ -294,10 +243,13 @@ class GameConsumer(AsyncWebsocketConsumer):
                     await self.send_in_game_message(self.match3, self.match3_group_name)
                     await asyncio.sleep(1 / 24)
                 await self.send_end_message(self.game.match3, True)
+        elif message_type == 'match3_info':
+            pass
 
         elif message_type == 'keyboard':
             if self.player1 is False:
                 if message_data == 'up':
+                    logger.info("p1 아님 - up")
                     if self.my_match == 1:
                         await self.send_data(self.match1_group_name, 'up')
                     elif self.my_match == 2:
@@ -306,6 +258,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                         await self.send_data(self.match3_group_name, 'up')
 
                 elif message_data == 'down':
+                    logger.info("p1 아님 - down")
                     if self.my_match == 1:
                         await self.send_data(self.match1_group_name, 'down')
                     elif self.my_match == 2:
@@ -314,6 +267,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                         await self.send_data(self.match3_group_name, 'down')
             else:
                 if message_data == 'up':
+                    logger.info("p1임 - up")
                     if self.my_match == 1:
                         self.match1.left_side_player.bar.y += 1
                     elif self.my_match == 2:
@@ -321,12 +275,68 @@ class GameConsumer(AsyncWebsocketConsumer):
                     elif self.my_match == 3:
                         self.match3.left_side_player.bar.y += 1
                 elif message_data == 'down':
+                    logger.info("p1임 - down")
                     if self.my_match == 1:
                         self.match1.left_side_player.bar.y -= 1
                     elif self.my_match == 2:
                         self.match2.left_side_player.bar.y -= 1
                     elif self.my_match == 3:
                         self.match3.left_side_player.bar.y -= 1
+
+    async def process_game_start(self, message_data):
+        if self.my_match == 1:
+            getattr(self.UserList, self.match1_group_name).append(self.user)
+        elif self.my_match == 2:
+            getattr(self.UserList, self.match2_group_name).append(self.user)
+
+        if self.player1:
+            if self.my_match == 1:
+                await self.init_game(message_data, self.my_match)
+                start_time = time.time()
+                while True:
+                    if time.time() - start_time >= 30:
+                        raise TimeoutError()
+                    num = self.channel_layer.groups[self.match1_group_name].__len__()
+                    if num == 2:
+                        break
+                    await asyncio.sleep(0.3)
+                await self.send_start_message(self.match1, self.match1_group_name)
+                await asyncio.sleep(2)
+                self.match1.started_at = datetime.now()
+                while not self.match1.finished:
+                    await self.play(self.match1)
+                    await self.send_in_game_message(self.match1, self.match1_group_name)
+                    await asyncio.sleep(1 / 24)
+                await self.save_match_data_in_database(self.match1)
+                if self.game.mode == 0:
+                    await self.send_end_message(self.game.match1, True)
+                    return
+                else:
+                    await self.save_match3_matching_in_database(self.game.match1.winner)
+                    await self.send_end_message(self.game.match1, False)
+                    return
+            elif self.my_match == 2:
+                await self.init_game(message_data, self.my_match)
+                start_time = time.time()
+                while True:
+                    if time.time() - start_time >= 30:
+                        raise TimeoutError()
+                    num = self.channel_layer.groups[self.match2_group_name].__len__()
+                    if num == 2:
+                        break
+                    await asyncio.sleep(0.3)
+
+                await self.send_start_message(self.match2, self.match2_group_name)
+                await asyncio.sleep(2)
+                self.match2.started_at = datetime.now()
+                while not self.match2.finished:
+                    await self.play(self.match2)
+                    await self.send_in_game_message(self.match2, self.match2_group_name)
+                    await asyncio.sleep(1 / 24)
+                await self.save_match_data_in_database(self.match2)
+                await self.save_match3_matching_in_database(self.game.match2.winner)
+                await self.send_end_message(self.game.match2, False)
+                return
 
     async def send_data(self, group_name, type):
         await self.channel_layer.group_send(
