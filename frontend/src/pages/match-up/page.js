@@ -152,6 +152,7 @@ export default function Matchup($container, info = null) {
   init();
   // TODO: 여기서 5초 후에 online-game으로 이동하지만, match3의 경우엔 onmessage를 기다려야함
   setTimeout(() => {
+    ws.onmessage = null;
     navigate("/online-game", { socket: ws, data: info.data });
   }, 5000);
 }
