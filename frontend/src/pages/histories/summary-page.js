@@ -40,10 +40,22 @@ export default function Summary($app, info) {
         response.json().then((data) => {
           setUsersHistoriesSummary(data);
         });
+      } else if (response.status === 404) {
+        renderUserNotFound(nickname);
       } else {
         navigate("error", { errorCode: response.status });
       }
     });
+  };
+
+  const renderUserNotFound = (nickname) => {
+    this.$container.insertAdjacentHTML(
+      "beforeend",
+      `
+      <div class="histories summary user-not-found">
+        <span>${nickname}은(는) 존재하지 않는다.</span>
+      </div>`,
+    );
   };
 
   /**
