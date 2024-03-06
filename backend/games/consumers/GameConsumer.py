@@ -204,7 +204,6 @@ class GameConsumer(AsyncWebsocketConsumer):
                 'data': serializer_data
             }
         )
-        logger.info(f"방장의 nickname : {self.game.manager.nickname}")
         if self.game.mode == 0:
             logger.info("[시작] PVP")
         elif self.game.mode == 1:
