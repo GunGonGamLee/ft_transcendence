@@ -514,4 +514,3 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.match2.right_side_player.bar.y -= 1
         elif self.my_match == 3:
             self.match3.right_side_player.bar.y -= 1
-

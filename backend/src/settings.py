@@ -84,7 +84,7 @@ else:
     STATE = read_response['data']['data']['STATE']
     EMAIL_HOST_USER = read_response['data']['data']['EMAIL_HOST_USER']
     EMAIL_HOST_PASSWORD = read_response['data']['data']['EMAIL_HOST_PASSWORD']
-    BASE_URL = read_response['data']['data']['BASE_URL']
+    BASE_URL = config('BASE_URL')
     SECRET_KEY = LOG_KEY
 
 # LOGGING = {
@@ -120,30 +120,34 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
         },
-        'file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': '/var/log/djangolog/django.log',
-        },
+        # 'file': {
+            # 'level': 'INFO',
+            # 'class': 'logging.FileHandler',
+            # 'filename': '/var/log/djangolog/django.log',
+        # },
     },
     'loggers': {
         '': {
-            'handlers': ['console', 'file'],
+            # 'handlers': ['console', 'file'],
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': True,
         },
         'django': {
-            'handlers': ['console', 'file'],
+            # 'handlers': ['console', 'file'],
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': True,
         },
         'django.request': {
-            'handlers': ['console', 'file'],
+            # 'handlers': ['console', 'file'],
+            'handlers': ['console'],
             'level': 'WARN',
             'propagate': False,
         },
         'django.security': {
-            'handlers': ['console', 'file'],
+            # 'handlers': ['console', 'file'],
+            'handlers': ['console'],
             'level': 'WARN',
             'propagate': False,
         }

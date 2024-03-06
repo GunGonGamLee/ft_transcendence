@@ -27,7 +27,7 @@ from django.conf import settings
 logger = logging.getLogger(__name__)
 
 BASE_URL = settings.BASE_URL
-GOOGLE_CALLBACK_URI = BASE_URL + 'api/login/google/callback/'
+GOOGLE_CALLBACK_URI = 'https://localhost:443/' + 'api/login/google/callback/'
 INTRA42_CALLBACK_URI = BASE_URL + 'api/login/intra42/callback'
 config = AutoConfig()
 state = settings.STATE
@@ -47,7 +47,7 @@ DEFAULT_FROM_MAIL = settings.DEFAULT_FROM_MAIL
 if settings.DEBUG:
     EMAIL_AUTH_URI = 'http://localhost:3000/auth'
 else:
-    EMAIL_AUTH_URI = 'https://localhost:443/auth'
+    EMAIL_AUTH_URI = BASE_URL + 'auth'
 
 
 class OAuthLoginView(APIView):
