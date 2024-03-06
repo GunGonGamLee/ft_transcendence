@@ -2,6 +2,7 @@ import useState from "../../utils/useState.js";
 import scoreBar from "./scoreBar.js";
 import toast from "./toast.js";
 import { navigate } from "../../utils/navigate.js";
+import deepCopy from "../../utils/deepCopy.js";
 /**
  *
  * @param {HTMLElement} $container
@@ -9,7 +10,6 @@ import { navigate } from "../../utils/navigate.js";
  * @constructor
  */
 export default function InGame($container, info = null) {
-  console.log(info, "gameStart");
   let scoreInput = { player1: 0, player2: 0 };
   let [getScore, setScore] = useState(scoreInput, this, "renderScoreBoard");
   let [getTime, setTime] = useState(0, this, "renderTime");
@@ -212,25 +212,22 @@ export default function InGame($container, info = null) {
       drawFunction(bar1, bar2, ball);
       let moveBallEventId = window.requestAnimationFrame(moveBall);
       if (getScore().player1 + getScore().player2 >= 1) {
+        // TODO: 게임 종료 스코어 나중에 고치기
         cancelAnimationFrame(moveBallEventId);
-
-        // TODO: 여기서 경기가 끝날때마다 curMatch를 증가시켜야 합니다.
-        info.curMatch += 1;
-        // TODO: curMatch가 1 2 일때 player5 6에 우승자 닉네임을 추가시켜야 합니다.
-        if (info.match.finalPlayer1 === null) {
-          info.match.finalPlayer1 =
+        // 게임 종료
+        if (info.finalPlayer1 === null) {
+          info.finalPlayer1 =
             getScore().player1 > getScore().player2
-              ? info.match.player1
-              : info.match.player2;
-        } else if (info.match.finalPlayer2 === null) {
-          info.match.finalPlayer2 =
+              ? info.player1
+              : info.player2;
+        } else if (info.finalPlayer2 === null) {
+          info.finalPlayer2 =
             getScore().player1 > getScore().player2
-              ? info.match.player3
-              : info.match.player4;
+              ? info.player3
+              : info.player4;
         } else {
-          // TODO: curMatch가 3일때는 종료해야 합니다.
           alert(
-            `승자는 ${getScore().player1 > getScore().player2 ? info.match.finalPlayer1 : info.match.finalPlayer2} 입니다`,
+            `승자는 ${getScore().player1 > getScore().player2 ? info.finalPlayer1 : info.finalPlayer2} 입니다`,
           );
           navigate("/game-mode");
           return;
@@ -239,21 +236,6 @@ export default function InGame($container, info = null) {
         navigate("/in-game", newInfo);
       }
     };
-    function deepCopy(obj) {
-      if (Array.isArray(obj)) {
-        return obj.map((item) => deepCopy(item));
-      } else if (isObject(obj)) {
-        return Object.keys(obj).reduce((acc, key) => {
-          acc[key] = deepCopy(obj[key]);
-          return acc;
-        }, {});
-      } else {
-        return obj;
-      }
-    }
-    function isObject(obj) {
-      return obj !== null && typeof obj === "object";
-    }
 
     /**
      * 공이 벽에 부딪혔는지 확인하는 함수
