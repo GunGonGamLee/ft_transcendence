@@ -19,6 +19,10 @@ export default function Avatar($container) {
     importCss("../../../assets/css/avatar.css");
   };
 
+  /**
+   * 기본으로 제공되는 5개의 아바타 파일명을 이용하여 아바타 이미지를 렌더링하는 함수. 아바타 이미지를 클릭하면 해당 아바타로 변경된다.
+   * @returns { string } 아바타 이미지를 렌더링한 HTML 문자열
+   */
   const renderAvatarExamples = () => {
     let html = "";
     for (let avatar of AVATAR_FILE_NAME) {
@@ -29,6 +33,10 @@ export default function Avatar($container) {
     return html;
   };
 
+  /**
+   * 아바타 파일을 업로드하는 함수
+   * @param files { DataTransfer.files } 업로드할 파일
+   */
   const uploadAvatar = (files) => {
     const $avatarName = document.getElementById("avatar-name");
     $avatarName.value = files[0].name;
@@ -59,6 +67,10 @@ export default function Avatar($container) {
     });
   };
 
+  /**
+   * 사용자의 아바타를 업데이트하는 함수
+   * @param avatarName { string } 업데이트할 아바타 파일명으로, 확장자를 포함한다. 기본으로 제공되는 5개의 아바타 파일명 중 하나.
+   */
   const updateAvatar = (avatarName) => {
     getUserMe().then((response) => {
       const { nickname } = response.data;
@@ -79,6 +91,9 @@ export default function Avatar($container) {
     });
   };
 
+  /**
+   * 아바타 변경 페이지를 렌더링하는 함수. 아바타 변경 페이지는 기본 아바타와 업로드 아바타로 구성되어 있다.
+   */
   const render = () => {
     this.$content.insertAdjacentHTML(
       "beforeend",
