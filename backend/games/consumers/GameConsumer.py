@@ -51,17 +51,54 @@ class GameConsumer(AsyncWebsocketConsumer):
             await self.process_valid_user()
 
     async def disconnect(self, close_code):
-        logger.info(f'[인게임] disconnect - {self.user.nickname}')
-        # if self.user in self.users:
-        #     self.users.remove(self.user)
-        # if self.user in self.match1_users:
-        #     self.match1_users.remove(self.user)
-        # elif self.user in self.match2_users:
-        #     self.match2_users.remove(self.user)
-        # if self.user in self.match1_users:
-        #     self.match3_users.remove(self.user)
-        # todo 게임중이면 패배 처리
-        # await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+        if await self.is_invalid_user():
+            await self.reject_invalid_user()
+        else:
+            await self.save_game_object_by_id()
+            await self.process_valid_user_disconnect()
+
+    async def process_valid_user_disconnect(self):
+        if await self.is_finished(self.game.mode) is False:     # 겜 중인데 나감
+            match = None
+            if self.game.mode == 0:
+                match = self.game.match1
+                if self.player1: #p1
+                    self.save_match_data(match)
+                    await self.channel_layer.group_discard(self.match1_group_name, self.channel_name)
+                else: #p2
+                    await self.channel_layer.group_send(
+                        self.match1_group_name,
+                        {
+                            'type': 'player2_disconnect',
+                            'data': '하위'
+                        })
+                    await self.channel_layer.group_discard(self.match1_group_name, self.channel_name)
+            else:
+                match = self.game.match3
+                if self.player1: #p1
+                    pass
+                else: #p2
+                    pass
+
+    @database_sync_to_async
+    def save_match_data(self, match):
+        match.winner = match.player2
+        match.player1_score = self.match1.left_side_player.score
+        match.player2_score = self.match1.right_side_player.score
+        match.started_at = self.match1.started_at
+        finished_at = datetime.now()
+        time_diff = finished_at - self.match1.started_at
+        playtime = datetime.min + time_diff
+        match.playtime = playtime
+        match.save()
+
+    @database_sync_to_async
+    def is_finished(self, mode):
+        if mode == 0 and self.game.match1.winner is not None:
+            return True
+        elif mode != 0 and self.game.match3.winner is not None:
+            return True
+        return False
 
     async def is_invalid_user(self):
         self.user = self.scope['user']
@@ -269,7 +306,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 await self.send_start_message(self.match1, self.match1_group_name)
                 await asyncio.sleep(2)
                 self.match1.started_at = datetime.now()
-                while not self.match1.finished:
+                while not self.match1.finished and self.channel_layer.groups[self.match1_group_name].__len__() == 2:
                     await self.play(self.match1)
                     await self.send_in_game_message(self.match1, self.match1_group_name)
                     await asyncio.sleep(1 / 24)
@@ -402,10 +439,11 @@ class GameConsumer(AsyncWebsocketConsumer):
         match.player2_score = result.right_side_player.score
         match.started_at = result.started_at
         match.playtime = playtime
-        if result.left_side_player.score > result.right_side_player.score:
-            match.winner = match.player1
-        else:
-            match.winner = match.player2
+        if match.winner is None:
+            if result.left_side_player.score > result.right_side_player.score:
+                match.winner = match.player1
+            else:
+                match.winner = match.player2
         match.save()
 
     @database_sync_to_async
