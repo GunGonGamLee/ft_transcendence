@@ -2,6 +2,7 @@ import useState from "../../utils/useState.js";
 import scoreBar from "./scoreBar.js";
 import toast from "./toast.js";
 import { navigate } from "../../utils/navigate.js";
+import { getUserMe } from "../../utils/userUtils.js";
 /**
  *
  * @param {HTMLElement} $container
@@ -178,7 +179,14 @@ export default function OnlineGame($container, info) {
         setScore(newScore);
     } else if (data.type === "game_end") {
       // TODO: 승자면 match-up으로 이동 패자면 전적페이지로 game_id기반
-      // TODO: 모든 info받는 페이지 null이면 game-mode로 navigate
+      let endData = data.data;
+      if (endData.final === false && endData.winner === getUserMe()) {
+        navigate(`/match-up`);
+      } else {
+        navigate(
+          `/histories/details?mode=${endData.game_mode}&gameId=${endData.game_id}`,
+        );
+      }
     }
   };
 }
