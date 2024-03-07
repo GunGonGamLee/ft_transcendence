@@ -44,11 +44,11 @@ INTRA42_USERINFO_API = settings.INTRA42_USERINFO_API
 
 SECRET_KEY = settings.SECRET_KEY
 DEFAULT_FROM_MAIL = settings.DEFAULT_FROM_MAIL
-if settings.DEBUG:
-    EMAIL_AUTH_URI = 'http://localhost:3000/auth'
-else:
-    EMAIL_AUTH_URI = BASE_URL + 'auth'
 
+if settings.DEBUG:
+    EMAIL_AUTH_URI = 'https://localhost:3000/auth'
+else:
+    EMAIL_AUTH_URI = 'https://localhost:443/auth'
 
 class OAuthLoginView(APIView):
     @swagger_auto_schema(tags=['/api/login'], operation_description="소셜 로그인 창으로 페이지 redirect",
@@ -84,6 +84,8 @@ class OAuthCallbackView(APIView):
         responses={302: "Redirect to Front Page",
                    400: 'BAD_REQUEST',
                    500: 'SERVER_ERROR'})
+    def get_email_auth_uri(self):
+        return 'https://localhost/auth'
     def get(self, request):
         try:
             code = request.GET.get('code')
@@ -92,7 +94,7 @@ class OAuthCallbackView(APIView):
             user = User.objects.get(email=email)
             send_and_save_verification_code(user)
             auth_token = create_jwt_token(user, 3)
-            target_url = EMAIL_AUTH_URI + "?" + urlencode({
+            target_url = self.get_email_auth_uri() + "?" + urlencode({
                 'token': auth_token,
             })
             response = redirect(target_url)
@@ -103,7 +105,7 @@ class OAuthCallbackView(APIView):
                 user = User.objects.create_user(email=email)
                 send_and_save_verification_code(user)
                 auth_token = create_jwt_token(user, 3)
-                target_url = EMAIL_AUTH_URI + "?" + urlencode({
+                target_url = self.get_email_auth_uri() + "?" + urlencode({
                     'token': auth_token,
                 })
                 response = redirect(target_url)
@@ -143,6 +145,8 @@ class OAuthCallbackView(APIView):
 
 
 class GoogleCallbackView(OAuthCallbackView):
+    def get_email_auth_uri(self):
+        return 'https://localhost:443/auth'
     client_id = GOOGLE_CLIENT_ID
     client_secret = GOOGLE_CLIENT_SECRET
     token_api = "https://oauth2.googleapis.com/token"
@@ -151,6 +155,8 @@ class GoogleCallbackView(OAuthCallbackView):
 
 
 class Intra42CallbackView(OAuthCallbackView):
+    def get_email_auth_uri(self):
+        return BASE_URL + 'auth'
     client_id = INTRA42_CLIENT_ID
     client_secret = INTRA42_CLIENT_SECRET
     token_api = INTRA42_TOKEN_API
