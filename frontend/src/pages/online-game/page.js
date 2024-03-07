@@ -178,9 +178,9 @@ export default function OnlineGame($container, info) {
       )
         setScore(newScore);
     } else if (data.type === "game_end") {
-      // TODO: 승자면 match-up으로 이동 패자면 전적페이지로 game_id기반
       let endData = data.data;
       if (endData.final === false && endData.winner === getUserMe()) {
+        // TODO: match-up에다가 info로 웹소켓이랑 정보 넘겨야함
         navigate(`/match-up`);
       } else {
         navigate(
