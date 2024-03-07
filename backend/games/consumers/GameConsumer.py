@@ -9,7 +9,7 @@ from games.models import Game, CasualGameView, PingPongGame, Ball, Bar, Player, 
 from games.serializers import GameRoomSerializer, PvPMatchSerializer, TournamentMatchSerializer
 from datetime import datetime
 from users.models import User
-from src.choices import MODE_CHOICES_DICT
+from src.choices import MODE_CHOICES_DICT, GAME_SETTINGS_DICT
 import threading
 
 
@@ -463,7 +463,8 @@ class GameConsumer(AsyncWebsocketConsumer):
         data = {
             'game_id': self.game_id,
             'winner': match.winner.nickname,
-            'final': self.is_final
+            'final': self.is_final,
+            'game_mode': MODE_CHOICES_DICT[self.game.mode]
         }
         await self.channel_layer.group_send(
             self.game_group_name,
