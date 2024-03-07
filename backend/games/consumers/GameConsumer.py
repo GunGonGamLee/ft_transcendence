@@ -455,7 +455,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             'right_side_player': {
                 'x': match.right_side_player.bar.x,
                 'y': match.right_side_player.bar.y,
-                'score': match.left_side_player.score
+                'score': match.right_side_player.score
             }
         }
         await self.channel_layer.group_send(
