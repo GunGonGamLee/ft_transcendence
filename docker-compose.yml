@@ -30,8 +30,7 @@ services:
     networks:
       - app_network
     volumes:
-      - "${FRONTEND_CODE}:/frontend"
-      - ./frontend/assets/images/avatar:/frontend/assets/avatar
+      - ./frontend/assets/images/avatar:/frontend/assets/images/avatar
       - "${CERTS_PATH}:/backend/certs"
       - "${DJANGO_LOGS}:/var/log/djangolog"
     env_file:
