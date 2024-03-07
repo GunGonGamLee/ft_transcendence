@@ -566,7 +566,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             elif self.my_match == 3:
                 match = self.match3
             p2_lock.acquire()
-            match.right_side_player.bar.y -= 30
+            match.right_side_player.bar.y -= GAME_SETTINGS_DICT['bar']['speed']
             p2_lock.release()
             logger.info(f"p2 - up")
 
@@ -580,7 +580,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             elif self.my_match == 3:
                 match = self.match3
             p2_lock.acquire()
-            match.right_side_player.bar.y += 30
+            match.right_side_player.bar.y += GAME_SETTINGS_DICT['bar']['speed']
             p2_lock.release()
             logger.info(f"p2 - down")
 
