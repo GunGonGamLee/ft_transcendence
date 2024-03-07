@@ -9,7 +9,7 @@ from games.models import Game, CasualGameView, PingPongGame, Ball, Bar, Player, 
 from games.serializers import GameRoomSerializer, PvPMatchSerializer, TournamentMatchSerializer
 from datetime import datetime
 from users.models import User
-from src.choices import GAME_SETTINGS_DICT
+from src.choices import MODE_CHOICES_DICT
 import threading
 
 
@@ -369,7 +369,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 elif self.my_match == 3:
                     match = self.match3
                 p1_lock.acquire()
-                match.left_side_player.bar.y -= 30
+                match.left_side_player.bar.y -= GAME_SETTINGS_DICT['bar']['speed']
                 p1_lock.release()
             elif message_data == 'down':
                 logger.info("p1 - down")
@@ -381,7 +381,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 elif self.my_match == 3:
                     match = self.match3
                 p2_lock.acquire()
-                match.left_side_player.bar.y += 30
+                match.left_side_player.bar.y += GAME_SETTINGS_DICT['bar']['speed']
                 p2_lock.release()
 
     async def send_data(self, group_name, type):
