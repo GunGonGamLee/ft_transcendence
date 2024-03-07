@@ -30,7 +30,8 @@ services:
     networks:
       - app_network
     volumes:
-      - static-volume:/backend/static
+      - "${FRONTEND_CODE}:/frontend"
+      - ./frontend/assets/images/avatar:/frontend/assets/avatar
       - "${CERTS_PATH}:/backend/certs"
       - "${DJANGO_LOGS}:/var/log/djangolog"
     env_file:
