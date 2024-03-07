@@ -14,6 +14,8 @@ import threading
 
 
 logger = logging.getLogger(__name__)
+p1_lock = threading.Lock()
+p2_lock = threading.Lock()
 
 
 class GameConsumer(AsyncWebsocketConsumer):
