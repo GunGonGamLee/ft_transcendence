@@ -69,8 +69,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                     await self.channel_layer.group_send(
                         self.match1_group_name,
                         {
-                            'type': 'player2_disconnect',
-                            'data': '하위'
+                            'type': 'player2_disconnect'
                         })
                     await self.channel_layer.group_discard(self.match1_group_name, self.channel_name)
             else:
@@ -384,11 +383,11 @@ class GameConsumer(AsyncWebsocketConsumer):
                 match.left_side_player.bar.y += GAME_SETTINGS_DICT['bar']['speed']
                 p2_lock.release()
 
-    async def send_data(self, group_name, type):
+    async def send_data(self, group_name, type_):
         await self.channel_layer.group_send(
             group_name,
             {
-                'type': type,
+                'type': type_,
                 'sender_nickname': self.user.nickname
             }
         )
