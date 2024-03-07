@@ -41,7 +41,7 @@ export default function InGame($container, info = null) {
 
   this.render = () => {
     $container.innerHTML = `
-			${scoreBar()}
+			${scoreBar(info)}
       ${toast()}
 			<div class="in-game" style="height: 100vh; width: 100vw; background-image: url('../../../assets/images/ingame_background.png'); background-size: cover"></div>
 			<canvas id="gameCanvas" style="position: absolute; top: 12vh; left: 6%; width: 88%; height: 88%;border-left: 3px dotted white; border-right: 3px dotted white;"></canvas>
