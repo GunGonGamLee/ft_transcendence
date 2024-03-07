@@ -4,6 +4,7 @@ import { navigate } from "../../utils/navigate.js";
 
 export default function Matchup($container, info = null) {
   if (info === null) {
+    navigate("/game-mode");
     return;
   }
   // 이전 페이지로 부터 받아온 정보 처리

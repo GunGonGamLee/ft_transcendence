@@ -1,6 +1,7 @@
 import useState from "../../utils/useState.js";
 import scoreBar from "./scoreBar.js";
 import toast from "./toast.js";
+import { navigate } from "../../utils/navigate.js";
 /**
  *
  * @param {HTMLElement} $container
@@ -8,6 +9,10 @@ import toast from "./toast.js";
  * @constructor
  */
 export default function OnlineGame($container, info) {
+  if (info === null) {
+    navigate("/game-mode");
+    return;
+  }
   console.log(info);
   const ws = info.socket;
   let scoreInput = { player1: 0, player2: 0 };
