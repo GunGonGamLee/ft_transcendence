@@ -44,19 +44,21 @@ export default function LocalMatchup($container, info = null) {
           Authorization: `Bearer ${getCookie("jwt")}`,
         },
       });
-      navigate("/in-game", info);
+      navigate("/local-game", info);
     });
   };
 
   const render = () => {
     importCss("../../../assets/css/localMatchUp.css");
     $container.innerHTML = `
-      <div id="ididid" style="height: 100%; width: 100%; flex-direction: column; display: flex; justify-content: center; align-items: center; background-image: url('../../../assets/images/ingame_background4.png'); background-size: cover">
+      <div style="height: 100%; width: 100%; flex-direction: column; display: flex; justify-content: center; align-items: center; background-image: url('../../../assets/images/ingame_background4.png'); background-size: cover">
         ${playerNameInput(1)}
         ${playerNameInput(2)}  
         ${playerNameInput(3)}  
         ${playerNameInput(4)}
-        <button class="start-btn" style="background: linear-gradient(to bottom, #D80000, #FF0000); font-family: Galmuri11-Bold, serif; color: white; border: 4px solid darkred; padding: 10px 40px; text-align: center; text-decoration: none; font-size: 32px; margin: 4px 2px; cursor: pointer; border-radius: 5vh;">START</button>
+        <div style="display: flex; margin-bottom: 4vh; height: 10vh; width: 30vw; justify-content: center; align-items: center">
+          <button class="start-btn" style="background: linear-gradient(to bottom, #D80000, #FF0000); font-family: Galmuri11-Bold, serif; color: white; border: 0.6vh solid darkred; padding: 1vw 4vh; text-align: center; text-decoration: none; font-size: 4vh; margin: 1vw 1vh; cursor: pointer; border-radius: 5vh;">START</button>
+        </div>
       </div>
     `;
   };
