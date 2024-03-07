@@ -250,7 +250,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             logger.info("[시작] RANK")
 
     async def receive(self, text_data):
-        # todo try catch
         data = json.loads(text_data)
         message_type = data.get('type')
         message_data = data.get('data', {})
@@ -309,7 +308,8 @@ class GameConsumer(AsyncWebsocketConsumer):
                 while not self.match1.finished and self.channel_layer.groups[self.match1_group_name].__len__() == 2:
                     await self.play(self.match1)
                     await self.send_in_game_message(self.match1, self.match1_group_name)
-                    await asyncio.sleep(1 / 24)
+                    await asyncio.sleep(1 / 10)
+                await self.save_game_object_by_id()
                 await self.save_match_data_in_database(self.match1)
                 if self.game.mode == 0:
                     await self.send_end_message(self.game.match1)
