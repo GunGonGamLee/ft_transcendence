@@ -70,7 +70,7 @@ services:
     container_name: nginx_container
     volumes:
       - "${FRONTEND_CODE}:/usr/share/nginx/html"
-      - static-volume:/usr/share/nginx/html/static
+      - ./backend/static:/usr/share/nginx/html/static
       - "${CERTS_PATH}:/etc/nginx/certs"
       - "${NGINX_LOGS}:/var/log/nginx"
     logging:
