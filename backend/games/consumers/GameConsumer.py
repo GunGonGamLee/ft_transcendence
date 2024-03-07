@@ -584,7 +584,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             logger.info(f"p2 - down")
 
     async def player2_disconnect(self, event):
-        logger.info(f"!!!!!! player2_disconnect 받음 - {self.user.nickname}")
         if self.player1:
             if self.game.mode == 0:
                 await self.save_winner(1)
@@ -602,4 +601,3 @@ class GameConsumer(AsyncWebsocketConsumer):
         if match == 1:
             self.game.match1.winner = self.user
             self.game.match1.save()
-
