@@ -395,14 +395,11 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def play(self, match):
         if match.ball.is_ball_hit_wall(match.ping_pong_map):
-            logger.info(f"[인게임] match{self.my_match} - 공 벽에 부딪힘")
             match.ball.bounce((1, -1))
         elif match.ball.is_ball_inside_bar(match.left_side_player.bar) or match.ball.is_ball_inside_bar(
                 match.right_side_player.bar):
-            logger.info(f"[인게임] match{self.my_match} - 바에 부딪힘")
             match.ball.bounce((-1, 1))
         if (whether_score_a_goal := match.ball.is_goal_in(match.ping_pong_map)) != [False, False]:
-            logger.info(f"[인게임] match{self.my_match} - {whether_score_a_goal} 득점")
             match.update_score(whether_score_a_goal)
             match.ball.reset(match.ping_pong_map)
         if match.left_side_player.score + match.right_side_player.score == 5:
