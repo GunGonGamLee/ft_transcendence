@@ -64,7 +64,7 @@ export const routes = [
 
   { path: /^\/waiting-room$/, page: WaitingRoom, header: MainHeader },
   { path: /^\/custom-game-list$/, page: CustomGameList, header: MainHeader },
-  { path: /^\/in-game$/, page: LocalGame, header: MainHeader },
+  { path: /^\/local-game$/, page: LocalGame, header: MainHeader },
   { path: /^\/online-game$/, page: OnlineGame, header: MainHeader },
   { path: /^\/match-up$/, page: Matchup, header: MainHeader },
   { path: /^\/local-match-up$/, page: LocalMatchup, header: MainHeader },
