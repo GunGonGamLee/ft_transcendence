@@ -1,5 +1,7 @@
 FROM python:3.12.1-slim
 
+COPY .env .env
+
 RUN mkdir -p backend && \
 	mkdir -p /var/log/djangolog && \
 	apt-get update && \
