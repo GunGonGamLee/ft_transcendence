@@ -245,41 +245,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             pass
 
         elif message_type == 'keyboard':
-            if self.player1 is False:
-                if message_data == 'up':
-                    logger.info("p1 아님 - up")
-                    if self.my_match == 1:
-                        await self.send_data(self.match1_group_name, 'up')
-                    elif self.my_match == 2:
-                        await self.send_data(self.match2_group_name, 'up')
-                    elif self.my_match == 3:
-                        await self.send_data(self.match3_group_name, 'up')
-
-                elif message_data == 'down':
-                    logger.info("p1 아님 - down")
-                    if self.my_match == 1:
-                        await self.send_data(self.match1_group_name, 'down')
-                    elif self.my_match == 2:
-                        await self.send_data(self.match2_group_name, 'down')
-                    elif self.my_match == 3:
-                        await self.send_data(self.match3_group_name, 'down')
-            else:
-                if message_data == 'up':
-                    logger.info("p1임 - up")
-                    if self.my_match == 1:
-                        self.match1.left_side_player.bar.y += 1
-                    elif self.my_match == 2:
-                        self.match2.left_side_player.bar.y += 1
-                    elif self.my_match == 3:
-                        self.match3.left_side_player.bar.y += 1
-                elif message_data == 'down':
-                    logger.info("p1임 - down")
-                    if self.my_match == 1:
-                        self.match1.left_side_player.bar.y -= 1
-                    elif self.my_match == 2:
-                        self.match2.left_side_player.bar.y -= 1
-                    elif self.my_match == 3:
-                        self.match3.left_side_player.bar.y -= 1
+            asyncio.create_task(self.process_keyboard_input(message_data))
 
     async def process_game_start(self, message_data):
         if self.my_match == 1:
@@ -335,6 +301,49 @@ class GameConsumer(AsyncWebsocketConsumer):
                 await self.save_match3_matching_in_database(self.game.match2.winner)
                 await self.send_end_message(self.game.match2)
                 return
+
+    async def process_keyboard_input(self, message_data):
+        if self.player1 is False:
+            if message_data == 'up':
+                if self.my_match == 1:
+                    await self.send_data(self.match1_group_name, 'up')
+                elif self.my_match == 2:
+                    await self.send_data(self.match2_group_name, 'up')
+                elif self.my_match == 3:
+                    await self.send_data(self.match3_group_name, 'up')
+
+            elif message_data == 'down':
+                if self.my_match == 1:
+                    await self.send_data(self.match1_group_name, 'down')
+                elif self.my_match == 2:
+                    await self.send_data(self.match2_group_name, 'down')
+                elif self.my_match == 3:
+                    await self.send_data(self.match3_group_name, 'down')
+        else:
+            if message_data == 'up':
+                logger.info("p1 - up")
+                match = None
+                if self.my_match == 1:
+                    match = self.match1
+                elif self.my_match == 2:
+                    match = self.match2
+                elif self.my_match == 3:
+                    match = self.match3
+                p1_lock.acquire()
+                match.left_side_player.bar.y -= 30
+                p1_lock.release()
+            elif message_data == 'down':
+                logger.info("p1 - down")
+                match = None
+                if self.my_match == 1:
+                    match = self.match1
+                elif self.my_match == 2:
+                    match = self.match2
+                elif self.my_match == 3:
+                    match = self.match3
+                p2_lock.acquire()
+                match.left_side_player.bar.y += 30
+                p2_lock.release()
 
     async def send_data(self, group_name, type):
         await self.channel_layer.group_send(
@@ -507,22 +516,50 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps(event))
 
     async def up(self, event):
-        logger.info(f"match{self.my_match} , p1? : {self.player1} - up")
         if event['sender_nickname'] != self.user.nickname:
+            match = None
             if self.my_match == 1:
-                self.match1.right_side_player.bar.y += 1
+                match = self.match1
             elif self.my_match == 2:
-                self.match2.right_side_player.bar.y += 1
+                match = self.match2
             elif self.my_match == 3:
-                self.match3.right_side_player.bar.y += 1
+                match = self.match3
+            p2_lock.acquire()
+            match.right_side_player.bar.y -= 30
+            p2_lock.release()
+            logger.info(f"p2 - up")
 
     async def down(self, event):
-        logger.info(f"match{self.my_match} , player2 - down")
         if event['sender_nickname'] != self.user.nickname:
+            match = None
             if self.my_match == 1:
-                self.match1.right_side_player.bar.y -= 1
+                match = self.match1
             elif self.my_match == 2:
-                self.match2.right_side_player.bar.y -= 1
+                match = self.match2
             elif self.my_match == 3:
-                self.match3.right_side_player.bar.y -= 1
+                match = self.match3
+            p2_lock.acquire()
+            match.right_side_player.bar.y += 30
+            p2_lock.release()
+            logger.info(f"p2 - down")
+
+    async def player2_disconnect(self, event):
+        logger.info(f"!!!!!! player2_disconnect 받음 - {self.user.nickname}")
+        if self.player1:
+            if self.game.mode == 0:
+                await self.save_winner(1)
+                self.match1.finished = True
+            else:
+                if self.my_match == 1:
+                    pass
+                elif self.my_match == 2:
+                    pass
+                else:
+                    pass
+
+    @database_sync_to_async
+    def save_winner(self, match):
+        if match == 1:
+            self.game.match1.winner = self.user
+            self.game.match1.save()
 
