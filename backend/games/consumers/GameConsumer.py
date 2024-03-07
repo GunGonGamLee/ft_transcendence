@@ -343,42 +343,19 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def process_keyboard_input(self, message_data):
         if self.player1 is False:
             if message_data == 'up':
-                if self.my_match == 1:
-                    await self.send_data(self.match1_group_name, 'up')
-                elif self.my_match == 2:
-                    await self.send_data(self.match2_group_name, 'up')
-                elif self.my_match == 3:
-                    await self.send_data(self.match3_group_name, 'up')
-
+                await self.send_data(await self.get_my_match_group_name(self.my_match), 'up')
             elif message_data == 'down':
-                if self.my_match == 1:
-                    await self.send_data(self.match1_group_name, 'down')
-                elif self.my_match == 2:
-                    await self.send_data(self.match2_group_name, 'down')
-                elif self.my_match == 3:
-                    await self.send_data(self.match3_group_name, 'down')
+                await self.send_data(await self.get_my_match_group_name(self.my_match), 'down')
         else:
             if message_data == 'up':
                 logger.info("p1 - up")
-                match = None
-                if self.my_match == 1:
-                    match = self.match1
-                elif self.my_match == 2:
-                    match = self.match2
-                elif self.my_match == 3:
-                    match = self.match3
+                match = await self.get_my_match_object(self.my_match)
                 p1_lock.acquire()
                 match.left_side_player.bar.y -= GAME_SETTINGS_DICT['bar']['speed']
                 p1_lock.release()
             elif message_data == 'down':
                 logger.info("p1 - down")
-                match = None
-                if self.my_match == 1:
-                    match = self.match1
-                elif self.my_match == 2:
-                    match = self.match2
-                elif self.my_match == 3:
-                    match = self.match3
+                match = await self.get_my_match_object(self.my_match)
                 p2_lock.acquire()
                 match.left_side_player.bar.y += GAME_SETTINGS_DICT['bar']['speed']
                 p2_lock.release()
@@ -424,13 +401,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         finished_at = datetime.now()
         time_diff = finished_at - result.started_at
         playtime = datetime.min + time_diff
-        match = None
-        if self.my_match == 1:
-            match = self.game.match1
-        elif self.my_match == 2:
-            match = self.game.match2
-        elif self.my_match == 3:
-            match = self.game.match3
+        match = await self.get_my_match_object(self.my_match)
         match.player1_score = result.left_side_player.score
         match.player2_score = result.right_side_player.score
         match.started_at = result.started_at
@@ -554,13 +525,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def up(self, event):
         if event['sender_nickname'] != self.user.nickname:
-            match = None
-            if self.my_match == 1:
-                match = self.match1
-            elif self.my_match == 2:
-                match = self.match2
-            elif self.my_match == 3:
-                match = self.match3
+            match = await self.get_my_match_object(self.my_match)
             p2_lock.acquire()
             match.right_side_player.bar.y -= GAME_SETTINGS_DICT['bar']['speed']
             p2_lock.release()
@@ -568,13 +533,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def down(self, event):
         if event['sender_nickname'] != self.user.nickname:
-            match = None
-            if self.my_match == 1:
-                match = self.match1
-            elif self.my_match == 2:
-                match = self.match2
-            elif self.my_match == 3:
-                match = self.match3
+            match = await self.get_my_match_object(self.my_match)
             p2_lock.acquire()
             match.right_side_player.bar.y += GAME_SETTINGS_DICT['bar']['speed']
             p2_lock.release()
@@ -598,3 +557,23 @@ class GameConsumer(AsyncWebsocketConsumer):
         if match == 1:
             self.game.match1.winner = self.user
             self.game.match1.save()
+
+    async def get_my_match_object(self, my_match):
+        match = None
+        if my_match == 1:
+            match = self.match1
+        elif my_match == 2:
+            match = self.match2
+        elif my_match == 3:
+            match = self.match3
+        return match
+
+    async def get_my_match_group_name(self, my_match):
+        group_name = None
+        if my_match == 1:
+            group_name = self.match1_group_name
+        elif my_match == 2:
+            group_name = self.match2_group_name
+        elif my_match == 3:
+            group_name = self.match3_group_name
+        return group_name
