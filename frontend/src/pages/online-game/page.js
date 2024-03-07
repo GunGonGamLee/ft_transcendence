@@ -171,6 +171,8 @@ export default function OnlineGame($container, info) {
         score.player2 !== newScore.player2
       )
         setScore(newScore);
+    } else if (data.type === "game_end") {
+      // TODO: 승자면 match-up으로 이동 패자면 전적페이지로 game_id기반
     }
   };
 }
