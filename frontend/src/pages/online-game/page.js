@@ -173,6 +173,7 @@ export default function OnlineGame($container, info) {
         setScore(newScore);
     } else if (data.type === "game_end") {
       // TODO: 승자면 match-up으로 이동 패자면 전적페이지로 game_id기반
+      // TODO: 모든 info받는 페이지 null이면 game-mode로 navigate
     }
   };
 }
