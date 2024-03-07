@@ -91,7 +91,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 
             await self.get_match()
             await self.append_user(game_group_name)
-            await self.log(game_group_name)
 
             if self.manager:
                 await self.when_manager()
@@ -99,10 +98,6 @@ class GameConsumer(AsyncWebsocketConsumer):
         except Exception as e:
             await self.send(text_data=json.dumps({"error": "[" + e.__class__.__name__ + "] " + str(e)}))
             await self.close()
-
-    async def log(self, game_group_name):
-        logger.info(f"users[] = {getattr(self.UserList, game_group_name)}, "
-                    f"me = {self.user.nickname} - manager: {self.manager}")
 
     async def append_user(self, game_group_name):
         if hasattr(self.UserList, game_group_name) is False:
