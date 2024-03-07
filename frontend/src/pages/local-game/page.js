@@ -9,7 +9,7 @@ import deepCopy from "../../utils/deepCopy.js";
  * @param {Object} info
  * @constructor
  */
-export default function InGame($container, info = null) {
+export default function LocalGame($container, info = null) {
   let scoreInput = { player1: 0, player2: 0 };
   let [getScore, setScore] = useState(scoreInput, this, "renderScoreBoard");
   let [getTime, setTime] = useState(0, this, "renderTime");
