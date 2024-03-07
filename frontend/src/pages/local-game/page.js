@@ -237,7 +237,7 @@ export default function LocalGame($container, info = null) {
           return;
         }
         const newInfo = deepCopy(info);
-        navigate("/in-game", newInfo);
+        navigate("/local-game", newInfo);
       }
     };
 
