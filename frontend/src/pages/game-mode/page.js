@@ -34,7 +34,7 @@ export default function GameMode($container) {
       }
     });
     click($container.querySelector(".unit0"), () => {
-      // navigate("/in-game", { mode: "rank" });
+      // navigate("/local-game", { mode: "rank" });
       navigate("/local-match-up");
     });
     click($container.querySelector(".unit2"), () => {

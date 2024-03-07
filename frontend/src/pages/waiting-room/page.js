@@ -97,7 +97,7 @@ export default function WaitingRoom($container, info = null) {
           ${userBox(gameModeNum, players)}
         </div>
         <div class="start-btn-wrapper" style="width: 100vw; height: 10vh; display: flex; justify-content: center; align-items: center">
-          <button class="start-btn" style="background: linear-gradient(to bottom, #D80000, #FF0000); font-family: Galmuri11-Bold, serif; color: white; border: 4px solid darkred; padding: 10px 40px; text-align: center; text-decoration: none; display: none; font-size: 32px; margin: 4px 2px; cursor: pointer; border-radius: 5vh;">START</button>
+          <button class="start-btn" style="background: linear-gradient(to bottom, #D80000, #FF0000); font-family: Galmuri11-Bold, serif; color: white; border: 0.6vh solid darkred; padding: 1vw 4vh; text-align: center; text-decoration: none; font-size: 4vh; margin: 1vw 1vh; cursor: pointer; border-radius: 5vh;">START</button>
         </div>
       </div>
     `;

@@ -7,7 +7,7 @@ import WaitingRoom from "../pages/waiting-room/page.js";
 import Login from "../pages/login/page.js";
 import CustomGameList from "../pages/custom-game-list/page.js";
 import Auth from "../pages/auth/page.js";
-import InGame from "../pages/in-game/page.js";
+import LocalGame from "../pages/local-game/page.js";
 import Matchup from "../pages/match-up/page.js";
 import Summary from "../pages/histories/summary-page.js";
 import OneOnOneHistories from "../pages/histories/one-on-one-page.js";
@@ -64,7 +64,7 @@ export const routes = [
 
   { path: /^\/waiting-room$/, page: WaitingRoom, header: MainHeader },
   { path: /^\/custom-game-list$/, page: CustomGameList, header: MainHeader },
-  { path: /^\/in-game$/, page: InGame, header: MainHeader },
+  { path: /^\/local-game$/, page: LocalGame, header: MainHeader },
   { path: /^\/online-game$/, page: OnlineGame, header: MainHeader },
   { path: /^\/match-up$/, page: Matchup, header: MainHeader },
   { path: /^\/local-match-up$/, page: LocalMatchup, header: MainHeader },

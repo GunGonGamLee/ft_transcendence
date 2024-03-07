@@ -40,9 +40,9 @@ export default function Matchup($container, info = null) {
       setCards(matchData);
     }
 
-    // // 5초 후에 in-game 경로로 자동 이동
+    // // 5초 후에 local-game 경로로 자동 이동
     // setTimeout(() => {
-    //   navigate("/in-game");
+    //   navigate("/local-game");
     // }, 5000); // 5000밀리초는 5초를 의미합니다.
   };
 
