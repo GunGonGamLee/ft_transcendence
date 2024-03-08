@@ -429,7 +429,8 @@ class GameConsumer(AsyncWebsocketConsumer):
             'game_id': self.game_id,
             'winner': match.winner.nickname,
             'final': self.is_final,
-            'game_mode': MODE_CHOICES_DICT[self.game.mode]
+            'game_mode': MODE_CHOICES_DICT[self.game.mode],
+            'match': self.my_match
         }
         await self.channel_layer.group_send(
             self.game_group_name,
