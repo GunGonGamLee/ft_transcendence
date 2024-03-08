@@ -141,6 +141,8 @@ class GameConsumer(AsyncWebsocketConsumer):
                 break
             await asyncio.sleep(0.3)
         await self.send_match_table()
+        await self.print_start_log(self.game.mode)
+
 
     @database_sync_to_async
     def save_game_object_by_id(self):
@@ -222,11 +224,13 @@ class GameConsumer(AsyncWebsocketConsumer):
                 'data': serializer_data
             }
         )
-        if self.game.mode == 0:
+
+    async def print_start_log(self, mode):
+        if mode == 0:
             logger.info("[시작] PVP")
-        elif self.game.mode == 1:
+        elif mode == 1:
             logger.info("[시작] TOURNAMENT")
-        elif self.game.mode == 2:
+        elif mode == 2:
             logger.info("[시작] RANK")
 
     async def receive(self, text_data):
