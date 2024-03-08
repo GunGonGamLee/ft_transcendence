@@ -271,11 +271,9 @@ class GameConsumer(AsyncWebsocketConsumer):
                     await self.save_game_status(3)
                     await self.update_winner_data(self.game.mode)
                     await self.send_end_message(self.game.match1)
-                    return
                 else:
                     await self.save_match3_matching_in_database(self.game.match1.winner)
                     await self.send_end_message(self.game.match1)
-                    return
             elif self.my_match == 2:
                 await self.init_game(message_data, self.my_match)
                 start_time = time.time()
@@ -286,7 +284,6 @@ class GameConsumer(AsyncWebsocketConsumer):
                     if num == 2:
                         break
                     await asyncio.sleep(0.3)
-
                 await self.send_start_message(self.match2, self.match2_group_name)
                 await asyncio.sleep(2)
                 self.match2.started_at = datetime.now()
@@ -297,7 +294,6 @@ class GameConsumer(AsyncWebsocketConsumer):
                 await self.save_match_data_in_database(self.match2)
                 await self.save_match3_matching_in_database(self.game.match2.winner)
                 await self.send_end_message(self.game.match2)
-                return
 
     async def process_match3_game_start(self, message_data):
         self.my_match = 3
