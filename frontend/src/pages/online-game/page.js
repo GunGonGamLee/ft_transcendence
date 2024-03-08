@@ -19,6 +19,7 @@ export default function OnlineGame($container, info) {
   let scoreInput = { player1: 0, player2: 0 };
   let [getScore, setScore] = useState(scoreInput, this, "renderScoreBoard");
   let [getTime, setTime] = useState(0, this, "renderTime");
+  let keyState = { up: false, down: false };
 
   const init = () => {
     hideHeader();
@@ -28,6 +29,8 @@ export default function OnlineGame($container, info) {
       setTime(getTime() + 1);
     }, 1000);
     document.addEventListener("keydown", keyEventHandler);
+    document.addEventListener("keydown", keyDownHandler);
+    document.addEventListener("keyup", keyUpHandler);
 
     const $toast = document.querySelector(".toast");
     const toast = new bootstrap.Toast($toast);
@@ -43,6 +46,8 @@ export default function OnlineGame($container, info) {
     clearInterval(this.timeIntervalId);
     document.querySelector("#header").style.display = "block";
     document.removeEventListener("keydown", keyEventHandler);
+    document.removeEventListener("keydown", keyDownHandler);
+    document.removeEventListener("keyup", keyUpHandler);
     window.removeEventListener("beforeunload", disconnectWebSocket);
   };
   // TODO: avatar 하드코딩된거 나중에 수정하기 중복 코드 gameutils.js로 따로 빼기
@@ -89,16 +94,37 @@ export default function OnlineGame($container, info) {
         $container.querySelector(".in-game").style.backgroundImage =
           "url('../../../assets/images/ingame_background4.png')";
         break;
-      case "ArrowUp":
-        console.log("up");
-        ws.send(JSON.stringify({ type: "keyboard", data: "up" }));
-        break;
-      case "ArrowDown":
-        console.log("down");
-        ws.send(JSON.stringify({ type: "keyboard", data: "down" }));
-        break;
+      // case "ArrowUp":
+      //   if (keyState) console.log("up");
+      //   ws.send(JSON.stringify({ type: "keyboard", data: "up" }));
+      //   break;
+      // case "ArrowDown":
+      //   console.log("down");
+      //   ws.send(JSON.stringify({ type: "keyboard", data: "down" }));
+      //   break;
       default:
         break;
+    }
+  };
+
+  const keyDownHandler = (e) => {
+    if (e.key === "ArrowUp") {
+      keyState.up = true;
+    } else if (e.key === "ArrowDown") {
+      keyState.down = true;
+    }
+  };
+  const keyUpHandler = (e) => {
+    if (e.key === "ArrowUp") {
+      if (keyState.up === false) return;
+      keyState.up = false;
+      console.log("up");
+      ws.send(JSON.stringify({ type: "keyboard", data: "up" }));
+    } else if (e.key === "ArrowDown") {
+      if (keyState.down === false) return;
+      keyState.down = false;
+      console.log("down");
+      ws.send(JSON.stringify({ type: "keyboard", data: "down" }));
     }
   };
 
