@@ -119,7 +119,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.game_group_name = game_group_name
             self.match1_group_name = f"match1_{self.game_id}"
             self.match2_group_name = f"match2_{self.game_id}"
-            self.match3_group_name = f"match3_{self.game_id}"
+            self.match3_group_name = game_group_name
             await self.channel_layer.group_add(self.game_group_name, self.channel_name)
 
             await self.get_match()
@@ -303,16 +303,16 @@ class GameConsumer(AsyncWebsocketConsumer):
             while True:
                 if time.time() - start_time >= 30:
                     raise TimeoutError()
-                num = self.channel_layer.groups[self.game_group_name].__len__()
+                num = self.channel_layer.groups[self.match3_group_name].__len__()
                 if num == 2:
                     break
                 await asyncio.sleep(0.3)
-            await self.send_start_message(self.match3, self.game_group_name)
+            await self.send_start_message(self.match3, self.match3_group_name)
             await asyncio.sleep(2)
             self.match3.started_at = datetime.now()
-            while not self.match3.finished and self.channel_layer.groups[self.game_group_name].__len__() == 2:
+            while not self.match3.finished and self.channel_layer.groups[self.match3_group_name].__len__() == 2:
                 await self.play(self.match3)
-                await self.send_in_game_message(self.match3, self.game_group_name)
+                await self.send_in_game_message(self.match3, self.match3_group_name)
                 await asyncio.sleep(GAME_SETTINGS_DICT['play']['frame'])
             await self.save_game_status(3)
             await self.update_winner_data(self.game.mode)
@@ -555,7 +555,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         elif my_match == 2:
             group_name = self.match2_group_name
         elif my_match == 3:
-            group_name = self.match3_group_name
+            group_name = self.game_group_name
         return group_name
 
     @database_sync_to_async
