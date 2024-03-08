@@ -21,13 +21,15 @@ export default function OnlineGame($container, info) {
   let [getTime, setTime] = useState(0, this, "renderTime");
   let keyState = { up: false, down: false };
 
+  let matchesHandler = {};
+
   let myNickname = null;
   let myMatch = 1;
   let initMyInfo = async () => {
     myNickname = await getUserMe().then((user) => user.data.nickname);
     if (
-      info.data.match2[0].nickname === myNickname ||
-      info.data.match2[1].nickname === myNickname
+      info.data.data.match2[0].nickname === myNickname ||
+      info.data.data.match2[1].nickname === myNickname
     )
       myMatch = 2;
   };
@@ -219,14 +221,29 @@ export default function OnlineGame($container, info) {
   };
 
   function endGame(data, ws) {
-    if (myMatch !== data.match) {
+    console.log(data, myMatch, myNickname);
+    if (matchesHandler[data.data.match]) {
       return;
-      //TODO: 여기서 받은 정보 저장해야할듯
     }
+
+    if (myMatch != data.data.match) {
+      return;
+    }
+
     let endData = data.data;
-    if (endData.final === false && endData.winner === myNickname) {
-      ws.onmessage = null;
-      navigate(`/match-up`, { socket: ws, data: endData, remainMatch: true });
+    let isWinner = endData.winner === myNickname;
+    matchesHandler[data.data.match] = true;
+
+    if (!endData.final) {
+      if (isWinner) {
+        ws.onmessage = null;
+        navigate(`/match-up`, { socket: ws, data: endData, remainMatch: true });
+      } else {
+        navigate(
+          `/histories/details?mode=${endData.game_mode}&gameId=${endData.game_id}`,
+          { gameId: endData.game_id },
+        );
+      }
     } else {
       ws.close();
       navigate(
