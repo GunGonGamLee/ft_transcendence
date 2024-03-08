@@ -287,7 +287,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 await self.send_start_message(self.match2, self.match2_group_name)
                 await asyncio.sleep(2)
                 self.match2.started_at = datetime.now()
-                while not self.match2.finished:
+                while not self.match2.finished and self.channel_layer.groups[self.match2_group_name].__len__() == 2:
                     await self.play(self.match2)
                     await self.send_in_game_message(self.match2, self.match2_group_name)
                     await asyncio.sleep(GAME_SETTINGS_DICT['play']['frame'])
