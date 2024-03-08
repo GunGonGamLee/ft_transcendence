@@ -6,7 +6,7 @@ from django.contrib.auth.models import AnonymousUser
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from games.models import Game, CasualGameView, PingPongGame, Ball, Bar, Player, PingPongMap, Result
-from games.serializers import GameRoomSerializer, PvPMatchSerializer, TournamentMatchSerializer
+from games.serializers import GameRoomSerializer, PvPMatchSerializer, TournamentMatchSerializer, TournamentFinalMatchSerializer
 from datetime import datetime
 from users.models import User
 from src.choices import MODE_CHOICES_DICT, GAME_SETTINGS_DICT
@@ -205,18 +205,20 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.game.match2.save()
 
     @database_sync_to_async
-    def get_serializer_data(self):
+    def get_serializer_data(self, final):
         serializer = None
         game = Game.objects.get(id=self.game_id)
         self.game = game
         if self.game.mode == 0:
             serializer = PvPMatchSerializer(game)
-        else:
+        elif self.game.mode != 0 and final is False:
             serializer = TournamentMatchSerializer(game)
+        elif self.game.mode != 0 and final is True:
+            serializer = TournamentFinalMatchSerializer(game)
         return serializer.data
 
     async def send_match_table(self):
-        serializer_data = await self.get_serializer_data()
+        serializer_data = await self.get_serializer_data(False)
         await self.channel_layer.group_send(
             self.game_group_name,
             {
@@ -321,6 +323,16 @@ class GameConsumer(AsyncWebsocketConsumer):
             await self.save_game_status(3)
             await self.update_winner_data(self.game.mode)
             await self.send_end_message(self.game.match3)
+
+    async def send_final_match_table(self):
+        serializer_data = await self.get_serializer_data(True)
+        await self.channel_layer.group_send(
+            self.game_group_name,
+            {
+                'type': 'game_info',
+                'data': serializer_data
+            }
+        )
 
     async def process_keyboard_input(self, message_data):
         if self.player1 is False:
