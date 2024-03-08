@@ -304,16 +304,16 @@ class GameConsumer(AsyncWebsocketConsumer):
             while True:
                 if time.time() - start_time >= 30:
                     raise TimeoutError()
-                num = self.channel_layer.groups[self.match1_group_name].__len__()
+                num = self.channel_layer.groups[self.game_group_name].__len__()
                 if num == 2:
                     break
                 await asyncio.sleep(0.3)
-            await self.send_start_message(self.match3, self.match3_group_name)
+            await self.send_start_message(self.match3, self.game_group_name)
             await asyncio.sleep(2)
             self.match3.started_at = datetime.now()
-            while not self.match3.finished:
+            while not self.match3.finished and self.channel_layer.groups[self.game_group_name].__len__() == 2:
                 await self.play(self.match3)
-                await self.send_in_game_message(self.match3, self.match3_group_name)
+                await self.send_in_game_message(self.match3, self.game_group_name)
                 await asyncio.sleep(GAME_SETTINGS_DICT['play']['frame'])
             await self.save_game_status(3)
             await self.update_winner_data(self.game.mode)
