@@ -146,9 +146,9 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         data = json.loads(text_data)
         message_type = data.get('type')
         message_data = data.get('data', {})
+        await self.save_game_object_by_id()
         if message_type == 'game_start' and message_data == 'true' and self.game.status == 1:
             await self.set_game_status(2)
-            await self.save_game_object_by_id()
             await self.channel_layer.group_send(
                 self.game_group_name,
                 {
