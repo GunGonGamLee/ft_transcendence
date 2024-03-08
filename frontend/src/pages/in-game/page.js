@@ -375,7 +375,7 @@ export default function InGame($container, info = null) {
       while (Date.now() < end) {}
     };
 
-    normalizeVector(ball.direction.x, ball.direction.y);
+    reset(ball, canvas);
     moveBar();
     moveBall();
   };
