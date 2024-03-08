@@ -208,9 +208,10 @@ export default function MainHeader($container) {
     headerElement.insertAdjacentHTML(
         "beforeend",
         `
-      <div id="warning-modal-wrapper" style="display: ${display}; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 860px; height: 230px; background: rgba(10, 10, 10, 0.95); border-radius: 25px; border: 5px #FBFF3E solid;">
+      <div id="warning-modal-wrapper" style="display: ${display}; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 70vw; height: 30vh; background: rgba(10, 10, 10, 0.95); border-radius: 3vh; border: 1vh #FBFF3E solid;">
         <div style="position: absolute; left: 120px; top: 80px; text-align: center; color: white; font-size: 40px; font-family: Galmuri11, serif; font-weight: 400; word-wrap: break-word;">이미 보냈다.</div>
-        <img id="warning-modal-close" alt="setting" style="position: absolute; width: 70px; height: 70px; left: 770px; top: 26px;" src="../../../assets/images/close.png" />
+        <!-- left: calc(50% + 25vw - 1vh); : left기준으로 모달이 50% 위치에 우선 있고 모달의 너비는 width: 70vw 이니까 x의 위치를 모달 오른쪽 테두리로부터 10vw 만큼 주고 싶었기에 border : 1vh까지 계산하여 (50% + 25vw - 1vh)를 주었습니다.   -->
+        <img id="warning-modal-close" alt="setting" style="position: absolute; height: 9vh; left: calc(50% + 25vw - 1vh); top: 2.5vh;" src="../../../assets/images/close.png" />
       </div>
     `,
     );
