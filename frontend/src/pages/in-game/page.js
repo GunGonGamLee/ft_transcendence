@@ -264,8 +264,10 @@ export default function InGame($container, info = null) {
      */
     const isBallInsideBarX = (bar, ball) => {
       return (
-        ball.x + ball.radius >= bar.x &&
-        ball.x - ball.radius <= bar.x + bar.width
+        (ball.x + ball.radius >= bar.x &&
+          ball.x + ball.radius <= bar.x + bar.width) ||
+        (ball.x - ball.radius >= bar.x &&
+          ball.x - ball.radius <= bar.x + bar.width)
       );
     };
 
@@ -277,8 +279,10 @@ export default function InGame($container, info = null) {
      */
     const isBallInsideBarY = (bar, ball) => {
       return (
-        ball.y + ball.radius >= bar.y &&
-        ball.y - ball.radius <= bar.y + bar.height
+        (ball.y + ball.radius >= bar.y &&
+          ball.y + ball.radius <= bar.y + bar.height) ||
+        (ball.y - ball.radius >= bar.y &&
+          ball.y - ball.radius <= bar.y + bar.height)
       );
     };
 
