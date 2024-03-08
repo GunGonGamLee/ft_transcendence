@@ -226,7 +226,7 @@ export default function OnlineGame($container, info) {
       return;
     }
 
-    if (myMatch != data.data.match) {
+    if (myMatch !== data.data.match) {
       return;
     }
 
