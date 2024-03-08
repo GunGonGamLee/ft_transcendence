@@ -270,6 +270,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                     await self.play(self.match3)
                     await self.send_in_game_message(self.match3, self.match3_group_name)
                     await asyncio.sleep(GAME_SETTINGS_DICT['play']['frame'])
+                await self.save_game_status(3)
                 await self.send_end_message(self.game.match3)
         elif message_type == 'match3_info':
             pass
