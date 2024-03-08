@@ -302,8 +302,8 @@ class GameConsumer(AsyncWebsocketConsumer):
                     await self.send_in_game_message(self.match1, self.match1_group_name)
                     await asyncio.sleep(GAME_SETTINGS_DICT['play']['frame'])
                 await self.save_match_data_in_database(self.match1)
-                await self.save_game_status(3)
                 if self.game.mode == 0:
+                    await self.save_game_status(3)
                     await self.send_end_message(self.game.match1)
                     return
                 else:
@@ -329,7 +329,6 @@ class GameConsumer(AsyncWebsocketConsumer):
                     await self.send_in_game_message(self.match2, self.match2_group_name)
                     await asyncio.sleep(GAME_SETTINGS_DICT['play']['frame'])
                 await self.save_match_data_in_database(self.match2)
-                await self.save_game_status(3)
                 await self.save_match3_matching_in_database(self.game.match2.winner)
                 await self.send_end_message(self.game.match2)
                 return
