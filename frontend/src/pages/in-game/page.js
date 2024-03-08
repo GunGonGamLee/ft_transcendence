@@ -327,13 +327,13 @@ export default function InGame($container, info = null) {
     const bounce = (bounceX, bounceY) => {
       if (bounceX) {
         [ball.direction.x, ball.direction.y] = normalizeVector(
-          (ball.direction.x + getRandomCoefficient(-0.001, 0.001)) * -1,
+          ball.direction.x * -1 * getRandomCoefficient(0.99, 1.01),
           ball.direction.y,
         );
       } else if (bounceY) {
         [ball.direction.x, ball.direction.y] = normalizeVector(
           ball.direction.x,
-          (ball.direction.y + getRandomCoefficient(-0.001, 0.001)) * -1,
+          ball.direction.y * -1 * getRandomCoefficient(0.99, 1.01),
         );
       }
     };
@@ -350,7 +350,8 @@ export default function InGame($container, info = null) {
         x: Math.random() * 2 - 1,
         y: Math.random() * 2 - 1,
       };
-      normalizeVector(ball.direction.x, ball.direction.y);
+      normalize;
+      Vector(ball.direction.x, ball.direction.y);
       ball.speed = BALL_SPEED;
     };
 
@@ -358,7 +359,7 @@ export default function InGame($container, info = null) {
      * 최소값과 최대값 사이의 랜덤한 수를 반환하는 함수
      */
     const getRandomCoefficient = (min, max) => {
-      return Math.floor(Math.random() * (max - min + 1)) + min;
+      return Math.random() * (max - min) + min;
     };
 
     /**
