@@ -194,11 +194,15 @@ export default function InGame($container, info = null) {
    * @param drawFunction {function} 캔버스를 그리는 함수
    */
   const runGame = (canvas, bar1, bar2, ball, drawFunction) => {
+    let isBounced = false;
+
     const moveBall = () => {
       if (isBallInsideBar(bar1, ball) || isBallInsideBar(bar2, ball)) {
         bounce(true, false);
       } else if (isBallHitWall(canvas, ball)) {
         bounce(false, true);
+      } else {
+        isBounced = false;
       }
       ball.x = ball.x + ball.direction.x * ball.speed;
       ball.y = ball.y + ball.direction.y * ball.speed;
@@ -246,10 +250,10 @@ export default function InGame($container, info = null) {
       let topPoint = ball.y - ball.radius;
       let bottomPoint = ball.y + ball.radius;
 
-      if (topPoint <= 0) {
+      if (topPoint <= 0 && !isBounced) {
         ball.y += Math.abs(topPoint);
         return true;
-      } else if (bottomPoint >= canvas.height) {
+      } else if (bottomPoint >= canvas.height && !isBounced) {
         ball.y -= bottomPoint - canvas.height;
         return true;
       }
@@ -264,10 +268,10 @@ export default function InGame($container, info = null) {
      */
     const isBallInsideBarX = (bar, ball) => {
       return (
-        (ball.x + ball.radius >= bar.x &&
-          ball.x + ball.radius <= bar.x + bar.width) ||
-        (ball.x - ball.radius >= bar.x &&
-          ball.x - ball.radius <= bar.x + bar.width)
+        (ball.x + ball.radius > bar.x &&
+          ball.x + ball.radius < bar.x + bar.width) ||
+        (ball.x - ball.radius > bar.x &&
+          ball.x - ball.radius < bar.x + bar.width)
       );
     };
 
@@ -279,10 +283,10 @@ export default function InGame($container, info = null) {
      */
     const isBallInsideBarY = (bar, ball) => {
       return (
-        (ball.y + ball.radius >= bar.y &&
-          ball.y + ball.radius <= bar.y + bar.height) ||
-        (ball.y - ball.radius >= bar.y &&
-          ball.y - ball.radius <= bar.y + bar.height)
+        (ball.y + ball.radius > bar.y &&
+          ball.y + ball.radius < bar.y + bar.height) ||
+        (ball.y - ball.radius > bar.y &&
+          ball.y - ball.radius < bar.y + bar.height)
       );
     };
 
@@ -293,7 +297,11 @@ export default function InGame($container, info = null) {
      * @returns {boolean} 바에 부딪혔으면 true, 아니면 false
      */
     const isBallInsideBar = (bar, ball) => {
-      return isBallInsideBarX(bar, ball) && isBallInsideBarY(bar, ball);
+      if (isBallInsideBarX(bar, ball) && isBallInsideBarY(bar, ball)) {
+        return true;
+      } else {
+        return false;
+      }
     };
 
     const isBallHitGoal = (canvas, ball) => {
@@ -305,13 +313,13 @@ export default function InGame($container, info = null) {
       return [false, false];
     };
 
-    const updateScore = (wheterScoreAGoal) => {
-      if (wheterScoreAGoal[0]) {
+    const updateScore = (whetherScoreAGoal) => {
+      if (whetherScoreAGoal[0]) {
         setScore({
           player1: getScore().player1 + 1,
           player2: getScore().player2,
         });
-      } else if (wheterScoreAGoal[1]) {
+      } else if (whetherScoreAGoal[1]) {
         setScore({
           player1: getScore().player1,
           player2: getScore().player2 + 1,
@@ -325,16 +333,18 @@ export default function InGame($container, info = null) {
      * @param bounceY {boolean} y축으로 부딪혔는지 여부
      */
     const bounce = (bounceX, bounceY) => {
-      if (bounceX) {
+      if (bounceX && !isBounced) {
         [ball.direction.x, ball.direction.y] = normalizeVector(
           ball.direction.x * -1 * getRandomCoefficient(0.99, 1.01),
           ball.direction.y,
         );
-      } else if (bounceY) {
+        isBounced = true;
+      } else if (bounceY && !isBounced) {
         [ball.direction.x, ball.direction.y] = normalizeVector(
           ball.direction.x,
           ball.direction.y * -1 * getRandomCoefficient(0.99, 1.01),
         );
+        isBounced = true;
       }
     };
 
@@ -350,9 +360,9 @@ export default function InGame($container, info = null) {
         x: Math.random() * 2 - 1,
         y: Math.random() * 2 - 1,
       };
-      normalize;
-      Vector(ball.direction.x, ball.direction.y);
+      normalizeVector(ball.direction.x, ball.direction.y);
       ball.speed = BALL_SPEED;
+      isBounced = false;
     };
 
     /**
