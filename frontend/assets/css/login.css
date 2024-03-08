@@ -15,17 +15,21 @@
 }
 
 .arcade-machine {
+  position: relative;
+  display: flex;
+  justify-content: center;
   height: 88vh;
   width: 55vw;
-  position: relative;
   perspective: 35em;
 }
 
 .arcade-machine .top {
-  height: 13.8vh;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 13.5vh;
   width: 38.5vw;
-  position: absolute;
-  left: 15%;
   background: #024959;
   border: 0.5vw solid #4c4c4c;
   z-index: 3;
@@ -66,21 +70,10 @@
   right: -6%;
 }
 
-/* .arcade-machine > .shadow {
-  height: 50vh;
-  width: 49.9vh;
-  position: absolute;
-  top: 9vh;
-  left: 9vw;
-  background: #4b5b61;
-  box-shadow: 0 0 60px #4b5b61;
-  z-index: -1;
-} */
-
 .arcade-machine .screen-container {
+  position: absolute;
   height: 50%;
   width: 62%;
-  position: absolute;
   top: 15%;
   left: 19%;
   background: #4b5b61;
@@ -114,17 +107,20 @@
 }
 
 .arcade-machine .screen-container .screen {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   height: 84%;
   width: 80%;
-  position: absolute;
   top: 9%;
   left: 10%;
   background: #313332;
   border: 0.3vw solid #4c4c4c;
   border-radius: 90px 93px 93px 93px/15px 15px 15px 15px;
   overflow: hidden;
-  text-align: center;
 }
+
 .arcade-machine .screen-container .screen-display {
   position: absolute;
   width: 100%;
@@ -135,9 +131,13 @@
 
 .arcade-machine .screen-container .screen h2 {
   position: absolute;
+  display: flex;
   font-size: 2.7vw;
   color: #e0e0e0;
   font-family: "Orbitron", sans-serif, sans-serif;
+  /*top: 50%;*/
+  /*left: 50%;*/
+  /*transform: translate(-50%, -50%);*/
 }
 
 .arcade-machine .screen-container .screen h2#google {
