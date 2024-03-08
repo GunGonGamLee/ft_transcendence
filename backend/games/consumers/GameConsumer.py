@@ -115,8 +115,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             game_id = self.scope["url_route"]["kwargs"]["game_id"]
             self.game_id = int(game_id)
             await self.save_game_object_by_id()
-            if self.game.status == 1:
-                await self.set_game_status()
             await self.validate_user(self.user.nickname)
             logger.info(f"[인게임] {self.user.nickname} - {self.game_id}번 방 연결 - {self.manager}")
 
@@ -217,11 +215,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.game.match2.save()
 
     @database_sync_to_async
-    def set_game_status(self):
-        self.game.status = 2
-        self.game.save()
-
-    @database_sync_to_async
     def get_serializer_data(self):
         serializer = None
         game = Game.objects.get(id=self.game_id)
@@ -277,6 +270,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                     await self.play(self.match3)
                     await self.send_in_game_message(self.match3, self.match3_group_name)
                     await asyncio.sleep(GAME_SETTINGS_DICT['play']['frame'])
+                await self.save_game_status(3)
                 await self.send_end_message(self.game.match3)
         elif message_type == 'match3_info':
             pass
@@ -310,6 +304,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                     await asyncio.sleep(GAME_SETTINGS_DICT['play']['frame'])
                 await self.save_match_data_in_database(self.match1)
                 if self.game.mode == 0:
+                    await self.save_game_status(3)
                     await self.send_end_message(self.game.match1)
                     return
                 else:
@@ -578,3 +573,8 @@ class GameConsumer(AsyncWebsocketConsumer):
         elif my_match == 3:
             group_name = self.match3_group_name
         return group_name
+
+    @database_sync_to_async
+    def save_game_status(self, status):
+        self.game.status = status
+        self.game.save()
