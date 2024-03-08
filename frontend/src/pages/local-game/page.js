@@ -361,7 +361,8 @@ export default function LocalGame($container, info = null) {
         x: Math.random() * 2 - 1,
         y: Math.random() * 2 - 1,
       };
-      normalizeVector(ball.direction.x, ball.direction.y);
+      normalize;
+      Vector(ball.direction.x, ball.direction.y);
       ball.speed = BALL_SPEED;
       isBounced = false;
     };
