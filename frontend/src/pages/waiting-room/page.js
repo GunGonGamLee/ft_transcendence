@@ -3,7 +3,7 @@ import { hover } from "../../utils/hoverEvent.js";
 import userBox from "./userBox.js";
 import useState from "../../utils/useState.js";
 import { navigate } from "../../utils/navigate.js";
-import { click } from "../../utils/clickEvent.js";
+import { clickOnce } from "../../utils/clickEvent.js";
 import { WEBSOCKET } from "../../global.js";
 import { getUserMe } from "../../utils/userUtils.js";
 /**
@@ -71,7 +71,7 @@ export default function WaitingRoom($container, info = null) {
       }
     };
 
-    click($container.querySelector(".start-btn"), () => {
+    clickOnce($container.querySelector(".start-btn"), () => {
       ws.send(
         JSON.stringify({
           type: "game_start",
