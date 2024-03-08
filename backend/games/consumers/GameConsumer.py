@@ -239,28 +239,8 @@ class GameConsumer(AsyncWebsocketConsumer):
             asyncio.create_task(self.process_game_start(message_data))
 
         elif message_type == 'match3_start':
-            self.my_match = 3
-            self.is_final = True
-            if self.player1:
-                await self.init_game(message_data, self.my_match)
-                start_time = time.time()
-                while True:
-                    if time.time() - start_time >= 30:
-                        raise TimeoutError()
-                    num = self.channel_layer.groups[self.match1_group_name].__len__()
-                    if num == 2:
-                        break
-                    await asyncio.sleep(0.3)
-                await self.send_start_message(self.match3, self.match3_group_name)
-                await asyncio.sleep(2)
-                self.match3.started_at = datetime.now()
-                while not self.match3.finished:
-                    await self.play(self.match3)
-                    await self.send_in_game_message(self.match3, self.match3_group_name)
-                    await asyncio.sleep(GAME_SETTINGS_DICT['play']['frame'])
-                await self.save_game_status(3)
-                await self.update_winner_data(self.game.mode)
-                await self.send_end_message(self.game.match3)
+            asyncio.create_task(self.process_match3_game_start(message_data))
+
         elif message_type == 'match3_info':
             pass
 
@@ -318,6 +298,30 @@ class GameConsumer(AsyncWebsocketConsumer):
                 await self.save_match3_matching_in_database(self.game.match2.winner)
                 await self.send_end_message(self.game.match2)
                 return
+
+    async def process_match3_game_start(self, message_data):
+        self.my_match = 3
+        self.is_final = True
+        if self.player1:
+            await self.init_game(message_data, self.my_match)
+            start_time = time.time()
+            while True:
+                if time.time() - start_time >= 30:
+                    raise TimeoutError()
+                num = self.channel_layer.groups[self.match1_group_name].__len__()
+                if num == 2:
+                    break
+                await asyncio.sleep(0.3)
+            await self.send_start_message(self.match3, self.match3_group_name)
+            await asyncio.sleep(2)
+            self.match3.started_at = datetime.now()
+            while not self.match3.finished:
+                await self.play(self.match3)
+                await self.send_in_game_message(self.match3, self.match3_group_name)
+                await asyncio.sleep(GAME_SETTINGS_DICT['play']['frame'])
+            await self.save_game_status(3)
+            await self.update_winner_data(self.game.mode)
+            await self.send_end_message(self.game.match3)
 
     async def process_keyboard_input(self, message_data):
         if self.player1 is False:
