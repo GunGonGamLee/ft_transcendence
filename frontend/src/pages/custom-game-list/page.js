@@ -1,4 +1,4 @@
-import { click } from "../../utils/clickEvent.js";
+import { click, clickOnce } from "../../utils/clickEvent.js";
 import { importCss } from "../../utils/importCss.js";
 import roomCreateModal from "./room-create-modal.js";
 import { hoverToggle } from "../../utils/hoverEvent.js";
@@ -86,7 +86,7 @@ export default function CustomGameList($container) {
                   ${gameRoomList(data)}
                 </div>`,
         );
-        click($listWrapper.querySelector(`.room-id-${data.id}`), () => {
+        clickOnce($listWrapper.querySelector(`.room-id-${data.id}`), () => {
           if (data.started === true) {
             alert("게임이 이미 시작되었습니다.");
             return;
@@ -284,7 +284,7 @@ export default function CustomGameList($container) {
     });
 
     // 신속히 입장
-    click(document.getElementById("quick-join"), () => {
+    clickOnce(document.getElementById("quick-join"), () => {
       enterRoom(0);
     });
 

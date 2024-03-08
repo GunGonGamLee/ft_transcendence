@@ -3,7 +3,7 @@ import { hover } from "../../utils/hoverEvent.js";
 import userBox from "./userBox.js";
 import useState from "../../utils/useState.js";
 import { navigate } from "../../utils/navigate.js";
-import { click } from "../../utils/clickEvent.js";
+import { clickOnce } from "../../utils/clickEvent.js";
 import { WEBSOCKET } from "../../global.js";
 import { getUserMe } from "../../utils/userUtils.js";
 /**
@@ -18,7 +18,7 @@ export default function WaitingRoom($container, info = null) {
   }
   let userNickname = null;
   let players = info.data.players;
-
+  console.log(players);
   getUserMe().then((user) => {
     userNickname = user.data.nickname;
   });
@@ -47,11 +47,12 @@ export default function WaitingRoom($container, info = null) {
         const player = info.data.players.find(
           (player) => player.nickname === userNickname,
         );
+        console.log(player, userNickname);
         if (
           (data.data.mode === 1 && data.data.players.length === 4) ||
           (data.data.mode === 0 &&
             data.data.players.length === 2 &&
-            player.is_manager)
+            player.is_manager === true)
         ) {
           $container.querySelector(".start-btn").style.display = "inline-block";
         } else {
@@ -61,6 +62,7 @@ export default function WaitingRoom($container, info = null) {
         setUserState(players);
       } else {
         console.log(data);
+        ws.close();
         const newWs = new WebSocket(`${WEBSOCKET}${data.data}`);
         newWs.onmessage = (msg) => {
           let data = JSON.parse(msg.data);
@@ -69,7 +71,7 @@ export default function WaitingRoom($container, info = null) {
       }
     };
 
-    click($container.querySelector(".start-btn"), () => {
+    clickOnce($container.querySelector(".start-btn"), () => {
       ws.send(
         JSON.stringify({
           type: "game_start",
@@ -97,7 +99,7 @@ export default function WaitingRoom($container, info = null) {
           ${userBox(gameModeNum, players)}
         </div>
         <div class="start-btn-wrapper" style="width: 100vw; height: 10vh; display: flex; justify-content: center; align-items: center">
-          <button class="start-btn" style="background: linear-gradient(to bottom, #D80000, #FF0000); font-family: Galmuri11-Bold, serif; color: white; border: 0.6vh solid darkred; padding: 1vw 4vh; text-align: center; text-decoration: none; font-size: 4vh; margin: 1vw 1vh; cursor: pointer; border-radius: 5vh;">START</button>
+          <button class="start-btn" style="display: none; background: linear-gradient(to bottom, #D80000, #FF0000); font-family: Galmuri11-Bold, serif; color: white; border: 0.6vh solid darkred; padding: 1vw 4vh; text-align: center; text-decoration: none; font-size: 4vh; margin: 1vw 1vh; cursor: pointer; border-radius: 5vh;">START</button>
         </div>
       </div>
     `;
