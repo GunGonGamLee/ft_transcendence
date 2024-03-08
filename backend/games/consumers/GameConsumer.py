@@ -242,13 +242,10 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self.save_game_object_by_id()
         if message_type == 'start':
             asyncio.create_task(self.process_game_start(message_data))
-
         elif message_type == 'match3_start':
             asyncio.create_task(self.process_match3_game_start(message_data))
-
         elif message_type == 'match3_info':
-            pass
-
+            await self.send_final_match_table()
         elif message_type == 'keyboard':
             asyncio.create_task(self.process_keyboard_input(message_data))
 
