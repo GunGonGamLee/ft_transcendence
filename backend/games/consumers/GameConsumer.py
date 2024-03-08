@@ -115,8 +115,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             game_id = self.scope["url_route"]["kwargs"]["game_id"]
             self.game_id = int(game_id)
             await self.save_game_object_by_id()
-            if self.game.status == 1:
-                await self.set_game_status()
             await self.validate_user(self.user.nickname)
             logger.info(f"[인게임] {self.user.nickname} - {self.game_id}번 방 연결 - {self.manager}")
 
@@ -215,11 +213,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             else:
                 self.game.match2.player2 = self.user
             self.game.match2.save()
-
-    @database_sync_to_async
-    def set_game_status(self):
-        self.game.status = 2
-        self.game.save()
 
     @database_sync_to_async
     def get_serializer_data(self):
