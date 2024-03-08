@@ -44,10 +44,13 @@ GAME_SETTINGS_DICT = {
     'bar': {
         'width': 10,
         'height': 100,
-        'speed': 10
+        'speed': 30
     },
     'ball': {
         'radius': 10,
-        'speed': 10
+        'speed': 30
+    },
+    'play': {
+        'frame': 1 / 24
     }
 }
