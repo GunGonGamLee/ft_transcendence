@@ -19,9 +19,6 @@ p2_lock = threading.Lock()
 
 
 class GameConsumer(AsyncWebsocketConsumer):
-    class UserList:
-        pass
-
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
         self.user = None
@@ -135,14 +132,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             await self.send(text_data=json.dumps({"error": "[" + e.__class__.__name__ + "] " + str(e)}))
             await self.close()
 
-    async def append_user(self, game_group_name):
-        if hasattr(self.UserList, game_group_name) is False:
-            setattr(self.UserList, game_group_name, [])
-            setattr(self.UserList, self.match1_group_name, [])
-            setattr(self.UserList, self.match2_group_name, [])
-            setattr(self.UserList, self.match3_group_name, [])
-        getattr(self.UserList, game_group_name).append(self.user)
-
     async def when_manager(self):
         start_time = time.time()
         while True:
@@ -251,8 +240,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 
         elif message_type == 'match3_start':
             self.my_match = 3
-            if self.my_match == 3:
-                getattr(self.UserList, self.match3_group_name).append(self.user)
             self.is_final = True
             if self.player1:
                 await self.init_game(message_data, self.my_match)
@@ -280,11 +267,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             asyncio.create_task(self.process_keyboard_input(message_data))
 
     async def process_game_start(self, message_data):
-        if self.my_match == 1:
-            getattr(self.UserList, self.match1_group_name).append(self.user)
-        elif self.my_match == 2:
-            getattr(self.UserList, self.match2_group_name).append(self.user)
-
         if self.player1:
             if self.my_match == 1:
                 await self.init_game(message_data, self.my_match)
