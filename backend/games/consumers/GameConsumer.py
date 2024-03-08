@@ -250,6 +250,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             asyncio.create_task(self.process_game_start(message_data))
 
         elif message_type == 'match3_start':
+            self.my_match = 3
             if self.my_match == 3:
                 getattr(self.UserList, self.match3_group_name).append(self.user)
             self.is_final = True
@@ -420,7 +421,6 @@ class GameConsumer(AsyncWebsocketConsumer):
         else:
             match.player2 = winner
             self.player1 = False
-        self.my_match = 3
         match.save()
 
     async def send_end_message(self, match: Result):
