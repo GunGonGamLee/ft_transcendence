@@ -323,13 +323,13 @@ export default function InGame($container, info = null) {
     const bounce = (bounceX, bounceY) => {
       if (bounceX) {
         [ball.direction.x, ball.direction.y] = normalizeVector(
-          ball.direction.x * -1 * getRandomCoefficient(0.9, 1.1),
+          (ball.direction.x + getRandomCoefficient(-0.001, 0.001)) * -1,
           ball.direction.y,
         );
       } else if (bounceY) {
         [ball.direction.x, ball.direction.y] = normalizeVector(
           ball.direction.x,
-          ball.direction.y * -1 * getRandomCoefficient(0.9, 1.1),
+          (ball.direction.y + getRandomCoefficient(-0.001, 0.001)) * -1,
         );
       }
     };
