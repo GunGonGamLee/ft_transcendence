@@ -317,3 +317,18 @@ class TournamentMatchSerializer(serializers.ModelSerializer):
         players_data.append(UserSerializer(game.match2.player1).data)
         players_data.append(UserSerializer(game.match2.player2).data)
         return players_data
+
+
+class TournamentFinalMatchSerializer(serializers.ModelSerializer):
+
+    match3 = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Game
+        fields = ['match3']
+
+    def get_match3(self, game):
+        players_data = []
+        players_data.append(UserSerializer(game.match3.player1).data)
+        players_data.append(UserSerializer(game.match3.player2).data)
+        return players_data
