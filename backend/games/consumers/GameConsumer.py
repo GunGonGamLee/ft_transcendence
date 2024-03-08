@@ -539,7 +539,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             p2_lock.acquire()
             match.right_side_player.bar.y += GAME_SETTINGS_DICT['bar']['speed']
             p2_lock.release()
-            logger.info(f"p2 - down")
 
     async def player2_disconnect(self, event):
         if self.player1:
