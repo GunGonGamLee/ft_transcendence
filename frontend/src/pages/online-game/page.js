@@ -177,16 +177,25 @@ export default function OnlineGame($container, info) {
         score.player2 !== newScore.player2
       )
         setScore(newScore);
-    } else if (data.type === "game_end") {
-      let endData = data.data;
-      if (endData.final === false && endData.winner === getUserMe()) {
-        // TODO: match-up에다가 info로 웹소켓이랑 정보 넘겨야함
-        navigate(`/match-up`);
-      } else {
-        navigate(
-          `/histories/details?mode=${endData.game_mode}&gameId=${endData.game_id}`,
-        );
-      }
-    }
+    } else if (data.type === "game_end") endGame(data, ws);
   };
+
+  async function endGame(data, ws) {
+    let endData = data.data;
+    // TODO: 자기가속한 match가 아닐 땐 data에 저장하고 겜 더하고, 자기가 속한거면 data 가지고 navigate
+    if (
+      endData.final === false &&
+      endData.winner === (await getUserMe().then((user) => user.data.nickname))
+    ) {
+      // TODO: match-up에다가 info로 웹소켓이랑 정보 넘겨야함
+      ws.onmessage = null;
+      navigate(`/match-up`, { socket: ws, data: endData });
+    } else {
+      ws.close();
+      navigate(
+        `/histories/details?mode=${endData.game_mode}&gameId=${endData.game_id}`,
+        { gameId: endData.game_id },
+      );
+    }
+  }
 }
