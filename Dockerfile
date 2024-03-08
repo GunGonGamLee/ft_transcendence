@@ -1,5 +1,7 @@
 FROM python:3.12.1-slim
 
+COPY .env .env
+
 RUN mkdir -p backend && \
 	mkdir -p /var/log/djangolog && \
 	apt-get update && \
@@ -14,7 +16,7 @@ ENV DJANGO_SETTINGS_MODULE=src.settings
 COPY backend ./backend
 WORKDIR /backend
 
-COPY init.sh /init.sh
-RUN chmod +x /init.sh
+COPY init.sh ./init.sh
+RUN chmod +x ./init.sh
 
-ENTRYPOINT ["/init.sh"]
+ENTRYPOINT ["./init.sh"]
