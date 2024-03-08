@@ -1,6 +1,7 @@
 import json
 import random
 import logging
+from datetime import datetime
 import urllib.parse
 from django.contrib.auth.models import AnonymousUser
 from django.db.models import Min, Count
@@ -149,6 +150,7 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         await self.save_game_object_by_id()
         if message_type == 'game_start' and message_data == 'true' and self.game.status == 1:
             await self.set_game_status(2)
+            await self.save_game_started_at()
             await self.channel_layer.group_send(
                 self.game_group_name,
                 {
@@ -160,6 +162,11 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def set_game_status(self, status):
         self.game.status = status
+        self.game.save()
+
+    @database_sync_to_async
+    def save_game_started_at(self):
+        self.game.started_at = datetime.now()
         self.game.save()
 
     async def url(self, event):
