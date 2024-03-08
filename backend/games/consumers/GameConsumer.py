@@ -555,7 +555,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         elif my_match == 2:
             group_name = self.match2_group_name
         elif my_match == 3:
-            group_name = self.game_group_name
+            group_name = self.match3_group_name
         return group_name
 
     @database_sync_to_async
