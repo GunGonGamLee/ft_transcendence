@@ -302,7 +302,11 @@ export default function LocalGame($container, info = null) {
      * @returns {boolean} 바에 부딪혔으면 true, 아니면 false
      */
     const isBallInsideBar = (bar, ball) => {
-      return isBallInsideBarX(bar, ball) && isBallInsideBarY(bar, ball);
+      if (isBallInsideBarX(bar, ball) && isBallInsideBarY(bar, ball)) {
+        return true;
+      } else {
+        return false;
+      }
     };
 
     const isBallHitGoal = (canvas, ball) => {
@@ -361,8 +365,7 @@ export default function LocalGame($container, info = null) {
         x: Math.random() * 2 - 1,
         y: Math.random() * 2 - 1,
       };
-      normalize;
-      Vector(ball.direction.x, ball.direction.y);
+      normalizeVector(ball.direction.x, ball.direction.y);
       ball.speed = BALL_SPEED;
       isBounced = false;
     };
