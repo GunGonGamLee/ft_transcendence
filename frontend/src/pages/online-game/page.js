@@ -1,6 +1,8 @@
 import useState from "../../utils/useState.js";
 import scoreBar from "./scoreBar.js";
 import toast from "./toast.js";
+import { navigate } from "../../utils/navigate.js";
+import { getUserMe } from "../../utils/userUtils.js";
 /**
  *
  * @param {HTMLElement} $container
@@ -8,6 +10,10 @@ import toast from "./toast.js";
  * @constructor
  */
 export default function OnlineGame($container, info) {
+  if (info === null) {
+    navigate("/game-mode");
+    return;
+  }
   console.log(info);
   const ws = info.socket;
   let scoreInput = { player1: 0, player2: 0 };
@@ -172,7 +178,15 @@ export default function OnlineGame($container, info) {
       )
         setScore(newScore);
     } else if (data.type === "game_end") {
-      // TODO: 승자면 match-up으로 이동 패자면 전적페이지로 game_id기반
+      let endData = data.data;
+      if (endData.final === false && endData.winner === getUserMe()) {
+        // TODO: match-up에다가 info로 웹소켓이랑 정보 넘겨야함
+        navigate(`/match-up`);
+      } else {
+        navigate(
+          `/histories/details?mode=${endData.game_mode}&gameId=${endData.game_id}`,
+        );
+      }
     }
   };
 }
