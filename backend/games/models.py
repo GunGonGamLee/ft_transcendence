@@ -1,4 +1,3 @@
-import math
 import random
 from datetime import datetime
 
@@ -342,21 +341,3 @@ class PingPongGame:
             self.left_side_player.score += 1
         elif whether_score_a_goal[1]:
             self.right_side_player.score += 1
-
-    def play(self):
-        """
-        게임을 진행하는 함수
-        :return: None
-        :rtype: None
-        """
-        while not self.finished:
-            self.ball.move()
-            if self.ball.is_ball_hit_wall(self.ping_pong_map):
-                self.ball.bounce((1, -1))
-            elif self.ball.is_ball_inside_bar(self.left_side_player.bar) or self.ball.is_ball_inside_bar(self.right_side_player.bar):
-                self.ball.bounce((-1, 1))
-            if whether_score_a_goal := self.ball.is_goal_in(self.ping_pong_map):
-                self.update_score(whether_score_a_goal)
-                self.ball.reset(self.ping_pong_map)
-            if self.left_side_player.score + self.right_side_player.score == 5:
-                self.finished = True
