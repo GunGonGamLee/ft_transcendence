@@ -347,7 +347,6 @@ class GameConsumer(AsyncWebsocketConsumer):
                 await self.send_data(await self.get_my_match_group_name(self.my_match), 'down')
         else:
             if message_data == 'up':
-                logger.info("p1 - up")
                 match = await self.get_my_match_PingPongGame_object(self.my_match)
                 p1_lock.acquire()
                 match.left_side_player.bar.y -= GAME_SETTINGS_DICT['bar']['speed']
