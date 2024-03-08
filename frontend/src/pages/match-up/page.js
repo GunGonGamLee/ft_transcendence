@@ -8,6 +8,10 @@ export default function Matchup($container, info = null) {
     return;
   }
   console.log(info);
+  if (info.remainMatch === true) {
+    alert("이전 경기가 아직 끝나지 않았음 기다리셈");
+    return;
+  } //////////////////////////
   // 이전 페이지로 부터 받아온 정보 처리
   const ws = info.socket;
   ws.onmessage = (msg) => {
