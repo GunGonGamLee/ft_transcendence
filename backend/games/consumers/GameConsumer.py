@@ -400,7 +400,13 @@ class GameConsumer(AsyncWebsocketConsumer):
         finished_at = datetime.now()
         time_diff = finished_at - result.started_at
         playtime = datetime.min + time_diff
-        match = await self.get_my_match_object(self.my_match)
+        match = None
+        if self.my_match == 1:
+            match = self.game.match1
+        elif self.my_match == 2:
+            match = self.game.match2
+        elif self.my_match == 3:
+            match = self.game.match3
         match.player1_score = result.left_side_player.score
         match.player2_score = result.right_side_player.score
         match.started_at = result.started_at
