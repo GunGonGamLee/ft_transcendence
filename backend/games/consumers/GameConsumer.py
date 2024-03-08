@@ -9,7 +9,7 @@ from games.models import Game, CasualGameView, PingPongGame, Ball, Bar, Player, 
 from games.serializers import GameRoomSerializer, PvPMatchSerializer, TournamentMatchSerializer
 from datetime import datetime
 from users.models import User
-from src.choices import GAME_SETTINGS_DICT
+from src.choices import MODE_CHOICES_DICT, GAME_SETTINGS_DICT
 import threading
 
 
@@ -69,8 +69,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                     await self.channel_layer.group_send(
                         self.match1_group_name,
                         {
-                            'type': 'player2_disconnect',
-                            'data': '하위'
+                            'type': 'player2_disconnect'
                         })
                     await self.channel_layer.group_discard(self.match1_group_name, self.channel_name)
             else:
@@ -277,7 +276,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 while not self.match3.finished:
                     await self.play(self.match3)
                     await self.send_in_game_message(self.match3, self.match3_group_name)
-                    await asyncio.sleep(1 / 24)
+                    await asyncio.sleep(GAME_SETTINGS_DICT['play']['frame'])
                 await self.send_end_message(self.game.match3)
         elif message_type == 'match3_info':
             pass
@@ -308,8 +307,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 while not self.match1.finished and self.channel_layer.groups[self.match1_group_name].__len__() == 2:
                     await self.play(self.match1)
                     await self.send_in_game_message(self.match1, self.match1_group_name)
-                    await asyncio.sleep(1 / 10)
-                await self.save_game_object_by_id()
+                    await asyncio.sleep(GAME_SETTINGS_DICT['play']['frame'])
                 await self.save_match_data_in_database(self.match1)
                 if self.game.mode == 0:
                     await self.send_end_message(self.game.match1)
@@ -335,7 +333,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 while not self.match2.finished:
                     await self.play(self.match2)
                     await self.send_in_game_message(self.match2, self.match2_group_name)
-                    await asyncio.sleep(1 / 24)
+                    await asyncio.sleep(GAME_SETTINGS_DICT['play']['frame'])
                 await self.save_match_data_in_database(self.match2)
                 await self.save_match3_matching_in_database(self.game.match2.winner)
                 await self.send_end_message(self.game.match2)
@@ -344,65 +342,37 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def process_keyboard_input(self, message_data):
         if self.player1 is False:
             if message_data == 'up':
-                if self.my_match == 1:
-                    await self.send_data(self.match1_group_name, 'up')
-                elif self.my_match == 2:
-                    await self.send_data(self.match2_group_name, 'up')
-                elif self.my_match == 3:
-                    await self.send_data(self.match3_group_name, 'up')
-
+                await self.send_data(await self.get_my_match_group_name(self.my_match), 'up')
             elif message_data == 'down':
-                if self.my_match == 1:
-                    await self.send_data(self.match1_group_name, 'down')
-                elif self.my_match == 2:
-                    await self.send_data(self.match2_group_name, 'down')
-                elif self.my_match == 3:
-                    await self.send_data(self.match3_group_name, 'down')
+                await self.send_data(await self.get_my_match_group_name(self.my_match), 'down')
         else:
             if message_data == 'up':
-                logger.info("p1 - up")
-                match = None
-                if self.my_match == 1:
-                    match = self.match1
-                elif self.my_match == 2:
-                    match = self.match2
-                elif self.my_match == 3:
-                    match = self.match3
+                match = await self.get_my_match_PingPongGame_object(self.my_match)
                 p1_lock.acquire()
-                match.left_side_player.bar.y -= 30
+                match.left_side_player.bar.y -= GAME_SETTINGS_DICT['bar']['speed']
                 p1_lock.release()
             elif message_data == 'down':
-                logger.info("p1 - down")
-                match = None
-                if self.my_match == 1:
-                    match = self.match1
-                elif self.my_match == 2:
-                    match = self.match2
-                elif self.my_match == 3:
-                    match = self.match3
+                match = await self.get_my_match_PingPongGame_object(self.my_match)
                 p2_lock.acquire()
-                match.left_side_player.bar.y += 30
+                match.left_side_player.bar.y += GAME_SETTINGS_DICT['bar']['speed']
                 p2_lock.release()
 
-    async def send_data(self, group_name, type):
+    async def send_data(self, group_name, type_):
         await self.channel_layer.group_send(
             group_name,
             {
-                'type': type,
+                'type': type_,
                 'sender_nickname': self.user.nickname
             }
         )
 
     async def play(self, match):
         if match.ball.is_ball_hit_wall(match.ping_pong_map):
-            logger.info(f"[인게임] match{self.my_match} - 공 벽에 부딪힘")
             match.ball.bounce((1, -1))
         elif match.ball.is_ball_inside_bar(match.left_side_player.bar) or match.ball.is_ball_inside_bar(
                 match.right_side_player.bar):
-            logger.info(f"[인게임] match{self.my_match} - 바에 부딪힘")
             match.ball.bounce((-1, 1))
         if (whether_score_a_goal := match.ball.is_goal_in(match.ping_pong_map)) != [False, False]:
-            logger.info(f"[인게임] match{self.my_match} - {whether_score_a_goal} 득점")
             match.update_score(whether_score_a_goal)
             match.ball.reset(match.ping_pong_map)
         if match.left_side_player.score + match.right_side_player.score == 5:
@@ -463,7 +433,8 @@ class GameConsumer(AsyncWebsocketConsumer):
         data = {
             'game_id': self.game_id,
             'winner': match.winner.nickname,
-            'final': self.is_final
+            'final': self.is_final,
+            'game_mode': MODE_CHOICES_DICT[self.game.mode]
         }
         await self.channel_layer.group_send(
             self.game_group_name,
@@ -557,34 +528,19 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def up(self, event):
         if event['sender_nickname'] != self.user.nickname:
-            match = None
-            if self.my_match == 1:
-                match = self.match1
-            elif self.my_match == 2:
-                match = self.match2
-            elif self.my_match == 3:
-                match = self.match3
+            match = await self.get_my_match_PingPongGame_object(self.my_match)
             p2_lock.acquire()
-            match.right_side_player.bar.y -= 30
+            match.right_side_player.bar.y -= GAME_SETTINGS_DICT['bar']['speed']
             p2_lock.release()
-            logger.info(f"p2 - up")
 
     async def down(self, event):
         if event['sender_nickname'] != self.user.nickname:
-            match = None
-            if self.my_match == 1:
-                match = self.match1
-            elif self.my_match == 2:
-                match = self.match2
-            elif self.my_match == 3:
-                match = self.match3
+            match = await self.get_my_match_PingPongGame_object(self.my_match)
             p2_lock.acquire()
-            match.right_side_player.bar.y += 30
+            match.right_side_player.bar.y += GAME_SETTINGS_DICT['bar']['speed']
             p2_lock.release()
-            logger.info(f"p2 - down")
 
     async def player2_disconnect(self, event):
-        logger.info(f"!!!!!! player2_disconnect 받음 - {self.user.nickname}")
         if self.player1:
             if self.game.mode == 0:
                 await self.save_winner(1)
@@ -603,3 +559,22 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.game.match1.winner = self.user
             self.game.match1.save()
 
+    async def get_my_match_PingPongGame_object(self, my_match):
+        match = None
+        if my_match == 1:
+            match = self.match1
+        elif my_match == 2:
+            match = self.match2
+        elif my_match == 3:
+            match = self.match3
+        return match
+
+    async def get_my_match_group_name(self, my_match):
+        group_name = None
+        if my_match == 1:
+            group_name = self.match1_group_name
+        elif my_match == 2:
+            group_name = self.match2_group_name
+        elif my_match == 3:
+            group_name = self.match3_group_name
+        return group_name
