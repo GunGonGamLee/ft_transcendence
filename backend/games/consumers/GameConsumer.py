@@ -259,6 +259,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                     await self.send_in_game_message(self.match3, self.match3_group_name)
                     await asyncio.sleep(GAME_SETTINGS_DICT['play']['frame'])
                 await self.save_game_status(3)
+                await self.update_winner_data(self.game.mode)
                 await self.send_end_message(self.game.match3)
         elif message_type == 'match3_info':
             pass
@@ -288,6 +289,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 await self.save_match_data_in_database(self.match1)
                 if self.game.mode == 0:
                     await self.save_game_status(3)
+                    await self.update_winner_data(self.game.mode)
                     await self.send_end_message(self.game.match1)
                     return
                 else:
@@ -561,3 +563,18 @@ class GameConsumer(AsyncWebsocketConsumer):
     def save_game_status(self, status):
         self.game.status = status
         self.game.save()
+
+    @database_sync_to_async
+    def update_winner_data(self, mode):
+        winner = None
+        if mode == 0:
+            winner = User.objects.get(id=self.game.match1.winner.id)
+        else:
+            winner = User.objects.get(id=self.game.match3.winner.id)
+        if mode == 0:
+            winner.custom_1vs1_wins = winner.custom_1vs1_wins + 1
+        elif mode == 1:
+            winner.custom_tournament_wins = winner.custom_tournament_wins + 1
+        elif mode == 2:
+            winner.rank_wins = winner.rank_wins + 1
+        winner.save()
