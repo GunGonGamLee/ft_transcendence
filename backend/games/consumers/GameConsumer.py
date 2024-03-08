@@ -348,13 +348,13 @@ class GameConsumer(AsyncWebsocketConsumer):
         else:
             if message_data == 'up':
                 logger.info("p1 - up")
-                match = await self.get_my_match_object(self.my_match)
+                match = await self.get_my_match_PingPongGame_object(self.my_match)
                 p1_lock.acquire()
                 match.left_side_player.bar.y -= GAME_SETTINGS_DICT['bar']['speed']
                 p1_lock.release()
             elif message_data == 'down':
                 logger.info("p1 - down")
-                match = await self.get_my_match_object(self.my_match)
+                match = await self.get_my_match_PingPongGame_object(self.my_match)
                 p2_lock.acquire()
                 match.left_side_player.bar.y += GAME_SETTINGS_DICT['bar']['speed']
                 p2_lock.release()
@@ -524,7 +524,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def up(self, event):
         if event['sender_nickname'] != self.user.nickname:
-            match = await self.get_my_match_object(self.my_match)
+            match = await self.get_my_match_PingPongGame_object(self.my_match)
             p2_lock.acquire()
             match.right_side_player.bar.y -= GAME_SETTINGS_DICT['bar']['speed']
             p2_lock.release()
@@ -532,7 +532,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def down(self, event):
         if event['sender_nickname'] != self.user.nickname:
-            match = await self.get_my_match_object(self.my_match)
+            match = await self.get_my_match_PingPongGame_object(self.my_match)
             p2_lock.acquire()
             match.right_side_player.bar.y += GAME_SETTINGS_DICT['bar']['speed']
             p2_lock.release()
@@ -557,7 +557,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.game.match1.winner = self.user
             self.game.match1.save()
 
-    async def get_my_match_object(self, my_match):
+    async def get_my_match_PingPongGame_object(self, my_match):
         match = None
         if my_match == 1:
             match = self.match1
