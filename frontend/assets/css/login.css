@@ -73,9 +73,9 @@
 .arcade-machine .screen-container {
   position: absolute;
   height: 50%;
-  width: 62%;
+  width: 34vw;
   top: 15%;
-  left: 19%;
+  left: 10vw;
   background: #4b5b61;
   border: 5px solid #4c4c4c;
 }
@@ -110,10 +110,9 @@
   position: relative;
   display: flex;
   justify-content: center;
-  align-items: center;
-  height: 84%;
-  width: 80%;
-  top: 9%;
+  height: 35vh;
+  width: 27vw;
+  top: 10%;
   left: 10%;
   background: #313332;
   border: 0.3vw solid #4c4c4c;
@@ -131,23 +130,21 @@
 
 .arcade-machine .screen-container .screen h2 {
   position: absolute;
-  display: flex;
   font-size: 2.7vw;
   color: #e0e0e0;
   font-family: "Orbitron", sans-serif, sans-serif;
-  /*top: 50%;*/
-  /*left: 50%;*/
-  /*transform: translate(-50%, -50%);*/
 }
 
 .arcade-machine .screen-container .screen h2#google {
-  left: 5.3vw;
+  height: 3vh;
+  left: 5vw;
   top: 20vh;
   cursor: pointer;
 }
 
 .arcade-machine .screen-container .screen h2#forty-two {
-  left: 8.1vw;
+  height: 3vh;
+  left: 5vw;
   top: 26vh;
   cursor: pointer;
 }
@@ -250,7 +247,7 @@
   width: 2.8vw;
   position: absolute;
   top: -0.7vh;
-  background: DA0C81;
+  background: #DA0C81;
   content: " ";
   border: 0.5vw solid #4c4c4c;
 }
