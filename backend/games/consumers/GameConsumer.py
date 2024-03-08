@@ -123,7 +123,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             await self.channel_layer.group_add(self.game_group_name, self.channel_name)
 
             await self.get_match()
-            await self.append_user(game_group_name)
 
             if self.manager:
                 await self.when_manager()
