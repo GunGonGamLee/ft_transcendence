@@ -352,7 +352,6 @@ class GameConsumer(AsyncWebsocketConsumer):
                 match.left_side_player.bar.y -= GAME_SETTINGS_DICT['bar']['speed']
                 p1_lock.release()
             elif message_data == 'down':
-                logger.info("p1 - down")
                 match = await self.get_my_match_PingPongGame_object(self.my_match)
                 p2_lock.acquire()
                 match.left_side_player.bar.y += GAME_SETTINGS_DICT['bar']['speed']
