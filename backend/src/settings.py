@@ -8,7 +8,8 @@ import time
 from pythonjsonlogger import jsonlogger
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ENV_PATH = os.path.join(BASE_DIR, '..', '.env')
+BASE_DIR_PATH = Path(__file__).resolve().parent.parent.parent
+ENV_PATH = BASE_DIR_PATH / '.env'
 env = environ.Env()
 DEBUG = False
 env.read_env(env_file=ENV_PATH)

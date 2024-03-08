@@ -38,6 +38,8 @@ schema_view = get_schema_view(
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
+    re_path(r'^redoc/$', schema_view.with_ui('redoc',
+            cache_timeout=0), name='schema-redoc'),
 ]
 
 # DEBUG 모드일 경우, ui 없이 swagger view를 사용할 수 있도록 설정
@@ -47,6 +49,4 @@ if settings.DEBUG:
                 schema_view.without_ui(cache_timeout=0), name='schema-json'),
         re_path(r'^swagger/$', schema_view.with_ui('swagger',
                 cache_timeout=0), name='schema-swagger-ui'),
-        re_path(r'^redoc/$', schema_view.with_ui('redoc',
-                cache_timeout=0), name='schema-redoc'),
     ]
