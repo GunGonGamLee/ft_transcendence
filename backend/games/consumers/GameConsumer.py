@@ -327,7 +327,7 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def send_final_match_table(self):
         serializer_data = await self.get_serializer_data(True)
         await self.channel_layer.group_send(
-            self.game_group_name,
+            self.match3_group_name,
             {
                 'type': 'game_info',
                 'data': serializer_data
