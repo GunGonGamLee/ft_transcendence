@@ -532,7 +532,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             p2_lock.acquire()
             match.right_side_player.bar.y -= GAME_SETTINGS_DICT['bar']['speed']
             p2_lock.release()
-            logger.info(f"p2 - up")
 
     async def down(self, event):
         if event['sender_nickname'] != self.user.nickname:
