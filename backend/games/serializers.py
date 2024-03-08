@@ -274,7 +274,10 @@ class TournamentResultSerializer(serializers.ModelSerializer):
 
     def get_match3(self, game):
         data = MatchSerializer(game.match3).data
-        data['winner'] = game.match3.winner.nickname
+        if game.match3.winner is None:
+            data['winner'] = None
+        else:
+            data['winner'] = game.match3.winner.nickname
         data['date'] = game.started_at
         return data
 
