@@ -31,6 +31,7 @@ services:
       - app_network
     volumes:
       - ./frontend/assets/images/avatar:/frontend/assets/images/avatar
+      - static-volume:/backend/static
       - "${CERTS_PATH}:/backend/certs"
       - "${DJANGO_LOGS}:/var/log/djangolog"
     env_file:
@@ -70,7 +71,7 @@ services:
     container_name: nginx_container
     volumes:
       - "${FRONTEND_CODE}:/usr/share/nginx/html"
-      - ./backend/static:/usr/share/nginx/html/static
+      - static-volume:/usr/share/nginx/html/static
       - "${CERTS_PATH}:/etc/nginx/certs"
       - "${NGINX_LOGS}:/var/log/nginx"
     logging:
