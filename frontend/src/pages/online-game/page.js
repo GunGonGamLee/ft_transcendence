@@ -21,7 +21,19 @@ export default function OnlineGame($container, info) {
   let [getTime, setTime] = useState(0, this, "renderTime");
   let keyState = { up: false, down: false };
 
+  let myNickname = null;
+  let myMatch = 1;
+  let initMyInfo = async () => {
+    myNickname = await getUserMe().then((user) => user.data.nickname);
+    if (
+      info.data.match2[0].nickname === myNickname ||
+      info.data.match2[1].nickname === myNickname
+    )
+      myMatch = 2;
+  };
+
   const init = () => {
+    initMyInfo();
     hideHeader();
     this.render();
     this.renderScoreBoard();
@@ -206,16 +218,15 @@ export default function OnlineGame($container, info) {
     } else if (data.type === "game_end") endGame(data, ws);
   };
 
-  async function endGame(data, ws) {
+  function endGame(data, ws) {
+    if (myMatch !== data.match) {
+      return;
+      //TODO: 여기서 받은 정보 저장해야할듯
+    }
     let endData = data.data;
-    // TODO: 자기가속한 match가 아닐 땐 data에 저장하고 겜 더하고, 자기가 속한거면 data 가지고 navigate
-    if (
-      endData.final === false &&
-      endData.winner === (await getUserMe().then((user) => user.data.nickname))
-    ) {
-      // TODO: match-up에다가 info로 웹소켓이랑 정보 넘겨야함
+    if (endData.final === false && endData.winner === myNickname) {
       ws.onmessage = null;
-      navigate(`/match-up`, { socket: ws, data: endData });
+      navigate(`/match-up`, { socket: ws, data: endData, remainMatch: true });
     } else {
       ws.close();
       navigate(
