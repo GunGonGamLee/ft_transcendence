@@ -49,10 +49,9 @@ export default function WaitingRoom($container, info = null) {
         );
         console.log(player, userNickname);
         if (
-          (data.data.mode === 1 && data.data.players.length === 4) ||
-          (data.data.mode === 0 &&
-            data.data.players.length === 2 &&
-            player.is_manager === true)
+          ((data.data.mode === 1 && data.data.players.length === 4) ||
+            (data.data.mode === 0 && data.data.players.length === 2)) &&
+          player.is_manager === true
         ) {
           $container.querySelector(".start-btn").style.display = "inline-block";
         } else {
