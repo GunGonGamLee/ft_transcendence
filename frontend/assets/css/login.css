@@ -236,11 +236,10 @@
   left: 70%;
 }
 .arcade-machine .bottom {
+  position: absolute;
   height: 10vh;
   width: 43vw;
-  position: absolute;
   top: 68vh;
-  left: 6vw;
   background: #024959;
   border: 0.5vw solid #4c4c4c;
 }
