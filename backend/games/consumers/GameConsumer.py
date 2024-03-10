@@ -11,7 +11,6 @@ from datetime import datetime
 from users.models import User
 from src.choices import MODE_CHOICES_DICT, GAME_SETTINGS_DICT
 import threading
-from asgiref.sync import sync_to_async
 
 logger = logging.getLogger(__name__)
 p1_lock = threading.Lock()
@@ -51,7 +50,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         data = json.loads(text_data)
         message_type = data.get('type')
         message_data = data.get('data', {})
-        await self.save_game_object_by_id()
+        await self._save_game_object_by_id()
         if message_type == 'start':
             asyncio.create_task(self.process_game_start(message_data))
         elif message_type == 'match3_start':
@@ -96,7 +95,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             await self._get_match()
 
             if self.manager:
-                await self._waiting_join()
+                await self._waiting_join(self.game_group_name, "game")
                 await self._send_match_table()
                 await self._print_start_log(self.game.mode)
 
@@ -164,13 +163,15 @@ class GameConsumer(AsyncWebsocketConsumer):
             return True
         return False
 
-    async def _waiting_join(self):
+    async def _waiting_join(self, group_name, _type):
         start_time = time.time()
         while True:
             if time.time() - start_time >= 30:
                 raise TimeoutError()
-            num = self.channel_layer.groups[f"{self.game_group_name}"].__len__()
-            if (self.game.mode == 0 and num == 2) or (self.game.mode != 0 and num == 4):
+            num = self.channel_layer.groups[group_name].__len__()
+            if _type == "game" and ((self.game.mode == 0 and num == 2) or (self.game.mode != 0 and num == 4)):
+                break
+            elif _type == "match" and num == 2:
                 break
             await asyncio.sleep(0.3)
 
@@ -268,14 +269,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         if self.player1:
             if self.my_match == 1:
                 await self._init_game(message_data, self.my_match)
-                start_time = time.time()
-                while True:
-                    if time.time() - start_time >= 30:
-                        raise TimeoutError()
-                    num = self.channel_layer.groups[self.match1_group_name].__len__()
-                    if num == 2:
-                        break
-                    await asyncio.sleep(0.3)
+                await self._waiting_join(self.match1_group_name, 'match')
                 await self._send_start_message(self.match1, self.match1_group_name)
                 await asyncio.sleep(2)
                 self.match1.started_at = datetime.now()
@@ -293,14 +287,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                     await self._send_end_message(self.game.match1)
             elif self.my_match == 2:
                 await self._init_game(message_data, self.my_match)
-                start_time = time.time()
-                while True:
-                    if time.time() - start_time >= 30:
-                        raise TimeoutError()
-                    num = self.channel_layer.groups[self.match2_group_name].__len__()
-                    if num == 2:
-                        break
-                    await asyncio.sleep(0.3)
+                await self._waiting_join(self.match2_group_name, 'match')
                 await self._send_start_message(self.match2, self.match2_group_name)
                 await asyncio.sleep(2)
                 self.match2.started_at = datetime.now()
