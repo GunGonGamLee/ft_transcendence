@@ -1,16 +1,17 @@
+import asyncio
+import autobahn
 import json
 import logging
-import asyncio
-import time
-from django.contrib.auth.models import AnonymousUser
-from channels.generic.websocket import AsyncWebsocketConsumer
-from channels.db import database_sync_to_async
-from games.models import Game, CasualGameView, PingPongGame, Ball, Bar, Player, PingPongMap, Result
-from games.serializers import GameRoomSerializer, PvPMatchSerializer, TournamentMatchSerializer, TournamentFinalMatchSerializer
-from datetime import datetime
-from users.models import User
-from src.choices import MODE_CHOICES_DICT, GAME_SETTINGS_DICT
 import threading
+import time
+from datetime import datetime
+from channels.db import database_sync_to_async
+from channels.generic.websocket import AsyncWebsocketConsumer
+from django.contrib.auth.models import AnonymousUser
+from games.models import Game, PingPongGame, PingPongMap, Result
+from games.serializers import PvPMatchSerializer, TournamentMatchSerializer, TournamentFinalMatchSerializer
+from src.choices import MODE_CHOICES_DICT, GAME_SETTINGS_DICT
+from users.models import User
 
 logger = logging.getLogger(__name__)
 p1_lock = threading.Lock()
