@@ -40,10 +40,10 @@ class GameConsumer(AsyncWebsocketConsumer):
         self.match3 = None
 
     async def connect(self):
-        logger.info("[인게임] connect")
         if await self._is_invalid_user():
             await self._reject_invalid_user()
         else:
+            logger.info(f"[인게임] connect - {self.user.nickname}")
             await self._process_valid_user_connect()
 
     async def receive(self, text_data):
@@ -64,6 +64,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         if await self._is_invalid_user():
             await self._reject_invalid_user()
         else:
+            logger.info(f"[인게임] disconnect - {self.user.nickname}")
             await self._process_valid_user_disconnect()
 
     async def _is_invalid_user(self):
