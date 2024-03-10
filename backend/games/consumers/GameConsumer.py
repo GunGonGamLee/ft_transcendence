@@ -278,7 +278,10 @@ class GameConsumer(AsyncWebsocketConsumer):
                     await self._check_game(self.match1)
                     await self._send_in_game_message(self.match1, self.match1_group_name)
                     await asyncio.sleep(GAME_SETTINGS_DICT['play']['frame'])
-                await self._save_match_data(self.my_match, self.match1, True)
+                if self.channel_layer.groups[self.match1_group_name].__len__() == 2:
+                    await self._save_match_data(self.my_match, self.match1, True)
+                else:
+                    await self._save_match_data(self.my_match, self.match1, False)
                 if self.game.mode == 0:
                     await self._save_game_status(3)
                     await self._update_winner_data(self.game.mode)
@@ -296,7 +299,10 @@ class GameConsumer(AsyncWebsocketConsumer):
                     await self._check_game(self.match2)
                     await self._send_in_game_message(self.match2, self.match2_group_name)
                     await asyncio.sleep(GAME_SETTINGS_DICT['play']['frame'])
-                await self._save_match_data(self.my_match, self.match2, True)
+                if self.channel_layer.groups[self.match2_group_name].__len__() == 2:
+                    await self._save_match_data(self.my_match, self.match2, True)
+                else:
+                    await self._save_match_data(self.my_match, self.match2, False)
                 await self._save_match3_matching_in_database(self.game.match2.winner)
                 await self._send_end_message(self.game.match2)
 
