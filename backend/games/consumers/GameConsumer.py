@@ -42,71 +42,42 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
         logger.info("[인게임] connect")
-        if await self.is_invalid_user():
-            await self.reject_invalid_user()
+        if await self._is_invalid_user():
+            await self._reject_invalid_user()
         else:
-            await self.process_valid_user()
+            await self._process_valid_user_connect()
+
+    async def receive(self, text_data):
+        data = json.loads(text_data)
+        message_type = data.get('type')
+        message_data = data.get('data', {})
+        await self.save_game_object_by_id()
+        if message_type == 'start':
+            asyncio.create_task(self.process_game_start(message_data))
+        elif message_type == 'match3_start':
+            asyncio.create_task(self.process_match3_game_start(message_data))
+        elif message_type == 'match3_info':
+            await self.send_final_match_table()
+        elif message_type == 'keyboard':
+            asyncio.create_task(self.process_keyboard_input(message_data))
 
     async def disconnect(self, close_code):
-        if await self.is_invalid_user():
-            await self.reject_invalid_user()
+        if await self._is_invalid_user():
+            await self._reject_invalid_user()
         else:
-            await self.save_game_object_by_id()
-            await self.process_valid_user_disconnect()
+            await self._process_valid_user_disconnect()
 
-    async def process_valid_user_disconnect(self):
-        if await self.is_finished(self.game.mode) is False:     # 겜 중인데 나감
-            match = None
-            if self.game.mode == 0:
-                match = self.game.match1
-                if self.player1: #p1
-                    self.save_match_data(match)
-                    await self.channel_layer.group_discard(self.match1_group_name, self.channel_name)
-                else: #p2
-                    await self.channel_layer.group_send(
-                        self.match1_group_name,
-                        {
-                            'type': 'player2_disconnect'
-                        })
-                    await self.channel_layer.group_discard(self.match1_group_name, self.channel_name)
-            else:
-                match = self.game.match3
-                if self.player1: #p1
-                    pass
-                else: #p2
-                    pass
-
-    @database_sync_to_async
-    def save_match_data(self, match):
-        match.winner = match.player2
-        match.player1_score = self.match1.left_side_player.score
-        match.player2_score = self.match1.right_side_player.score
-        match.started_at = self.match1.started_at
-        finished_at = datetime.now()
-        time_diff = finished_at - self.match1.started_at
-        playtime = datetime.min + time_diff
-        match.playtime = playtime
-        match.save()
-
-    @database_sync_to_async
-    def is_finished(self, mode):
-        if mode == 0 and self.game.match1.winner is not None:
-            return True
-        elif mode != 0 and self.game.match3.winner is not None:
-            return True
-        return False
-
-    async def is_invalid_user(self):
+    async def _is_invalid_user(self):
         self.user = self.scope['user']
         return isinstance(self.user, AnonymousUser)
 
-    async def reject_invalid_user(self):
+    async def _reject_invalid_user(self):
+        logger.info("[인게임] Invalid user")
         await self.accept()
         await self.send(text_data=json.dumps({"error": "Invalid user"}))
-        logger.info("[인게임] Invalid user")
         await self.close()
 
-    async def process_valid_user(self):
+    async def _process_valid_user_connect(self):
         try:
             await self.accept()
             game_id = self.scope["url_route"]["kwargs"]["game_id"]
@@ -131,6 +102,55 @@ class GameConsumer(AsyncWebsocketConsumer):
             await self.send(text_data=json.dumps({"error": "[" + e.__class__.__name__ + "] " + str(e)}))
             await self.close()
 
+    async def _process_valid_user_disconnect(self):
+        await self.save_game_object_by_id()
+        if await self.is_finished(self.game.mode) is False:     # 겜 중인데 나감
+            match = None
+            if self.game.mode == 0:
+                match = self.game.match1
+                if self.player1: #p1
+                    self._save_match_data(match, self.match1, False)
+                    await self.channel_layer.group_discard(self.match1_group_name, self.channel_name)
+                else: #p2
+                    await self.channel_layer.group_send(
+                        self.match1_group_name,
+                        {
+                            'type': 'player2_disconnect'
+                        })
+                    await self.channel_layer.group_discard(self.match1_group_name, self.channel_name)
+            else:
+                match = self.game.match3
+                if self.player1: #p1
+                    pass
+                else: #p2
+                    pass
+
+    @database_sync_to_async
+    def _save_match_data(self, match: Result, result: PingPongGame, finished: bool):
+        finished_at = datetime.now()
+        time_diff = finished_at - result.started_at
+        playtime = datetime.min + time_diff
+        match.player1_score = result.left_side_player.score
+        match.player2_score = result.right_side_player.score
+        match.started_at = result.started_at
+        match.playtime = playtime
+        if not finished:
+            match.winner = match.player2
+        elif finished and match.winner is None:
+            if result.left_side_player.score > result.right_side_player.score:
+                match.winner = match.player1
+            else:
+                match.winner = match.player2
+        match.save()
+
+    @database_sync_to_async
+    def is_finished(self, mode):
+        if mode == 0 and self.game.match1.winner is not None:
+            return True
+        elif mode != 0 and self.game.match3.winner is not None:
+            return True
+        return False
+
     async def when_manager(self):
         start_time = time.time()
         while True:
@@ -142,7 +162,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             await asyncio.sleep(0.3)
         await self.send_match_table()
         await self.print_start_log(self.game.mode)
-
 
     @database_sync_to_async
     def save_game_object_by_id(self):
@@ -235,20 +254,6 @@ class GameConsumer(AsyncWebsocketConsumer):
         elif mode == 2:
             logger.info("[시작] RANK")
 
-    async def receive(self, text_data):
-        data = json.loads(text_data)
-        message_type = data.get('type')
-        message_data = data.get('data', {})
-        await self.save_game_object_by_id()
-        if message_type == 'start':
-            asyncio.create_task(self.process_game_start(message_data))
-        elif message_type == 'match3_start':
-            asyncio.create_task(self.process_match3_game_start(message_data))
-        elif message_type == 'match3_info':
-            await self.send_final_match_table()
-        elif message_type == 'keyboard':
-            asyncio.create_task(self.process_keyboard_input(message_data))
-
     async def process_game_start(self, message_data):
         if self.player1:
             if self.my_match == 1:
@@ -268,7 +273,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                     await self.play(self.match1)
                     await self.send_in_game_message(self.match1, self.match1_group_name)
                     await asyncio.sleep(GAME_SETTINGS_DICT['play']['frame'])
-                await self.save_match_data_in_database(self.match1)
+                await self._save_match_data(self.game.match1, self.match1, True)
                 if self.game.mode == 0:
                     await self.save_game_status(3)
                     await self.update_winner_data(self.game.mode)
@@ -293,7 +298,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                     await self.play(self.match2)
                     await self.send_in_game_message(self.match2, self.match2_group_name)
                     await asyncio.sleep(GAME_SETTINGS_DICT['play']['frame'])
-                await self.save_match_data_in_database(self.match2)
+                await self._save_match_data(self.game.match2, self.match2, True)
                 await self.save_match3_matching_in_database(self.game.match2.winner)
                 await self.send_end_message(self.game.match2)
 
@@ -384,29 +389,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.match2 = PingPongGame(self.ping_pong_map, self.game.match2.player1, self.game.match2.player2)
         elif match == 3:
             self.match3 = PingPongGame(self.ping_pong_map, self.game.match3.player1, self.game.match3.player2)
-
-    @database_sync_to_async
-    def save_match_data_in_database(self, result: PingPongGame):
-        finished_at = datetime.now()
-        time_diff = finished_at - result.started_at
-        playtime = datetime.min + time_diff
-        match = None
-        if self.my_match == 1:
-            match = self.game.match1
-        elif self.my_match == 2:
-            match = self.game.match2
-        elif self.my_match == 3:
-            match = self.game.match3
-        match.player1_score = result.left_side_player.score
-        match.player2_score = result.right_side_player.score
-        match.started_at = result.started_at
-        match.playtime = playtime
-        if match.winner is None:
-            if result.left_side_player.score > result.right_side_player.score:
-                match.winner = match.player1
-            else:
-                match.winner = match.player2
-        match.save()
 
     @database_sync_to_async
     def save_match3_matching_in_database(self, winner: User):
