@@ -143,11 +143,14 @@ class GameConsumer(AsyncWebsocketConsumer):
         elif my_match == 3:
             match = self.game.match3
 
+        if match.playtime is not None:
+            return
+
         match.player1_score = result.left_side_player.score
         match.player2_score = result.right_side_player.score
         match.started_at = result.started_at
         match.playtime = playtime
-        if not finished:
+        if not finished and match.winner is None:
             match.winner = match.player2
         elif finished and match.winner is None:
             if result.left_side_player.score > result.right_side_player.score:
