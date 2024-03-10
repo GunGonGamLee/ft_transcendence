@@ -101,11 +101,11 @@ class Bar:
     speed: float
 
     def __init__(self, x, y):
-        self.width = 10
-        self.height = 100
+        self.width = GAME_SETTINGS_DICT['bar']['width']
+        self.height = GAME_SETTINGS_DICT['bar']['height']
         self.x = x
         self.y = y
-        self.speed = 10
+        self.speed = GAME_SETTINGS_DICT['bar']['speed']
 
     def set_x_y(self, x, y):
         self.x = x
