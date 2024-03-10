@@ -496,13 +496,22 @@ class GameConsumer(AsyncWebsocketConsumer):
         })
 
     async def game_info(self, event):
-        await self.send(text_data=json.dumps(event))
+        try:
+            await self.send(text_data=json.dumps(event))
+        except autobahn.exception.Disconnected:
+            logger.info("autobahn.exception.Disconnected: Attempt to send on a closed protocol 발생")
 
     async def game_start(self, event):
-        await self.send(text_data=json.dumps(event))
+        try:
+            await self.send(text_data=json.dumps(event))
+        except autobahn.exception.Disconnected:
+            logger.info("autobahn.exception.Disconnected: Attempt to send on a closed protocol 발생")
 
     async def in_game(self, event):
-        await self.send(text_data=json.dumps(event))
+        try:
+            await self.send(text_data=json.dumps(event))
+        except autobahn.exception.Disconnected:
+            logger.info("autobahn.exception.Disconnected: Attempt to send on a closed protocol 발생")
 
     async def game_end(self, event):
         await self.send(text_data=json.dumps(event))
