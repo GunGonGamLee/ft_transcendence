@@ -56,7 +56,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         elif message_type == 'match3_start':
             asyncio.create_task(self.process_match3_game_start(message_data))
         elif message_type == 'match3_info':
-            await self.send_final_match_table()
+            await self._send_final_match_table()
         elif message_type == 'keyboard':
             asyncio.create_task(self.process_keyboard_input(message_data))
 
@@ -106,7 +106,6 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def _process_valid_user_disconnect(self):
         await self._save_game_object_by_id()
         if await self._is_finished(self.game.mode) is False:  # 겜 중인데 나감
-            match = None
             if self.game.mode == 0:
                 await self._dodge(self.my_match, self.match1, self.player1, self.match1_group_name)
             else:
@@ -274,7 +273,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 await asyncio.sleep(2)
                 self.match1.started_at = datetime.now()
                 while not self.match1.finished and self.channel_layer.groups[self.match1_group_name].__len__() == 2:
-                    await self._play(self.match1)
+                    await self._check_game(self.match1)
                     await self._send_in_game_message(self.match1, self.match1_group_name)
                     await asyncio.sleep(GAME_SETTINGS_DICT['play']['frame'])
                 await self._save_match_data(self.my_match, self.match1, True)
@@ -292,7 +291,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 await asyncio.sleep(2)
                 self.match2.started_at = datetime.now()
                 while not self.match2.finished and self.channel_layer.groups[self.match2_group_name].__len__() == 2:
-                    await self._play(self.match2)
+                    await self._check_game(self.match2)
                     await self._send_in_game_message(self.match2, self.match2_group_name)
                     await asyncio.sleep(GAME_SETTINGS_DICT['play']['frame'])
                 await self._save_match_data(self.my_match, self.match2, True)
@@ -316,7 +315,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             await asyncio.sleep(2)
             self.match3.started_at = datetime.now()
             while not self.match3.finished and self.channel_layer.groups[self.match3_group_name].__len__() == 2:
-                await self._play(self.match3)
+                await self._check_game(self.match3)
                 await self._send_in_game_message(self.match3, self.match3_group_name)
                 await asyncio.sleep(GAME_SETTINGS_DICT['play']['frame'])
             await self._save_game_status(3)
@@ -360,7 +359,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             }
         )
 
-    async def _play(self, match):
+    async def _check_game(self, match):
         if match.ball.is_ball_hit_wall(match.ping_pong_map):
             match.ball.bounce((1, -1))
         elif match.ball.is_ball_inside_bar(match.left_side_player.bar) or match.ball.is_ball_inside_bar(
