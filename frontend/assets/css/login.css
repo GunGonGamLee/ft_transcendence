@@ -39,7 +39,7 @@
   font-family: "Vibur", sans-serif;
   font-size: 3.5vw;
   color: #fff;
-  text-align: center;
+  /*text-align: center;*/
   margin-top: 2vh;
   text-shadow:
   0 0 7px #DA0C81,
@@ -128,24 +128,22 @@
 }
 
 .arcade-machine .screen-container .screen h2 {
-  position: absolute;
+  position: fixed;
+  /*left: 50%;*/
   font-size: 2.7vw;
   color: #e0e0e0;
   font-family: "Orbitron", sans-serif, sans-serif;
+  cursor: pointer;
 }
 
 .arcade-machine .screen-container .screen h2#google {
   height: 3vh;
-  left: 5vw;
-  top: 20vh;
-  cursor: pointer;
+  top: 38vh;
 }
 
 .arcade-machine .screen-container .screen h2#forty-two {
   height: 3vh;
-  left: 5vw;
-  top: 26vh;
-  cursor: pointer;
+  top: 44vh;
 }
 
 .arcade-machine .screen-container .joystick {
@@ -207,12 +205,15 @@
   content: " ";
   border: 0.5vw solid #4c4c4c;
 }
+
 .arcade-machine .board:before {
   left: -6.5%;
 }
+
 .arcade-machine .board:after {
   right: -6.5%;
 }
+
 .arcade-machine .board .button {
   height: 20%;
   width: 6%;
@@ -243,6 +244,7 @@
   background: #024959;
   border: 0.5vw solid #4c4c4c;
 }
+
 .arcade-machine .bottom:before, .arcade-machine .bottom:after {
   height: 9.8vh;
   width: 2.8vw;
