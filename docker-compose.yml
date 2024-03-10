@@ -140,6 +140,59 @@ services:
   #   networks:
   #     - app_network
 
+  # node_exporter:
+  #   image: prom/node-exporter
+  #   container_name: node_exporter_container
+  #   ports:
+  #     - 9100:9100
+  #   volumes:
+  #     - "/proc:/host/proc"
+  #     - "/sys:/host/sys"
+  #     - "/:/rootfs"
+  #     - "/etc:/host/etc:ro"
+  #     - "${CERTS_PATH}:/etc/ssl/certs"
+  #     - "${PROMETHEUS_CONFIG}:/etc/node_exporter"
+  #   command:
+  #     - '--path.procfs=/host/proc'
+  #     - '--path.sysfs=/host/sys'
+  #     - '--path.rootfs=/rootfs'
+  #     - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+  #     - '--web.config.file=/etc/node_exporter/web.yml'
+  #   networks:
+  #     - app_network
+
+  # prometheus:
+  #   build:
+  #     context: ./prometheus
+  #     dockerfile: Dockerfile
+  #   container_name: prometheus_container
+  #   env_file:
+  #     - .env
+  #   volumes:
+  #     - "${PROMETHEUS_DATA}:/prometheus/data"
+  #     - "${PROMETHEUS_CONFIG}:/prometheus/config"
+  #     - "${CERTS_PATH}:/etc/ssl/certs"
+  #   ports:
+  #     - 9090:9090
+  #   networks:
+  #     - app_network
+
+  # grafana:
+  #   build:
+  #     context: ./grafana
+  #     dockerfile: Dockerfile
+  #   container_name: grafana_container
+  #   env_file:
+  #     - .env
+  #   volumes:
+  #     - "${GRAFANA_DATA}:/var/lib/grafana"
+  #     - "${GRAFANA_CONFIG}:/etc/grafana/grafana.ini"
+  #     - "${CERTS_PATH}:/etc/ssl/certs"
+  #   ports:
+  #     - 3000:3000
+  #   networks:
+  #     - app_network
+
 volumes:
   static-volume:
   cert-volume:
