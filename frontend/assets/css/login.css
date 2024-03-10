@@ -44,10 +44,10 @@
   text-shadow:
   0 0 7px #DA0C81,
   0 0 10px #DA0C81,
+  0 0 92px #DA0C81,
   0 0 21px #DA0C81,
   0 0 42px #DA0C81,
   0 0 82px #DA0C81,
-  0 0 92px #DA0C81,
   0 0 102px #DA0C81,
   0 0 151px #DA0C81;
 }
@@ -75,7 +75,6 @@
   height: 50%;
   width: 34vw;
   top: 15%;
-  left: 10vw;
   background: #4b5b61;
   border: 5px solid #4c4c4c;
 }
@@ -179,6 +178,7 @@
   background: #4c4c4c;
   content: "";
 }
+
 .arcade-machine .screen-container .joystick .stick:before {
   height: 100%;
   width: 150%;
@@ -189,15 +189,16 @@
   background: #4c4c4c;
   content: "";
 }
+
 .arcade-machine .board {
   height: 20vh;
   width: 37vw;
   position: absolute;
   top: 52.2vh;
-  left: 9vw;
   background: #4b5b61;
   transform: rotateX(70deg);
 }
+
 .arcade-machine .board:before, .arcade-machine .board:after {
   height: 96%;
   width: 2.8vw;
