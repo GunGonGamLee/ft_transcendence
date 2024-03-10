@@ -52,13 +52,13 @@ class GameConsumer(AsyncWebsocketConsumer):
         message_data = data.get('data', {})
         await self._save_game_object_by_id()
         if message_type == 'start':
-            asyncio.create_task(self.process_game_start(message_data))
+            asyncio.create_task(self._process_game_start(message_data))
         elif message_type == 'match3_start':
-            asyncio.create_task(self.process_match3_game_start(message_data))
+            asyncio.create_task(self._process_match3_game_start(message_data))
         elif message_type == 'match3_info':
             await self._send_final_match_table()
         elif message_type == 'keyboard':
-            asyncio.create_task(self.process_keyboard_input(message_data))
+            asyncio.create_task(self._process_keyboard_input(message_data))
 
     async def disconnect(self, close_code):
         if await self._is_invalid_user():
@@ -511,7 +511,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             match.right_side_player.bar.y += GAME_SETTINGS_DICT['bar']['speed']
             p2_lock.release()
 
-    async def _player2_disconnect(self, event):
+    async def player2_disconnect(self, event):
         if self.player1:
             # todo 겜 객체 만들어지기 전에 나갔을 때 예외처리 self.match1.finished 를 못 불러옴
             if self.game.mode == 0:
