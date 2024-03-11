@@ -176,7 +176,7 @@ export default function TournamentHistoriesDetails(gameId) {
    * 게임 중인 토너먼트의 결과를 반환합니다. match3가 null인 경우에 호출됩니다.
    * @param match1 {object}
    * @param match2 {object}
-   * @returns {{firstPlayer: {nickname: string, avatar: string, rating: string}, secondPlayer: {nickname: string, avatar: string, rating: string}, others: {player2: {nickname: string, avatar: string, rating: string}}}} 토너먼트 결과
+   * @returns {object} 토너먼트 결과
    */
   const getResultInGame = (match1, match2) => {
     let result = {
@@ -192,23 +192,35 @@ export default function TournamentHistoriesDetails(gameId) {
       },
       others: {
         player1: {},
-        player2: {
-          nickname: "",
-          avatar: "anonymous.png",
-          rating: "?",
-        },
+        player2: {},
       },
+    };
+    let anonymous = {
+      nickname: "",
+      avatar: "anonymous.png",
+      rating: "?",
     };
     if (match1.player1.score === null && match1.player2.score === null) {
       result.others.player1 =
         match2.player1.score > match2.player2.score
           ? match2.player2
           : match2.player1;
+      result.others.player2 = anonymous;
     } else if (match2.player1.score === null && match2.player2.score === null) {
       result.others.player1 =
         match1.player1.score > match1.player2.score
           ? match1.player2
           : match1.player1;
+      result.others.player2 = anonymous;
+    } else {
+      result.others.player1 =
+        match1.player1.score < match1.player2.score
+          ? match1.player1
+          : match1.player2;
+      result.others.player2 =
+        match2.player1.score < match2.player2.score
+          ? match2.player1
+          : match2.player2;
     }
     return result;
   };
