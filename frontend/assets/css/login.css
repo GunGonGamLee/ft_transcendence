@@ -39,7 +39,6 @@
   font-family: "Vibur", sans-serif;
   font-size: 3.5vw;
   color: #fff;
-  /*text-align: center;*/
   margin-top: 2vh;
   text-shadow:
   0 0 7px #DA0C81,
@@ -189,9 +188,9 @@
 }
 
 .arcade-machine .board {
+  position: absolute;
   height: 20vh;
   width: 37vw;
-  position: absolute;
   top: 52.2vh;
   background: #4b5b61;
   transform: rotateX(70deg);
