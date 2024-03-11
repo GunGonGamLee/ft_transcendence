@@ -80,6 +80,11 @@ class PingPongGameTestCase(TestCase):
         self.ping_pong_game.ball.bounce((1, -1))
         self.assertNotEqual(self.ping_pong_game.ball.direction, (1, 1))
 
+    def test_bounce_fail(self):
+        with self.assertRaises(ValueError):
+            self.ping_pong_game.ball.bounce((-1.1, 0))
+            self.ping_pong_game.ball.bounce((0, 1.00001))
+
     def test_is_goal_in(self):
         self.ping_pong_game.ball.x = 0
         self.ping_pong_game.ball.y = self.ping_pong_game.ping_pong_map.height / 2

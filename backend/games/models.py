@@ -198,6 +198,8 @@ class Ball:
         :param bounce_direction: 튕길 방향
         :type bounce_direction: tuple
         """
+        if not -1 <= bounce_direction[0] <= 1 or not -1 <= bounce_direction[1] <= 1:
+            raise ValueError('bounce_direction must be in range of -1 to 1')
         self.direction = (self.direction[0] * bounce_direction[0], self.direction[1] * bounce_direction[1])
         correction = random.uniform(0.9, 1.1)
         self.direction = (self.direction[0] * correction, self.direction[1] * correction)
