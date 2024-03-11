@@ -201,18 +201,21 @@ export default function TournamentHistoriesDetails(gameId) {
       rating: "?",
     };
     if (match1.player1.score === null && match1.player2.score === null) {
+      // match1의 결과가 없는 경우
       result.others.player1 =
         match2.player1.score > match2.player2.score
           ? match2.player2
           : match2.player1;
       result.others.player2 = anonymous;
     } else if (match2.player1.score === null && match2.player2.score === null) {
+      // match2의 결과가 없는 경우
       result.others.player1 =
         match1.player1.score > match1.player2.score
           ? match1.player2
           : match1.player1;
       result.others.player2 = anonymous;
     } else {
+      // match1, match2의 결과가 모두 있는 경우
       result.others.player1 =
         match1.player1.score < match1.player2.score
           ? match1.player1
