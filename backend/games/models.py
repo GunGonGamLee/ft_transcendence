@@ -210,11 +210,11 @@ class Ball:
         """
         return self.is_ball_inside_bar_x(bar) and self.is_ball_inside_bar_y(bar)
 
-    def is_ball_hit_wall(self, ping_pong_map: namedtuple):
+    def is_ball_hit_wall(self, ping_pong_map: namedtuple('Map', ['width', 'height'])):
         """
         공이 맵에 부딪혔는지 확인하는 함수
         :param ping_pong_map: 맵
-        :type ping_pong_map: namedtuple
+        :type ping_pong_map: namedtuple('Map', ['width', 'height'])
         :return: 부딪혔으면 True, 아니면 False
         :rtype: bool
         """
@@ -241,11 +241,11 @@ class Ball:
         self.direction = (self.direction[0] * correction, self.direction[1] * correction)
         self.normalize_ball_direction()
 
-    def is_goal_in(self, ping_pong_map: namedtuple):
+    def is_goal_in(self, ping_pong_map: namedtuple('Map', ['width', 'height'])):
         """
         골인했는지 확인하는 함수
         :param ping_pong_map: 맵
-        :type ping_pong_map: namedtuple
+        :type ping_pong_map: namedtuple('Map', ['width', 'height'])
         :return: 골인했으면 True, 아니면 False
         :rtype: list
         """
@@ -256,11 +256,11 @@ class Ball:
         else:
             return [False, False]
 
-    def reset(self, ping_pong_map: namedtuple):
+    def reset(self, ping_pong_map: namedtuple('Map', ['width', 'height'])):
         """
         공을 초기화하는 함수
         :param ping_pong_map: 맵
-        :type ping_pong_map: namedtuple
+        :type ping_pong_map: namedtuple('Map', ['width', 'height'])
         :return: None
         :rtype: None
         """
@@ -289,10 +289,10 @@ class PingPongGame:
     started_at: datetime
     finished: False
 
-    def __init__(self, ping_pong_map: namedtuple, player1: User, player2: User):
+    def __init__(self, ping_pong_map: namedtuple('Map', ['width', 'height']), player1: User, player2: User):
         """
         Args:
-        - ping_pong_map: namedtuple
+        - ping_pong_map: namedtuple('Map', ['width', 'height'])
         """
         self.left_side_player = Player(
             player1,
