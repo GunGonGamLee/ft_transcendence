@@ -115,8 +115,22 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def _dodge(self, my_match, result: PingPongGame, player1: bool, match_group_name):
         if player1:
-            self._save_match_data(my_match, result, False)
-            await self.channel_layer.group_discard(match_group_name, self.channel_name)
+            if result is None:
+                await self.channel_layer.group_send(
+                    match_group_name,
+                    {
+                        'type': 'close.connection'
+                    })
+            else:
+                if result.started_at is None:
+                    await self.channel_layer.group_send(
+                        match_group_name,
+                        {
+                            'type': 'close.connection'
+                        })
+                else:
+                    self._save_match_data(my_match, result, False)
+                    await self.channel_layer.group_discard(match_group_name, self.channel_name)
         else:
             await self.channel_layer.group_send(
                 match_group_name,
