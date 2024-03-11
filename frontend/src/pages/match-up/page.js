@@ -8,11 +8,6 @@ export default function Matchup($container, info = null) {
     return;
   }
   console.log(info);
-  if (info.remainMatch === true) {
-    alert("이전 경기가 아직 끝나지 않았음 기다리셈");
-    // TODO: match 다른거 끝나면 send쏘게 처리 필요함
-    return;
-  } //////////////////////////
   // 이전 페이지로 부터 받아온 정보 처리
   const ws = info.socket;
   ws.onmessage = (msg) => {
@@ -26,7 +21,7 @@ export default function Matchup($container, info = null) {
     } else {
       console.error("No match data available");
     }
-    setCards(data.data.data.match3);
+    setCards(info.data.data.match3);
   };
 
   const init = () => {
@@ -36,9 +31,9 @@ export default function Matchup($container, info = null) {
       renderSemifinal();
       matchData = matchData.concat(info.data.data.match1);
       matchData = matchData.concat(info.data.data.match2);
-    } else if (info.data.data.match1) {
+    } else if (info.data.data.match3) {
       renderFinal();
-      matchData = matchData.concat(info.data.data.match1);
+      matchData = matchData.concat(info.data.data.match3);
     } else {
       console.error("No match data available");
     }
@@ -157,7 +152,6 @@ export default function Matchup($container, info = null) {
   let [getCards, setCards] = useState({}, this, "renderCards");
 
   init();
-  // TODO: 여기서 5초 후에 online-game으로 이동하지만, match3의 경우엔 onmessage를 기다려야함
   setTimeout(() => {
     ws.onmessage = null;
     navigate("/online-game", { socket: ws, data: info.data });

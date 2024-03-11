@@ -19,19 +19,24 @@ export default function OnlineGame($container, info) {
   let scoreInput = { player1: 0, player2: 0 };
   let [getScore, setScore] = useState(scoreInput, this, "renderScoreBoard");
   let [getTime, setTime] = useState(0, this, "renderTime");
-  let keyState = { up: false, down: false };
-
-  let matchesHandler = {};
+  // let keyState = { up: false, down: false };
 
   let myNickname = null;
   let myMatch = 1;
   let initMyInfo = async () => {
     myNickname = await getUserMe().then((user) => user.data.nickname);
     if (
+      info.data.data.match2 && (
       info.data.data.match2[0].nickname === myNickname ||
-      info.data.data.match2[1].nickname === myNickname
+      info.data.data.match2[1].nickname === myNickname)
     )
       myMatch = 2;
+    else if (
+      info.data.data.match3 && (
+      info.data.data.match3[0].nickname === myNickname ||
+      info.data.data.match3[1].nickname === myNickname)
+    )
+      myMatch = 3;
   };
 
   const init = () => {
@@ -43,8 +48,8 @@ export default function OnlineGame($container, info) {
       setTime(getTime() + 1);
     }, 1000);
     document.addEventListener("keydown", keyEventHandler);
-    document.addEventListener("keydown", keyDownHandler);
-    document.addEventListener("keyup", keyUpHandler);
+    // document.addEventListener("keydown", keyDownHandler);
+    // document.addEventListener("keyup", keyUpHandler);
 
     const $toast = document.querySelector(".toast");
     const toast = new bootstrap.Toast($toast);
@@ -60,8 +65,8 @@ export default function OnlineGame($container, info) {
     clearInterval(this.timeIntervalId);
     document.querySelector("#header").style.display = "block";
     document.removeEventListener("keydown", keyEventHandler);
-    document.removeEventListener("keydown", keyDownHandler);
-    document.removeEventListener("keyup", keyUpHandler);
+    // document.removeEventListener("keydown", keyDownHandler);
+    // document.removeEventListener("keyup", keyUpHandler);
     window.removeEventListener("beforeunload", disconnectWebSocket);
   };
   // TODO: avatar 하드코딩된거 나중에 수정하기 중복 코드 gameutils.js로 따로 빼기
@@ -108,39 +113,39 @@ export default function OnlineGame($container, info) {
         $container.querySelector(".in-game").style.backgroundImage =
           "url('../../../assets/images/ingame_background4.png')";
         break;
-      // case "ArrowUp":
-      //   if (keyState) console.log("up");
-      //   ws.send(JSON.stringify({ type: "keyboard", data: "up" }));
-      //   break;
-      // case "ArrowDown":
-      //   console.log("down");
-      //   ws.send(JSON.stringify({ type: "keyboard", data: "down" }));
-      //   break;
+      case "ArrowUp":
+        // if (keyState) console.log("up");
+        ws.send(JSON.stringify({ type: "keyboard", data: "up" }));
+        break;
+      case "ArrowDown":
+        // console.log("down");
+        ws.send(JSON.stringify({ type: "keyboard", data: "down" }));
+        break;
       default:
         break;
     }
   };
 
-  const keyDownHandler = (e) => {
-    if (e.key === "ArrowUp") {
-      keyState.up = true;
-    } else if (e.key === "ArrowDown") {
-      keyState.down = true;
-    }
-  };
-  const keyUpHandler = (e) => {
-    if (e.key === "ArrowUp") {
-      if (keyState.up === false) return;
-      keyState.up = false;
-      console.log("up");
-      ws.send(JSON.stringify({ type: "keyboard", data: "up" }));
-    } else if (e.key === "ArrowDown") {
-      if (keyState.down === false) return;
-      keyState.down = false;
-      console.log("down");
-      ws.send(JSON.stringify({ type: "keyboard", data: "down" }));
-    }
-  };
+  // const keyDownHandler = (e) => {
+  //   if (e.key === "ArrowUp") {
+  //     keyState.up = true;
+  //   } else if (e.key === "ArrowDown") {
+  //     keyState.down = true;
+  //   }
+  // };
+  // const keyUpHandler = (e) => {
+  //   if (e.key === "ArrowUp") {
+  //     if (keyState.up === false) return;
+  //     keyState.up = false;
+  //     console.log("up");
+  //     ws.send(JSON.stringify({ type: "keyboard", data: "up" }));
+  //   } else if (e.key === "ArrowDown") {
+  //     if (keyState.down === false) return;
+  //     keyState.down = false;
+  //     console.log("down");
+  //     ws.send(JSON.stringify({ type: "keyboard", data: "down" }));
+  //   }
+  // };
 
   /**
    * 바 두 개와 공의 데이터를 받아서 화면에 그리는 함수.
@@ -194,7 +199,7 @@ export default function OnlineGame($container, info) {
 
   ws.onmessage = (event) => {
     const data = JSON.parse(event.data);
-    console.log(data);
+    // console.log(data);
     if (data.type === "in_game") {
       bar1.x = data.data.left_side_player.x;
       bar1.y = data.data.left_side_player.y;
@@ -219,25 +224,38 @@ export default function OnlineGame($container, info) {
         setScore(newScore);
     } else if (data.type === "game_end") endGame(data, ws);
   };
-
-  function endGame(data, ws) {
-    console.log(data, myMatch, myNickname);
-    if (matchesHandler[data.data.match]) {
-      return;
+  let matchEndCnt = 0;
+  function match3Logic(ws) {
+    ws.onmessage = null;
+    ws.send(JSON.stringify(
+      {"type":"match3_info"}));
+    ws.onmessage = (msg) => {
+      let data = JSON.parse(msg.data);
+      navigate(`/match-up`, { socket: ws, data: data, remainMatch: true });
     }
-
+  }
+  function endGame(data, ws) {
+    console.log(myMatch, data);
     if (myMatch !== data.data.match) {
+      matchEndCnt++;
       return;
     }
 
     let endData = data.data;
     let isWinner = endData.winner === myNickname;
-    matchesHandler[data.data.match] = true;
 
     if (!endData.final) {
       if (isWinner) {
-        ws.onmessage = null;
-        navigate(`/match-up`, { socket: ws, data: endData, remainMatch: true });
+        if (matchEndCnt === 1) {
+          match3Logic(ws);
+        } else {
+          ws.onmessage = (msg) => {
+            const data = JSON.parse(msg.data);
+            if (data.type === "game_end") {
+              match3Logic(ws);
+            }
+          }
+        }
       } else {
         navigate(
           `/histories/details?mode=${endData.game_mode}&gameId=${endData.game_id}`,
