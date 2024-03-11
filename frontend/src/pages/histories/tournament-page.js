@@ -14,6 +14,7 @@ export default function TournamentHistories($container, info) {
   new Histories($container);
   this.$tournamentList = document.getElementById("content");
   this.$pagination = document.getElementById("pagination");
+  this.currentPage = 1;
   const mode = info.mode;
 
   const init = () => {
@@ -23,14 +24,21 @@ export default function TournamentHistories($container, info) {
     this.totalPages = 0;
     initializePagination(this.$pagination, this.$prev, this.$next);
     getTournamentList();
+    click(this.$prev, () => {
+      if (this.currentPage === 1) return;
+      this.currentPage--;
+    });
+    click(this.$next, () => {
+      if (this.currentPage === this.totalPages) return;
+      this.currentPage++;
+    });
   };
 
   const getTournamentList = () => {
-    let page = Number(this.$prev.dataset.page) + 1;
     getUserMe().then((response) => {
       let { nickname } = response.data;
       fetch(
-        `${BACKEND}/games/results?user=${nickname}&mode=${mode}&currentPage=${page}&limit=4`,
+        `${BACKEND}/games/results?user=${nickname}&mode=${mode}&currentPage=${this.currentPage}&limit=4`,
         {
           method: "GET",
           headers: {
@@ -55,17 +63,17 @@ export default function TournamentHistories($container, info) {
   const setPagination = () => {
     if (this.totalPages === 1) {
       // 페이지가 1개인 경우
-      setPaginationActive(this.$prev, false, null);
-      setPaginationActive(this.$next, false, null);
+      setPaginationActive(this.$prev, false, getTournamentList);
+      setPaginationActive(this.$next, false, getTournamentList);
     } else if (this.totalPages > 1) {
       // 페이지가 2개 이상인 경우
-      if (this.$prev.dataset.page === "0") {
-        setPaginationActive(this.$prev, false, null);
+      if (this.currentPage === 1) {
+        setPaginationActive(this.$prev, false, getTournamentList);
         setPaginationActive(this.$next, true, getTournamentList);
       }
-      if (this.$next.dataset.page === this.totalPages + 1) {
+      if (this.currentPage === this.totalPages) {
         setPaginationActive(this.$prev, true, getTournamentList);
-        setPaginationActive(this.$next, false, null);
+        setPaginationActive(this.$next, false, getTournamentList);
       }
     }
   };
@@ -141,6 +149,7 @@ export default function TournamentHistories($container, info) {
   };
 
   this.render = () => {
+    this.$tournamentList.textContent = "";
     this.$tournamentList.insertAdjacentHTML(
       "afterbegin",
       `
