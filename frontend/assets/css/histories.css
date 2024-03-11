@@ -350,6 +350,7 @@ footer.histories {
     height: 100%;
     font-size: 3.5vh;
     margin-left: 5vh;
+    align-items: center;
 }
 
 .histories.one-on-one.info-title {
@@ -358,6 +359,18 @@ footer.histories {
 
 .histories.one-on-one.info-data {
     font-family: Galmuri11, serif;
+}
+
+.histories.one-on-one #player-winner-icon > img {
+    height: 5vh;
+    margin-bottom: 1vh;
+}
+
+.histories.one-on-one.winner#player-winner-icon > img {
+}
+
+.histories.one-on-one.loser#player-winner-icon > img {
+    visibility: hidden;
 }
 
 /********** Histories Tournament ***********/
