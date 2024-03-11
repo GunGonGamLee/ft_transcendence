@@ -100,6 +100,11 @@ class PingPongGameTestCase(TestCase):
         self.assertEqual(self.ping_pong_game.left_side_player.score, 1)
         self.assertEqual(self.ping_pong_game.right_side_player.score, 1)
 
+    def test_update_score_fail(self):
+        with self.assertRaises(ValueError):
+            self.ping_pong_game.update_score([False, False])
+            self.ping_pong_game.update_score([True, True])
+
     def test_ball_reset(self):
         self.ping_pong_game.ball.x = 0
         self.ping_pong_game.ball.y = 0
