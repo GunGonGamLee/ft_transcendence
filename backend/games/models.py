@@ -117,13 +117,6 @@ class Ball:
             raise ValueError('direction must be in range of -1 to 1')
         self.normalize_ball_direction()
 
-    def set_speed(self, speed):
-        self.speed = speed
-
-    def set_x_y(self, x, y):
-        self.x = x
-        self.y = y
-
     def move(self):
         self.x += self.speed * self.direction[0]
         self.y += self.speed * self.direction[1]
