@@ -94,7 +94,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.match3_group_name = game_group_name
             await self.channel_layer.group_add(self.game_group_name, self.channel_name)
 
-            await self._get_match()
+            await self._assignment_match()
 
             if self.manager:
                 await self._waiting_join(self.game_group_name, "game")
@@ -195,7 +195,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         else:
             raise Exception("게임 방에 속한 유저가 아닙니다.")
 
-    async def _get_match(self):
+    async def _assignment_match(self):
         if self.game.mode == 0:  # 1e1
             self.my_match = 1
             self.is_final = True
