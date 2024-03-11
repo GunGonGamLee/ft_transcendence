@@ -1,4 +1,5 @@
 import random
+from collections import namedtuple
 from datetime import datetime
 
 import numpy as np
@@ -131,22 +132,6 @@ class Player:
         self.bar = bar
 
 
-class PingPongMap:
-    """
-    맵 정보를 담는 클래스
-
-    Attributes:
-    - width: float
-    - height: float
-    """
-    width: float
-    height: float
-
-    def __init__(self, width, height):
-        self.width = width
-        self.height = height
-
-
 class Ball:
     """
     공 정보를 담는 클래스
@@ -225,11 +210,11 @@ class Ball:
         """
         return self.is_ball_inside_bar_x(bar) and self.is_ball_inside_bar_y(bar)
 
-    def is_ball_hit_wall(self, ping_pong_map: PingPongMap):
+    def is_ball_hit_wall(self, ping_pong_map: namedtuple):
         """
         공이 맵에 부딪혔는지 확인하는 함수
         :param ping_pong_map: 맵
-        :type ping_pong_map: PingPongMap
+        :type ping_pong_map: namedtuple
         :return: 부딪혔으면 True, 아니면 False
         :rtype: bool
         """
@@ -256,11 +241,11 @@ class Ball:
         self.direction = (self.direction[0] * correction, self.direction[1] * correction)
         self.normalize_ball_direction()
 
-    def is_goal_in(self, ping_pong_map: PingPongMap):
+    def is_goal_in(self, ping_pong_map: namedtuple):
         """
         골인했는지 확인하는 함수
         :param ping_pong_map: 맵
-        :type ping_pong_map: PingPongMap
+        :type ping_pong_map: namedtuple
         :return: 골인했으면 True, 아니면 False
         :rtype: list
         """
@@ -271,11 +256,11 @@ class Ball:
         else:
             return [False, False]
 
-    def reset(self, ping_pong_map: PingPongMap):
+    def reset(self, ping_pong_map: namedtuple):
         """
         공을 초기화하는 함수
         :param ping_pong_map: 맵
-        :type ping_pong_map: PingPongMap
+        :type ping_pong_map: namedtuple
         :return: None
         :rtype: None
         """
@@ -299,15 +284,15 @@ class PingPongGame:
     """
     left_side_player: Player
     right_side_player: Player
-    ping_pong_map: PingPongMap
+    ping_pong_map: namedtuple
     ball: Ball
     started_at: datetime
     finished: False
 
-    def __init__(self, ping_pong_map: PingPongMap, player1: User, player2: User):
+    def __init__(self, ping_pong_map: namedtuple, player1: User, player2: User):
         """
         Args:
-        - ping_pong_map: PingPongMap
+        - ping_pong_map: namedtuple
         """
         self.left_side_player = Player(
             player1,
