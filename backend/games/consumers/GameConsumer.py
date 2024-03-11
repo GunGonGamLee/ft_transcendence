@@ -109,7 +109,7 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def _process_valid_user_disconnect(self):
         await self._save_game_object_by_id()
         if await self._is_finished(self.game.mode) is False:
-            match = self._get_my_match_PingPongGame_object(self.my_match)
+            match = await self._get_my_match_PingPongGame_object(self.my_match)
             group_name = await self._get_my_match_group_name(self.my_match)
             await self._dodge(self.my_match, match, self.player1, group_name)
 
