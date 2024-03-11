@@ -113,25 +113,6 @@ class Bar:
         self.y = y
 
 
-class Player:
-    """
-    플레이어 정보를 담는 클래스
-
-    Attributes:
-    - user: User
-    - score: int
-    - bar: Bar
-    """
-    user: User
-    score: int
-    bar: Bar
-
-    def __init__(self, user: User, score: int, bar: Bar):
-        self.user = user
-        self.score = score
-        self.bar = bar
-
-
 class Ball:
     """
     공 정보를 담는 클래스
@@ -276,15 +257,16 @@ class PingPongGame:
     핑퐁 게임 정보를 담는 클래스
 
     Attributes:
-    - player: Player
-    - map: Map
-    - ball: Ball
-    - bar: Bar
-    - started_at: datetime
+    - left_side_player: 왼쪽 플레이어. user, score, bar를 가진 namedtuple
+    - right_side_player: 오른쪽 플레이어 user, score, bar를 가진 namedtuple
+    - ping_pong_map: 맵 정보. width, height를 가진 namedtuple
+    - ball: Ball 클래스
+    - started_at: 게임 시작 시간
+    - finished: 게임이 끝났는지 여부
     """
-    left_side_player: Player
-    right_side_player: Player
-    ping_pong_map: namedtuple
+    left_side_player: namedtuple('Player', ['user', 'score', 'bar'])
+    right_side_player: namedtuple('Player', ['user', 'score', 'bar'])
+    ping_pong_map: namedtuple('Map', ['width', 'height'])
     ball: Ball
     started_at: datetime
     finished: False
@@ -294,7 +276,7 @@ class PingPongGame:
         Args:
         - ping_pong_map: namedtuple('Map', ['width', 'height'])
         """
-        self.left_side_player = Player(
+        self.left_side_player = namedtuple('Player', ['user', 'score', 'bar'])(
             player1,
             0,
             Bar(
@@ -302,7 +284,7 @@ class PingPongGame:
                 ping_pong_map.height / 2 - GAME_SETTINGS_DICT['bar']['height'] / 2
             )
         )
-        self.right_side_player = Player(
+        self.right_side_player = namedtuple('Player', ['user', 'score', 'bar'])(
             player2,
             0,
             Bar(
