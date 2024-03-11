@@ -169,6 +169,7 @@ export default function TournamentHistoriesDetails(gameId) {
     renderFinal($treeWrapper, match3);
     renderMatch($treeWrapper, match2);
     this.appendChild($treeWrapper);
+    removeRatingForAnonymous();
   };
 
   /**
@@ -342,6 +343,22 @@ export default function TournamentHistoriesDetails(gameId) {
     this.appendChild($resultWrapper);
     setPodiumHeight(4);
     renderWinnerIcon();
+    removeRatingForAnonymous();
+  };
+
+  /**
+   * 익명 사용자의 rating을 제거합니다.
+   */
+  const removeRatingForAnonymous = () => {
+    let $ratings = document.getElementsByClassName(
+      "histories tournament rating",
+    );
+    console.log($ratings);
+    for (let $rating of $ratings) {
+      if ($rating.textContent.trim() === "Rating: ?") {
+        $rating.style.display = "none";
+      }
+    }
   };
 
   init();
