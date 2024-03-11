@@ -3,6 +3,7 @@ import { navigate } from "../../utils/navigate.js";
 import { getCookie } from "../../utils/cookie.js";
 import useState from "../../utils/useState.js";
 import { getUserMe } from "../../utils/userUtils.js";
+import { formatDateWithTime } from "../../utils/dateUtils.js";
 
 export default function OneOnOneHistoriesDetails(gameId) {
   const init = () => {
@@ -71,7 +72,7 @@ export default function OneOnOneHistoriesDetails(gameId) {
       <div class="histories one-on-one info-title" id="game-id">게임 번호</div>
       <div class="histories one-on-one info-data">${gameId}</div>
       <div class="histories one-on-one info-title" id="game-date">게임 날짜</div>
-      <div class="histories one-on-one info-data">${start_time}</div>
+      <div class="histories one-on-one info-data">${formatDateWithTime(start_time)}</div>
       <div class="histories one-on-one info-title" id="game-playtime">게임 시간</div>
       <div class="histories one-on-one info-data">${playtime}</div>
     `;
