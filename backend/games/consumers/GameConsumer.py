@@ -489,15 +489,15 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def player2_disconnect(self, event):
         if self.player1:
-            # todo 겜 객체 만들어지기 전에 나갔을 때 예외처리 self.match1.finished 를 못 불러옴
             match_attributes = {
                 1: self.match1,
                 2: self.match2,
                 3: self.match3
             }
             match = match_attributes.get(self.my_match)
-            await self._save_winner(self.my_match)
-            match.finished = True
+            if match is not None:
+                await self._save_winner(self.my_match)
+                match.finished = True
 
     async def _get_my_match_PingPongGame_object(self, my_match):
         match = None
