@@ -84,35 +84,6 @@ class CasualGameListView(models.Model):
 # PingPong 게임 정보를 담는 클래스. 데이터베이스에 저장되지 않음.         #
 ##############################################################
 
-class Bar:
-    """
-    바 정보를 담는 클래스. xy 좌표는 바의 좌상단을 기준으로 한다.
-
-    Attributes:
-    - width: float
-    - height: float
-    - x: float (좌상단 x 좌표)
-    - y: float (좌상단 y 좌표)
-    - speed: float
-    """
-    width: float
-    height: float
-    x: float
-    y: float
-    speed: float
-
-    def __init__(self, x, y):
-        self.width = GAME_SETTINGS_DICT['bar']['width']
-        self.height = GAME_SETTINGS_DICT['bar']['height']
-        self.x = x
-        self.y = y
-        self.speed = GAME_SETTINGS_DICT['bar']['speed']
-
-    def set_x_y(self, x, y):
-        self.x = x
-        self.y = y
-
-
 class Ball:
     """
     공 정보를 담는 클래스
@@ -157,11 +128,11 @@ class Ball:
         self.x += self.speed * self.direction[0]
         self.y += self.speed * self.direction[1]
 
-    def is_ball_inside_bar_x(self, bar: Bar):
+    def is_ball_inside_bar_x(self, bar: namedtuple('Bar', ['width', 'height', 'x', 'y', 'speed'])):
         """
         공이 바 안에 있는지 확인하는 함수. x 좌표를 기준으로 확인한다.
         :param bar: 바
-        :type bar: Bar
+        :type bar: namedtuple('Bar', ['width', 'height', 'x', 'y', 'speed'])
         :return: x축 상에서 바 안에 있으면 True, 아니면 False
         :rtype: bool
         """
@@ -169,11 +140,11 @@ class Ball:
         right_point = self.x + self.radius
         return bar.x <= right_point and left_point <= bar.x + bar.width
 
-    def is_ball_inside_bar_y(self, bar: Bar):
+    def is_ball_inside_bar_y(self, bar: namedtuple('Bar', ['width', 'height', 'x', 'y', 'speed'])):
         """
         공이 바 안에 있는지 확인하는 함수. y 좌표를 기준으로 확인한다.
         :param bar: 바
-        :type bar: Bar
+        :type bar: namedtuple('Bar', ['width', 'height', 'x', 'y', 'speed'])
         :return: y축 상에서 바 안에 있으면 True, 아니면 False
         :rtype: bool
         """
@@ -181,11 +152,11 @@ class Ball:
         bottom_point = self.y + self.radius
         return bar.y <= bottom_point and top_point <= bar.y + bar.height
 
-    def is_ball_inside_bar(self, bar: Bar):
+    def is_ball_inside_bar(self, bar: namedtuple('Bar', ['width', 'height', 'x', 'y', 'speed'])):
         """
         공이 바에 부딪혔는지 확인하는 함수. 바 안에 공이 들어가면 부딪힌 것으로 간주한다.
         :param bar: 바
-        :type bar: Bar
+        :type bar: namedtuple('Bar', ['width', 'height', 'x', 'y', 'speed'])
         :return: 부딪혔으면 True, 아니면 False
         :rtype: bool
         """
@@ -279,18 +250,24 @@ class PingPongGame:
         self.left_side_player = namedtuple('Player', ['user', 'score', 'bar'])(
             player1,
             0,
-            Bar(
+            namedtuple('Bar', ['width', 'height', 'x', 'y', 'speed'])(
                 GAME_SETTINGS_DICT['bar']['width'],
-                ping_pong_map.height / 2 - GAME_SETTINGS_DICT['bar']['height'] / 2
+                GAME_SETTINGS_DICT['bar']['height'],
+                GAME_SETTINGS_DICT['bar']['width'],
+                ping_pong_map.height / 2 - GAME_SETTINGS_DICT['bar']['height'] / 2,
+                GAME_SETTINGS_DICT['bar']['speed']
             )
         )
         self.right_side_player = namedtuple('Player', ['user', 'score', 'bar'])(
             player2,
             0,
-            Bar(
+            namedtuple('Bar', ['width', 'height', 'x', 'y', 'speed'])(
+                GAME_SETTINGS_DICT['bar']['width'],
+                GAME_SETTINGS_DICT['bar']['height'],
                 ping_pong_map.width - GAME_SETTINGS_DICT['bar']['width'],
-                ping_pong_map.height / 2 - GAME_SETTINGS_DICT['bar']['height'] / 2
-            ),
+                ping_pong_map.height / 2 - GAME_SETTINGS_DICT['bar']['height'] / 2,
+                GAME_SETTINGS_DICT['bar']['speed']
+            )
         )
         self.ping_pong_map = ping_pong_map
         self.ball = Ball(ping_pong_map.width / 2, ping_pong_map.height / 2)
