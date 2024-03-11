@@ -97,7 +97,8 @@ class GameConsumer(AsyncWebsocketConsumer):
             await self._assignment_match()
 
             if self.manager:
-                await self._waiting_join(self.game_group_name, "game")
+                if await self._waiting_join(self.game_group_name, "game"):
+                    return
                 await self._send_match_table()
                 await self._print_start_log(self.game.mode)
 
@@ -108,14 +109,28 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def _process_valid_user_disconnect(self):
         await self._save_game_object_by_id()
         if await self._is_finished(self.game.mode) is False:
-            match = self._get_my_match_PingPongGame_object(self.my_match)
+            match = await self._get_my_match_PingPongGame_object(self.my_match)
             group_name = await self._get_my_match_group_name(self.my_match)
             await self._dodge(self.my_match, match, self.player1, group_name)
 
     async def _dodge(self, my_match, result: PingPongGame, player1: bool, match_group_name):
         if player1:
-            self._save_match_data(my_match, result, False)
-            await self.channel_layer.group_discard(match_group_name, self.channel_name)
+            if result is None:
+                await self.channel_layer.group_send(
+                    match_group_name,
+                    {
+                        'type': 'close.connection'
+                    })
+            else:
+                if result.started_at is None:
+                    await self.channel_layer.group_send(
+                        match_group_name,
+                        {
+                            'type': 'close.connection'
+                        })
+                else:
+                    self._save_match_data(my_match, result, False)
+                    await self.channel_layer.group_discard(match_group_name, self.channel_name)
         else:
             await self.channel_layer.group_send(
                 match_group_name,
@@ -135,14 +150,22 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def _waiting_join(self, group_name, _type):
         start_time = time.time()
         while True:
-            if time.time() - start_time >= 30:
-                raise TimeoutError()
+            if time.time() - start_time >= 10:
+                await self.channel_layer.group_send(
+                    self.game_group_name,
+                    {
+                        'type': 'close.connection'
+                    }
+                )
+                await self._save_game_status(4)
+                return True
             num = self.channel_layer.groups[group_name].__len__()
             if _type == "game" and ((self.game.mode == 0 and num == 2) or (self.game.mode != 0 and num == 4)):
                 break
             elif _type == "match" and num == 2:
                 break
             await asyncio.sleep(0.3)
+        return False
 
     @database_sync_to_async
     def _validate_user(self, user):
@@ -221,7 +244,8 @@ class GameConsumer(AsyncWebsocketConsumer):
         if self.player1:
             if self.my_match == 1:
                 await self._init_game(message_data, self.my_match)
-                await self._waiting_join(self.match1_group_name, 'match')
+                if await self._waiting_join(self.match1_group_name, 'match'):
+                    return
                 await self._send_start_message(self.match1, self.match1_group_name)
                 await asyncio.sleep(2)
                 self.match1.started_at = datetime.now()
@@ -242,7 +266,8 @@ class GameConsumer(AsyncWebsocketConsumer):
                     await self._send_end_message(self.game.match1)
             elif self.my_match == 2:
                 await self._init_game(message_data, self.my_match)
-                await self._waiting_join(self.match2_group_name, 'match')
+                if await self._waiting_join(self.match2_group_name, 'match'):
+                    return
                 await self._send_start_message(self.match2, self.match2_group_name)
                 await asyncio.sleep(2)
                 self.match2.started_at = datetime.now()
@@ -262,14 +287,8 @@ class GameConsumer(AsyncWebsocketConsumer):
         self.is_final = True
         if self.player1:
             await self._init_game(message_data, self.my_match)
-            start_time = time.time()
-            while True:
-                if time.time() - start_time >= 30:
-                    raise TimeoutError()
-                num = self.channel_layer.groups[self.match3_group_name].__len__()
-                if num == 2:
-                    break
-                await asyncio.sleep(0.3)
+            if await self._waiting_join(self.match3_group_name, 'match'):
+                return
             await self._send_start_message(self.match3, self.match3_group_name)
             await asyncio.sleep(2)
             self.match3.started_at = datetime.now()
@@ -443,6 +462,10 @@ class GameConsumer(AsyncWebsocketConsumer):
         #     'data': data
         # })
 
+    async def close_connection(self, event):
+        await self.send(text_data=json.dumps(event))
+        await self.close()
+
     async def game_info(self, event):
         try:
             await self.send(text_data=json.dumps(event))
@@ -480,15 +503,15 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def player2_disconnect(self, event):
         if self.player1:
-            # todo 겜 객체 만들어지기 전에 나갔을 때 예외처리 self.match1.finished 를 못 불러옴
             match_attributes = {
                 1: self.match1,
                 2: self.match2,
                 3: self.match3
             }
             match = match_attributes.get(self.my_match)
-            await self._save_winner(self.my_match)
-            match.finished = True
+            if match is not None:
+                await self._save_winner(self.my_match)
+                match.finished = True
 
     async def _get_my_match_PingPongGame_object(self, my_match):
         match = None
