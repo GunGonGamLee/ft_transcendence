@@ -292,6 +292,6 @@ class PingPongGame:
         :rtype: None
         """
         if whether_score_a_goal[0]:
-            self.left_side_player.score += 1
+            self.left_side_player = self.left_side_player._replace(score=self.left_side_player.score + 1)
         elif whether_score_a_goal[1]:
-            self.right_side_player.score += 1
+            self.right_side_player = self.right_side_player._replace(score=self.right_side_player.score + 1)
