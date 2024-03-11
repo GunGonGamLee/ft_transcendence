@@ -125,36 +125,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             await self.channel_layer.group_discard(match_group_name, self.channel_name)
 
     @database_sync_to_async
-    def _save_match_data(self, my_match, result: PingPongGame, finished: bool):
-        finished_at = datetime.now()
-        time_diff = finished_at - result.started_at
-        playtime = datetime.min + time_diff
-
-        match = None
-        if my_match == 1:
-            match = self.game.match1
-        elif my_match == 2:
-            match = self.game.match2
-        elif my_match == 3:
-            match = self.game.match3
-
-        if match.playtime is not None:
-            return
-
-        match.player1_score = result.left_side_player.score
-        match.player2_score = result.right_side_player.score
-        match.started_at = result.started_at
-        match.playtime = playtime
-        if not finished and match.winner is None:
-            match.winner = match.player2
-        elif finished and match.winner is None:
-            if result.left_side_player.score > result.right_side_player.score:
-                match.winner = match.player1
-            else:
-                match.winner = match.player2
-        match.save()
-
-    @database_sync_to_async
     def _is_finished(self, mode):
         if mode == 0 and self.game.match1.winner is not None:
             return True
@@ -173,10 +143,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             elif _type == "match" and num == 2:
                 break
             await asyncio.sleep(0.3)
-
-    @database_sync_to_async
-    def _save_game_object_by_id(self):
-        self.game = Game.objects.get(id=self.game_id)
 
     @database_sync_to_async
     def _validate_user(self, user):
@@ -232,19 +198,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             else:
                 self.game.match2.player2 = self.user
             self.game.match2.save()
-
-    @database_sync_to_async
-    def _get_serializer_data(self, final):
-        serializer = None
-        game = Game.objects.get(id=self.game_id)
-        self.game = game
-        if self.game.mode == 0:
-            serializer = PvPMatchSerializer(game)
-        elif self.game.mode != 0 and final is False:
-            serializer = TournamentMatchSerializer(game)
-        elif self.game.mode != 0 and final is True:
-            serializer = TournamentFinalMatchSerializer(game)
-        return serializer.data
 
     async def _send_match_table(self):
         serializer_data = await self._get_serializer_data(False)
@@ -566,6 +519,23 @@ class GameConsumer(AsyncWebsocketConsumer):
         return group_name
 
     @database_sync_to_async
+    def _get_serializer_data(self, final):
+        serializer = None
+        game = Game.objects.get(id=self.game_id)
+        self.game = game
+        if self.game.mode == 0:
+            serializer = PvPMatchSerializer(game)
+        elif self.game.mode != 0 and final is False:
+            serializer = TournamentMatchSerializer(game)
+        elif self.game.mode != 0 and final is True:
+            serializer = TournamentFinalMatchSerializer(game)
+        return serializer.data
+
+    @database_sync_to_async
+    def _save_game_object_by_id(self):
+        self.game = Game.objects.get(id=self.game_id)
+
+    @database_sync_to_async
     def _save_game_status(self, status):
         self.game.status = status
         self.game.save()
@@ -584,3 +554,44 @@ class GameConsumer(AsyncWebsocketConsumer):
         elif mode == 2:
             winner.rank_wins = winner.rank_wins + 1
         winner.save()
+
+    @database_sync_to_async
+    def _save_winner(self, match):
+        match_options = {
+            1: self.game.match1,
+            2: self.game.match2,
+            3: self.game.match3
+        }
+        match = match_options.get(match)
+        match.winner = self.user
+        match.save()
+
+    @database_sync_to_async
+    def _save_match_data(self, my_match, result: PingPongGame, finished: bool):
+        finished_at = datetime.now()
+        time_diff = finished_at - result.started_at
+        playtime = datetime.min + time_diff
+
+        match = None
+        if my_match == 1:
+            match = self.game.match1
+        elif my_match == 2:
+            match = self.game.match2
+        elif my_match == 3:
+            match = self.game.match3
+
+        if match.playtime is not None:
+            return
+
+        match.player1_score = result.left_side_player.score
+        match.player2_score = result.right_side_player.score
+        match.started_at = result.started_at
+        match.playtime = playtime
+        if not finished and match.winner is None:
+            match.winner = match.player2
+        elif finished and match.winner is None:
+            if result.left_side_player.score > result.right_side_player.score:
+                match.winner = match.player1
+            else:
+                match.winner = match.player2
+        match.save()
