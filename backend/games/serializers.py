@@ -267,19 +267,25 @@ class TournamentResultSerializer(serializers.ModelSerializer):
         fields = ['match1', 'match2', 'match3']
 
     def get_match1(self, game):
-        return MatchSerializer(game.match1).data
+        if game.match1 is not None and game.match1.player1 is not None and game.match1.player2 is not None:
+            return MatchSerializer(game.match1).data
+        return None
 
     def get_match2(self, game):
-        return MatchSerializer(game.match2).data
+        if game.match2 is not None and game.match2.player1 is not None and game.match2.player2 is not None:
+            return MatchSerializer(game.match2).data
+        return None
 
     def get_match3(self, game):
-        data = MatchSerializer(game.match3).data
-        if game.match3.winner is None:
-            data['winner'] = None
-        else:
-            data['winner'] = game.match3.winner.nickname
-        data['date'] = game.started_at
-        return data
+        if game.match3 is not None and game.match3.player1 is not None and game.match3.player2 is not None:
+            data = MatchSerializer(game.match3).data
+            if game.match3.winner is None:
+                data['winner'] = None
+            else:
+                data['winner'] = game.match3.winner.nickname
+            data['date'] = game.started_at
+            return data
+        return None
 
 
 class PvPMatchSerializer(serializers.ModelSerializer):
