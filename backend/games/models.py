@@ -109,15 +109,32 @@ class Ball:
         self.direction = (random.uniform(-1, 1), random.uniform(-1, 1))
 
     def normalize_ball_direction(self):
+        """
+        공의 방향을 정규화하는 함수
+        :return: None
+        :rtype: None
+        """
         direction_list = np.array(self.direction)
         self.direction = tuple(direction_list / norm(direction_list))
 
     def set_direction(self, direction: tuple):
+        """
+        공의 방향을 설정하는 함수
+        :param direction: 공의 방향 (x, y)
+        :type direction: tuple
+        :return: None
+        :rtype: None
+        """
         if direction[0] > 1 or direction[0] < -1 or direction[1] > 1 or direction[1] < -1:
             raise ValueError('direction must be in range of -1 to 1')
         self.normalize_ball_direction()
 
     def move(self):
+        """
+        공을 이동시키는 함수
+        :return: None
+        :rtype: None
+        """
         self.x += self.speed * self.direction[0]
         self.y += self.speed * self.direction[1]
 
