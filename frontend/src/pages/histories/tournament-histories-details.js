@@ -127,6 +127,20 @@ export default function TournamentHistoriesDetails(gameId) {
    * @param finalData {object} 결승전 정보
    */
   const renderFinal = ($treeWrapper, finalData) => {
+    if (finalData === null) {
+      finalData = {
+        player1: {
+          avatar: "anonymous.png",
+          nickname: "",
+          rating: "?",
+        },
+        player2: {
+          avatar: "anonymous.png",
+          nickname: "",
+          rating: "?",
+        },
+      };
+    }
     let $final = document.createElement("div");
     $final.className = "histories tournament";
     $final.id = "final";
@@ -158,6 +172,39 @@ export default function TournamentHistoriesDetails(gameId) {
   };
 
   /**
+   * 게임 중인 토너먼트의 결과를 반환합니다. match3가 null인 경우에 호출됩니다.
+   * @param match1 {object}
+   * @param match2 {object}
+   */
+  const getResultIngame = (match1, match2) => {
+    if (match1.player1.score === 0 && match1.player2.score === 0) {
+      let loser =
+        match2.player1.score > match2.player2.score
+          ? match2.player2
+          : match2.player1;
+      return {
+        firstPlayer: null,
+        secondPlayer: null,
+        others: {
+          player1: loser,
+        },
+      };
+    } else if (match2.player1.score === 0 && match2.player2.score === 0) {
+      let loser =
+        match1.player1.score > match1.player2.score
+          ? match1.player2
+          : match1.player1;
+      return {
+        firstPlayer: null,
+        secondPlayer: null,
+        others: {
+          player1: loser,
+        },
+      };
+    }
+  };
+
+  /**
    * 토너먼트 결과를 반환합니다.
    * 1. match3의 승자를 기준으로 firstPlayer, secondPlayer를 정합니다.
    * 2. match1, match2의 player1, player2 중 match3의 플레이어가 아닌 플레이어를 others에 추가합니다.
@@ -165,6 +212,9 @@ export default function TournamentHistoriesDetails(gameId) {
    */
   const getResult = () => {
     const { match1, match2, match3 } = getTournamentHistoriesDetails();
+    if (match3 === null) {
+      return getResultIngame(match1, match2);
+    }
     let firstPlayer,
       secondPlayer,
       others = {};
@@ -280,7 +330,8 @@ export default function TournamentHistoriesDetails(gameId) {
     $resultWrapper.id = "result-wrapper";
     $resultWrapper.className = "histories tournament";
     const result = getResult();
-    renderResult(result, $resultWrapper);
+    console.log(result);
+    // renderResult(result, $resultWrapper);
     this.appendChild($resultWrapper);
     setPodiumHeight(4);
     renderWinnerIcon();
