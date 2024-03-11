@@ -177,7 +177,7 @@ export default function TournamentHistoriesDetails(gameId) {
    * @param match2 {object}
    * @returns {{firstPlayer: {nickname: string, avatar: string, rating: string}, secondPlayer: {nickname: string, avatar: string, rating: string}, others: {player2: {nickname: string, avatar: string, rating: string}}}} 토너먼트 결과
    */
-  const getResultIngame = (match1, match2) => {
+  const getResultInGame = (match1, match2) => {
     let result = {
       firstPlayer: {
         nickname: "",
@@ -221,7 +221,7 @@ export default function TournamentHistoriesDetails(gameId) {
   const getResult = () => {
     const { match1, match2, match3 } = getTournamentHistoriesDetails();
     if (match3 === null) {
-      return getResultIngame(match1, match2);
+      return getResultInGame(match1, match2);
     }
     let firstPlayer,
       secondPlayer,
