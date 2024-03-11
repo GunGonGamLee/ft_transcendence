@@ -45,7 +45,7 @@
 .histories.list-item {
     display: flex;
     justify-content: center;
-    align-items: baseline;
+    align-items: center;
     flex-direction: row;
     border: 3px transparent solid;
     border-radius: 1vw;
@@ -376,7 +376,7 @@ footer.histories {
 /********** Histories Tournament ***********/
 .histories.tournament.list-item {
     display: grid;
-    grid-template-columns: 1fr 2fr 3fr;
+    grid-template-columns: 1fr 2fr;
     justify-items: center;
     align-items: center;
     font-family: Galmuri11-Bold, serif;
