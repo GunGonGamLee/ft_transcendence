@@ -320,6 +320,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 await self._check_game(self.match3)
                 await self._send_in_game_message(self.match3, self.match3_group_name)
                 await asyncio.sleep(GAME_SETTINGS_DICT['play']['frame'])
+            await self._save_match_data(self.my_match, self.match3, True)
             await self._save_game_status(3)
             await self._update_winner_data(self.game.mode)
             await self._send_end_message(self.game.match3)
