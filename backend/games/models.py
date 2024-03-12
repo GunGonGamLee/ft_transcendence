@@ -169,7 +169,7 @@ class Ball:
         self.x = x
         self.y = y
         self.speed = float(GAME_SETTINGS_DICT['ball']['speed'])
-        self.direction = (random.uniform(-1, 1), random.uniform(-1, 1))
+        self.direction = (self.get_direction_x(), random.uniform(-1, 1))
 
     def normalize_ball_direction(self):
         direction_list = np.array(self.direction)
@@ -282,8 +282,15 @@ class Ball:
         self.x = ping_pong_map.width / 2
         self.y = ping_pong_map.height / 2
         self.speed = GAME_SETTINGS_DICT['ball']['speed']
-        self.direction = (random.uniform(-1, 1), random.uniform(-1, 1))
+        self.direction = (self.get_direction_x(), random.uniform(-1, 1))
         self.normalize_ball_direction()
+
+    def get_direction_x(self):
+        if random.uniform(1, 100) % 2 == 0:
+            return random.uniform(0.4, 1)
+        else:
+            return random.uniform(-1, -0.4)
+        return 1
 
 
 class PingPongGame:
