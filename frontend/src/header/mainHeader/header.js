@@ -285,19 +285,19 @@ export default function MainHeader($container) {
       )
       .join("");
 
-    // const friendsListWrapper = document.getElementById("friends-list-wrapper");
-    // if (friendsListWrapper !== null) {
-    //   friendsListWrapper.innerHTML = `
-    //         <div class="list-subject">
-    //             친구 (${newFriendList.length} / 8)
-    //         </div>
-    //         <div id="friends-list">
-    //             ${newFriendCards}
-    //         </div>
-    //     `;
-    // } else {
-    //   console.error("Element with ID 'friends-list-wrapper' was not found.");
-    // }
+    const friendsListWrapper = document.getElementById("friends-list-wrapper");
+    if (friendsListWrapper !== null) {
+      friendsListWrapper.innerHTML = `
+            <div class="list-subject">
+                친구 (${newFriendList.length} / 8)
+            </div>
+            <div id="friends-list">
+                ${newFriendCards}
+            </div>
+        `;
+    } else {
+      console.error("Element with ID 'friends-list-wrapper' was not found.");
+    }
 
 
     // 친구삭제 클릭 이벤트
