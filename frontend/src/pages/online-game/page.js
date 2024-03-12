@@ -83,12 +83,12 @@ export default function OnlineGame($container, info) {
       if (data.type === "in_game") {
         bar1.x = data.data.left_side_player.x;
         bar1.y = data.data.left_side_player.y;
-        bar1.width = data.data.width;
-        bar1.height = data.data.height;
+        bar1.width = data.data.bar.width;
+        bar1.height = data.data.bar.height;
         bar2.x = data.data.right_side_player.x;
         bar2.y = data.data.right_side_player.y;
-        bar2.width = data.data.width;
-        bar2.height = data.data.height;
+        bar2.width = data.data.bar.width;
+        bar2.height = data.data.bar.height;
         ball.x = data.data.ball.x;
         ball.y = data.data.ball.y;
         draw(bar1, bar2, ball);
