@@ -189,7 +189,7 @@ export default function OnlineGame($container, info) {
   let ball = { x: canvas.width / 2, y: canvas.height / 2, radius: 10 };
   ws.send(
     JSON.stringify({
-      type: "start",
+      type: myMatch === 3 ? "match3_start" : "start",
       data: {
         map_width: canvas.width,
         map_height: canvas.height,
