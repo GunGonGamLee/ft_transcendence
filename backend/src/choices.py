@@ -48,7 +48,15 @@ GAME_SETTINGS_DICT = {
     },
     'ball': {
         'radius': 10,
-        'speed': 30
+        'speed': 30,
+        'dir_left': {
+            'start': -1,
+            'end': -0.4
+        },
+        'dir_right': {
+            'start': 0.4,
+            'end': 1
+        }
     },
     'play': {
         'frame': 1 / 24
