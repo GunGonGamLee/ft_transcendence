@@ -197,7 +197,7 @@
   width: 37vw;
   position: absolute;
   top: 52.2vh;
-  left: 9vw;
+  /*left: 9vw;*/
   background: #4b5b61;
   transform: rotateX(70deg);
 }
