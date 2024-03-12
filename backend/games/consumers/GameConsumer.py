@@ -346,14 +346,20 @@ class GameConsumer(AsyncWebsocketConsumer):
         else:
             if message_data == 'up':
                 match = await self._get_my_match_PingPongGame_object(self.my_match)
-                p1_lock.acquire()
-                match.left_side_player.bar.y -= GAME_SETTINGS_DICT['bar']['speed']
-                p1_lock.release()
+                if match.left_side_player.bar.y >= 0:
+                    p1_lock.acquire()
+                    match.left_side_player.bar.y -= GAME_SETTINGS_DICT['bar']['speed']
+                    if match.left_side_player.bar.y < 0:
+                        match.left_side_player.bar.y = 0
+                    p1_lock.release()
             elif message_data == 'down':
                 match = await self._get_my_match_PingPongGame_object(self.my_match)
-                p2_lock.acquire()
-                match.left_side_player.bar.y += GAME_SETTINGS_DICT['bar']['speed']
-                p2_lock.release()
+                if match.left_side_player.bar.y + GAME_SETTINGS_DICT['bar']['height'] <= match.ping_pong_map.height:
+                    p2_lock.acquire()
+                    match.left_side_player.bar.y += GAME_SETTINGS_DICT['bar']['speed']
+                    if match.left_side_player.bar.y > match.ping_pong_map.height:
+                        match.left_side_player.bar.y = match.ping_pong_map.height - GAME_SETTINGS_DICT['bar']['height']
+                    p2_lock.release()
 
     async def _send_data(self, group_name, type_):
         await self.channel_layer.group_send(
@@ -516,16 +522,22 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def up(self, event):
         if event['sender_nickname'] != self.user.nickname:
             match = await self._get_my_match_PingPongGame_object(self.my_match)
-            p2_lock.acquire()
-            match.right_side_player.bar.y -= GAME_SETTINGS_DICT['bar']['speed']
-            p2_lock.release()
+            if match.right_side_player.bar.y >= 0:
+                p2_lock.acquire()
+                match.right_side_player.bar.y -= GAME_SETTINGS_DICT['bar']['speed']
+                if match.right_side_player.bar.y < 0:
+                    match.right_side_player.bar.y = 0
+                p2_lock.release()
 
     async def down(self, event):
         if event['sender_nickname'] != self.user.nickname:
             match = await self._get_my_match_PingPongGame_object(self.my_match)
-            p2_lock.acquire()
-            match.right_side_player.bar.y += GAME_SETTINGS_DICT['bar']['speed']
-            p2_lock.release()
+            if match.right_side_player.bar.y + GAME_SETTINGS_DICT['bar']['height'] <= match.ping_pong_map.height:
+                p2_lock.acquire()
+                match.right_side_player.bar.y += GAME_SETTINGS_DICT['bar']['speed']
+                if match.right_side_player.bar.y > match.ping_pong_map.height:
+                    match.right_side_player.bar.y = match.ping_pong_map.height - GAME_SETTINGS_DICT['bar']['height']
+                p2_lock.release()
 
     async def player2_disconnect(self, event):
         if self.player1:
