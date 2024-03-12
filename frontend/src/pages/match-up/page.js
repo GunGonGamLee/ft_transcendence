@@ -8,26 +8,22 @@ export default function Matchup($container, info = null) {
     return;
   }
   console.log(info);
-  if (info.remainMatch === true) {
-    alert("이전 경기가 아직 끝나지 않았음 기다리셈");
-    // TODO: match 다른거 끝나면 send쏘게 처리 필요함
-    return;
-  } //////////////////////////
   // 이전 페이지로 부터 받아온 정보 처리
   const ws = info.socket;
-  ws.onmessage = (msg) => {
-    let data = JSON.parse(msg.data);
-    let matchData = [];
-
-    // 파이널 대기 때 받아올 데이터 set
-    if (info.data.data.match3) {
-      renderFinal();
-      matchData.concat(info.data.data.match3);
-    } else {
-      console.error("No match data available");
-    }
-    setCards(data.data.data.match3);
-  };
+  ws.onmessage = null;
+  // ws.onmessage = (msg) => {
+  //   let data = JSON.parse(msg.data);
+  //   let matchData = [];
+  //
+  //   // 파이널 대기 때 받아올 데이터 set
+  //   if (info.data.data.match3) {
+  //     renderFinal();
+  //     matchData.concat(info.data.data.match3);
+  //   } else {
+  //     console.error("No match data available");
+  //   }
+  //   setCards(info.data.data.match3);
+  // };
 
   const init = () => {
     let matchData = [];
@@ -36,16 +32,16 @@ export default function Matchup($container, info = null) {
       renderSemifinal();
       matchData = matchData.concat(info.data.data.match1);
       matchData = matchData.concat(info.data.data.match2);
-    } else if (info.data.data.match1) {
+    } else if (info.data.data.match3) {
       renderFinal();
-      matchData = matchData.concat(info.data.data.match1);
+      matchData = matchData.concat(info.data.data.match3);
     } else {
       console.error("No match data available");
     }
 
-    if (matchData.length > 0) {
-      setCards(matchData);
-    }
+    // if (matchData.length > 0) {
+    setCards(matchData);
+    // }
 
     // // 5초 후에 local-game 경로로 자동 이동
     // setTimeout(() => {
@@ -157,7 +153,6 @@ export default function Matchup($container, info = null) {
   let [getCards, setCards] = useState({}, this, "renderCards");
 
   init();
-  // TODO: 여기서 5초 후에 online-game으로 이동하지만, match3의 경우엔 onmessage를 기다려야함
   setTimeout(() => {
     ws.onmessage = null;
     navigate("/online-game", { socket: ws, data: info.data });
