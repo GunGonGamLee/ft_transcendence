@@ -289,6 +289,8 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def _process_match3_game_start(self, message_data):
         self.my_match = 3
         self.is_final = True
+        await self._save_game_object_by_id()
+        await self._set_player1()
         if self.player1:
             await self._init_game(message_data, self.my_match)
             if await self._waiting_join(self.match3_group_name, 'match'):
@@ -310,6 +312,11 @@ class GameConsumer(AsyncWebsocketConsumer):
             'type': 'game_info',
             'data': serializer_data
         })
+
+    @database_sync_to_async
+    def _set_player1(self):
+        if self.game.match3.player1.nickname == self.user.nickname:
+            self.player1 = True
 
     async def _process_keyboard_input(self, message_data):
         if self.player1 is False:
@@ -370,10 +377,8 @@ class GameConsumer(AsyncWebsocketConsumer):
         match = self.game.match3
         if self.my_match == 1:
             match.player1 = winner
-            self.player1 = True
         else:
             match.player2 = winner
-            self.player1 = False
         match.save()
 
     async def _send_end_message(self, match: Result):
