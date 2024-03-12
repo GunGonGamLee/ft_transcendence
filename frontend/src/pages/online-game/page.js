@@ -72,7 +72,7 @@ export default function OnlineGame($container, info) {
   // TODO: avatar 하드코딩된거 나중에 수정하기 중복 코드 gameutils.js로 따로 빼기
   this.render = () => {
     $container.innerHTML = `
-    ${scoreBar()}
+    ${scoreBar(info.data.data, myMatch)}
       ${toast()}
     <div class="in-game" style="height: 100vh; width: 100vw; background-image: url('../../../assets/images/ingame_background.png'); background-size: cover"></div>
     <canvas id="gameCanvas" style="position: absolute; top: 12vh; left: 6%; width: 88%; height: 88%;border-left: 3px dotted white; border-right: 3px dotted white;"></canvas>
