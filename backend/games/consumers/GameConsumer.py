@@ -144,7 +144,7 @@ class GameConsumer(AsyncWebsocketConsumer):
     def _is_finished(self, mode):
         if mode == 0 and self.game.match1.winner is not None:
             return True
-        elif mode != 0 and self.game.match3.winner is not None:      # todo 다시 생각해야 됨
+        elif mode != 0 and self.game.match3.winner is not None:
             return True
         return False
 
