@@ -4,13 +4,14 @@ import json
 import logging
 import threading
 import time
+import random
 from datetime import datetime
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.contrib.auth.models import AnonymousUser
 from games.models import Game, PingPongGame, PingPongMap, Result
 from games.serializers import PvPMatchSerializer, TournamentMatchSerializer, TournamentFinalMatchSerializer
-from src.choices import MODE_CHOICES_DICT, GAME_SETTINGS_DICT
+from src.choices import MODE_CHOICES_DICT, GAME_SETTINGS_DICT, RATING_RANGE_DICT
 from users.models import User
 
 logger = logging.getLogger(__name__)
@@ -568,6 +569,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             winner.custom_tournament_wins = winner.custom_tournament_wins + 1
         elif mode == 2:
             winner.rank_wins = winner.rank_wins + 1
+            winner.rating += random.randint(RATING_RANGE_DICT['start'], RATING_RANGE_DICT['end'])
         winner.save()
 
     @database_sync_to_async
