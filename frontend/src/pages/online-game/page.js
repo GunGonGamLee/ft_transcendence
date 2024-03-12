@@ -259,6 +259,7 @@ export default function OnlineGame($container, info) {
           };
         }
       } else {
+        ws.close();
         navigate(
           `/histories/details?mode=${endData.game_mode}&gameId=${endData.game_id}`,
           { gameId: endData.game_id },
