@@ -188,11 +188,11 @@
 
 .arcade-machine .board {
   position: absolute;
-  height: 20vh;
-  width: 37vw;
-  top: 52.2vh;
+  height: 16.9vh;
+  width: 37.5vw;
+  top: 52vh;
   background: #4b5b61;
-  transform: rotateX(70deg);
+  transform: rotateX(45deg);
 }
 
 .arcade-machine .board:before, .arcade-machine .board:after {
