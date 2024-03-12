@@ -262,7 +262,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                     await self._update_winner_data(self.game.mode)
                     await self._send_end_message(self.game.match1)
                 else:
-                    await self._save_match3_matching_in_database(self.game.match1.winner)
+                    await self._save_match3_matching_in_database(await self._get_match12_winner(1))
                     await self._send_end_message(self.game.match1)
             elif self.my_match == 2:
                 await self._init_game(message_data, self.my_match)
@@ -279,7 +279,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                     await self._save_match_data(self.my_match, self.match2, True)
                 else:
                     await self._save_match_data(self.my_match, self.match2, False)
-                await self._save_match3_matching_in_database(self.game.match2.winner)
+                await self._save_match3_matching_in_database(await self._get_match12_winner(2))
                 await self._send_end_message(self.game.match2)
 
     async def _process_match3_game_start(self, message_data):
@@ -610,3 +610,11 @@ class GameConsumer(AsyncWebsocketConsumer):
             else:
                 match.winner = match.player2
         match.save()
+
+    @database_sync_to_async
+    def _get_match12_winner(self, my_match):
+        if my_match == 1:
+            return self.game.match1.winner
+        elif my_match == 2:
+            return self.game.match2.winner
+        return None
