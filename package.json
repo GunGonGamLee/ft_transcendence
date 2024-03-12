@@ -1,0 +1,14 @@
+{
+  "name": "ft_transcendence",
+  "version": "1.0.0",
+  "description": "![리드밍](https://img.buzzfeed.com/store-an-image-prod-us-east-1/EdGE5ilDZ.gif)",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.42.1",
+    "@types/node": "^20.11.26"
+  }
+}
