@@ -274,7 +274,7 @@ export default function MainHeader($container) {
     const friends = Array.isArray(newFriendList.friends) ? newFriendList.friends : [];
 
     // 새로운 친구 목록을 기반으로 친구 카드를 생성.
-    const newFriendCards = newFriendList.friends
+    const newFriendCards = friends
       .slice(0, 8)
       .map((card, index) =>
         createInfoCard(
