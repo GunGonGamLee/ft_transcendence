@@ -220,8 +220,7 @@ export default function LocalGame($container, info = null) {
       }
       drawFunction(bar1, bar2, ball);
       let moveBallEventId = window.requestAnimationFrame(moveBall);
-      if (getScore().player1 + getScore().player2 >= 1) {
-        // TODO: 게임 종료 스코어 나중에 고치기
+      if (getScore().player1 + getScore().player2 >= 5) {
         cancelAnimationFrame(moveBallEventId);
         // 게임 종료
         if (info.finalPlayer1 === null) {

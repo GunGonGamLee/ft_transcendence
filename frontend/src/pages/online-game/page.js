@@ -118,7 +118,6 @@ export default function OnlineGame($container, info) {
     document.removeEventListener("keyup", keyUpHandler);
     window.removeEventListener("beforeunload", disconnectWebSocket);
   };
-  // TODO: avatar 하드코딩된거 나중에 수정하기 중복 코드 gameutils.js로 따로 빼기
   this.render = () => {
     $container.innerHTML = `
     ${scoreBar(info.data.data, myMatch)}
