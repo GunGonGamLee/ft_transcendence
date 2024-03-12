@@ -22,13 +22,12 @@ export default function MainHeader($container) {
         this.ws = new WebSocket(`${WEBSOCKET}/friend_status/`);
         this.ws.onmessage = (msg) => {
           let response = JSON.parse(msg.data);
-          // TODO: 중복로그인 임시로 풀어둠
-          // if (response.type === 'alreadyLogin') {
-          //   console.log(response.message);
-          //   this.ws.close();
-          //   navigate("error", { errorCode: 4001 });
-          //   return;
-          // }
+          if (response.type === "alreadyLogin") {
+            console.log(response.message);
+            this.ws.close();
+            navigate("error", { errorCode: 4001 });
+            return;
+          }
 
           // 업데이트된 내용을 set 함수에 전달합니다.
           setFriendsList(response.data);
@@ -271,7 +270,9 @@ export default function MainHeader($container) {
     // 상태 관리 시스템으로부터 현재 친구 목록 상태를 가져옴.
     const newFriendList = getFriendsList();
     // friends가 배열인지 확인하고, 아니라면 빈 배열을 사용.
-    const friends = Array.isArray(newFriendList.friends) ? newFriendList.friends : [];
+    const friends = Array.isArray(newFriendList.friends)
+      ? newFriendList.friends
+      : [];
 
     // 새로운 친구 목록을 기반으로 친구 카드를 생성.
     const newFriendCards = friends
