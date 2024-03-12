@@ -3,7 +3,7 @@ FROM nginx:1.21.6-alpine
 # 필요한 패키지 설치
 RUN apk add --no-cache git build-base libtool automake autoconf zlib-dev pcre-dev openssl-dev linux-headers openssl
 
-# # # ModSecurity 다운로드 및 컴파일
+# ModSecurity 다운로드 및 컴파일
 RUN git clone --depth 1 https://github.com/SpiderLabs/ModSecurity.git /usr/local/src/modsecurity \
     && cd /usr/local/src/modsecurity \
     && git submodule init \
@@ -13,10 +13,10 @@ RUN git clone --depth 1 https://github.com/SpiderLabs/ModSecurity.git /usr/local
     && make \
     && make install
 
-# # ModSecurity-nginx 커넥터 다운로드
+# ModSecurity-nginx 커넥터 다운로드
 RUN git clone --depth 1 https://github.com/SpiderLabs/ModSecurity-nginx.git /usr/local/src/modsecurity-nginx
 
-# # Nginx 컴파일을 위한 준비 및 ModSecurity 모듈 빌드
+# Nginx 컴파일을 위한 준비 및 ModSecurity 모듈 빌드
 ARG NGINX_VERSION=1.21.6
 RUN wget https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz \
     && tar zxvf nginx-${NGINX_VERSION}.tar.gz \
@@ -25,9 +25,7 @@ RUN wget https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz \
     && make modules \
     && cp objs/ngx_http_modsecurity_module.so /usr/lib/nginx/modules
 
-
-
-# # ModSecurity 설정 디렉토리 생성 및 파일 복사
+# ModSecurity 설정 디렉토리 생성 및 파일 복사
 RUN mkdir -p /etc/nginx/modsecurity
 COPY ./config/modsecurity.conf /etc/nginx/modsecurity/
 COPY ./config/owasp-crs /etc/nginx/modsecurity/owasp-crs

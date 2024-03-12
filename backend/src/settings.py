@@ -120,16 +120,16 @@ LOGGING = {
             'level': 'INFO',
             'propagate': True,
         },
-        'django.request': {
-            'handlers': ['console', 'file'],
-            'level': 'WARN',
-            'propagate': False,
-        },
-        'django.security': {
-            'handlers': ['console', 'file'],
-            'level': 'WARN',
-            'propagate': False,
-        }
+        # 'django.request': {
+            # 'handlers': ['console', 'file'],
+            # 'level': 'WARN',
+            # 'propagate': False,
+        # },
+        # 'django.security': {
+            # 'handlers': ['console', 'file'],
+            # 'level': 'WARN',
+            # 'propagate': False,
+        # }
     }
 }
 
