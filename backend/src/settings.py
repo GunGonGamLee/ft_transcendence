@@ -88,24 +88,6 @@ else:
     BASE_URL = config('BASE_URL')
     SECRET_KEY = LOG_KEY
 
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'handlers': {
-#         'console': {
-#             'class': 'logging.StreamHandler',
-#         },
-#     },
-#     'loggers': {
-#         '': {  # 'root' logger
-#             'handlers': ['console'],
-#             'level': 'INFO',
-#         },
-#     },
-# }
-
-# logging settings
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -121,37 +103,33 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
         },
-        # 'file': {
-            # 'level': 'INFO',
-            # 'class': 'logging.FileHandler',
-            # 'filename': '/var/log/djangolog/django.log',
-        # },
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': '/var/log/djangolog/django.log',
+        },
     },
     'loggers': {
         '': {
-            # 'handlers': ['console', 'file'],
-            'handlers': ['console'],
+            'handlers': ['console', 'file'],
             'level': 'INFO',
             'propagate': True,
         },
         'django': {
-            # 'handlers': ['console', 'file'],
-            'handlers': ['console'],
+            'handlers': ['console', 'file'],
             'level': 'INFO',
             'propagate': True,
         },
-        'django.request': {
+        # 'django.request': {
             # 'handlers': ['console', 'file'],
-            'handlers': ['console'],
-            'level': 'WARN',
-            'propagate': False,
-        },
-        'django.security': {
+            # 'level': 'WARN',
+            # 'propagate': False,
+        # },
+        # 'django.security': {
             # 'handlers': ['console', 'file'],
-            'handlers': ['console'],
-            'level': 'WARN',
-            'propagate': False,
-        }
+            # 'level': 'WARN',
+            # 'propagate': False,
+        # }
     }
 }
 
