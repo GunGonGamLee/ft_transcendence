@@ -286,10 +286,12 @@ class Ball:
         self.normalize_ball_direction()
 
     def get_direction_x(self):
-        if random.uniform(1, 100) % 2 == 0:
-            return random.uniform(0.4, 1)
+        if random.uniform(0, 10000) % 2 == 0:
+            return random.uniform(GAME_SETTINGS_DICT['ball']['dir_right']['start'],
+                                  GAME_SETTINGS_DICT['ball']['dir_right']['end'])
         else:
-            return random.uniform(-1, -0.4)
+            return random.uniform(GAME_SETTINGS_DICT['ball']['dir_left']['start'],
+                                  GAME_SETTINGS_DICT['ball']['dir_left']['end'])
         return 1
 
 
