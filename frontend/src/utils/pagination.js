@@ -30,24 +30,28 @@ export const addPaginationOnClickProperty = (
 ) => {
   if (typeof paginationIdOrElement === "string") {
     let $pagination = document.getElementById(paginationIdOrElement);
-    onClick($pagination, paginationFunction);
+    click($pagination, paginationFunction);
   }
   if (paginationIdOrElement instanceof HTMLElement) {
-    onClick(paginationIdOrElement, paginationFunction);
+    click(paginationIdOrElement, paginationFunction);
   }
 };
 
 /**
  * 페이지로 이동하는 버튼에 대한 onClick 프로퍼티를 제거합니다.
  * @param paginationIdOrElement {string | HTMLElement} 페이지네이션의 id 또는 HTMLElement
+ * @param functionToRemove {function} 제거할 함수
  */
-export const removePaginationOnClickProperty = (paginationIdOrElement) => {
+export const removePaginationOnClickProperty = (
+  paginationIdOrElement,
+  functionToRemove,
+) => {
   if (typeof paginationIdOrElement === "string") {
     let $pagination = document.getElementById(paginationIdOrElement);
-    $pagination.removeAttribute("onclick");
+    $pagination.removeEventListener("click", functionToRemove);
   }
   if (paginationIdOrElement instanceof HTMLElement) {
-    paginationIdOrElement.removeAttribute("onclick");
+    paginationIdOrElement.removeEventListener("click", functionToRemove);
   }
 };
 
@@ -55,7 +59,7 @@ export const removePaginationOnClickProperty = (paginationIdOrElement) => {
  * 이전, 다음 페이지로 이동하는 버튼의 활성화 여부를 설정합니다.
  * @param $pagination {HTMLElement} 페이지네이션 버튼
  * @param isActive {boolean} 활성화 여부
- * @param activeFunction {function | null} 활성화 시 동작하는 함수. isActive가 false일 때는 null
+ * @param activeFunction {function | null} 활성화 시 동작하는 함수.
  */
 export const setPaginationActive = ($pagination, isActive, activeFunction) => {
   if (isActive) {
@@ -65,7 +69,7 @@ export const setPaginationActive = ($pagination, isActive, activeFunction) => {
   } else {
     $pagination.style.opacity = "0.5";
     $pagination.style.cursor = "default";
-    removePaginationOnClickProperty($pagination);
+    removePaginationOnClickProperty($pagination, activeFunction);
   }
 };
 
@@ -78,7 +82,7 @@ export const setPaginationActive = ($pagination, isActive, activeFunction) => {
 export const initializePagination = ($pagination, $prev, $next) => {
   $pagination.style.display = "block";
   $prev.dataset.page = "0";
-  $next.dataset.page = "0";
+  $next.dataset.page = "1";
   setPaginationActive($prev, false, null);
   setPaginationActive($next, false, null);
 };

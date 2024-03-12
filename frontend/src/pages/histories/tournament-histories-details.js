@@ -144,7 +144,7 @@ export default function TournamentHistoriesDetails(gameId) {
    * 토너먼트 대진표를 렌더링합니다.
    */
   const renderTournamentTree = () => {
-    setPaginationActive(this.$prev, false, null);
+    setPaginationActive(this.$prev, false, renderTournamentTree);
     setPaginationActive(this.$next, true, renderTournamentResult);
     this.textContent = "";
     let $treeWrapper = document.createElement("div");
@@ -274,7 +274,7 @@ export default function TournamentHistoriesDetails(gameId) {
    */
   const renderTournamentResult = () => {
     setPaginationActive(this.$prev, true, renderTournamentTree);
-    setPaginationActive(this.$next, false, null);
+    setPaginationActive(this.$next, false, renderTournamentResult);
     this.textContent = "";
     let $resultWrapper = document.createElement("div");
     $resultWrapper.id = "result-wrapper";
