@@ -23,8 +23,10 @@ export default function OnlineGame($container, info) {
 
   let myNickname = null;
   let myMatch = 1;
+  let bar1, bar2, ball, $toast, toastt, canvas, ctx;
   let initMyInfo = async () => {
     myNickname = await getUserMe().then((user) => user.data.nickname);
+    console.log(myNickname);
     if (
       info.data.data.match2 &&
       (info.data.data.match2[0].nickname === myNickname ||
@@ -37,10 +39,10 @@ export default function OnlineGame($container, info) {
         info.data.data.match3[1].nickname === myNickname)
     )
       myMatch = 3;
+    console.log(myMatch);
   };
-
-  const init = () => {
-    initMyInfo();
+  const init = async () => {
+    await initMyInfo();
     hideHeader();
     this.render();
     this.renderScoreBoard();
@@ -51,10 +53,61 @@ export default function OnlineGame($container, info) {
     document.addEventListener("keydown", keyDownHandler);
     document.addEventListener("keyup", keyUpHandler);
 
-    const $toast = document.querySelector(".toast");
-    const toast = new bootstrap.Toast($toast);
-    toast.show(); // Toast를 보여줍니다.
+    $toast = document.querySelector(".toast");
+    toastt = new bootstrap.Toast($toast);
+    toastt.show(); // Toast를 보여줍니다.
     window.addEventListener("beforeunload", disconnectWebSocket);
+    canvas = $container.querySelector("#gameCanvas");
+    ctx = canvas.getContext("2d");
+    canvas.width = document.body.clientWidth;
+    canvas.height = document.body.clientHeight * 0.88; // header의 height가 12vh이므로 88%만큼의 height를 가짐
+    console.log(canvas.width, canvas.height);
+
+    bar1 = { x: 10, y: canvas.height / 2 - 50, width: 20, height: 100 };
+    bar2 = {
+      x: canvas.width - 30,
+      y: canvas.height / 2 - 50,
+      width: 20,
+      height: 100,
+    };
+    ball = { x: canvas.width / 2, y: canvas.height / 2, radius: 10 };
+    ws.send(
+      JSON.stringify({
+        type: myMatch === 3 ? "match3_start" : "start",
+        data: {
+          map_width: canvas.width,
+          map_height: canvas.height,
+        },
+      }),
+    );
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      // console.log(data);
+      if (data.type === "in_game") {
+        bar1.x = data.data.left_side_player.x;
+        bar1.y = data.data.left_side_player.y;
+        bar1.width = 20;
+        bar1.height = 100;
+        bar2.x = data.data.right_side_player.x;
+        bar2.y = data.data.right_side_player.y;
+        bar2.width = 20;
+        bar2.height = 100;
+        ball.x = data.data.ball.x;
+        ball.y = data.data.ball.y;
+        draw(bar1, bar2, ball);
+        let score = getScore();
+        let newScore = {
+          player1: data.data.left_side_player.score,
+          player2: data.data.right_side_player.score,
+        };
+        if (
+          score.player1 !== newScore.player1 ||
+          score.player2 !== newScore.player2
+        )
+          setScore(newScore);
+      } else if (data.type === "game_end") endGame(data, ws);
+    };
   };
 
   const disconnectWebSocket = () => {
@@ -173,57 +226,7 @@ export default function OnlineGame($container, info) {
   }
 
   init();
-  const canvas = $container.querySelector("#gameCanvas");
-  const ctx = canvas.getContext("2d");
-  canvas.width = document.body.clientWidth;
-  canvas.height = document.body.clientHeight * 0.88; // header의 height가 12vh이므로 88%만큼의 height를 가짐
-  console.log(canvas.width, canvas.height);
 
-  let bar1 = { x: 10, y: canvas.height / 2 - 50, width: 20, height: 100 };
-  let bar2 = {
-    x: canvas.width - 30,
-    y: canvas.height / 2 - 50,
-    width: 20,
-    height: 100,
-  };
-  let ball = { x: canvas.width / 2, y: canvas.height / 2, radius: 10 };
-  ws.send(
-    JSON.stringify({
-      type: myMatch === 3 ? "match3_start" : "start",
-      data: {
-        map_width: canvas.width,
-        map_height: canvas.height,
-      },
-    }),
-  );
-
-  ws.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-    // console.log(data);
-    if (data.type === "in_game") {
-      bar1.x = data.data.left_side_player.x;
-      bar1.y = data.data.left_side_player.y;
-      bar1.width = 20;
-      bar1.height = 100;
-      bar2.x = data.data.right_side_player.x;
-      bar2.y = data.data.right_side_player.y;
-      bar2.width = 20;
-      bar2.height = 100;
-      ball.x = data.data.ball.x;
-      ball.y = data.data.ball.y;
-      draw(bar1, bar2, ball);
-      let score = getScore();
-      let newScore = {
-        player1: data.data.left_side_player.score,
-        player2: data.data.right_side_player.score,
-      };
-      if (
-        score.player1 !== newScore.player1 ||
-        score.player2 !== newScore.player2
-      )
-        setScore(newScore);
-    } else if (data.type === "game_end") endGame(data, ws);
-  };
   let matchEndCnt = 0;
   function match3Logic(ws) {
     ws.onmessage = null;
