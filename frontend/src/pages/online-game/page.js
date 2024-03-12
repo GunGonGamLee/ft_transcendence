@@ -19,10 +19,10 @@ export default function OnlineGame($container, info) {
   let [getScore, setScore] = useState(scoreInput, this, "renderScoreBoard");
   let [getTime, setTime] = useState(0, this, "renderTime");
   let keyState = { up: false, down: false };
-
   let myNickname = null;
   let myMatch = 1;
-  let bar1, bar2, ball, $toast, toastt, canvas, ctx;
+  let bar1, bar2, ball, $toast, toastObj, canvas, ctx;
+  let matchEndCnt = 0;
   let initMyInfo = async () => {
     myNickname = await getUserMe().then((user) => user.data.nickname);
     if (
@@ -51,8 +51,8 @@ export default function OnlineGame($container, info) {
     document.addEventListener("keyup", keyUpHandler);
 
     $toast = document.querySelector(".toast");
-    toastt = new bootstrap.Toast($toast);
-    toastt.show(); // Toast를 보여줍니다.
+    toastObj = new bootstrap.Toast($toast);
+    toastObj.show(); // Toast를 보여줍니다.
     window.addEventListener("beforeunload", disconnectWebSocket);
     canvas = $container.querySelector("#gameCanvas");
     ctx = canvas.getContext("2d");
@@ -83,12 +83,12 @@ export default function OnlineGame($container, info) {
       if (data.type === "in_game") {
         bar1.x = data.data.left_side_player.x;
         bar1.y = data.data.left_side_player.y;
-        bar1.width = 20;
-        bar1.height = 100;
+        bar1.width = data.data.width;
+        bar1.height = data.data.height;
         bar2.x = data.data.right_side_player.x;
         bar2.y = data.data.right_side_player.y;
-        bar2.width = 20;
-        bar2.height = 100;
+        bar2.width = data.data.width;
+        bar2.height = data.data.height;
         ball.x = data.data.ball.x;
         ball.y = data.data.ball.y;
         draw(bar1, bar2, ball);
@@ -220,7 +220,6 @@ export default function OnlineGame($container, info) {
 
   init();
 
-  let matchEndCnt = 0;
   function match3Logic(ws) {
     ws.onmessage = null;
     ws.send(JSON.stringify({ type: "match3_info" }));
