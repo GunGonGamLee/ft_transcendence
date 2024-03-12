@@ -109,10 +109,20 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def _process_valid_user_disconnect(self):
         await self._save_game_object_by_id()
-        if await self._is_finished(self.game.mode) is False:
+        if self.game.mode != 0 and await self._is_loser() and await self._is_match_finished(self.my_match):
+            await self.channel_layer.group_discard(self.game_group_name, self.channel_name)
+        if await self._is_game_finished(self.game.mode) is False:
             match = await self._get_my_match_PingPongGame_object(self.my_match)
             group_name = await self._get_my_match_group_name(self.my_match)
             await self._dodge(self.my_match, match, self.player1, group_name)
+
+    @database_sync_to_async
+    def _is_loser(self):
+        if self.my_match == 1 and self.user.nickname != self.game.match1.winner.nickname:
+            return True
+        elif self.my_match == 2 and self.user.nickname != self.game.match2.winner.nickname:
+            return True
+        return False
 
     async def _dodge(self, my_match, result: PingPongGame, player1: bool, match_group_name):
         if player1:
@@ -143,7 +153,15 @@ class GameConsumer(AsyncWebsocketConsumer):
             await self.channel_layer.group_discard(match_group_name, self.channel_name)
 
     @database_sync_to_async
-    def _is_finished(self, mode):
+    def _is_match_finished(self, my_match):
+        if my_match == 1 and self.game.match1.winner is None:
+            return False
+        elif my_match == 2 and self.game.match2.winner is None:
+            return False
+        return True
+
+    @database_sync_to_async
+    def _is_game_finished(self, mode):
         if mode == 0 and self.game.match1.winner is not None:
             return True
         elif mode != 0 and self.game.match3.winner is not None:
