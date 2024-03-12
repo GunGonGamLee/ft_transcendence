@@ -328,6 +328,7 @@ class PingPongGame:
         self.ping_pong_map = ping_pong_map
         self.ball = Ball(ping_pong_map.width / 2, ping_pong_map.height / 2)
         self.finished = False
+        self.started_at = None
 
     def update_score(self, whether_score_a_goal: list):
         """
