@@ -120,14 +120,16 @@ class GameConsumer(AsyncWebsocketConsumer):
                 await self.channel_layer.group_send(
                     match_group_name,
                     {
-                        'type': 'close.connection'
+                        'type': 'close.connection',
+                        'data': 'dodge'
                     })
             else:
                 if result.started_at is None:
                     await self.channel_layer.group_send(
                         match_group_name,
                         {
-                            'type': 'close.connection'
+                            'type': 'close.connection',
+                            'data': 'dodge'
                         })
                 else:
                     self._save_match_data(my_match, result, False)
@@ -155,7 +157,8 @@ class GameConsumer(AsyncWebsocketConsumer):
                 await self.channel_layer.group_send(
                     self.game_group_name,
                     {
-                        'type': 'close.connection'
+                        'type': 'close.connection',
+                        'data': 'waiting_join time limit'
                     }
                 )
                 await self._save_game_status(4)
