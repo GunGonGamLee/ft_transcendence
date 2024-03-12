@@ -10,19 +10,20 @@ export default function Matchup($container, info = null) {
   console.log(info);
   // 이전 페이지로 부터 받아온 정보 처리
   const ws = info.socket;
-  ws.onmessage = (msg) => {
-    let data = JSON.parse(msg.data);
-    let matchData = [];
-
-    // 파이널 대기 때 받아올 데이터 set
-    if (info.data.data.match3) {
-      renderFinal();
-      matchData.concat(info.data.data.match3);
-    } else {
-      console.error("No match data available");
-    }
-    setCards(info.data.data.match3);
-  };
+  ws.onmessage = null;
+  // ws.onmessage = (msg) => {
+  //   let data = JSON.parse(msg.data);
+  //   let matchData = [];
+  //
+  //   // 파이널 대기 때 받아올 데이터 set
+  //   if (info.data.data.match3) {
+  //     renderFinal();
+  //     matchData.concat(info.data.data.match3);
+  //   } else {
+  //     console.error("No match data available");
+  //   }
+  //   setCards(info.data.data.match3);
+  // };
 
   const init = () => {
     let matchData = [];
@@ -38,9 +39,9 @@ export default function Matchup($container, info = null) {
       console.error("No match data available");
     }
 
-    if (matchData.length > 0) {
-      setCards(matchData);
-    }
+    // if (matchData.length > 0) {
+    setCards(matchData);
+    // }
 
     // // 5초 후에 local-game 경로로 자동 이동
     // setTimeout(() => {
