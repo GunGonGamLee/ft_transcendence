@@ -45,7 +45,7 @@
 .histories.list-item {
     display: flex;
     justify-content: center;
-    align-items: baseline;
+    align-items: center;
     flex-direction: row;
     border: 3px transparent solid;
     border-radius: 1vw;
@@ -350,6 +350,7 @@ footer.histories {
     height: 100%;
     font-size: 3.5vh;
     margin-left: 5vh;
+    align-items: center;
 }
 
 .histories.one-on-one.info-title {
@@ -360,10 +361,22 @@ footer.histories {
     font-family: Galmuri11, serif;
 }
 
+.histories.one-on-one #player-winner-icon > img {
+    height: 5vh;
+    margin-bottom: 1vh;
+}
+
+.histories.one-on-one.winner#player-winner-icon > img {
+}
+
+.histories.one-on-one.loser#player-winner-icon > img {
+    visibility: hidden;
+}
+
 /********** Histories Tournament ***********/
 .histories.tournament.list-item {
     display: grid;
-    grid-template-columns: 1fr 2fr 3fr;
+    grid-template-columns: 1fr 2fr;
     justify-items: center;
     align-items: center;
     font-family: Galmuri11-Bold, serif;
