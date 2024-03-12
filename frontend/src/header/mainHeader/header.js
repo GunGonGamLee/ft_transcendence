@@ -336,18 +336,18 @@ export default function MainHeader($container) {
         });
       }
     });
-    click(document.getElementById("friends-list"), () => {
-      const loadingHtml = `
-                                <div style="position: relative; width: 100%; height: 100%;">
-                                    <div id="loading-spinner" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">               
-                                        <div class="spinner-border text-light" style="width: 10vh; height: 10vh;" role="status">
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
-      const friendsListDiv = document.getElementById("friends-list");
-      friendsListDiv.innerHTML = loadingHtml; // 로딩 스피너를 friends-list 내부에 갱신
-    });
+    // click(document.getElementById("friends-list"), () => {
+    //   const loadingHtml = `
+    //                             <div style="position: relative; width: 100%; height: 100%;">
+    //                                 <div id="loading-spinner" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+    //                                     <div class="spinner-border text-light" style="width: 10vh; height: 10vh;" role="status">
+    //                                     </div>
+    //                                 </div>
+    //                             </div>
+    //                         `;
+    //   const friendsListDiv = document.getElementById("friends-list");
+    //   friendsListDiv.innerHTML = loadingHtml; // 로딩 스피너를 friends-list 내부에 갱신
+    // });
   };
 
   // 친구요청 받은 리스트 렌더링 함수
