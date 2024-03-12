@@ -1,8 +1,9 @@
 import random
+from collections import namedtuple
 
 import numpy as np
 from django.test import TestCase
-from games.models import PingPongGame, Ball, Bar, Player, PingPongMap
+from games.models import PingPongGame, Ball
 from users.models import User
 
 
@@ -16,7 +17,7 @@ class PingPongGameTestCase(TestCase):
             nickname='오른쪽',
             email='right@test.com',
         )
-        ping_pong_map = PingPongMap(1920, 1080)
+        ping_pong_map = namedtuple('PingPongMap', ['width', 'height'])(1920, 1080)
         self.ping_pong_game = PingPongGame(
             ping_pong_map=ping_pong_map,
             player1=self.left_side_player,
@@ -30,27 +31,18 @@ class PingPongGameTestCase(TestCase):
     def test_set_ball(self):
         before_direction = self.ping_pong_game.ball.direction
         self.ping_pong_game.ball.set_direction((-1, 0))
-        self.ping_pong_game.ball.set_speed(10)
-        self.ping_pong_game.ball.set_x_y(10, 10)
         self.assertNotEqual(before_direction, self.ping_pong_game.ball.direction)
-        self.assertEqual(self.ping_pong_game.ball.speed, 10)
-        self.assertEqual(self.ping_pong_game.ball.x, 10)
-        self.assertEqual(self.ping_pong_game.ball.y, 10)
 
     def test_set_ball_direction_fail(self):
         direction = (random.uniform(1.1, 2), random.uniform(-1, 1))
         with self.assertRaises(ValueError):
             self.ping_pong_game.ball.set_direction(direction)
 
-    def test_set_bar_position(self):
-        self.ping_pong_game.left_side_player.bar.set_x_y(10, 10)
-        self.assertEqual(self.ping_pong_game.left_side_player.bar.x, 10)
-        self.assertEqual(self.ping_pong_game.left_side_player.bar.y, 10)
-
     def test_is_ball_inside_bar(self):
         ball_x = self.ping_pong_game.left_side_player.bar.x + self.ping_pong_game.left_side_player.bar.width
         ball_y = self.ping_pong_game.left_side_player.bar.y
-        self.ping_pong_game.ball.set_x_y(ball_x, ball_y)
+        self.ping_pong_game.ball.x = ball_x
+        self.ping_pong_game.ball.y = ball_y
         self.assertEqual(self.ping_pong_game.ball.is_ball_inside_bar(
             self.ping_pong_game.left_side_player.bar,
         ), True)
@@ -61,7 +53,8 @@ class PingPongGameTestCase(TestCase):
     def test_is_ball_hit_wall(self):
         ball_x = self.ping_pong_game.ping_pong_map.width / 2
         ball_y = 0
-        self.ping_pong_game.ball.set_x_y(ball_x, ball_y)
+        self.ping_pong_game.ball.x = ball_x
+        self.ping_pong_game.ball.y = ball_y
         self.assertEqual(self.ping_pong_game.ball.is_ball_hit_wall(
             self.ping_pong_game.ping_pong_map
         ), True)
@@ -87,12 +80,19 @@ class PingPongGameTestCase(TestCase):
         self.ping_pong_game.ball.bounce((1, -1))
         self.assertNotEqual(self.ping_pong_game.ball.direction, (1, 1))
 
+    def test_bounce_fail(self):
+        with self.assertRaises(ValueError):
+            self.ping_pong_game.ball.bounce((-1.1, 0))
+            self.ping_pong_game.ball.bounce((0, 1.00001))
+
     def test_is_goal_in(self):
-        self.ping_pong_game.ball.set_x_y(0, self.ping_pong_game.ping_pong_map.height / 2)
+        self.ping_pong_game.ball.x = 0
+        self.ping_pong_game.ball.y = self.ping_pong_game.ping_pong_map.height / 2
         self.assertEqual(self.ping_pong_game.ball.is_goal_in(
             self.ping_pong_game.ping_pong_map
         ), [False, True])
-        self.ping_pong_game.ball.set_x_y(self.ping_pong_game.ping_pong_map.width, self.ping_pong_game.ping_pong_map.height / 2)
+        self.ping_pong_game.ball.x = self.ping_pong_game.ping_pong_map.width
+        self.ping_pong_game.ball.y = self.ping_pong_game.ping_pong_map.height / 2
         self.assertEqual(self.ping_pong_game.ball.is_goal_in(
             self.ping_pong_game.ping_pong_map
         ), [True, False])
@@ -105,8 +105,14 @@ class PingPongGameTestCase(TestCase):
         self.assertEqual(self.ping_pong_game.left_side_player.score, 1)
         self.assertEqual(self.ping_pong_game.right_side_player.score, 1)
 
+    def test_update_score_fail(self):
+        with self.assertRaises(ValueError):
+            self.ping_pong_game.update_score([False, False])
+            self.ping_pong_game.update_score([True, True])
+
     def test_ball_reset(self):
-        self.ping_pong_game.ball.set_x_y(0, 0)
+        self.ping_pong_game.ball.x = 0
+        self.ping_pong_game.ball.y = 0
         self.ping_pong_game.ball.reset(
             self.ping_pong_game.ping_pong_map,
         )

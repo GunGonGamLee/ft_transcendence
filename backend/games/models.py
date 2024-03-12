@@ -1,4 +1,5 @@
 import random
+from collections import namedtuple
 from datetime import datetime
 
 import numpy as np
@@ -83,70 +84,6 @@ class CasualGameListView(models.Model):
 # PingPong 게임 정보를 담는 클래스. 데이터베이스에 저장되지 않음.         #
 ##############################################################
 
-class Bar:
-    """
-    바 정보를 담는 클래스. xy 좌표는 바의 좌상단을 기준으로 한다.
-
-    Attributes:
-    - width: float
-    - height: float
-    - x: float (좌상단 x 좌표)
-    - y: float (좌상단 y 좌표)
-    - speed: float
-    """
-    width: float
-    height: float
-    x: float
-    y: float
-    speed: float
-
-    def __init__(self, x, y):
-        self.width = GAME_SETTINGS_DICT['bar']['width']
-        self.height = GAME_SETTINGS_DICT['bar']['height']
-        self.x = x
-        self.y = y
-        self.speed = GAME_SETTINGS_DICT['bar']['speed']
-
-    def set_x_y(self, x, y):
-        self.x = x
-        self.y = y
-
-
-class Player:
-    """
-    플레이어 정보를 담는 클래스
-
-    Attributes:
-    - user: User
-    - score: int
-    - bar: Bar
-    """
-    user: User
-    score: int
-    bar: Bar
-
-    def __init__(self, user: User, score: int, bar: Bar):
-        self.user = user
-        self.score = score
-        self.bar = bar
-
-
-class PingPongMap:
-    """
-    맵 정보를 담는 클래스
-
-    Attributes:
-    - width: float
-    - height: float
-    """
-    width: float
-    height: float
-
-    def __init__(self, width, height):
-        self.width = width
-        self.height = height
-
-
 class Ball:
     """
     공 정보를 담는 클래스
@@ -172,30 +109,40 @@ class Ball:
         self.direction = (self.get_direction_x(), random.uniform(-1, 1))
 
     def normalize_ball_direction(self):
+        """
+        공의 방향을 정규화하는 함수
+        :return: None
+        :rtype: None
+        """
         direction_list = np.array(self.direction)
         self.direction = tuple(direction_list / norm(direction_list))
 
     def set_direction(self, direction: tuple):
+        """
+        공의 방향을 설정하는 함수
+        :param direction: 공의 방향 (x, y)
+        :type direction: tuple
+        :return: None
+        :rtype: None
+        """
         if direction[0] > 1 or direction[0] < -1 or direction[1] > 1 or direction[1] < -1:
             raise ValueError('direction must be in range of -1 to 1')
         self.normalize_ball_direction()
 
-    def set_speed(self, speed):
-        self.speed = speed
-
-    def set_x_y(self, x, y):
-        self.x = x
-        self.y = y
-
     def move(self):
+        """
+        공을 이동시키는 함수
+        :return: None
+        :rtype: None
+        """
         self.x += self.speed * self.direction[0]
         self.y += self.speed * self.direction[1]
 
-    def is_ball_inside_bar_x(self, bar: Bar):
+    def is_ball_inside_bar_x(self, bar: namedtuple('Bar', ['width', 'height', 'x', 'y', 'speed'])):
         """
         공이 바 안에 있는지 확인하는 함수. x 좌표를 기준으로 확인한다.
         :param bar: 바
-        :type bar: Bar
+        :type bar: namedtuple('Bar', ['width', 'height', 'x', 'y', 'speed'])
         :return: x축 상에서 바 안에 있으면 True, 아니면 False
         :rtype: bool
         """
@@ -203,11 +150,11 @@ class Ball:
         right_point = self.x + self.radius
         return bar.x <= right_point and left_point <= bar.x + bar.width
 
-    def is_ball_inside_bar_y(self, bar: Bar):
+    def is_ball_inside_bar_y(self, bar: namedtuple('Bar', ['width', 'height', 'x', 'y', 'speed'])):
         """
         공이 바 안에 있는지 확인하는 함수. y 좌표를 기준으로 확인한다.
         :param bar: 바
-        :type bar: Bar
+        :type bar: namedtuple('Bar', ['width', 'height', 'x', 'y', 'speed'])
         :return: y축 상에서 바 안에 있으면 True, 아니면 False
         :rtype: bool
         """
@@ -215,21 +162,21 @@ class Ball:
         bottom_point = self.y + self.radius
         return bar.y <= bottom_point and top_point <= bar.y + bar.height
 
-    def is_ball_inside_bar(self, bar: Bar):
+    def is_ball_inside_bar(self, bar: namedtuple('Bar', ['width', 'height', 'x', 'y', 'speed'])):
         """
         공이 바에 부딪혔는지 확인하는 함수. 바 안에 공이 들어가면 부딪힌 것으로 간주한다.
         :param bar: 바
-        :type bar: Bar
+        :type bar: namedtuple('Bar', ['width', 'height', 'x', 'y', 'speed'])
         :return: 부딪혔으면 True, 아니면 False
         :rtype: bool
         """
         return self.is_ball_inside_bar_x(bar) and self.is_ball_inside_bar_y(bar)
 
-    def is_ball_hit_wall(self, ping_pong_map: PingPongMap):
+    def is_ball_hit_wall(self, ping_pong_map: namedtuple('Map', ['width', 'height'])):
         """
         공이 맵에 부딪혔는지 확인하는 함수
         :param ping_pong_map: 맵
-        :type ping_pong_map: PingPongMap
+        :type ping_pong_map: namedtuple('Map', ['width', 'height'])
         :return: 부딪혔으면 True, 아니면 False
         :rtype: bool
         """
@@ -251,16 +198,18 @@ class Ball:
         :param bounce_direction: 튕길 방향
         :type bounce_direction: tuple
         """
+        if not -1 <= bounce_direction[0] <= 1 or not -1 <= bounce_direction[1] <= 1:
+            raise ValueError('bounce_direction must be in range of -1 to 1')
         self.direction = (self.direction[0] * bounce_direction[0], self.direction[1] * bounce_direction[1])
         correction = random.uniform(0.9, 1.1)
         self.direction = (self.direction[0] * correction, self.direction[1] * correction)
         self.normalize_ball_direction()
 
-    def is_goal_in(self, ping_pong_map: PingPongMap):
+    def is_goal_in(self, ping_pong_map: namedtuple('Map', ['width', 'height'])):
         """
         골인했는지 확인하는 함수
         :param ping_pong_map: 맵
-        :type ping_pong_map: PingPongMap
+        :type ping_pong_map: namedtuple('Map', ['width', 'height'])
         :return: 골인했으면 True, 아니면 False
         :rtype: list
         """
@@ -271,11 +220,11 @@ class Ball:
         else:
             return [False, False]
 
-    def reset(self, ping_pong_map: PingPongMap):
+    def reset(self, ping_pong_map: namedtuple('Map', ['width', 'height'])):
         """
         공을 초기화하는 함수
         :param ping_pong_map: 맵
-        :type ping_pong_map: PingPongMap
+        :type ping_pong_map: namedtuple('Map', ['width', 'height'])
         :return: None
         :rtype: None
         """
@@ -300,39 +249,46 @@ class PingPongGame:
     핑퐁 게임 정보를 담는 클래스
 
     Attributes:
-    - player: Player
-    - map: Map
-    - ball: Ball
-    - bar: Bar
-    - started_at: datetime
+    - left_side_player: 왼쪽 플레이어. user, score, bar를 가진 namedtuple
+    - right_side_player: 오른쪽 플레이어 user, score, bar를 가진 namedtuple
+    - ping_pong_map: 맵 정보. width, height를 가진 namedtuple
+    - ball: Ball 클래스
+    - started_at: 게임 시작 시간
+    - finished: 게임이 끝났는지 여부
     """
-    left_side_player: Player
-    right_side_player: Player
-    ping_pong_map: PingPongMap
+    left_side_player: namedtuple('Player', ['user', 'score', 'bar'])
+    right_side_player: namedtuple('Player', ['user', 'score', 'bar'])
+    ping_pong_map: namedtuple('Map', ['width', 'height'])
     ball: Ball
     started_at: datetime
     finished: False
 
-    def __init__(self, ping_pong_map: PingPongMap, player1: User, player2: User):
+    def __init__(self, ping_pong_map: namedtuple('Map', ['width', 'height']), player1: User, player2: User):
         """
         Args:
-        - ping_pong_map: PingPongMap
+        - ping_pong_map: namedtuple('Map', ['width', 'height'])
         """
-        self.left_side_player = Player(
+        self.left_side_player = namedtuple('Player', ['user', 'score', 'bar'])(
             player1,
             0,
-            Bar(
+            namedtuple('Bar', ['width', 'height', 'x', 'y', 'speed'])(
                 GAME_SETTINGS_DICT['bar']['width'],
-                ping_pong_map.height / 2 - GAME_SETTINGS_DICT['bar']['height'] / 2
+                GAME_SETTINGS_DICT['bar']['height'],
+                GAME_SETTINGS_DICT['bar']['width'],
+                ping_pong_map.height / 2 - GAME_SETTINGS_DICT['bar']['height'] / 2,
+                GAME_SETTINGS_DICT['bar']['speed']
             )
         )
-        self.right_side_player = Player(
+        self.right_side_player = namedtuple('Player', ['user', 'score', 'bar'])(
             player2,
             0,
-            Bar(
+            namedtuple('Bar', ['width', 'height', 'x', 'y', 'speed'])(
+                GAME_SETTINGS_DICT['bar']['width'],
+                GAME_SETTINGS_DICT['bar']['height'],
                 ping_pong_map.width - GAME_SETTINGS_DICT['bar']['width'],
-                ping_pong_map.height / 2 - GAME_SETTINGS_DICT['bar']['height'] / 2
-            ),
+                ping_pong_map.height / 2 - GAME_SETTINGS_DICT['bar']['height'] / 2,
+                GAME_SETTINGS_DICT['bar']['speed']
+            )
         )
         self.ping_pong_map = ping_pong_map
         self.ball = Ball(ping_pong_map.width / 2, ping_pong_map.height / 2)
@@ -347,7 +303,9 @@ class PingPongGame:
         :return: None
         :rtype: None
         """
-        if whether_score_a_goal[0]:
-            self.left_side_player.score += 1
-        elif whether_score_a_goal[1]:
-            self.right_side_player.score += 1
+        if whether_score_a_goal[0] and not whether_score_a_goal[1]:
+            self.left_side_player = self.left_side_player._replace(score=self.left_side_player.score + 1)
+        elif whether_score_a_goal[1] and not whether_score_a_goal[0]:
+            self.right_side_player = self.right_side_player._replace(score=self.right_side_player.score + 1)
+        else:
+            raise ValueError('only one player can score a goal')

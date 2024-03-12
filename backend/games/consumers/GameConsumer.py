@@ -1,4 +1,6 @@
 import asyncio
+from collections import namedtuple
+
 import autobahn
 import json
 import logging
@@ -9,7 +11,7 @@ from datetime import datetime
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.contrib.auth.models import AnonymousUser
-from games.models import Game, PingPongGame, PingPongMap, Result
+from games.models import Game, PingPongGame, Result
 from games.serializers import PvPMatchSerializer, TournamentMatchSerializer, TournamentFinalMatchSerializer
 from src.choices import MODE_CHOICES_DICT, GAME_SETTINGS_DICT, RATING_RANGE_DICT
 from users.models import User
@@ -395,7 +397,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         map_width = message_data['map_width']
         map_height = message_data['map_height']
 
-        self.ping_pong_map = PingPongMap(map_width, map_height)
+        self.ping_pong_map = namedtuple('Map', ['width', 'height'])(map_width, map_height)
 
         if match == 1:
             self.match1 = PingPongGame(self.ping_pong_map, self.game.match1.player1, self.game.match1.player2)
