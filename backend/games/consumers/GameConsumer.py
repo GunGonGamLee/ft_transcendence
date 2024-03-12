@@ -146,6 +146,8 @@ class GameConsumer(AsyncWebsocketConsumer):
                         })
                 else:
                     self._save_match_data(my_match, result, False)
+                    if my_match != 3:
+                        await self.channel_layer.group_discard(self.game_group_name, self.channel_name)
                     await self.channel_layer.group_discard(match_group_name, self.channel_name)
         else:
             await self.channel_layer.group_send(
@@ -153,6 +155,8 @@ class GameConsumer(AsyncWebsocketConsumer):
                 {
                     'type': 'player2_disconnect'
                 })
+            if my_match != 3:
+                await self.channel_layer.group_discard(self.game_group_name, self.channel_name)
             await self.channel_layer.group_discard(match_group_name, self.channel_name)
 
     @database_sync_to_async
