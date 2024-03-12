@@ -489,6 +489,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def close_connection(self, event):
         await self.send(text_data=json.dumps(event))
+        await self.channel_layer.group_discard(self.game_group_name, self.channel_name)
         await self.close()
 
     async def game_info(self, event):
