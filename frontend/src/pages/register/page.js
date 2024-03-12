@@ -102,7 +102,6 @@ export default function Register($container) {
       })
       .then((data) => {
         // response.json()이 null이 아닐 때만 아래 로직 실행
-        console.log(data);
         if (data) {
           // token 값을 로컬 스토리지에 저장
           if (data.token) {

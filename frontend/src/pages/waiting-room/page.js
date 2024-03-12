@@ -18,7 +18,6 @@ export default function WaitingRoom($container, info = null) {
   }
   let userNickname = null;
   let players = info.data.players;
-  console.log(players);
   getUserMe().then((user) => {
     userNickname = user.data.nickname;
   });
@@ -42,12 +41,10 @@ export default function WaitingRoom($container, info = null) {
     );
     ws.onmessage = (msg) => {
       let data = JSON.parse(msg.data);
-      console.log(data);
       if (data.type === "game_info") {
         const player = info.data.players.find(
           (player) => player.nickname === userNickname,
         );
-        console.log(player, userNickname);
         if (
           ((data.data.mode === 1 && data.data.players.length === 4) ||
             (data.data.mode === 0 && data.data.players.length === 2)) &&
@@ -60,7 +57,6 @@ export default function WaitingRoom($container, info = null) {
         players = data.data.players;
         setUserState(players);
       } else {
-        console.log(data);
         ws.close();
         const newWs = new WebSocket(`${WEBSOCKET}${data.data}`);
         newWs.onmessage = (msg) => {

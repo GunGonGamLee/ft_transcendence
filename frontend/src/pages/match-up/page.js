@@ -7,7 +7,6 @@ export default function Matchup($container, info = null) {
     navigate("/game-mode");
     return;
   }
-  console.log(info);
   // 이전 페이지로 부터 받아온 정보 처리
   const ws = info.socket;
   ws.onmessage = null;

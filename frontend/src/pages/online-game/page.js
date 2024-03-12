@@ -14,7 +14,6 @@ export default function OnlineGame($container, info) {
     navigate("/game-mode");
     return;
   }
-  console.log(info);
   const ws = info.socket;
   let scoreInput = { player1: 0, player2: 0 };
   let [getScore, setScore] = useState(scoreInput, this, "renderScoreBoard");
@@ -59,7 +58,6 @@ export default function OnlineGame($container, info) {
     ctx = canvas.getContext("2d");
     canvas.width = document.body.clientWidth;
     canvas.height = document.body.clientHeight * 0.88; // header의 height가 12vh이므로 88%만큼의 height를 가짐
-    console.log(canvas.width, canvas.height);
 
     bar1 = { x: 10, y: canvas.height / 2 - 50, width: 20, height: 100 };
     bar2 = {
