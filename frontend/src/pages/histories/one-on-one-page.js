@@ -24,17 +24,25 @@ export default function OneOnOneHistories($container, info) {
     this.$customList.textContent = "";
     this.$prev = document.getElementById("prev");
     this.$next = document.getElementById("next");
+    this.currentPage = 1;
     this.totalPages = 0;
     initializePagination(this.$pagination, this.$prev, this.$next);
     getOneOnOneList();
+    click(this.$prev, () => {
+      if (this.currentPage === 1) return;
+      this.currentPage--;
+    });
+    click(this.$next, () => {
+      if (this.currentPage === this.totalPages) return;
+      this.currentPage++;
+    });
   };
 
   const getOneOnOneList = () => {
-    let page = Number(this.$prev.dataset.page) + 1;
     getUserMe().then((response) => {
       let { nickname } = response.data;
       fetch(
-        `${BACKEND}/games/results?user=${nickname}&mode=${mode}&page=${page}&limit=4`,
+        `${BACKEND}/games/results?user=${nickname}&mode=${mode}&page=${this.currentPage}&limit=4`,
         {
           method: "GET",
           headers: {
@@ -48,6 +56,7 @@ export default function OneOnOneHistories($container, info) {
             this.totalPages = data.total_pages;
             setPagination();
             set1vs1Histories(data);
+            console.log(this.$prev.click);
           });
         } else {
           navigate("error", { errorCode: response.status });
@@ -56,20 +65,22 @@ export default function OneOnOneHistories($container, info) {
     });
   };
 
+  /**
+   * 페이지로 이동하는 버튼에 대한 onClick 프로퍼티를 추가하고, 페이지네이션의 인덱스를 설정합니다.
+   */
   const setPagination = () => {
     if (this.totalPages === 1) {
       // 페이지가 1개인 경우
-      setPaginationActive(this.$prev, false, null);
-      setPaginationActive(this.$next, false, null);
+      setPaginationActive(this.$prev, false, getOneOnOneList);
+      setPaginationActive(this.$next, false, getOneOnOneList);
     } else if (this.totalPages > 1) {
-      // 페이지가 2개 이상인 경우
-      if (this.$prev.dataset.page === "0") {
-        setPaginationActive(this.$prev, false, null);
+      if (this.currentPage === 1) {
+        setPaginationActive(this.$prev, false, getOneOnOneList);
         setPaginationActive(this.$next, true, getOneOnOneList);
       }
-      if (this.$next.dataset.page === this.totalPages + 1) {
+      if (this.currentPage === this.totalPages) {
         setPaginationActive(this.$prev, true, getOneOnOneList);
-        setPaginationActive(this.$next, false, null);
+        setPaginationActive(this.$next, false, getOneOnOneList);
       }
     }
   };
@@ -81,6 +92,7 @@ export default function OneOnOneHistories($container, info) {
    * 3. 플레이어 2의 정보를 렌더링합니다.
    */
   this.render = () => {
+    this.$customList.textContent = "";
     this.$customList.insertAdjacentHTML(
       "afterbegin",
       `
