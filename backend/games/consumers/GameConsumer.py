@@ -118,11 +118,14 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def _is_loser(self):
-        if self.my_match == 1 and self.user.nickname != self.game.match1.winner.nickname:
-            return True
-        elif self.my_match == 2 and self.user.nickname != self.game.match2.winner.nickname:
-            return True
-        return False
+        try:
+            if self.my_match == 1 and self.user.nickname != self.game.match1.winner.nickname:
+                return True
+            elif self.my_match == 2 and self.user.nickname != self.game.match2.winner.nickname:
+                return True
+            return False
+        except Exception as e:
+            return False
 
     async def _dodge(self, my_match, result: PingPongGame, player1: bool, match_group_name):
         if player1:
