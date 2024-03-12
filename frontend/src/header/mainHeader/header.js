@@ -268,10 +268,13 @@ export default function MainHeader($container) {
   };
 
   this.renderFriendsList = () => {
-    // 상태 관리 시스템으로부터 현재 친구 목록 상태를 가져옵니다.
+    // 상태 관리 시스템으로부터 현재 친구 목록 상태를 가져옴.
     const newFriendList = getFriendsList();
-    // 새로운 친구 목록을 기반으로 친구 카드를 생성합니다.
-    const newFriendCards = newFriendList.friends
+    // friends가 배열인지 확인하고, 아니라면 빈 배열을 사용.
+    const friends = Array.isArray(newFriendList.friends) ? newFriendList.friends : [];
+
+    // 새로운 친구 목록을 기반으로 친구 카드를 생성.
+    const newFriendCards = friends
       .slice(0, 8)
       .map((card, index) =>
         createInfoCard(
