@@ -268,14 +268,12 @@ export default function MainHeader($container) {
 
   this.renderFriendsList = () => {
     // 상태 관리 시스템으로부터 현재 친구 목록 상태를 가져옴.
-    const newFriendList = getFriendsList();
+    const tempFriendList = getFriendsList();
     // friends가 배열인지 확인하고, 아니라면 빈 배열을 사용.
-    const friends = Array.isArray(newFriendList.friends)
-      ? newFriendList.friends
-      : [];
+    const newFriendList = Array.isArray(tempFriendList.friends) ? tempFriendList.friends : [];
 
     // 새로운 친구 목록을 기반으로 친구 카드를 생성.
-    const newFriendCards = friends
+    const newFriendCards = newFriendList
       .slice(0, 8)
       .map((card, index) =>
         createInfoCard(
@@ -287,17 +285,23 @@ export default function MainHeader($container) {
       )
       .join("");
 
-    document.getElementById("friends-list-wrapper").innerHTML = `
-          <div class="list-subject">
-            친구 (${newFriendList.friends.length} / 8)
-            </div>
-            <div id="friends-list">
-                ${newFriendCards}
-            </div>
-                `;
+    // const friendsListWrapper = document.getElementById("friends-list-wrapper");
+    // if (friendsListWrapper !== null) {
+    //   friendsListWrapper.innerHTML = `
+    //         <div class="list-subject">
+    //             친구 (${newFriendList.length} / 8)
+    //         </div>
+    //         <div id="friends-list">
+    //             ${newFriendCards}
+    //         </div>
+    //     `;
+    // } else {
+    //   console.error("Element with ID 'friends-list-wrapper' was not found.");
+    // }
+
 
     // 친구삭제 클릭 이벤트
-    newFriendList.friends.forEach((friend, index) => {
+    newFriendList.forEach((friend, index) => {
       const iconElement = document.getElementById(`delete-icon-${index}`);
 
       if (iconElement) {
