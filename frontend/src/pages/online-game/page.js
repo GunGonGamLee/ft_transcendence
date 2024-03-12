@@ -26,7 +26,6 @@ export default function OnlineGame($container, info) {
   let bar1, bar2, ball, $toast, toastt, canvas, ctx;
   let initMyInfo = async () => {
     myNickname = await getUserMe().then((user) => user.data.nickname);
-    console.log(myNickname);
     if (
       info.data.data.match2 &&
       (info.data.data.match2[0].nickname === myNickname ||
@@ -39,7 +38,6 @@ export default function OnlineGame($container, info) {
         info.data.data.match3[1].nickname === myNickname)
     )
       myMatch = 3;
-    console.log(myMatch);
   };
   const init = async () => {
     await initMyInfo();
@@ -190,12 +188,10 @@ export default function OnlineGame($container, info) {
     if (e.key === "ArrowUp") {
       if (keyState.up === false) return;
       keyState.up = false;
-      console.log("up");
       ws.send(JSON.stringify({ type: "keyboard", data: "up" }));
     } else if (e.key === "ArrowDown") {
       if (keyState.down === false) return;
       keyState.down = false;
-      console.log("down");
       ws.send(JSON.stringify({ type: "keyboard", data: "down" }));
     }
   };
@@ -237,7 +233,6 @@ export default function OnlineGame($container, info) {
     };
   }
   function endGame(data, ws) {
-    console.log(myMatch, data);
     if (myMatch !== data.data.match) {
       matchEndCnt++;
       return;
