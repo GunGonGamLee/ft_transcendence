@@ -54,3 +54,8 @@ GAME_SETTINGS_DICT = {
         'frame': 1 / 24
     }
 }
+
+RATING_RANGE_DICT = {
+    'start': 80,
+    'end': 120
+}
