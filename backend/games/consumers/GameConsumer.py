@@ -303,13 +303,10 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def _send_final_match_table(self):
         serializer_data = await self._get_serializer_data(True)
-        await self.channel_layer.group_send(
-            self.match3_group_name,
-            {
-                'type': 'game_info',
-                'data': serializer_data
-            }
-        )
+        await self.game_info({
+            'type': 'game_info',
+            'data': serializer_data
+        })
 
     async def _process_keyboard_input(self, message_data):
         if self.player1 is False:
