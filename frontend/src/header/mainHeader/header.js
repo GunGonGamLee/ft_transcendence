@@ -89,6 +89,9 @@ export default function MainHeader($container) {
         if (response.status === 200) {
           navigate("/");
           deleteCookie("jwt");
+        } else {
+          // todo -> 200이 아니면 로그인페이지로 다시 보냄
+
         }
       });
     });
@@ -268,14 +271,11 @@ export default function MainHeader($container) {
 
   this.renderFriendsList = () => {
     // 상태 관리 시스템으로부터 현재 친구 목록 상태를 가져옴.
-    const tempFriendList = getFriendsList();
-    // friends가 배열인지 확인하고, 아니라면 빈 배열을 사용.
-    const newFriendList = Array.isArray(tempFriendList.friends) ? tempFriendList.friends : [];
+    const newFriendList = getFriendsList().length === undefined ?  null : getFriendsList();
 
     // 새로운 친구 목록을 기반으로 친구 카드를 생성.
-    const newFriendCards = newFriendList
-      .slice(0, 8)
-      .map((card, index) =>
+    const newFriendCards = newFriendList?.slice(0, 8)
+      ?.map((card, index) =>
         createInfoCard(
           card,
           index,
@@ -283,13 +283,13 @@ export default function MainHeader($container) {
           { iconImagePath: "../../assets/images/trash.png" },
         ),
       )
-      .join("");
+      ?.join("");
 
     const friendsListWrapper = document.getElementById("friends-list-wrapper");
     if (friendsListWrapper !== null) {
       friendsListWrapper.innerHTML = `
             <div class="list-subject">
-                친구 (${newFriendList.length} / 8)
+                친구 (${newFriendList === null ? 0 : newFriendList.friends.length} / 8)
             </div>
             <div id="friends-list">
                 ${newFriendCards}
@@ -301,7 +301,7 @@ export default function MainHeader($container) {
 
 
     // 친구삭제 클릭 이벤트
-    newFriendList.forEach((friend, index) => {
+    newFriendList?.forEach((friend, index) => {
       const iconElement = document.getElementById(`delete-icon-${index}`);
 
       if (iconElement) {
