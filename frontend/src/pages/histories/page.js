@@ -33,7 +33,7 @@ export function Histories($container) {
                 <div class="histories casual-toggle" id="toggle">
                     <ul class="histories">
                         <li>${MODE.one_on_one}</li>
-                        <li>${MODE.rank}</li>
+                        <li>${MODE.casual_tournament}</li>
                     </ul>
                 </div>
             </div>
