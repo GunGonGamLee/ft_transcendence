@@ -3,6 +3,7 @@ import scoreBar from "./scoreBar.js";
 import toast from "./toast.js";
 import { navigate } from "../../utils/navigate.js";
 import deepCopy from "../../utils/deepCopy.js";
+
 /**
  *
  * @param {HTMLElement} $container
@@ -40,6 +41,7 @@ export default function LocalGame($container, info = null) {
     clearInterval(this.timeIntervalId);
     cancelAnimationFrame(this.gameAnimationId);
     cancelAnimationFrame(this.barAnimationId);
+    cancelAnimationFrame(this.moveBallEventId);
     document.querySelector("#header").style.display = "block";
     document.removeEventListener("keydown", keyEventHandler);
   };
@@ -200,18 +202,19 @@ export default function LocalGame($container, info = null) {
    */
   const runGame = (canvas, bar1, bar2, ball, drawFunction) => {
     let isBounced = false;
+    let hitCountOfWall = 0;
 
     const moveBall = () => {
       if (isBallInsideBar(bar1, ball) || isBallInsideBar(bar2, ball)) {
-        bounce(true, false, 0.99, 1.01);
+        bounce(true, false);
         hitCountOfWall = 0;
       } else if (isBallHitWall(canvas, ball)) {
         hitCountOfWall++;
         if (hitCountOfWall % 6 === 5) {
           ball.direction.x *= getRandomCoefficient(2, 5);
-          bounce(false, true, 0.99, 1.01);
+          bounce(false, true);
         } else {
-          bounce(false, true, 0.99, 1.01);
+          bounce(false, true);
         }
       } else {
         isBounced = false;
@@ -338,20 +341,18 @@ export default function LocalGame($container, info = null) {
      * 공이 벽에 부딪혔을 때 방향을 바꾸는 함수
      * @param bounceX {boolean} x축으로 부딪혔는지 여부
      * @param bounceY {boolean} y축으로 부딪혔는지 여부
-     * @param cMin {number} 보정치 계수의 최소값
-     * @param cMax {number} 보정치 계수의 최대값
      */
-    const bounce = (bounceX, bounceY, cMin, cMax) => {
+    const bounce = (bounceX, bounceY) => {
       if (bounceX && !isBounced) {
         [ball.direction.x, ball.direction.y] = normalizeVector(
-          ball.direction.x * -1 * getRandomCoefficient(cMin, cMax),
+          ball.direction.x * -1 * getRandomCoefficient(0.99, 1.01),
           ball.direction.y,
         );
         isBounced = true;
       } else if (bounceY && !isBounced) {
         [ball.direction.x, ball.direction.y] = normalizeVector(
           ball.direction.x,
-          ball.direction.y * -1 * getRandomCoefficient(cMin, cMax),
+          ball.direction.y * -1 * getRandomCoefficient(0.99, 1.01),
         );
         isBounced = true;
       }
@@ -372,6 +373,7 @@ export default function LocalGame($container, info = null) {
       normalizeVector(ball.direction.x, ball.direction.y);
       ball.speed = BALL_SPEED;
       isBounced = false;
+      hitCountOfWall = 0;
     };
 
     /**
