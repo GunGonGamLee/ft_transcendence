@@ -28,10 +28,9 @@ export function formatTime(timeString) {
 
 /**
  * 승률을 포맷팅하여 반환합니다. (xx.xx%)
- * @param rateString {string} 승률 문자열
+ * @param rate {number} 승률 문자열
  * @returns {string} 포맷팅된 승률 문자열
  */
-export function formatWinRate(rateString) {
-  const rate = parseFloat(rateString);
+export function formatWinRate(rate) {
   return rate.toFixed(2) + "%";
 }
