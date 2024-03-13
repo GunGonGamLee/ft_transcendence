@@ -42,13 +42,16 @@ INTRA42_AUTHORIZE_API = settings.INTRA42_AUTHORIZE_API
 INTRA42_TOKEN_API = settings.INTRA42_TOKEN_API
 INTRA42_USERINFO_API = settings.INTRA42_USERINFO_API
 
-SECRET_KEY = settings.SECRET_KEY
+JWT_EMAIL_SECRET_KEY = settings.JWT_EMAIL_SECRET_KEY
+JWT_AUTH_SECRET_KEY = settings.JWT_AUTH_SECRET_KEY
+
 DEFAULT_FROM_MAIL = settings.DEFAULT_FROM_MAIL
 
 if settings.DEBUG:
     EMAIL_AUTH_URI = 'https://localhost:3000/auth'
 else:
     EMAIL_AUTH_URI = 'https://localhost:443/auth'
+
 
 class OAuthLoginView(APIView):
     @swagger_auto_schema(tags=['/api/login'], operation_description="소셜 로그인 창으로 페이지 redirect",
@@ -93,7 +96,7 @@ class OAuthCallbackView(APIView):
             email = self.get_email(access_token)
             user = User.objects.get(email=email)
             send_and_save_verification_code(user)
-            auth_token = create_jwt_token(user, 3)
+            auth_token = create_jwt_token(user, JWT_EMAIL_SECRET_KEY, 3)
             target_url = self.get_email_auth_uri() + "?" + urlencode({
                 'token': auth_token,
             })
@@ -104,7 +107,7 @@ class OAuthCallbackView(APIView):
             try:
                 user = User.objects.create_user(email=email)
                 send_and_save_verification_code(user)
-                auth_token = create_jwt_token(user, 3)
+                auth_token = create_jwt_token(user, JWT_EMAIL_SECRET_KEY, 3)
                 target_url = self.get_email_auth_uri() + "?" + urlencode({
                     'token': auth_token,
                 })
@@ -164,13 +167,13 @@ class Intra42CallbackView(OAuthCallbackView):
     userinfo_api = INTRA42_USERINFO_API
 
 
-def create_jwt_token(user: User, expiration_days: int):
+def create_jwt_token(user: User, secret_key, expiration_days: int):
     try:
         payload = {
             'user_email': user.email,
             'exp': datetime.utcnow() + timedelta(days=expiration_days),
         }
-        token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+        token = jwt.encode(payload, secret_key, algorithm='HS256')
         token = token.decode('utf-8') if isinstance(token, bytes) else token
         return token
     except Exception as e:
@@ -204,13 +207,13 @@ class VerificationCodeView(APIView):
                    500: 'SERVER_ERROR'})
     def post(self, request):
         try:
-            user = AuthUtils.validate_jwt_token_and_get_user(request)
+            user = AuthUtils.validate_jwt_token_and_get_user(request, JWT_EMAIL_SECRET_KEY)
             verification_code = get_request_body_value(request, 'code')
             nickname = user.nickname
             is_noob = True if nickname is None else False
 
             if user.verification_code == verification_code:
-                jwt_token = create_jwt_token(user, 7)
+                jwt_token = create_jwt_token(user, JWT_AUTH_SECRET_KEY, 7)
                 data = {'token': jwt_token, 'is_noob': is_noob}
                 serializer = VerificationCodeSerializer(data)
                 response = Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -241,9 +244,9 @@ class VerificationCodeAgainView(APIView):
                    500: 'SERVER_ERROR'})
     def post(self, request):
         try:
-            user = AuthUtils.validate_jwt_token_and_get_user(request)
+            user = AuthUtils.validate_jwt_token_and_get_user(request, JWT_EMAIL_SECRET_KEY)
             send_and_save_verification_code(user)
-            auth_token = create_jwt_token(user, 1)
+            auth_token = create_jwt_token(user, JWT_AUTH_SECRET_KEY, 1)
             response = JsonResponse({'token': auth_token}, status=status.HTTP_200_OK)
             response.set_cookie('jwt', auth_token)
             return response
@@ -260,12 +263,12 @@ class VerificationCodeAgainView(APIView):
 
 class AuthUtils:
     @staticmethod
-    def validate_jwt_token_and_get_user(request):
+    def validate_jwt_token_and_get_user(request, secret_key=JWT_AUTH_SECRET_KEY):
         try:
             jwt_token = request.COOKIES.get('jwt')
             if jwt_token is None:
                 jwt_token = request.headers.get('Authorization').split(' ')[1]
-            decoded_token = jwt.decode(jwt_token, SECRET_KEY, algorithms=['HS256'])
+            decoded_token = jwt.decode(jwt_token, secret_key, algorithms=['HS256'])
             user_email = decoded_token.get('user_email')
             user = User.objects.get(email=user_email)
             return user
