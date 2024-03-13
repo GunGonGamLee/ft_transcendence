@@ -11,7 +11,7 @@ RUN git clone --depth 1 https://github.com/SpiderLabs/ModSecurity.git /usr/local
     && ./build.sh \
     && ./configure \
     && make \
-    && make install
+    && make install 
 
 # ModSecurity-nginx 커넥터 다운로드
 RUN git clone --depth 1 https://github.com/SpiderLabs/ModSecurity-nginx.git /usr/local/src/modsecurity-nginx
