@@ -42,13 +42,16 @@ INTRA42_AUTHORIZE_API = settings.INTRA42_AUTHORIZE_API
 INTRA42_TOKEN_API = settings.INTRA42_TOKEN_API
 INTRA42_USERINFO_API = settings.INTRA42_USERINFO_API
 
-SECRET_KEY = settings.SECRET_KEY
+JWT_EMAIL_SECRET_KEY = settings.JWT_EMAIL_SECRET_KEY
+JWT_AUTH_SECRET_KEY = settings.JWT_AUTH_SECRET_KEY
+
 DEFAULT_FROM_MAIL = settings.DEFAULT_FROM_MAIL
 
 if settings.DEBUG:
     EMAIL_AUTH_URI = 'https://localhost:3000/auth'
 else:
     EMAIL_AUTH_URI = 'https://localhost:443/auth'
+
 
 class OAuthLoginView(APIView):
     @swagger_auto_schema(tags=['/api/login'], operation_description="소셜 로그인 창으로 페이지 redirect",
