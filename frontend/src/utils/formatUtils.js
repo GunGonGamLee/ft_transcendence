@@ -25,3 +25,13 @@ export function formatTime(timeString) {
     hour.split(".")[0] + ":" + minute.split(".")[0] + ":" + second.split(".")[0]
   );
 }
+
+/**
+ * 승률을 포맷팅하여 반환합니다. (xx.xx%)
+ * @param rateString {string} 승률 문자열
+ * @returns {string} 포맷팅된 승률 문자열
+ */
+export function formatWinRate(rateString) {
+  const rate = parseFloat(rateString);
+  return rate.toFixed(2) + "%";
+}
