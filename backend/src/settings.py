@@ -92,6 +92,7 @@ else:
     JWT_EMAIL_SECRET_KEY = read_response['data']['data']['JWT_EMAIL_SECRET_KEY']
     JWT_AUTH_SECRET_KEY = read_response['data']['data']['JWT_AUTH_SECRET_KEY']
     BASE_URL = config('BASE_URL')
+    SECRET_KEY = LOG_KEY
 
 LOGGING = {
     'version': 1,
