@@ -204,8 +204,10 @@ export default function LocalGame($container, info = null) {
     const moveBall = () => {
       if (isBallInsideBar(bar1, ball) || isBallInsideBar(bar2, ball)) {
         bounce(true, false);
+        bounce(true, false, 0.99, 1.01);
       } else if (isBallHitWall(canvas, ball)) {
         bounce(false, true);
+        bounce(false, true, 0.99, 1.01);
       } else {
         isBounced = false;
       }
@@ -331,18 +333,20 @@ export default function LocalGame($container, info = null) {
      * 공이 벽에 부딪혔을 때 방향을 바꾸는 함수
      * @param bounceX {boolean} x축으로 부딪혔는지 여부
      * @param bounceY {boolean} y축으로 부딪혔는지 여부
+     * @param cMin {number} 보정치 계수의 최소값
+     * @param cMax {number} 보정치 계수의 최대값
      */
-    const bounce = (bounceX, bounceY) => {
+    const bounce = (bounceX, bounceY, cMin, cMax) => {
       if (bounceX && !isBounced) {
         [ball.direction.x, ball.direction.y] = normalizeVector(
-          ball.direction.x * -1 * getRandomCoefficient(0.99, 1.01),
+          ball.direction.x * -1 * getRandomCoefficient(cMin, cMax),
           ball.direction.y,
         );
         isBounced = true;
       } else if (bounceY && !isBounced) {
         [ball.direction.x, ball.direction.y] = normalizeVector(
           ball.direction.x,
-          ball.direction.y * -1 * getRandomCoefficient(0.99, 1.01),
+          ball.direction.y * -1 * getRandomCoefficient(cMin, cMax),
         );
         isBounced = true;
       }
