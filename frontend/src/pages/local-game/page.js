@@ -209,12 +209,13 @@ export default function LocalGame($container, info = null) {
         bounce(true, false);
         hitCountOfWall = 0;
       } else if (isBallHitWall(canvas, ball)) {
-        Math.abs(ball.direction.x) * 100 === 0
-          ? hitCountOfWall++
-          : hitCountOfWall;
-        if (hitCountOfWall % 6 === 5) {
-          ball.direction.x *= getRandomCoefficient(2, 5);
+        Math.abs(ball.direction.x) <= 0.2 ? hitCountOfWall++ : hitCountOfWall;
+        if (hitCountOfWall % 5 === 4) {
+          Math.abs(ball.direction.x) <= 0.01
+            ? (ball.direction.x *= getRandomCoefficient(60, 80))
+            : (ball.direction.x *= getRandomCoefficient(3, 4));
           bounce(false, true);
+          hitCountOfWall = 0;
         } else {
           bounce(false, true);
         }
