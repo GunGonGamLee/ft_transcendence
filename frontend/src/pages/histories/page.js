@@ -33,13 +33,13 @@ export function Histories($container) {
                 <div class="histories casual-toggle" id="toggle">
                     <ul class="histories">
                         <li>${MODE.one_on_one}</li>
-                        <li>${MODE.tournament}</li>
+                        <li>${MODE.rank}</li>
                     </ul>
                 </div>
             </div>
            <div class="histories" id="tournament">
                <img class="histories" src="${HISTORIES_IMAGE_PATH}/tournament_logo.png" alt="tournament">
-               ${MODE.tournament}
+               ${MODE.rank}
            </div>
            <div class="histories" id="avatar">
                 <img class="histories" src="${HISTORIES_IMAGE_PATH}/avatar_change.png" alt="avatar">

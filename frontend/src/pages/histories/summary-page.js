@@ -4,6 +4,7 @@ import useState from "../../utils/useState.js";
 import { getUserMe } from "../../utils/userUtils.js";
 import { navigate } from "../../utils/navigate.js";
 import { Histories } from "./page.js";
+import { formatWinRate } from "../../utils/formatUtils.js";
 
 export default function Summary($app, info) {
   new Histories($app);
@@ -113,11 +114,15 @@ export default function Summary($app, info) {
       </div>
       <div class="histories summary" id="casual-win-rate">
         <span>${MODE.casual} 승률: </span>
-        <span>${props.custom_1v1_win_rate}%</span>
+        <span>${formatWinRate(props.custom_1v1_win_rate)}</span>
+      </div>
+      <div class="histories summary" id="custom-win-rate">
+        <span>${MODE.casual_tournament} 승률: </span>
+        <span>${formatWinRate(props.custom_tournament_win_rate)}</span>
       </div>
       <div class="histories summary" id="tournament-win-rate">
-        <span>${MODE.tournament} 승률: </span>
-        <span>${props.rank_win_rate}%</span>
+        <span>${MODE.rank} 승률: </span>
+        <span>${formatWinRate(props.rank_win_rate)}</span>
       </div>
     `;
   };
