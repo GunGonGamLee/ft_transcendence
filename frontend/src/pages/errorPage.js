@@ -11,6 +11,9 @@ export default function ErrorPage($container, errorCode = 0) {
       case 401:
         comment = "어이 넌 권한이 없다.";
         break;
+      case 404:
+        comment = "그런 거 없다.";
+        break;
       case 403:
         comment = "클라이언트 요청 관련 오류.";
         break;
