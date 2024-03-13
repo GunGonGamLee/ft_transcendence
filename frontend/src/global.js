@@ -24,6 +24,7 @@ export const AVATAR_FILE_NAME = [
 
 export const MODE = {
   casual: "캐주얼 모드",
-  tournament: "토너먼트 모드",
+  casual_tournament: "토너먼트 모드",
+  rank: "랭크 토너먼트",
   one_on_one: "1 vs 1 모드",
 };
