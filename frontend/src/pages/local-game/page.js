@@ -3,6 +3,7 @@ import scoreBar from "./scoreBar.js";
 import toast from "./toast.js";
 import { navigate } from "../../utils/navigate.js";
 import deepCopy from "../../utils/deepCopy.js";
+
 /**
  *
  * @param {HTMLElement} $container
@@ -40,6 +41,7 @@ export default function LocalGame($container, info = null) {
     clearInterval(this.timeIntervalId);
     cancelAnimationFrame(this.gameAnimationId);
     cancelAnimationFrame(this.barAnimationId);
+    cancelAnimationFrame(this.moveBallEventId);
     document.querySelector("#header").style.display = "block";
     document.removeEventListener("keydown", keyEventHandler);
   };
@@ -200,12 +202,23 @@ export default function LocalGame($container, info = null) {
    */
   const runGame = (canvas, bar1, bar2, ball, drawFunction) => {
     let isBounced = false;
+    let hitCountOfWall = 0;
 
     const moveBall = () => {
       if (isBallInsideBar(bar1, ball) || isBallInsideBar(bar2, ball)) {
         bounce(true, false);
+        hitCountOfWall = 0;
       } else if (isBallHitWall(canvas, ball)) {
-        bounce(false, true);
+        Math.abs(ball.direction.x) <= 0.2 ? hitCountOfWall++ : hitCountOfWall;
+        if (hitCountOfWall % 5 === 4) {
+          Math.abs(ball.direction.x) <= 0.01
+            ? (ball.direction.x *= getRandomCoefficient(60, 80))
+            : (ball.direction.x *= getRandomCoefficient(3, 4));
+          bounce(false, true);
+          hitCountOfWall = 0;
+        } else {
+          bounce(false, true);
+        }
       } else {
         isBounced = false;
       }
@@ -219,9 +232,9 @@ export default function LocalGame($container, info = null) {
         pause(1000);
       }
       drawFunction(bar1, bar2, ball);
-      let moveBallEventId = window.requestAnimationFrame(moveBall);
+      this.moveBallEventId = window.requestAnimationFrame(moveBall);
       if (getScore().player1 + getScore().player2 >= 5) {
-        cancelAnimationFrame(moveBallEventId);
+        cancelAnimationFrame(this.moveBallEventId);
         // 게임 종료
         if (info.finalPlayer1 === null) {
           info.finalPlayer1 =
@@ -357,12 +370,13 @@ export default function LocalGame($container, info = null) {
       ball.x = canvas.width / 2;
       ball.y = canvas.height / 2;
       ball.direction = {
-        x: Math.random() * 2 - 1,
-        y: Math.random() * 2 - 1,
+        x: (Math.random() * 2 - 1) * getRandomCoefficient(0.7, 0.9),
+        y: (Math.random() * 2 - 1) * getRandomCoefficient(0.7, 0.9),
       };
       normalizeVector(ball.direction.x, ball.direction.y);
       ball.speed = BALL_SPEED;
       isBounced = false;
+      hitCountOfWall = 0;
     };
 
     /**
