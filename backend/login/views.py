@@ -50,7 +50,7 @@ DEFAULT_FROM_MAIL = settings.DEFAULT_FROM_MAIL
 if settings.DEBUG:
     EMAIL_AUTH_URI = 'https://localhost:3000/auth'
 else:
-    EMAIL_AUTH_URI = 'https://localhost:443/auth'
+    EMAIL_AUTH_URI = BASE_URL + 'register'
 
 
 class OAuthLoginView(APIView):
@@ -159,7 +159,7 @@ class GoogleCallbackView(OAuthCallbackView):
 
 class Intra42CallbackView(OAuthCallbackView):
     def get_email_auth_uri(self):
-        return BASE_URL + 'auth'
+        return BASE_URL + 'register'
     client_id = INTRA42_CLIENT_ID
     client_secret = INTRA42_CLIENT_SECRET
     token_api = INTRA42_TOKEN_API

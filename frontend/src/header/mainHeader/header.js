@@ -12,7 +12,6 @@ import { getUserMe } from "../../utils/userUtils.js";
  */
 export default function MainHeader($container) {
   this.$container = $container;
-
   const init = () => {
     getUserMe().then((response) => {
       if (response.status === 200) {
@@ -473,7 +472,6 @@ export default function MainHeader($container) {
       }
     });
   };
-
   let [getUserInfo, setUserInfo] = useState({}, this, "render");
   let [getFriendsList, setFriendsList] = useState(
     {},

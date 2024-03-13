@@ -9,7 +9,13 @@ export default function Matchup($container, info = null) {
   }
   // 이전 페이지로 부터 받아온 정보 처리
   const ws = info.socket;
-  ws.onmessage = null;
+  ws.onmessage = (msg) => {
+    ws.close()
+    let data = JSON.parse(msg.data);
+    if (data.type === "close.connection") {
+      navigate("/game-mode");
+    }
+  }
   // ws.onmessage = (msg) => {
   //   let data = JSON.parse(msg.data);
   //   let matchData = [];
@@ -126,6 +132,10 @@ export default function Matchup($container, info = null) {
   };
 
   const renderFinal = () => {
+    const $semiFinalCssLink = document.querySelector(
+      'link[href*="semi-final.css"]',
+    );
+    $semiFinalCssLink?.parentNode.removeChild($semiFinalCssLink);
     importCss("../../../assets/css/final.css");
 
     $container.innerHTML = `
