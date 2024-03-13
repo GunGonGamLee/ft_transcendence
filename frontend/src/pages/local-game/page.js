@@ -19,7 +19,7 @@ export default function LocalGame($container, info = null) {
   let scoreInput = { player1: 0, player2: 0 };
   let [getScore, setScore] = useState(scoreInput, this, "renderScoreBoard");
   let [getTime, setTime] = useState(0, this, "renderTime");
-  const BALL_SPEED = 7;
+  let BALL_SPEED = 7;
 
   const init = () => {
     hideHeader();
@@ -125,6 +125,7 @@ export default function LocalGame($container, info = null) {
   const ctx = canvas.getContext("2d");
   canvas.width = document.body.clientWidth;
   canvas.height = document.body.clientHeight * 0.88; // header의 height가 12vh이므로 88%만큼의 height를 가짐
+  BALL_SPEED = canvas.height * 0.02;
 
   // 초기 위치 설정
   let commonBarInfo = {

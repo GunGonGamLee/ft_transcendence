@@ -4,6 +4,7 @@ COPY .env .env
 
 RUN mkdir -p backend && \
 	mkdir -p /var/log/djangolog && \
+	chmod 777 /var/log/djangolog && \
 	apt-get update && \
 	apt-get install bash && \
 	apt-get install -y python3-pip

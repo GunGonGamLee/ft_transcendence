@@ -59,12 +59,12 @@ export default function OnlineGame($container, info) {
     canvas.width = document.body.clientWidth;
     canvas.height = document.body.clientHeight * 0.88; // header의 height가 12vh이므로 88%만큼의 height를 가짐
 
-    bar1 = { x: 10, y: canvas.height / 2 - 50, width: 20, height: 100 };
+    bar1 = { x: 10, y: canvas.height / 2 - 50, width: 10, height: 300 };
     bar2 = {
       x: canvas.width - 30,
       y: canvas.height / 2 - 50,
-      width: 20,
-      height: 100,
+      width: 10,
+      height: 300,
     };
     ball = { x: canvas.width / 2, y: canvas.height / 2, radius: 10 };
     ws.send(
@@ -83,12 +83,12 @@ export default function OnlineGame($container, info) {
       if (data.type === "in_game") {
         bar1.x = data.data.left_side_player.x;
         bar1.y = data.data.left_side_player.y;
-        bar1.width = data.data.width;
-        bar1.height = data.data.height;
+        bar1.width = 10;
+        bar1.height = 300;
         bar2.x = data.data.right_side_player.x;
         bar2.y = data.data.right_side_player.y;
-        bar2.width = data.data.width;
-        bar2.height = data.data.height;
+        bar2.width = 10;
+        bar2.height = 300;
         ball.x = data.data.ball.x;
         ball.y = data.data.ball.y;
         draw(bar1, bar2, ball);
@@ -103,6 +103,7 @@ export default function OnlineGame($container, info) {
         )
           setScore(newScore);
       } else if (data.type === "game_end") endGame(data, ws);
+      else if (data.type === "close.connection") navigate("/game-mode");
     };
   };
 
@@ -225,6 +226,10 @@ export default function OnlineGame($container, info) {
     ws.send(JSON.stringify({ type: "match3_info" }));
     ws.onmessage = (msg) => {
       let data = JSON.parse(msg.data);
+      if (data.type === "close.connection") {
+        navigate("/game-mode");
+        return ;
+      } 
       navigate(`/match-up`, { socket: ws, data: data, remainMatch: true });
     };
   }
@@ -244,7 +249,11 @@ export default function OnlineGame($container, info) {
         } else {
           ws.onmessage = (msg) => {
             const data = JSON.parse(msg.data);
-            if (data.type === "game_end") {
+            if (data.type === "close.connection") {
+              navigate("/game-mode");
+              return ;
+            }
+            else if (data.type === "game_end") {
               match3Logic(ws);
             }
           };

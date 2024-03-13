@@ -6,7 +6,6 @@ import MainHeader from "../header/mainHeader/header.js";
 import WaitingRoom from "../pages/waiting-room/page.js";
 import Login from "../pages/login/page.js";
 import CustomGameList from "../pages/custom-game-list/page.js";
-import Auth from "../pages/auth/page.js";
 import LocalGame from "../pages/local-game/page.js";
 import Matchup from "../pages/match-up/page.js";
 import Summary from "../pages/histories/summary-page.js";
@@ -21,7 +20,6 @@ import LocalMatchup from "../pages/local-match-up/page.js";
  */
 export const routes = [
   { path: /^\/$/, page: Login, header: emptyHeader },
-  { path: /^\/auth(?:\?.*)?$/, page: Auth, header: emptyHeader },
   { path: /^\/register$/, page: Register, header: emptyHeader },
   { path: /^\/game-mode$/, page: GameMode, header: MainHeader },
 

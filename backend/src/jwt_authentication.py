@@ -5,7 +5,7 @@ from users.models import User
 from channels.middleware import BaseMiddleware
 from django.contrib.auth.models import AnonymousUser
 
-SECRET_KEY = settings.SECRET_KEY
+SECRET_KEY = settings.JWT_AUTH_SECRET_KEY
 
 
 class JWTAuthMiddleware(BaseMiddleware):
