@@ -203,11 +203,16 @@ export default function LocalGame($container, info = null) {
 
     const moveBall = () => {
       if (isBallInsideBar(bar1, ball) || isBallInsideBar(bar2, ball)) {
-        bounce(true, false);
         bounce(true, false, 0.99, 1.01);
+        hitCountOfWall = 0;
       } else if (isBallHitWall(canvas, ball)) {
-        bounce(false, true);
-        bounce(false, true, 0.99, 1.01);
+        hitCountOfWall++;
+        if (hitCountOfWall % 6 === 5) {
+          ball.direction.x *= getRandomCoefficient(2, 5);
+          bounce(false, true, 0.99, 1.01);
+        } else {
+          bounce(false, true, 0.99, 1.01);
+        }
       } else {
         isBounced = false;
       }
