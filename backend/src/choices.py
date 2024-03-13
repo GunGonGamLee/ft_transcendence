@@ -41,9 +41,9 @@ FRIENDS_CHOICES = [
 ]
 
 GAME_SETTINGS_DICT = {
-    'bar': {
+    'bar': { 
         'width': 10,
-        'height': 100,
+        'height': 300,
         'speed': 30
     },
     'ball': {
