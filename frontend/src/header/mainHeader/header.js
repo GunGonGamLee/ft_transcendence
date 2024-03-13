@@ -23,7 +23,6 @@ export default function MainHeader($container) {
         this.ws.onmessage = (msg) => {
           let response = JSON.parse(msg.data);
           if (response.type === "alreadyLogin") {
-            console.log(response.message);
             this.ws.close();
             navigate("error", { errorCode: 4001 });
             return;
