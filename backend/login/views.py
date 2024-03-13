@@ -96,7 +96,7 @@ class OAuthCallbackView(APIView):
             email = self.get_email(access_token)
             user = User.objects.get(email=email)
             send_and_save_verification_code(user)
-            auth_token = create_jwt_token(user, 3)
+            auth_token = create_jwt_token(user, JWT_EMAIL_SECRET_KEY, 3)
             target_url = self.get_email_auth_uri() + "?" + urlencode({
                 'token': auth_token,
             })
@@ -107,7 +107,7 @@ class OAuthCallbackView(APIView):
             try:
                 user = User.objects.create_user(email=email)
                 send_and_save_verification_code(user)
-                auth_token = create_jwt_token(user, 3)
+                auth_token = create_jwt_token(user, JWT_EMAIL_SECRET_KEY, 3)
                 target_url = self.get_email_auth_uri() + "?" + urlencode({
                     'token': auth_token,
                 })
@@ -167,13 +167,13 @@ class Intra42CallbackView(OAuthCallbackView):
     userinfo_api = INTRA42_USERINFO_API
 
 
-def create_jwt_token(user: User, expiration_days: int):
+def create_jwt_token(user: User, secret_key, expiration_days: int):
     try:
         payload = {
             'user_email': user.email,
             'exp': datetime.utcnow() + timedelta(days=expiration_days),
         }
-        token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+        token = jwt.encode(payload, secret_key, algorithm='HS256')
         token = token.decode('utf-8') if isinstance(token, bytes) else token
         return token
     except Exception as e:
@@ -213,7 +213,7 @@ class VerificationCodeView(APIView):
             is_noob = True if nickname is None else False
 
             if user.verification_code == verification_code:
-                jwt_token = create_jwt_token(user, 7)
+                jwt_token = create_jwt_token(user, JWT_AUTH_SECRET_KEY, 7)
                 data = {'token': jwt_token, 'is_noob': is_noob}
                 serializer = VerificationCodeSerializer(data)
                 response = Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -246,7 +246,7 @@ class VerificationCodeAgainView(APIView):
         try:
             user = AuthUtils.validate_jwt_token_and_get_user(request)
             send_and_save_verification_code(user)
-            auth_token = create_jwt_token(user, 1)
+            auth_token = create_jwt_token(user, JWT_AUTH_SECRET_KEY, 1)
             response = JsonResponse({'token': auth_token}, status=status.HTTP_200_OK)
             response.set_cookie('jwt', auth_token)
             return response
