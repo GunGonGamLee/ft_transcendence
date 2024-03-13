@@ -23,7 +23,6 @@ export default function MainHeader($container) {
         this.ws.onmessage = (msg) => {
           let response = JSON.parse(msg.data);
           if (response.type === "alreadyLogin") {
-            console.log(response.message);
             this.ws.close();
             navigate("error", { errorCode: 4001 });
             return;
@@ -268,16 +267,11 @@ export default function MainHeader($container) {
 
   this.renderFriendsList = () => {
     // 상태 관리 시스템으로부터 현재 친구 목록 상태를 가져옴.
-    const newFriendList = getFriendsList();
-    // friends가 배열인지 확인하고, 아니라면 빈 배열을 사용.
-    const friends = Array.isArray(newFriendList.friends)
-      ? newFriendList.friends
-      : [];
+    const newFriendList = getFriendsList().length === undefined ?  null : getFriendsList();
 
     // 새로운 친구 목록을 기반으로 친구 카드를 생성.
-    const newFriendCards = friends
-      .slice(0, 8)
-      .map((card, index) =>
+    const newFriendCards = newFriendList?.slice(0, 8)
+      ?.map((card, index) =>
         createInfoCard(
           card,
           index,
@@ -285,19 +279,25 @@ export default function MainHeader($container) {
           { iconImagePath: "../../assets/images/trash.png" },
         ),
       )
-      .join("");
+      ?.join("");
 
-    document.getElementById("friends-list-wrapper").innerHTML = `
-          <div class="list-subject">
-            친구 (${newFriendList.friends.length} / 8)
+    const friendsListWrapper = document.getElementById("friends-list-wrapper");
+    if (friendsListWrapper !== null) {
+      friendsListWrapper.innerHTML = `
+            <div class="list-subject">
+                친구 (${newFriendList === null ? 0 : newFriendList.friends.length} / 8)
             </div>
             <div id="friends-list">
                 ${newFriendCards}
             </div>
-                `;
+        `;
+    } else {
+      console.error("Element with ID 'friends-list-wrapper' was not found.");
+    }
+
 
     // 친구삭제 클릭 이벤트
-    newFriendList.friends.forEach((friend, index) => {
+    newFriendList?.forEach((friend, index) => {
       const iconElement = document.getElementById(`delete-icon-${index}`);
 
       if (iconElement) {
@@ -325,24 +325,11 @@ export default function MainHeader($container) {
               const friendsListDiv = document.getElementById("friends-list");
               friendsListDiv.innerHTML = loadingHtml; // 로딩 스피너를 friends-list 내부에 갱신
             } else {
-              // TODO => 에러 페이지로 이동
               navigate("/");
             }
           });
         });
       }
-    });
-    click(document.getElementById("friends-list"), () => {
-      const loadingHtml = `
-                                <div style="position: relative; width: 100%; height: 100%;">
-                                    <div id="loading-spinner" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">               
-                                        <div class="spinner-border text-light" style="width: 10vh; height: 10vh;" role="status">
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
-      const friendsListDiv = document.getElementById("friends-list");
-      friendsListDiv.innerHTML = loadingHtml; // 로딩 스피너를 friends-list 내부에 갱신
     });
   };
 
