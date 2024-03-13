@@ -370,8 +370,8 @@ export default function LocalGame($container, info = null) {
       ball.x = canvas.width / 2;
       ball.y = canvas.height / 2;
       ball.direction = {
-        x: Math.random() * 2 - 1,
-        y: Math.random() * 2 - 1,
+        x: (Math.random() * 2 - 1) * getRandomCoefficient(0.7, 0.9),
+        y: (Math.random() * 2 - 1) * getRandomCoefficient(0.7, 0.9),
       };
       normalizeVector(ball.direction.x, ball.direction.y);
       ball.speed = BALL_SPEED;
