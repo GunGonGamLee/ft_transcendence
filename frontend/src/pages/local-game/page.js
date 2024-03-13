@@ -209,7 +209,7 @@ export default function LocalGame($container, info = null) {
         bounce(true, false);
         hitCountOfWall = 0;
       } else if (isBallHitWall(canvas, ball)) {
-        Math.abs(ball.direction.y) * 1000 === 0
+        Math.abs(ball.direction.x) * 1000 === 0
           ? hitCountOfWall++
           : hitCountOfWall;
         if (hitCountOfWall % 6 === 5) {
