@@ -88,9 +88,6 @@ export default function MainHeader($container) {
         if (response.status === 200) {
           navigate("/");
           deleteCookie("jwt");
-        } else {
-          // todo -> 200이 아니면 로그인페이지로 다시 보냄
-
         }
       });
     });
@@ -328,7 +325,6 @@ export default function MainHeader($container) {
               const friendsListDiv = document.getElementById("friends-list");
               friendsListDiv.innerHTML = loadingHtml; // 로딩 스피너를 friends-list 내부에 갱신
             } else {
-              // TODO => 에러 페이지로 이동
               navigate("/");
             }
           });
