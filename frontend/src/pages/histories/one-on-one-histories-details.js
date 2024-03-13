@@ -3,7 +3,7 @@ import { navigate } from "../../utils/navigate.js";
 import { getCookie } from "../../utils/cookie.js";
 import useState from "../../utils/useState.js";
 import { getUserMe } from "../../utils/userUtils.js";
-import { formatDateWithTime } from "../../utils/dateUtils.js";
+import { formatDateWithTime } from "../../utils/formatUtils.js";
 
 export default function OneOnOneHistoriesDetails(gameId) {
   const init = () => {
