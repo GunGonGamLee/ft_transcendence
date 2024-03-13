@@ -207,7 +207,7 @@ class VerificationCodeView(APIView):
                    500: 'SERVER_ERROR'})
     def post(self, request):
         try:
-            user = AuthUtils.validate_jwt_token_and_get_user(request)
+            user = AuthUtils.validate_jwt_token_and_get_user(request, JWT_EMAIL_SECRET_KEY)
             verification_code = get_request_body_value(request, 'code')
             nickname = user.nickname
             is_noob = True if nickname is None else False
@@ -244,7 +244,7 @@ class VerificationCodeAgainView(APIView):
                    500: 'SERVER_ERROR'})
     def post(self, request):
         try:
-            user = AuthUtils.validate_jwt_token_and_get_user(request)
+            user = AuthUtils.validate_jwt_token_and_get_user(request, JWT_EMAIL_SECRET_KEY)
             send_and_save_verification_code(user)
             auth_token = create_jwt_token(user, JWT_AUTH_SECRET_KEY, 1)
             response = JsonResponse({'token': auth_token}, status=status.HTTP_200_OK)
@@ -263,12 +263,12 @@ class VerificationCodeAgainView(APIView):
 
 class AuthUtils:
     @staticmethod
-    def validate_jwt_token_and_get_user(request):
+    def validate_jwt_token_and_get_user(request, secret_key=JWT_AUTH_SECRET_KEY):
         try:
             jwt_token = request.COOKIES.get('jwt')
             if jwt_token is None:
                 jwt_token = request.headers.get('Authorization').split(' ')[1]
-            decoded_token = jwt.decode(jwt_token, SECRET_KEY, algorithms=['HS256'])
+            decoded_token = jwt.decode(jwt_token, secret_key, algorithms=['HS256'])
             user_email = decoded_token.get('user_email')
             user = User.objects.get(email=user_email)
             return user
