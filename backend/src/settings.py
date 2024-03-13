@@ -58,6 +58,10 @@ if DEBUG:
     EMAIL_HOST_USER = config('EMAIL_HOST_USER')
     EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
+    # JWT
+    JWT_EMAIL_SECRET_KEY = config('JWT_EMAIL_SECRET_KEY')
+    JWT_AUTH_SECRET_KEY = config('JWT_AUTH_SECRET_KEY')
+
 else:
     VAULT_URL = env('VAULT_URL')
     VAULT_TOKEN = env('VAULT_TOKEN')
@@ -85,8 +89,9 @@ else:
     STATE = read_response['data']['data']['STATE']
     EMAIL_HOST_USER = read_response['data']['data']['EMAIL_HOST_USER']
     EMAIL_HOST_PASSWORD = read_response['data']['data']['EMAIL_HOST_PASSWORD']
+    JWT_EMAIL_SECRET_KEY = read_response['data']['data']['JWT_EMAIL_SECRET_KEY']
+    JWT_AUTH_SECRET_KEY = read_response['data']['data']['JWT_AUTH_SECRET_KEY']
     BASE_URL = config('BASE_URL')
-    SECRET_KEY = LOG_KEY
 
 LOGGING = {
     'version': 1,
