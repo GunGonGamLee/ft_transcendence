@@ -17,7 +17,7 @@
 
 ## 스택
 ### 프론트엔드
-[![stackticon](https://firebasestorage.googleapis.com/v0/b/stackticon-81399.appspot.com/o/images%2F1711170935917?alt=media&token=97882237-4d9c-4cf3-b579-192f9126baed)](https://github.com/msdio/stackticon)
+[![stackticon](https://firebasestorage.googleapis.com/v0/b/stackticon-81399.appspot.com/o/images%2F1711171110530?alt=media&token=eb2fa37d-bce2-400b-a833-447e757f3105)](https://github.com/msdio/stackticon)
 
 ### 백엔드
 [![stackticon](https://firebasestorage.googleapis.com/v0/b/stackticon-81399.appspot.com/o/images%2F1711170663418?alt=media&token=0ff40d88-2773-45a6-a65a-93cf7e1bb2e5)](https://github.com/msdio/stackticon)
