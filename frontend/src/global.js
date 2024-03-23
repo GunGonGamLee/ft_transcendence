@@ -1,7 +1,7 @@
 const devBackend = "http://localhost:8000/api";
 const devWebSocket = "ws://localhost:8000/ws";
-const prodBackend = "https://10.14.10.2:443/api";
-const prodWebSocket = "wss://10.14.10.2:443/ws";
+const prodBackend = "https://10.14.5.2:443/api";
+const prodWebSocket = "wss://10.14.5.2:443/ws";
 
 const getAPIUrl = () => {
   return window.mode === "dev" ? devBackend : prodBackend;

@@ -31,8 +31,8 @@ def wait_for_vault_client(client, retries=5, delay=5):
 if DEBUG:
     # DB
     DB_HOST = config('DB_HOST')
-    DB_PASSWORD = config('DB_PASSWORD')
-    DB_USER = config('DB_USER')
+    POSTGRES_PASSWORD = config('POSTGRES_PASSWORD')
+    POSTGRES_USER = config('POSTGRES_USER')
     DB_DATABASE = config('DB_DATABASE')
     DB_PORT = config('DB_PORT')
 
@@ -175,11 +175,11 @@ INSTALLED_APPS = [
     'django_prometheus',
 ]
 
-ELASTICSEARCH_DSL = {
-    'default': {
-        'hosts': 'localhost:9200'
-    },
-}
+# ELASTICSEARCH_DSL = {
+#     'default': {
+#         'hosts': 'localhost:9200'
+#     },
+# }
 
 AUTH_USER_MODEL = 'users.User'
 
@@ -230,9 +230,9 @@ if DEBUG:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': env('DB_DATABASE'),
-            'USER': env('DB_USER'),
-            'PASSWORD': env('DB_PASSWORD'),
+            'NAME': 'db_name',
+            'USER': env('POSTGRES_USER'),
+            'PASSWORD': env('POSTGRES_PASSWORD'),
             'HOST': env('DB_HOST'),
             'PORT': env('DB_PORT'),
         }
@@ -241,11 +241,11 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': db_name,
-            'USER': db_user,
-            'PASSWORD': db_password,
-            'HOST': db_host,
-            'PORT': db_port,
+            'NAME': 'db_name',
+            'USER': env('POSTGRES_USER'),
+            'PASSWORD': env('POSTGRES_PASSWORD'),
+            'HOST': env('DB_HOST'),
+            'PORT': env('DB_PORT'),
         }
     }
 
