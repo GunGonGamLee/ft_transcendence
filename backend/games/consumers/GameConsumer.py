@@ -91,11 +91,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             await self._validate_user(self.user.nickname)
             logger.info(f"[인게임] {self.user.nickname} - {self.game_id}번 방 연결 - {self.manager}")
 
-            game_group_name = f"ingame_{self.game_id}"
-            self.game_group_name = game_group_name
-            self.match1_group_name = f"match1_{self.game_id}"
-            self.match2_group_name = f"match2_{self.game_id}"
-            self.match3_group_name = game_group_name
+            await self._set_group_name()
             await self.channel_layer.group_add(self.game_group_name, self.channel_name)
 
             await self._create_game_object(self.game_group_name)
@@ -211,6 +207,13 @@ class GameConsumer(AsyncWebsocketConsumer):
             return
         else:
             raise Exception("게임 방에 속한 유저가 아닙니다.")
+
+    async def _set_group_name(self):
+        game_group_name = f"ingame_{self.game_id}"
+        self.game_group_name = game_group_name
+        self.match1_group_name = f"match1_{self.game_id}"
+        self.match2_group_name = f"match2_{self.game_id}"
+        self.match3_group_name = game_group_name
 
     async def _create_game_object(self, game_group_name):
         setattr(self.GameList, game_group_name, None)
