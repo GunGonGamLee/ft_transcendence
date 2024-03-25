@@ -20,6 +20,9 @@ p2_lock = threading.Lock()
 
 
 class GameConsumer(AsyncWebsocketConsumer):
+    class GameList:
+        pass
+
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
         self.user = None
@@ -95,6 +98,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.match3_group_name = game_group_name
             await self.channel_layer.group_add(self.game_group_name, self.channel_name)
 
+            await self._create_game_object(self.game_group_name)
             await self._assignment_match()
 
             if self.manager:
@@ -207,6 +211,15 @@ class GameConsumer(AsyncWebsocketConsumer):
             return
         else:
             raise Exception("게임 방에 속한 유저가 아닙니다.")
+
+    async def _create_game_object(self, game_group_name):
+        setattr(self.GameList, game_group_name, None)
+        if self.game.id == 0:
+            setattr(getattr(self.GameList, game_group_name), 'match1', None)
+        else:
+            setattr(getattr(self.GameList, game_group_name), 'match1', None)
+            setattr(getattr(self.GameList, game_group_name), 'match2', None)
+            setattr(getattr(self.GameList, game_group_name), 'match3', None)
 
     async def _assignment_match(self):
         if self.game.mode == 0:  # 1e1
