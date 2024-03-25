@@ -1,4 +1,4 @@
-version: '3.0'
+version: '3.8'
 
 services:
   hashicorp_vault:
@@ -14,7 +14,6 @@ services:
       - "${VAULT_LOG_PATH}:/vault/logs"
       - "${VAULT_TOKEN_PATH}:/vault/config"
       - "${CERTS_PATH}:/vault/certs"
-
     environment:
       VAULT_ADDR: "https://hashicorp_vault:8200"
     cap_add:
@@ -23,7 +22,8 @@ services:
       - app_network
 
   django_node_app:
-    build: .
+    build:
+      dockerfile: Dockerfile
     container_name: django_node_container
     ports:
       - 8443:8443
@@ -34,13 +34,34 @@ services:
       - static-volume:/backend/static
       - "${CERTS_PATH}:/backend/certs"
       - "${DJANGO_LOGS}:/var/log/djangolog"
+    env_file:
+      - .env
     environment:
       VAULT_URL: "https://hashicorp_vault:8200"
       VAULT_TOKEN: ${VAULT_TOKEN}
       BASE_URL: ${BASE_URL}
-
     depends_on:
-      - hashicorp_vault
+      postgresql:
+        condition: service_healthy
+
+  postgresql:
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    container_name: db_container
+    ports:
+      - 5432:5432
+    volumes:
+      - "${POSTGRES_DATA}:/var/lib/postgresql/data"
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app_network
 
   nginx:
     build: ./nginx
@@ -61,113 +82,113 @@ services:
     networks:
       - app_network
 
-  elasticsearch:
-    build:
-      context: ./elk/elasticsearch
-      dockerfile: Dockerfile
-    volumes:
-      - "${ELASTIC_DATA}:/usr/share/elasticsearch/data"
-      - "${ELASTIC_CERTS}:/usr/share/elasticsearch/config/certs"
-    environment:
-      discovery.type : single-node
-      ELASTIC_PW : ${ELASTIC_PW}
-      ES_JAVA_OPTS: "-Xms2g -Xmx2g"
-      ES_CERTS_PW: ${ES_CERTS_PW}
-    ports:
-      - 9200:9200
-      - 9300:9300
-    networks:
-      - app_network
+#   elasticsearch:
+#     build:
+#       context: ./elk/elasticsearch
+#       dockerfile: Dockerfile
+#     volumes:
+#       - "${ELASTIC_DATA}:/usr/share/elasticsearch/data"
+#       - "${ELASTIC_CERTS}:/usr/share/elasticsearch/config/certs"
+#     environment:
+#       discovery.type : single-node
+#       ELASTIC_PW : ${ELASTIC_PW}
+#       ES_JAVA_OPTS: "-Xms2g -Xmx2g"
+#       ES_CERTS_PW: ${ES_CERTS_PW}
+#     ports:
+#       - 9200:9200
+#       - 9300:9300
+#     networks:
+#       - app_network
 
-    # elasticsearch-setup-passwords interactive --url "https://localhost:9200" -E xpack.security.http.ssl.verification_mode=none
+#     # elasticsearch-setup-passwords interactive --url "https://localhost:9200" -E xpack.security.http.ssl.verification_mode=none
 
-  logstash:
-    build: ./elk/logstash
-    container_name: logstash_container
-    environment:
-      LS_JAVA_OPTS: "-Xms2g -Xmx2g"
-      ELASTIC_PW: ${ELASTIC_PW}
-      ES_CERTS_PW: ${ES_CERTS_PW}
-    volumes:
-      - "${ELASTIC_CERTS}:/usr/share/logstash/config/certs"
-      - "${NGINX_LOGS}:/usr/share/logstash/log/nginx_logs"
-      - "${DJANGO_LOGS}:/usr/share/logstash/log/django_logs"
-    ports:
-      - 5333:5333
-    depends_on:
-      - elasticsearch
-    networks:
-      - app_network
+#   logstash:
+#     build: ./elk/logstash
+#     container_name: logstash_container
+#     environment:
+#       LS_JAVA_OPTS: "-Xms2g -Xmx2g"
+#       ELASTIC_PW: ${ELASTIC_PW}
+#       ES_CERTS_PW: ${ES_CERTS_PW}
+#     volumes:
+#       - "${ELASTIC_CERTS}:/usr/share/logstash/config/certs"
+#       - "${NGINX_LOGS}:/usr/share/logstash/log/nginx_logs"
+#       - "${DJANGO_LOGS}:/usr/share/logstash/log/django_logs"
+#     ports:
+#       - 5333:5333
+#     depends_on:
+#       - elasticsearch
+#     networks:
+#       - app_network
 
-  kibana:
-    build: ./elk/kibana
-    container_name: kibana_container
-    volumes:
-      - "${KIBANA_DATA}:/usr/share/kibana/data"
-      - "${ELASTIC_CERTS}:/usr/share/kibana/config/certs"
-    environment:
-      ELASTICSEARCH_URL: https://elasticsearch:9200
-      ELASTIC_PW: ${ELASTIC_PW}
-      ES_CERTS_PW: ${ES_CERTS_PW}
-    ports:
-      - 5601:5601
-    depends_on:
-      - elasticsearch
-    networks:
-      - app_network
+#   kibana:
+#     build: ./elk/kibana
+#     container_name: kibana_container
+#     volumes:
+#       - "${KIBANA_DATA}:/usr/share/kibana/data"
+#       - "${ELASTIC_CERTS}:/usr/share/kibana/config/certs"
+#     environment:
+#       ELASTICSEARCH_URL: https://elasticsearch:9200
+#       ELASTIC_PW: ${ELASTIC_PW}
+#       ES_CERTS_PW: ${ES_CERTS_PW}
+#     ports:
+#       - 5601:5601
+#     depends_on:
+#       - elasticsearch
+#     networks:
+#       - app_network
 
-  node_exporter:
-    image: prom/node-exporter
-    container_name: node_exporter_container
-    ports:
-      - 9100:9100
-    volumes:
-      - "/proc:/host/proc"
-      - "/sys:/host/sys"
-      - "/:/rootfs"
-      - "/etc:/host/etc:ro"
-      - "${CERTS_PATH}:/etc/ssl/certs"
-      - "${PROMETHEUS_CONFIG}:/etc/node_exporter"
-    command:
-      - '--path.procfs=/host/proc'
-      - '--path.sysfs=/host/sys'
-      - '--path.rootfs=/rootfs'
-      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
-      - '--web.config.file=/etc/node_exporter/web.yml'
-    networks:
-      - app_network
+#   node_exporter:
+#     image: prom/node-exporter
+#     container_name: node_exporter_container
+#     ports:
+#       - 9100:9100
+#     volumes:
+#       - "/proc:/host/proc"
+#       - "/sys:/host/sys"
+#       - "/:/rootfs"
+#       - "/etc:/host/etc:ro"
+#       - "${CERTS_PATH}:/etc/ssl/certs"
+#       - "${PROMETHEUS_CONFIG}:/etc/node_exporter"
+#     command:
+#       - '--path.procfs=/host/proc'
+#       - '--path.sysfs=/host/sys'
+#       - '--path.rootfs=/rootfs'
+#       - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+#       - '--web.config.file=/etc/node_exporter/web.yml'
+#     networks:
+#       - app_network
 
-  prometheus:
-    build:
-      context: ./prometheus
-      dockerfile: Dockerfile
-    container_name: prometheus_container
-    env_file:
-      - .env
-    volumes:
-      - "${PROMETHEUS_DATA}:/prometheus/data"
-      - "${PROMETHEUS_CONFIG}:/prometheus/config"
-      - "${CERTS_PATH}:/etc/ssl/certs"
-    ports:
-      - 9090:9090
-    networks:
-      - app_network
+#   prometheus:
+#     build:
+#       context: ./prometheus
+#       dockerfile: Dockerfile
+#     container_name: prometheus_container
+#     env_file:
+#       - .env
+#     volumes:
+#       - "${PROMETHEUS_DATA}:/prometheus/data"
+#       - "${PROMETHEUS_CONFIG}:/prometheus/config"
+#       - "${CERTS_PATH}:/etc/ssl/certs"
+#     ports:
+#       - 9090:9090
+#     networks:
+#       - app_network
 
-  grafana:
-    build:
-      context: ./grafana
-      dockerfile: Dockerfile
-    container_name: grafana_container
-    env_file:
-      - .env
-    volumes:
-      - "${GRAFANA_DATA}:/var/lib/grafana"
-      - "${GRAFANA_CONFIG}:/etc/grafana/grafana.ini"
-      - "${CERTS_PATH}:/etc/ssl/certs"
-    ports:
-      - 3000:3000
-    networks:
-      - app_network
+#   grafana:
+#     build:
+#       context: ./grafana
+#       dockerfile: Dockerfile
+#     container_name: grafana_container
+#     env_file:
+#       - .env
+#     volumes:
+#       - "${GRAFANA_DATA}:/var/lib/grafana"
+#       - "${GRAFANA_CONFIG}:/etc/grafana/grafana.ini"
+#       - "${CERTS_PATH}:/etc/ssl/certs"
+#     ports:
+#       - 3000:3000
+#     networks:
+#       - app_network
 
 volumes:
   static-volume:
