@@ -40,28 +40,25 @@ services:
       VAULT_URL: "https://hashicorp_vault:8200"
       VAULT_TOKEN: ${VAULT_TOKEN}
       BASE_URL: ${BASE_URL}
-    depends_on:
-      postgresql:
-        condition: service_healthy
 
-  postgresql:
-    build:
-      context: ./db
-      dockerfile: Dockerfile
-    container_name: db_container
-    ports:
-      - 5432:5432
-    volumes:
-      - "${POSTGRES_DATA}:/var/lib/postgresql/data"
-    env_file:
-      - .env
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - app_network
+  # postgresql:
+  #   build:
+  #     context: ./db
+  #     dockerfile: Dockerfile
+  #   container_name: db_container
+  #   ports:
+  #     - 5432:5432
+  #   volumes:
+  #     - "${POSTGRES_DATA}:/var/lib/postgresql/data"
+  #   env_file:
+  #     - .env
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #   networks:
+  #     - app_network
 
   nginx:
     build: ./nginx
