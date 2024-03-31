@@ -515,14 +515,12 @@ class GameConsumer(AsyncWebsocketConsumer):
         return getattr(self.GameList, f'{game_group_name}_match{my_match}')
 
     async def _get_my_match_group_name(self, my_match):
-        group_name = None
-        if my_match == 1:
-            group_name = self.match1_group_name
-        elif my_match == 2:
-            group_name = self.match2_group_name
-        elif my_match == 3:
-            group_name = self.match3_group_name
-        return group_name
+        group_name_options = {
+            1: self.match1_group_name,
+            2: self.match2_group_name,
+            3: self.match3_group_name,
+        }
+        return group_name_options.get(my_match)
 
     @database_sync_to_async
     def _get_serializer_data(self, final):
