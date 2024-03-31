@@ -218,6 +218,9 @@ class GameConsumer(AsyncWebsocketConsumer):
             setattr(self.GameList, f'{game_group_name}_match2', None)
             setattr(self.GameList, f'{game_group_name}_match3', None)
 
+    async def _delete_match_object(self, game_group_name: str, my_match: int):
+        delattr(self.GameList, f'{game_group_name}_match{my_match}')
+
     async def _assignment_match(self):
         if self.game.mode == 0:  # 1e1
             self.my_match = 1
