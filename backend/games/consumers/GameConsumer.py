@@ -434,10 +434,6 @@ class GameConsumer(AsyncWebsocketConsumer):
                 'data': data
             }
         )
-        # await self.game_end({
-        #     'type': type_,
-        #     'data': data
-        # })
 
     async def _send_start_message(self, match, group_name):
         data = {
@@ -471,10 +467,6 @@ class GameConsumer(AsyncWebsocketConsumer):
                 'data': data
             }
         )
-        # await self.game_start({
-        #     'type': 'game_start',
-        #     'data': data
-        # })
 
     async def _send_in_game_message(self, match, group_name):
         data = {
