@@ -39,11 +39,6 @@ class GameConsumer(AsyncWebsocketConsumer):
         self.match2_group_name = None
         self.match3_group_name = None
 
-        self.ping_pong_map = None
-        self.match1 = None
-        self.match2 = None
-        self.match3 = None
-
     async def connect(self):
         if await self._is_invalid_user():
             await self._reject_invalid_user()
