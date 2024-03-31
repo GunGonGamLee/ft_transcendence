@@ -315,6 +315,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 await self._save_game_status(3)
                 await self._update_winner_data(self.game.mode)
                 await self._send_end_message(self.my_match)
+                await self._delete_match_object(self.game_group_name, 3)
 
     async def _game_ready(self, message_data, group_name):
         await self._init_game(message_data, self.my_match)
