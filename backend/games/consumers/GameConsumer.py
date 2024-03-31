@@ -107,7 +107,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         if self.game.mode != 0 and await self._is_loser() and await self._is_match_finished(self.my_match):
             await self.channel_layer.group_discard(self.game_group_name, self.channel_name)
         if await self._is_game_finished(self.game.mode) is False:
-            match = await self._get_my_match_PingPongGame_object(self.my_match)
+            match = await self._get_my_match_PingPongGame_object(self.game_group_name, self.my_match)
             group_name = await self._get_my_match_group_name(self.my_match)
             await self._dodge(self.my_match, match, self.player1, group_name)
 
@@ -318,7 +318,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self._init_game(message_data, self.my_match)
         if await self._waiting_join(group_name, 'match'):
             return None
-        match = await self._get_my_match_PingPongGame_object(self.my_match)
+        match = await self._get_my_match_PingPongGame_object(self.game_group_name, self.my_match)
         await self._send_start_message(match, group_name)
         await asyncio.sleep(2)
         match.started_at = datetime.now()
@@ -351,7 +351,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 await self._send_data(await self._get_my_match_group_name(self.my_match), 'down')
         else:
             if message_data == 'up':
-                match = await self._get_my_match_PingPongGame_object(self.my_match)
+                match = await self._get_my_match_PingPongGame_object(self.game_group_name, self.my_match)
                 if match.left_side_player.bar.y >= 0:
                     p1_lock.acquire()
                     match.left_side_player.bar.y -= GAME_SETTINGS_DICT['bar']['speed']
@@ -359,7 +359,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                         match.left_side_player.bar.y = 0
                     p1_lock.release()
             elif message_data == 'down':
-                match = await self._get_my_match_PingPongGame_object(self.my_match)
+                match = await self._get_my_match_PingPongGame_object(self.game_group_name, self.my_match)
                 if match.left_side_player.bar.y + GAME_SETTINGS_DICT['bar']['height'] <= match.ping_pong_map.height:
                     p2_lock.acquire()
                     match.left_side_player.bar.y += GAME_SETTINGS_DICT['bar']['speed']
@@ -519,7 +519,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def up(self, event):
         if event['sender_nickname'] != self.user.nickname:
-            match = await self._get_my_match_PingPongGame_object(self.my_match)
+            match = await self._get_my_match_PingPongGame_object(self.game_group_name, self.my_match)
             if match.right_side_player.bar.y >= 0:
                 p2_lock.acquire()
                 match.right_side_player.bar.y -= GAME_SETTINGS_DICT['bar']['speed']
@@ -529,7 +529,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def down(self, event):
         if event['sender_nickname'] != self.user.nickname:
-            match = await self._get_my_match_PingPongGame_object(self.my_match)
+            match = await self._get_my_match_PingPongGame_object(self.game_group_name, self.my_match)
             if match.right_side_player.bar.y + GAME_SETTINGS_DICT['bar']['height'] <= match.ping_pong_map.height:
                 p2_lock.acquire()
                 match.right_side_player.bar.y += GAME_SETTINGS_DICT['bar']['speed']
@@ -549,15 +549,8 @@ class GameConsumer(AsyncWebsocketConsumer):
                 await self._save_winner(self.my_match)
                 match.finished = True
 
-    async def _get_my_match_PingPongGame_object(self, my_match):
-        match = None
-        if my_match == 1:
-            match = self.match1
-        elif my_match == 2:
-            match = self.match2
-        elif my_match == 3:
-            match = self.match3
-        return match
+    async def _get_my_match_PingPongGame_object(self, game_group_name, my_match):
+        return getattr(self.GameList, f'{game_group_name}_match{my_match}')
 
     async def _get_my_match_group_name(self, my_match):
         group_name = None
