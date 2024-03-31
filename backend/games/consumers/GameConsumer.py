@@ -383,7 +383,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         if (whether_score_a_goal := match.ball.is_goal_in(match.ping_pong_map)) != [False, False]:
             match.update_score(whether_score_a_goal)
             match.ball.reset(match.ping_pong_map)
-        if match.left_side_player.score + match.right_side_player.score == 5:
+        if match.left_side_player.score + match.right_side_player.score == GAME_SETTINGS_DICT['play']['score']:
             match.finished = True
         match.ball.move()
 
