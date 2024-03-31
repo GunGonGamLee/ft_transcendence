@@ -109,22 +109,22 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
         },
-        'file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': '/var/log/djangolog/django.log',
-        },
+        # 'file': {
+            # 'level': 'INFO',
+            # 'class': 'logging.FileHandler',
+            # 'filename': '/var/log/djangolog/django.log',
+        # },
     },
     'loggers': {
         '': {
-            'handlers': ['console', 'file'],
-            # 'handlers': ['console'],
+            # 'handlers': ['console', 'file'],
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': True,
         },
         'django': {
-            'handlers': ['console', 'file'],
-            # 'handlers': ['console'],
+            # 'handlers': ['console', 'file'],
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': True,
         },
@@ -230,8 +230,8 @@ if DEBUG:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'db_name',
-            'USER': env('POSTGRES_USER'),
+            'NAME': 'transcendence',
+            'USER': 'sejokim',
             'PASSWORD': env('POSTGRES_PASSWORD'),
             'HOST': env('DB_HOST'),
             'PORT': env('DB_PORT'),
@@ -241,8 +241,8 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'db_name',
-            'USER': env('POSTGRES_USER'),
+            'NAME': 'postgres',
+            'USER': 'postgres',
             'PASSWORD': env('POSTGRES_PASSWORD'),
             'HOST': env('DB_HOST'),
             'PORT': env('DB_PORT'),
