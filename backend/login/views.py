@@ -149,7 +149,7 @@ class OAuthCallbackView(APIView):
 
 class GoogleCallbackView(OAuthCallbackView):
     def get_email_auth_uri(self):
-        return 'https://localhost:443/auth'
+        return 'https://localhost:443/register'
     client_id = GOOGLE_CLIENT_ID
     client_secret = GOOGLE_CLIENT_SECRET
     token_api = "https://oauth2.googleapis.com/token"
