@@ -216,13 +216,12 @@ class GameConsumer(AsyncWebsocketConsumer):
         self.match3_group_name = game_group_name
 
     async def _create_game_object(self, game_group_name):
-        setattr(self.GameList, game_group_name, None)
-        if self.game.id == 0:
-            setattr(getattr(self.GameList, game_group_name), 'match1', None)
+        if self.game.mode == 0:
+            setattr(self.GameList, f'{game_group_name}_match1', None)
         else:
-            setattr(getattr(self.GameList, game_group_name), 'match1', None)
-            setattr(getattr(self.GameList, game_group_name), 'match2', None)
-            setattr(getattr(self.GameList, game_group_name), 'match3', None)
+            setattr(self.GameList, f'{game_group_name}_match1', None)
+            setattr(self.GameList, f'{game_group_name}_match2', None)
+            setattr(self.GameList, f'{game_group_name}_match3', None)
 
     async def _assignment_match(self):
         if self.game.mode == 0:  # 1e1
