@@ -94,7 +94,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             await self._set_group_name()
             await self.channel_layer.group_add(self.game_group_name, self.channel_name)
 
-            await self._create_game_object(self.game_group_name)
+            await self._create_match_object(self.game_group_name)
             await self._assignment_match()
 
             if self.manager:
@@ -215,7 +215,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         self.match2_group_name = f"match2_{self.game_id}"
         self.match3_group_name = game_group_name
 
-    async def _create_game_object(self, game_group_name):
+    async def _create_match_object(self, game_group_name):
         if self.game.mode == 0:
             setattr(self.GameList, f'{game_group_name}_match1', None)
         else:
