@@ -483,10 +483,6 @@ class GameConsumer(AsyncWebsocketConsumer):
                 'data': data
             }
         )
-        # await self.in_game({
-        #     'type': 'in_game',
-        #     'data': data
-        # })
 
     async def close_connection(self, event):
         await self.send(text_data=json.dumps(event))
