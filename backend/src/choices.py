@@ -59,7 +59,8 @@ GAME_SETTINGS_DICT = {
         }
     },
     'play': {
-        'frame': 1 / 24
+        'frame': 1 / 24,
+        'score': 5,
     }
 }
 
