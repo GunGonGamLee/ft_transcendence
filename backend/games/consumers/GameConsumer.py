@@ -329,7 +329,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             await self._check_game(match)
             await self._send_in_game_message(match, group_name)
             await asyncio.sleep(GAME_SETTINGS_DICT['play']['frame'])
-        return match
 
     async def _send_final_match_table(self):
         serializer_data = await self._get_serializer_data(True)
@@ -394,14 +393,9 @@ class GameConsumer(AsyncWebsocketConsumer):
         map_width = message_data['map_width']
         map_height = message_data['map_height']
 
-        self.ping_pong_map = PingPongMap(map_width, map_height)
-
-        if match == 1:
-            self.match1 = PingPongGame(self.ping_pong_map, self.game.match1.player1, self.game.match1.player2)
-        elif match == 2:
-            self.match2 = PingPongGame(self.ping_pong_map, self.game.match2.player1, self.game.match2.player2)
-        elif match == 3:
-            self.match3 = PingPongGame(self.ping_pong_map, self.game.match3.player1, self.game.match3.player2)
+        setattr(self.GameList,
+                f'{self.game_group_name}_match{str(match)}',
+                PingPongGame(PingPongMap(map_width, map_height), self.game.match1.player1, self.game.match1.player2))
 
     @database_sync_to_async
     def _save_match3_matching_in_database(self, winner: User):
@@ -412,7 +406,9 @@ class GameConsumer(AsyncWebsocketConsumer):
             match.player2 = winner
         match.save()
 
-    async def _send_end_message(self, match: Result):
+    async def _send_end_message(self, my_match: int):
+        match = getattr(self.game, f'match{my_match}')
+
         type_ = 'game_end'
         data = {
             'game_id': self.game_id,
