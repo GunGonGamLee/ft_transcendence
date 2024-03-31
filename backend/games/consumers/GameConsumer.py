@@ -104,12 +104,24 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def _process_valid_user_disconnect(self):
         await self._save_game_object_by_id()
+        try:
+            await self._delete_match_object(self.game_group_name, 1)
+        except AttributeError:
+            pass
+        try:
+            await self._delete_match_object(self.game_group_name, 2)
+        except AttributeError:
+            pass
+        try:
+            await self._delete_match_object(self.game_group_name, 3)
+        except AttributeError:
+            pass
         if self.game.mode != 0 and await self._is_loser() and await self._is_match_finished(self.my_match):
             await self.channel_layer.group_discard(self.game_group_name, self.channel_name)
         if await self._is_game_finished(self.game.mode) is False:
             match = await self._get_my_match_PingPongGame_object(self.game_group_name, self.my_match)
             group_name = await self._get_my_match_group_name(self.my_match)
-            await self._dodge(self.my_match, match, self.player1, group_name)
+            await self._dodge(self.my_match, match, group_name)
 
     @database_sync_to_async
     def _is_loser(self):
@@ -122,9 +134,16 @@ class GameConsumer(AsyncWebsocketConsumer):
         except Exception as e:
             return False
 
-    async def _dodge(self, my_match, result: PingPongGame, player1: bool, match_group_name):
-        if player1:
-            if result is None:
+    async def _dodge(self, my_match, result: PingPongGame, match_group_name):
+        if result is None:
+            await self.channel_layer.group_send(
+                match_group_name,
+                {
+                    'type': 'close.connection',
+                    'data': 'dodge'
+                })
+        else:
+            if result.started_at is None:
                 await self.channel_layer.group_send(
                     match_group_name,
                     {
@@ -132,27 +151,10 @@ class GameConsumer(AsyncWebsocketConsumer):
                         'data': 'dodge'
                     })
             else:
-                if result.started_at is None:
-                    await self.channel_layer.group_send(
-                        match_group_name,
-                        {
-                            'type': 'close.connection',
-                            'data': 'dodge'
-                        })
-                else:
-                    self._save_match_data(my_match, result, False)
-                    if my_match != 3:
-                        await self.channel_layer.group_discard(self.game_group_name, self.channel_name)
-                    await self.channel_layer.group_discard(match_group_name, self.channel_name)
-        else:
-            await self.channel_layer.group_send(
-                match_group_name,
-                {
-                    'type': 'player2_disconnect'
-                })
-            if my_match != 3:
-                await self.channel_layer.group_discard(self.game_group_name, self.channel_name)
-            await self.channel_layer.group_discard(match_group_name, self.channel_name)
+                self._save_match_data(my_match, result, False)
+                if my_match != 3:
+                    await self.channel_layer.group_discard(self.game_group_name, self.channel_name)
+                await self.channel_layer.group_discard(match_group_name, self.channel_name)
 
     @database_sync_to_async
     def _is_match_finished(self, my_match):
@@ -511,18 +513,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def game_end(self, event):
         await self.send(text_data=json.dumps(event))
-
-    async def player2_disconnect(self, event):
-        if self.player1:
-            match_attributes = {
-                1: self.match1,
-                2: self.match2,
-                3: self.match3
-            }
-            match = match_attributes.get(self.my_match)
-            if match is not None:
-                await self._save_winner(self.my_match)
-                match.finished = True
 
     async def _get_my_match_PingPongGame_object(self, game_group_name, my_match):
         return getattr(self.GameList, f'{game_group_name}_match{my_match}')
