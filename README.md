@@ -1,5 +1,13 @@
+
+
 # ft_transcendence
-![리드밍](https://img.buzzfeed.com/store-an-image-prod-us-east-1/EdGE5ilDZ.gif)
+<img width="400" alt="image" src="https://github.com/GunGonGamLee/ft_transcendence/assets/50707297/ce67f899-fa8b-486a-8d1c-6587f1f2a302"> </br>
+### Transcendence, 한계를 넘어 초월의 탁구세계로!
+이 프로젝트는 사용자들이 실시간으로 서로 경쟁할 수 있는 온라인 pingpong 게임 웹사이트입니다. </br>
+
+1972년에 처음 선보인 원조 Pong 게임의 클래식한 매력을 현대적인 웹 환경에서 재현했습니다. </br>
+
+그 시절의 느낌을 웹에서 느낄 수 있게 픽셀 아트 테마로 재창조하여, 감성적인 레트로 경험을 제공합니다. </br>
 
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FGunGonGamLee%2Fft_transcendence&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
 
