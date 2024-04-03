@@ -8,13 +8,22 @@
 그 시절의 느낌을 웹에서 느낄 수 있게 픽셀 아트 테마로 재창조하여, 감성적인 레트로 경험을 제공하기 위해 노력했습니다. </br>
 
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FGunGonGamLee%2Fft_transcendence&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
-</br>
+</br></br>
 
-## 팀원
-|![yena](https://avatars.githubusercontent.com/u/50291995?v=4)|![donghyk2](https://avatars.githubusercontent.com/u/81581828?v=4)|![wonlim](https://avatars.githubusercontent.com/u/90092181?v=4)|![sejokim](https://avatars.githubusercontent.com/u/117820621?v=4)|![hyojocho](https://avatars.githubusercontent.com/u/50707297?v=4)|
-|:-:|:-:|:-:|:-:|:-:|
-|[yena](https://github.com/nyj001012)|[donghyk2](https://github.com/donghyun1998)|[wonlim](https://github.com/LWJ0513)|[sejokim](https://github.com/sejoonkimmm)|[hyojocho](https://github.com/bluedog129)|
-</br>
+## 게임 실행
+<details>
+  <summary>로그인 & 인증</summary>
+  
+
+https://github.com/GunGonGamLee/ft_transcendence/assets/50707297/7467e376-1644-426e-828d-3f49807ccad9
+
+
+</details></br>
+<details>
+  <summary>2P 모드(로컬게임)</summary>
+  
+</details>
+
 
 ## LINK
 - [스토리 보드](https://www.figma.com/file/CxS9ap8Ko1PFhfO6v0zaq2/transcendence?type=design&node-id=0%3A1&mode=design&t=pESqo1DwG6V7rqe6-1)
@@ -28,3 +37,9 @@
 
 ### 백엔드
 [![stackticon](https://firebasestorage.googleapis.com/v0/b/stackticon-81399.appspot.com/o/images%2F1711170663418?alt=media&token=0ff40d88-2773-45a6-a65a-93cf7e1bb2e5)](https://github.com/msdio/stackticon)
+
+## 팀원
+|![yena](https://avatars.githubusercontent.com/u/50291995?v=4)|![donghyk2](https://avatars.githubusercontent.com/u/81581828?v=4)|![wonlim](https://avatars.githubusercontent.com/u/90092181?v=4)|![sejokim](https://avatars.githubusercontent.com/u/117820621?v=4)|![hyojocho](https://avatars.githubusercontent.com/u/50707297?v=4)|
+|:-:|:-:|:-:|:-:|:-:|
+|[yena](https://github.com/nyj001012)|[donghyk2](https://github.com/donghyun1998)|[wonlim](https://github.com/LWJ0513)|[sejokim](https://github.com/sejoonkimmm)|[hyojocho](https://github.com/bluedog129)|
+</br>
