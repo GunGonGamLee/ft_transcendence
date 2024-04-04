@@ -84,7 +84,8 @@ https://github.com/GunGonGamLee/ft_transcendence/assets/50707297/1f16167a-fda5-4
 
 </details></br></br>
 
-## 프로젝트 구조
+## 아키텍쳐 구조
+![스크린샷 2024-03-25 오전 12 55 56](https://github.com/GunGonGamLee/ft_transcendence/assets/81581828/c502416f-3a61-489b-a244-280f59445452)
 
 
 
